@@ -1,0 +1,293 @@
+openapi: 3.0.0
+info:
+  title: EROP EMS Integration APIs
+  version: 1.0.0
+  description: EMSs can pull OAVA applications from a queue and ack each application as succesfully downloaded.
+  contact:
+    name: Krister Bone
+    email: krister.bone@valtech.com
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /postal:
+    parameters:
+      - name: pageSize
+        description: The maximum number of Pending Register Checks to return
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+          default: 100
+        example: 100
+        in: query
+        required: false
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      tags:
+        - Register Checks
+      responses:
+        '200':
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Methods: '''*'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            responseTemplates:
+              application/json: |
+                {}
+    get:
+      summary: Get Pending Register Checks
+      description: Retrieve list of pending approved postal vote applications that the EMS needs to download.
+      operationId: get-pending-postal-applicaitons
+      tags:
+        - Register Checks
+      responses:
+        '200':
+          $ref: '#/components/responses/PostalVoteApplications'
+      security:
+        - emsCertificateLambdaAuthorizer: []
+      x-amazon-apigateway-integration:
+        type: HTTP_PROXY
+        uri: '${base_uri}/postal'
+        requestParameters:
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: GET
+  '/postal/{applicationid}':
+    parameters:
+      - schema:
+          type: string
+        name: applicationid
+        in: path
+        required: true
+    options:
+      summary: CORS support
+      description: |
+        Enable CORS by returning correct headers
+      tags:
+        - Single Register Check
+      responses:
+        '200':
+          description: Default response for CORS method
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content: {}
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: |
+            {
+              "statusCode" : 200
+            }
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
+              method.response.header.Access-Control-Allow-Methods: '''*'''
+              method.response.header.Access-Control-Allow-Origin: '''*'''
+            responseTemplates:
+              application/json: |
+                {}
+    delete:
+      summary: Delete approved postal vote applications
+      description: The EMS system's response to a single postal vote application. Will delete (update) the postal vote application from the EMS's postal application queue.
+      operationId: delete-postal-application
+      tags:
+        - Single Register Check
+      requestBody:
+        $ref: '#/components/requestBodies/RegisterCheckResult'
+      responses:
+        '201':
+          description: Pending Register Check updated successfully.
+        '400':
+          description: Error response describing fields in the request payload that are in error
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                properties:
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2022-09-28T18:01:42.105Z'
+                  status:
+                    type: integer
+                    example: 400
+                  error:
+                    type: string
+                    example: Bad Request
+                  message:
+                    type: string
+                    example: 'Validation failed for object=''registerCheckResultRequest''. Error count: 1'
+                  validationErrors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      - 'Error on field ''gssCode'': rejected value [1234], must match "^[a-zA-Z]\d{8}$"'
+                required:
+                  - timestamp
+                  - status
+                  - error
+                  - message
+      security:
+        - emsCertificateLambdaAuthorizer: []
+      x-amazon-apigateway-integration:
+        type: HTTP_PROXY
+        uri: '${base_uri}/postal/{applicaitonid}'
+        requestParameters:
+          integration.request.path.requestid: method.request.path.requestid
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: POST
+components:
+  schemas:
+    ErrorResponse:
+      title: ErrorResponse
+      description: Response describing errors in a web request
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: '2022-09-28T18:01:42.105Z'
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: Bad Request
+        message:
+          type: string
+          example: 'Validation failed for object=''registerCheckResultRequest''. Error count: 1'
+        validationErrors:
+          type: array
+          items:
+            type: string
+          example:
+            - 'Error on field ''gssCode'': rejected value [1234], must match "^[a-zA-Z]\d{8}$"'
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+    PendingPostalVoteApplications:
+      title: PendingPostalVoteApplications
+      type: object
+      properties:
+        id:
+          type: string
+        requestid:
+          type: string
+          description: A unique identifier for this check against the Electoral Register.
+          format: uuid
+          example: 9477c3c2-303f-11ed-a261-0242ac120002
+        source:
+          $ref: '#/components/schemas/SourceSystem'
+        gssCode:
+          type: string
+          pattern: '^[a-zA-Z]\d{8}$'
+          description: The Local Authority GSS Code that manages the Electoral Register.
+          example: E06000001
+        actingStaffId:
+          type: string
+          description: |-
+            Indicates who/what initiated the register check request.
+
+            Where EROP creates the request automatically this will be "EROP". Should there be a need to manually force an additional check, this will indicate the id of the ERO user who triggered the request (for auditing purposes).
+          example: EROP
+        createdAt:
+          type: string
+          description: The date and time this request to check the Electoral Register was generated
+          format: date-time
+          example: '2022-09-07T14:14:55.123Z'
+        PostalVoteApplications:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostalVoteApplication'
+    PostalVoteApplication:
+      title: PostalVoteApplication
+      x-stoplight:
+        id: o5u6lrxdq95sm
+      type: object
+      properties:
+        id:
+          type: string
+  responses:
+    PostalVoteApplications:
+      description: Contains pending Postal Vote applications for the calling ERO's EMS system to process.
+      headers:
+        Access-Control-Allow-Origin:
+          schema:
+            type: string
+        Access-Control-Allow-Methods:
+          schema:
+            type: string
+        Access-Control-Allow-Headers:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PendingPostalVoteApplications'
+  requestBodies:
+    PostalApplications:
+      description: 'The result of a Register Check (performed by an ERO''s EMS system), which may contain a positive match or otherwise.'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RegisterCheckResultRequest'
+  securitySchemes:
+    emsCertificateLambdaAuthorizer:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: custom
+      x-amazon-apigateway-authorizer:
+        type: request
+        authorizerUri: '${ems_certificate_authorizer_id}'
+        authorizerCredentials: '${ems_certificate_authorizer_role}'
+        authorizerPayloadFormatVersion: '1.0'
+        authorizerResultTtlInSeconds: 0
