@@ -89,15 +89,25 @@ paths:
                         type: string
                         format: date-time
               examples:
-                Get User Alice Smith:
+                Example 1:
                   value:
-                    id: 142
-                    firstName: Alice
-                    lastName: Smith
-                    email: alice.smith@gmail.com
-                    dateOfBirth: '1997-10-31'
-                    emailVerified: true
-                    signUpDate: '2019-08-24'
+                    status:
+                      postalVoteTotal: 5
+                      oldestPostalVote: '2022-08-01 12:00:00'
+                      proxyVoteTotal: 5
+                      oldestProxyVote: '2022-08-01 12:00:00'
+                      moverTotal: 3
+                      emsTotal: 3
+                      webTotal: 2
+                      unprocessedWebTotal: 2
+                      unprocessedEmsTotal: 3
+                      verifiedWebTotal: 0
+                      verifiedEmsTotal: 0
+                      sentToDwp: 0
+                      oldestWeb: '2013-10-08 20:52:31'
+                      oldestEms: '2013-10-08 20:52:19'
+                      newestWeb: '2013-10-08 20:53:18'
+                      newestEms: '2013-10-08 20:53:02'
             application/xml:
               schema:
                 type: object
@@ -143,6 +153,8 @@ paths:
     delete:
       summary: Marking a single RtV application as received
       operationId: delete-applications-id
+      tags:
+        - Register to Vote related endpoints
       responses:
         '200':
           description: OK
@@ -215,6 +227,45 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/PostalVote'
+              examples:
+                Example 1:
+                  value:
+                    pageSize: 100
+                    postalVotes:
+                      - id: 502cf250036469154b4f85fc
+                        createdAt: '2022-08-01 14:14:55'
+                        gssCode: T12345678
+                        source: web
+                        authorisedAt: '2022-08-02 10:10:10'
+                        authorisingStaffId: jsmith99@somecouncil.gov.uk
+                        detail:
+                          refNum: FA3435
+                          ip: 1.2.3.4
+                          lang: en
+                          emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+                          fn: First
+                          mn: Middle
+                          ln: Last
+                          dob: '1995-03-02'
+                          regproperty: Aviation House
+                          regstreet: 125 Kingsway
+                          reglocality: Camden
+                          regtown: London
+                          regarea: Greater London
+                          regpostcode: SW112DR
+                          reguprn: '098765'
+                          phone: '07799779977'
+                          email: john@example.com
+                          ballotproperty: Another House
+                          ballotstreet: 234 Kingsway
+                          ballotlocality: Camden
+                          ballottown: London
+                          ballotarea: Greater London
+                          ballotpostcode: SW112DR
+                          ballotuprn: '098766'
+                          ballotAddressReason: I am away from home for work
+                          signature: LzlqLzRBQ...
+                          postalVoteUntilFurtherNotice: true
             application/xml:
               schema:
                 type: object
@@ -269,97 +320,60 @@ paths:
             application/json:
               schema:
                 type: object
+                x-examples:
+                  Example 1:
+                    pageSize: 100
+                    proxyVotes:
+                      - id: 502cf250036469154b4f85fc
+                        createdAt: '2020-08-01 14:14:55'
+                        gssCode: T12345678
+                        source: web
+                        authorisedAt: '2022-08-02 10:10:10'
+                        authorisingStaffId: jsmith99@somecouncil.gov.uk
+                        detail:
+                          refNum: FA3435
+                          ip: 1.2.3.4
+                          lang: en
+                          emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+                          fn: First
+                          mn: Middle
+                          ln: Last
+                          dob: '1995-03-02'
+                          regproperty: Aviation House
+                          regstreet: 125 Kingsway
+                          reglocality: Camden
+                          regtown: London
+                          regarea: Greater London
+                          regpostcode: SW112DR
+                          reguprn: '098765'
+                          phone: '07799779977'
+                          email: john@example.com
+                          proxyfn: Jane
+                          proxymn: Middle
+                          proxyln: Doe
+                          proxyfamilyrelationship: Sister
+                          proxyproperty: Aviation House
+                          proxystreet: 125 Kingsway
+                          proxylocality: Camden
+                          proxytown: London
+                          proxyarea: Greater London
+                          proxypostcode: SW112DR
+                          proxyuprn: '098765'
+                          proxyphone: '07777123456'
+                          proxyemail: jane@example.com
+                          proxyreason: work commitments
+                          signature: LzlqLzRBQ...
+                          proxyVoteUntilFurtherNotice: true
                 properties:
                   pageSize:
                     type: integer
                   proxyVotes:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        createdAt:
-                          type: string
-                        gssCode:
-                          type: string
-                        source:
-                          type: string
-                        authorisedAt:
-                          type: string
-                        authorisingStaffId:
-                          type: string
-                        detail:
-                          type: object
-                          properties:
-                            refNum:
-                              type: string
-                            ip:
-                              type: string
-                            lang:
-                              type: string
-                            emsElectorId:
-                              type: string
-                            fn:
-                              type: string
-                            mn:
-                              type: string
-                            ln:
-                              type: string
-                            dob:
-                              type: string
-                            regproperty:
-                              type: string
-                            regstreet:
-                              type: string
-                            reglocality:
-                              type: string
-                            regtown:
-                              type: string
-                            regarea:
-                              type: string
-                            regpostcode:
-                              type: string
-                            reguprn:
-                              type: string
-                            phone:
-                              type: string
-                            email:
-                              type: string
-                            proxyfn:
-                              type: string
-                            proxymn:
-                              type: string
-                            proxyln:
-                              type: string
-                            proxyfamilyrelationship:
-                              type: string
-                            proxyproperty:
-                              type: string
-                            proxystreet:
-                              type: string
-                            proxylocality:
-                              type: string
-                            proxytown:
-                              type: string
-                            proxyarea:
-                              type: string
-                            proxypostcode:
-                              type: string
-                            proxyuprn:
-                              type: string
-                            proxyphone:
-                              type: string
-                            proxyemail:
-                              type: string
-                            proxyreason:
-                              type: string
-                            signature:
-                              type: string
-                            proxyVoteUntilFurtherNotice:
-                              type: boolean
-                x-examples:
-                  Example 1:
+                      $ref: '#/components/schemas/ProxyVote'
+              examples:
+                Example 1:
+                  value:
                     pageSize: 100
                     proxyVotes:
                       - id: 502cf250036469154b4f85fc
