@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs
   version: 1.0.0
-  description: TBD
+  description: EMSs can pull OAVA applications from a queue and ack each application as successfully downloaded.
   contact:
     name: Krister Bone
     email: krister.bone@valtech.com
