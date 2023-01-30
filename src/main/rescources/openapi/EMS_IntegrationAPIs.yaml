@@ -1,0 +1,522 @@
+openapi: 3.0.0
+info:
+  title: EROP EMS Integration APIs
+  version: 1.0.0
+  description: EMSs can pull OAVA applications from a queue and ack each application as successfully downloaded.
+  contact:
+    name: Krister Bone
+    email: krister.bone@valtech.com
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /postalVotes/accepted:
+    get:
+      summary: For requesting updates about accepted Postal Vote applications
+      tags:
+        - Postal Vote related endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/PostalVoteAccepted'
+      operationId: get-postalVotes-accepted
+      description: |
+        This endpoint acts as a notification queue. To ensure resilience against communication failures, reading entries from this queue does not consume them. After successfully receiving a notification from this endpoint, the EMS should call the "DELETE /postalVotes/{id}" endpoint for each notification that it has received.
+
+        The server will not lock or hide records between the GET and DELETE calls, so it is not safe to call this endpoint concurrently from multiple client workers or threads without adding client-side deduplication or idempotency.
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: pageSize
+          description: 'the number of records to be present in the response. Default 100, min 1, max 500'
+      security:
+        - emsCertificateLambdaAuthorizer: []
+      x-amazon-apigateway-integration:
+        type: HTTP_PROXY
+        uri: '${base_uri}/postalVotes/accepted'
+        requestParameters:
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: GET
+  '/postalVotes/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: For marking a single Postal Vote application as received
+      operationId: delete-postalVotes-id
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      tags:
+        - Postal Vote related endpoints
+      description: |-
+        Postal vote applications that are acknowledged in this way will be removed from the queue immediately, and subsequently deleted from the IER system.
+
+        If the specified ID does not exist, or belongs to a postal vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
+      security:
+        - emsCertificateLambdaAuthorizer: []
+      x-amazon-apigateway-integration:
+        type: HTTP_PROXY
+        uri: '${base_uri}/proxyVotes/{id}'
+        requestParameters:
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: GET
+  /proxyVotes/accepted:
+    get:
+      summary: For requesting updates about accepted Proxy Vote applications
+      tags:
+        - Proxy Vote related endpoints
+      responses:
+        '200':
+          $ref: '#/components/responses/ProxyVoteAccepted'
+      operationId: get-proxyVotes-accepted
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: pageSize
+          description: ' the number of records to be present in the response. Default 100, min 1, max 500.'
+      security:
+        - emsCertificateLambdaAuthorizer: []
+      x-amazon-apigateway-integration:
+        type: HTTP_PROXY
+        uri: '${base_uri}/proxyVotes/accepted'
+        requestParameters:
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: GET
+  '/proxyVotes/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: For marking a single Proxy Vote application as received
+      operationId: delete-proxyVotes-id
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      tags:
+        - Proxy Vote related endpoints
+      description: 'Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and subsequently deleted from the IER system.'
+      security:
+        - emsCertificateLambdaAuthorizer: []
+      x-extension-1:
+        type: HTTP_PROXY
+        uri: '${base_uri}/proxyVotes/{id}'
+        requestParameters:
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: GET
+components:
+  schemas:
+    PostalVote:
+      type: object
+      x-examples:
+        Example 1:
+          id: 502cf250036469154b4f85fc
+          createdAt: '2022-08-01 14:14:55'
+          gssCode: T12345678
+          source: web
+          authorisedAt: '2022-08-02 10:10:10'
+          authorisingStaffId: jsmith99@somecouncil.gov.uk
+          detail:
+            refNum: FA3435
+            ip: 1.2.3.4
+            lang: en
+            emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+            fn: First
+            mn: Middle
+            ln: Last
+            dob: '1995-03-02'
+            regproperty: Aviation House
+            regstreet: 125 Kingsway
+            reglocality: Camden
+            regtown: London
+            regarea: Greater London
+            regpostcode: SW112DR
+            reguprn: '098765'
+            phone: '07799779977'
+            email: john@example.com
+            ballotproperty: Another House
+            ballotstreet: 234 Kingsway
+            ballotlocality: Camden
+            ballottown: London
+            ballotarea: Greater London
+            ballotpostcode: SW112DR
+            ballotuprn: '098766'
+            ballotAddressReason: I am away from home for work
+            signature: LzlqLzRBQ...
+            postalVoteUntilFurtherNotice: true
+      properties:
+        id:
+          type: string
+          description: the IER ID of the absent vote application
+          pattern: '^[a-fA-F\d]{24}$'
+          example: 502cf250036469154b4f85fc
+        createdAt:
+          type: string
+          format: date-time
+          description: the date and time the application was received (Europe/London)
+        gssCode:
+          type: string
+          description: the GSS Code of the LA/VJB of the applicant
+        source:
+          type: string
+          description: either “web” for digital applications or “erop” for applications received by post and entered into the EROP
+        authorisedAt:
+          type: string
+          format: date-time
+          description: the date and time the application was approved in the EROP (Europe/London)
+        authorisingStaffId:
+          type: string
+          format: email
+          description: the id of the ERO user who approved this application in the EROP
+        detail:
+          type: object
+          required:
+            - refNum
+            - ip
+            - lang
+            - emsElectorId
+            - fn
+            - ln
+            - dob
+            - regstreet
+            - regpostcode
+            - signature
+          properties:
+            refNum:
+              type: string
+              description: the reference number that was shown to the applicant (digital applications only)
+            ip:
+              type: string
+              description: |
+                the IP address from which the application was received (digital applications only)
+            lang:
+              type: string
+              description: “en” or “cy” according to which language the applicant used
+            emsElectorId:
+              type: string
+              format: uuid
+              description: the unique ID for this elector as used by the EMS for the current LA/VJ. This will have been returned to the EROP by the EMS over the “EROP to EMS Register Checker API”. See comments in “Elector ID and Identity Matching” above.
+            fn:
+              type: string
+              description: First name
+            mn:
+              type: string
+              description: Middle names (optional)
+            ln:
+              type: string
+              description: Last name
+            dob:
+              type: string
+              format: date
+              description: date of birth in ISO8601 format
+            regproperty:
+              type: string
+            regstreet:
+              type: string
+            reglocality:
+              type: string
+            regtown:
+              type: string
+            regarea:
+              type: string
+            regpostcode:
+              type: string
+            reguprn:
+              type: string
+            phone:
+              type: string
+              description: phone number for contact
+            email:
+              type: string
+              format: email
+              description: email address for contact
+            ballotproperty:
+              type: string
+              description: |
+                the address to which the applicant has requested the ballot paper is sent, if different to their registered address, in the same format as used on register to vote applications (all fields omitted if the ballot address is the same as the registered address) (if given, street and postcode are required other fields are optional)
+            ballotstreet:
+              type: string
+              description: |
+                the address to which the applicant has requested the ballot paper is sent, if different to their registered address, in the same format as used on register to vote applications (all fields omitted if the ballot address is the same as the registered address) (if given, street and postcode are required other fields are optional)
+            ballotlocality:
+              type: string
+              description: |
+                the address to which the applicant has requested the ballot paper is sent, if different to their registered address, in the same format as used on register to vote applications (all fields omitted if the ballot address is the same as the registered address) (if given, street and postcode are required other fields are optional)
+            ballottown:
+              type: string
+              description: |
+                the address to which the applicant has requested the ballot paper is sent, if different to their registered address, in the same format as used on register to vote applications (all fields omitted if the ballot address is the same as the registered address) (if given, street and postcode are required other fields are optional)
+            ballotarea:
+              type: string
+              description: |
+                the address to which the applicant has requested the ballot paper is sent, if different to their registered address, in the same format as used on register to vote applications (all fields omitted if the ballot address is the same as the registered address) (if given, street and postcode are required other fields are optional)
+            ballotpostcode:
+              type: string
+              description: |
+                the address to which the applicant has requested the ballot paper is sent, if different to their registered address, in the same format as used on register to vote applications (all fields omitted if the ballot address is the same as the registered address) (if given, street and postcode are required other fields are optional)
+            ballotuprn:
+              type: string
+              description: |
+                the address to which the applicant has requested the ballot paper is sent, if different to their registered address, in the same format as used on register to vote applications (all fields omitted if the ballot address is the same as the registered address) (if given, street and postcode are required other fields are optional)
+            ballotAddressReason:
+              type: string
+              description: ' (required only if “ballot” address given) The reason the applicant gave for using a different address for the ballot paper (max 500 utf-8 chars)'
+            signature:
+              type: string
+              description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
+            postalVoteUntilFurtherNotice:
+              type: boolean
+      required:
+        - id
+        - createdAt
+        - gssCode
+        - source
+        - authorisedAt
+        - authorisingStaffId
+        - detail
+      title: ''
+    ProxyVote:
+      type: object
+      x-examples:
+        Example 1:
+          id: 502cf250036469154b4f85fc
+          createdAt: '2020-08-01 14:14:55'
+          gssCode: T12345678
+          source: web
+          authorisedAt: '2022-08-02 10:10:10'
+          authorisingStaffId: jsmith99@somecouncil.gov.uk
+          detail:
+            refNum: FA3435
+            ip: 1.2.3.4
+            lang: en
+            emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+            fn: First
+            mn: Middle
+            ln: Last
+            dob: '1995-03-02'
+            regproperty: Aviation House
+            regstreet: 125 Kingsway
+            reglocality: Camden
+            regtown: London
+            regarea: Greater London
+            regpostcode: SW112DR
+            reguprn: '098765'
+            phone: '07799779977'
+            email: john@example.com
+            proxyfn: Jane
+            proxymn: Middle
+            proxyln: Doe
+            proxyfamilyrelationship: Sister
+            proxyproperty: Aviation House
+            proxystreet: 125 Kingsway
+            proxylocality: Camden
+            proxytown: London
+            proxyarea: Greater London
+            proxypostcode: SW112DR
+            proxyuprn: '098765'
+            proxyphone: '07777123456'
+            proxyemail: jane@example.com
+            proxyreason: work commitments
+            signature: LzlqLzRBQ...
+            proxyVoteUntilFurtherNotice: true
+      properties:
+        id:
+          type: string
+          description: |
+            the IER ID of the absent vote application
+          pattern: '^[a-fA-F\d]{24}$'
+        createdAt:
+          type: string
+          format: date-time
+          description: |
+            the date and time the application was received (Europe/London)
+        source:
+          type: string
+          description: ' either “web” for digital applications or “erop” for applications received by post and entered into the EROP'
+        gssCode:
+          type: string
+          description: |
+            the GSS Code of the LA/VJB of the applicant
+        authorisedAt:
+          type: string
+          format: date-time
+          description: |
+            the date and time the application was approved in the EROP (Europe/London)
+        authorisingStaffId:
+          type: string
+          format: email
+          description: |
+            the id of the ERO user who approved this application in the EROP
+        detail:
+          type: object
+          required:
+            - refNum
+            - ip
+            - lang
+            - emsElectorId
+            - fn
+            - ln
+            - dob
+            - regstreet
+            - regpostcode
+            - proxyfn
+            - proxyln
+            - proxystreet
+            - proxypostcode
+            - proxyreason
+          properties:
+            refNum:
+              type: string
+              description: the reference number that was shown to the applicant (digital applications only)
+            ip:
+              type: string
+            lang:
+              type: string
+              description: “en” or “cy” according to which language the applicant used
+            emsElectorId:
+              type: string
+              description: he unique ID for this elector as used by the EMS for the current LA/VJB. This will have been returned to the EROP by the EMS over the “EROP to EMS Register Checker API”
+            fn:
+              type: string
+              description: First name
+            mn:
+              type: string
+              description: Middle names
+            ln:
+              type: string
+              description: Last Name
+            dob:
+              type: string
+              description: |
+                date of birth in ISO8601 format
+            regproperty:
+              type: string
+            regstreet:
+              type: string
+            reglocality:
+              type: string
+            regtown:
+              type: string
+            regarea:
+              type: string
+            regpostcode:
+              type: string
+            reguprn:
+              type: string
+            phone:
+              type: string
+            phone - copy:
+              type: string
+            email:
+              type: string
+              format: email
+            proxyfn:
+              type: string
+              description: ' First name of the chosen proxy'
+            proxymn:
+              type: string
+              description: |
+                Middle name(s) (optional) of the chosen proxy
+            proxyln:
+              type: string
+              description: |
+                last name of the chosen proxy
+            proxyfamilyrelationship:
+              type: string
+              description: |
+                (optional) the family relationship (if any) of the chosen proxy. The question to users is “What is your proxy’s relationship to you?”
+            proxyproperty:
+              type: string
+            proxystreet:
+              type: string
+            proxylocality:
+              type: string
+            proxytown:
+              type: string
+            proxyarea:
+              type: string
+            proxypostcode:
+              type: string
+            proxyuprn:
+              type: string
+            proxyphone:
+              type: string
+            proxyemail:
+              type: string
+              format: email
+            proxyreason:
+              type: string
+              description: |-
+                a free-form text value containing the applicant’s response to the question “please explain why you are not able to go to your polling station on polling day” for the primary form variant or other text for other form variants (max 500 utf-8 chars)
+
+
+
+                All proxy vote forms, including variants which require supporting documentation, will be handled in the EROP. The ERO user working in that application will review the documentation as required and only accepted applications will be seen on this API. The supporting documentation, if any, will not be sent through here. The field “proxyreason” will contain details for other form variants and may have been filled in by an ERO user.
+            signature:
+              type: string
+            proxyVoteUntilFurtherNotice:
+              type: boolean
+      required:
+        - id
+        - createdAt
+        - source
+        - gssCode
+        - authorisedAt
+        - authorisingStaffId
+        - detail
+    ProxyVoteAcceptedResponse:
+      title: ProxyVoteAcceptedResponse
+      type: object
+      properties:
+        pageSize:
+          type: integer
+        proxyVotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProxyVote'
+    PostalVoteAcceptedResponse:
+      title: PostalVoteAcceptedResponse
+      type: object
+      properties:
+        pageSize:
+          type: integer
+        proxyVotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostalVote'
+  responses:
+    PostalVoteAccepted:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PostalVoteAcceptedResponse'
+    ProxyVoteAccepted:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProxyVoteAcceptedResponse'
+  securitySchemes:
+    emsCertificateLambdaAuthorizer:
+      name: Authorization
+      type: apiKey
+      in: header
