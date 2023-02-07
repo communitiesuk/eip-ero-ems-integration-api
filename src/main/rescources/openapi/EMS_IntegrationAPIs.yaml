@@ -8,6 +8,9 @@ info:
     email: krister.bone@valtech.com
 servers:
   - url: 'http://localhost:3000'
+  - url: 'https://api.ems-oava.int.erop.ierds.uk'
+  - url: 'https://api.ems-oava.test.erop.ierds.uk'
+  - url: 'https://api.ems-oava.erop.ierds.uk'
 paths:
   /postalVotes/accepted:
     get:
@@ -129,10 +132,10 @@ components:
       x-examples:
         Example 1:
           id: 502cf250036469154b4f85fc
-          createdAt: '2022-08-01 14:14:55'
+          createdAt: '2022-08-01T14:14:55Z'
           gssCode: T12345678
           source: web
-          authorisedAt: '2022-08-02 10:10:10'
+          authorisedAt: '2022-08-02T10:10:10Z'
           authorisingStaffId: jsmith99@somecouncil.gov.uk
           detail:
             refNum: FA3435
@@ -171,17 +174,18 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: the date and time the application was received (Europe/London)
+          description: the date and time the application was received in ISO8601 format '2022-08-02T10:10:10Z'
         gssCode:
           type: string
           description: the GSS Code of the LA/VJB of the applicant
         source:
           type: string
-          description: either “web” for digital applications or “erop” for applications received by post and entered into the EROP
+          description: |
+            either “web” for digital applications or “erop” for applications received by post and entered into the EROP
         authorisedAt:
           type: string
           format: date-time
-          description: the date and time the application was approved in the EROP (Europe/London)
+          description: the date and time the application was approved in the EROP in ISO8601 format '2022-08-02T10:10:10Z'
         authorisingStaffId:
           type: string
           format: email
@@ -284,6 +288,25 @@ components:
               description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
             postalVoteUntilFurtherNotice:
               type: boolean
+              description: Mutually exclusive postal voting limits. True if the elector wishes to vote by post until further notice.
+            postalVoteForSingleDate:
+              type: string
+              format: date
+              description:  |
+                If postal application is for a single dates.
+                In ISO8601 date format '2022-08-02'
+            postalVoteStartDate:
+              type: string
+              format: date
+              description:  |
+                If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteEndDate must also be present
+                In ISO8601 date format '2022-08-02'
+            postalVoteEndDate:
+              type: string
+              format: date
+              description:  |
+                If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteStartDate must also be present
+                In ISO8601 date format '2022-08-02'
       required:
         - id
         - createdAt
@@ -292,16 +315,15 @@ components:
         - authorisedAt
         - authorisingStaffId
         - detail
-      title: ''
     ProxyVote:
       type: object
       x-examples:
         Example 1:
           id: 502cf250036469154b4f85fc
-          createdAt: '2020-08-01 14:14:55'
+          createdAt: '2020-08-01T14:14:55Z'
           gssCode: T12345678
           source: web
-          authorisedAt: '2022-08-02 10:10:10'
+          authorisedAt: '2022-08-02T10:10:10Z'
           authorisingStaffId: jsmith99@somecouncil.gov.uk
           detail:
             refNum: FA3435
@@ -346,20 +368,18 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: |
-            the date and time the application was received (Europe/London)
-        source:
-          type: string
-          description: ' either “web” for digital applications or “erop” for applications received by post and entered into the EROP'
+          description: the date and time the application was received in ISO8601 format '2022-08-02T10:10:10Z'
         gssCode:
           type: string
+          description: the GSS Code of the LA/VJB of the applicant
+        source:
+          type: string
           description: |
-            the GSS Code of the LA/VJB of the applicant
+            either “web” for digital applications or “erop” for applications received by post and entered into the EROP
         authorisedAt:
           type: string
           format: date-time
-          description: |
-            the date and time the application was approved in the EROP (Europe/London)
+          description: the date and time the application was approved in the EROP in ISO8601 format '2022-08-02T10:10:10Z'
         authorisingStaffId:
           type: string
           format: email
@@ -466,14 +486,30 @@ components:
               type: string
               description: |-
                 a free-form text value containing the applicant’s response to the question “please explain why you are not able to go to your polling station on polling day” for the primary form variant or other text for other form variants (max 500 utf-8 chars)
-
-
-
                 All proxy vote forms, including variants which require supporting documentation, will be handled in the EROP. The ERO user working in that application will review the documentation as required and only accepted applications will be seen on this API. The supporting documentation, if any, will not be sent through here. The field “proxyreason” will contain details for other form variants and may have been filled in by an ERO user.
             signature:
               type: string
             proxyVoteUntilFurtherNotice:
               type: boolean
+              description: Mutually exclusive proxy voting limits. True if the elector wishes to vote by proxy until further notice.
+            proxyVoteForSingleDate:
+              type: string
+              format: date
+              description:  |
+                If proxy application is for a single date
+                In ISO8601 date format '2022-08-02'
+            proxyVoteStartDate:
+              type: string
+              format: date
+              description:  |
+                If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteEndDate must also be present
+                In ISO8601 date format '2022-08-02'
+            proxyVoteEndDate:
+              type: string
+              format: date
+              description:  |
+                If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteStartDate must also be present
+                In ISO8601 date format '2022-08-02'
       required:
         - id
         - createdAt
