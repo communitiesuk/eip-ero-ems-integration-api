@@ -182,8 +182,8 @@ components:
           description: GSS code of the ERO/VJB of the applicant/application
         source:
           type: string
-          minLength: 9
-          maxLength: 9          
+          minLength: 10
+          maxLength: 10         
           description: |
             either “web” for digital applications or “erop” for applications received by post and entered into the EROP
         authorisedAt:
@@ -199,12 +199,11 @@ components:
           type: object
           required:
             - refNum
-            - id
+            - ip
             - lang
             - emsElectorId
             - fn
             - ln
-            - dob
             - regstreet
             - regpostcode
             - signature
@@ -212,9 +211,9 @@ components:
             refNum:
               type: string
               description: the reference number that was shown to the applicant (digital applications only)
-              maxLength: 36
+              maxLength: 10
               example: 'V3HQ9LKI0W'              
-            id:
+            ip:
               type: string
               maxLength: 45
               description: |
@@ -234,7 +233,7 @@ components:
               description: First name
             mn:
               type: string
-              maxLength: 70
+              maxLength: 100
               description: Middle names (optional)
             ln:
               type: string
@@ -407,8 +406,8 @@ components:
           description: GSS code of the ERO/VJB of the applicant/application
         source:
           type: string
-          minLength: 9
-          maxLength: 9          
+          minLength: 10
+          maxLength: 10         
           description: |
             either “web” for digital applications or “erop” for applications received by post and entered into the EROP
         authorisedAt:
@@ -417,19 +416,18 @@ components:
           description: the date and time the application was approved in the EROP in ISO8601
         authorisingStaffId:
           type: string
-          maxLength: 255
+          maxLength: 256
           format: email
           description: the id of the ERO user who approved this application in the EROP
         detail:
           type: object
           required:
             - refNum
-            - id
+            - ip
             - lang
             - emsElectorId
             - fn
             - ln
-            - dob
             - regstreet
             - regpostcode
             - proxyfn
@@ -441,8 +439,9 @@ components:
             refNum:
               type: string
               description: the reference number that was shown to the applicant (digital applications only)
-              maxLength: 36
-            id:
+              maxLength: 10
+              example: 'V3HQ9LKI0W'  
+            ip:
               type: string
               maxLength: 45
               description: |
@@ -462,7 +461,7 @@ components:
               description: First name
             mn:
               type: string
-              maxLength: 70
+              maxLength: 100
               description: Middle names (optional)
             ln:
               type: string
@@ -505,10 +504,11 @@ components:
               description: email address for contact
             proxyfn:
               type: string
+              maxLength: 35
               description: ' First name of the chosen proxy'
             proxymn:
               type: string
-              maxLength: 35
+              maxLength: 100
               description: |
                 Middle name(s) (optional) of the chosen proxy
             proxyln:
