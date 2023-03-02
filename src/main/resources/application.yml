@@ -1,0 +1,18 @@
+feature-toggles:
+
+cloud:
+  aws:
+    region:
+      auto: true
+      use-default-aws-region-chain: true
+    credentials:
+      use-default-aws-credentials-chain: true
+
+sqs:
+  accepted-proxy-application-queue-name: ${SQS_ACCEPTED_PROXY_APPLICATION_QUEUE_NAME}
+  accepted-postal-application-queue-name: ${SQS_ACCEPTED_POSTAL_APPLICATION_QUEUE_NAME}
+  deleted-proxy-application-queue-name: ${SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME}
+  deleted-postal-application-queue-name: ${SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME}
+
+sts:
+  endpoint: ${STS_ENDPOINT}
