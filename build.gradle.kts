@@ -150,7 +150,7 @@ tasks.withType<GenerateTask> {
     )
 }
 
-tasks.create("generate-models-from-openapi-document-EMS_IntegrationAPIs.yaml", GenerateTask::class) {
+tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", GenerateTask::class) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/EMSIntegrationAPIs.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi")
