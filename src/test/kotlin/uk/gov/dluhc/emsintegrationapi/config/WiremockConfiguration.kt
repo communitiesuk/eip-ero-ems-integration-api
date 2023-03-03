@@ -12,7 +12,6 @@ import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
-import org.springframework.util.ResourceUtils
 import javax.net.ssl.TrustManagerFactory
 
 private val logger = KotlinLogging.logger {}
@@ -29,13 +28,6 @@ class WiremockConfiguration {
             options()
                 .dynamicPort()
                 .dynamicHttpsPort()
-                // Valtech has shared their public cert with DWP who will have added it to their trust store
-                // DWP only allow clients that are trusted to use its service through mTLS
-                .needClientAuth(true)
-                // keytool -import -trustcacerts -file client-cert.pem -keypass changeit -storepass changeit -keystore truststore.jks
-                .trustStorePath(ResourceUtils.getFile("classpath:certificates/dwp/truststore.jks").absolutePath)
-                .trustStorePassword("changeit")
-                .trustStoreType("JKS")
         ).apply {
             if (logWiremockRequests) {
                 addMockServiceRequestListener { request: Request, _: Response ->

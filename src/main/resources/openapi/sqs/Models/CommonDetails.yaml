@@ -1,0 +1,76 @@
+title: Common Details
+description: Common details such as ip address, ref number, language and electoral id
+type: object
+x-examples:
+  Minimum data:
+    id: 502cf250036469154b4f85fc
+    createdAt: 2022-08-01T14:14:55Z
+    gssCode: T12345678
+    source: web
+    authorisedAt: 2022-08-02T10:10:10Z
+    authorisingStaffId: jsmith99@somecouncil.gov.uk
+    refNum: V3HQ9LKI0W
+    ip: 1.2.3.4
+    lang: en
+    emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+
+properties:
+  id:
+    type: string
+    description: the IER ID of the absent vote application
+    pattern: '^[a-fA-F\d]{24}$'
+    example: 502cf250036469154b4f85fc
+  createdAt:
+    type: string
+    format: date-time
+    description: the date and time the application was received in ISO8601 format
+  gssCode:
+    type: string
+    minLength: 9
+    maxLength: 9
+    description: GSS code of the ERO/VJB of the applicant/application
+  source:
+    type: string
+    minLength: 10
+    maxLength: 10
+    description: |
+      either “web” for digital applications or “erop” for applications received by post and entered into the EROP
+  authorisedAt:
+    type: string
+    format: date-time
+    description: the date and time the application was approved in the EROP in ISO8601
+  authorisingStaffId:
+    type: string
+    maxLength: 255
+    format: email
+    description: the id of the ERO user who approved this application in the EROP
+  refNum:
+    type: string
+    description: the reference number that was shown to the applicant (digital applications only)
+    maxLength: 10
+    example: 'V3HQ9LKI0W'
+  ip:
+    type: string
+    maxLength: 45
+    description: |
+      the IP address from which the application was received (digital applications only)
+  lang:
+    type: string
+    minLength: 2
+    maxLength: 2
+    description: “en” or “cy” according to which language the applicant used
+  emsElectorId:
+    type: string
+    maxLength: 255
+    description: the unique ID for this elector as used by the EMS for the current LA/VJ. This will have been returned to the EROP by the EMS over the “EROP to EMS Register Checker API”. See comments in “Elector ID and Identity Matching” above.
+required:
+  - id
+  - createdAt
+  - gssCode
+  - source
+  - authorisedAt
+  - authorisingStaffId
+  - refNum
+  - ip
+  - lang
+  - emsElectorId

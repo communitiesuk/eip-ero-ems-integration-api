@@ -2,7 +2,7 @@
 
 Spring Boot microservice that :
 
-- Consumes approved Postal and Proxy application SQS message from EROP and saved into the database
+- Consumes approved Postal and Proxy vote application SQS message from EROP and saved into the database
 - Exposes secured REST APIs to get and delete approved Postal / Proxy vote applications
 - Publishes SQS messages for each deleted application
 
@@ -146,34 +146,6 @@ password: rootPassword
 classpath: /home/valtech/IdeaProjects/eip/eip-ero-ems-integration-api/src/main/resources/db/changelog/mysql-connector-java-8.0.29.jar
 context=ddl
 ```
-
-### DWP Integration
-
-This service integrates with a DWP REST API in order to perform automated identity checks using the applicant's National
-Insurance Number (NINo).  
-The DWP API uses mTLS authentication, where this service needs to present a client certificate as part of the SSL
-handshake.
-
-DWP documentation demonstrates connectivity using `curl` where the client certificate and private key are presented, and
-the CA certificates that signed the client certificate and the DWP server certificate are presented in a CA bundle:
-
-```shell
-curl \
-  https://dwp-api-url \
-  -d "<request body>" \
-  --cert client-cerificate.pem \
-  --key client-private-key.pem \
-  --cacert ca-bundle.pem
-```
-
-Where the `ca-bundle.pem` contains the CA certificates that signed the client certificate and the DWP server
-certificate.
-
-The java implementation of this is slightly different. The service builds a java `SslContext` with a `KeyStore` that
-contains the client certificate, the client private key, and the CA Chain that was used to sign the client
-certificate.  
-As the DWP API server certificate is signed by a public CA it is already trusted by the JVM's default `cacerts` file, so
-the configuration of a `TrustStore` is not necessary.
 
 ##### The SSL handshake works as follows:
 

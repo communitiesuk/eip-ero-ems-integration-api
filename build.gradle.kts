@@ -155,6 +155,24 @@ tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", Ge
     inputSpec.set("$projectDir/src/main/resources/openapi/EMSIntegrationAPIs.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi")
 }
+// Postal SQS Message
+tasks.create(
+    "generate-models-from-openapi-document-approved-postal-vote-application-sqs-messaging.yaml",
+    GenerateTask::class
+) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/approved-postal-vote-application-sqs-messaging.yaml")
+    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
+}
+
+tasks.create(
+    "generate-models-from-openapi-document-approved-proxy-vote-application-sqs-messaging.yaml",
+    GenerateTask::class
+) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/approved-proxy-vote-application-sqs-messaging.yaml")
+    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
+}
 
 // Add the generated code to the source sets
 sourceSets["main"].java {

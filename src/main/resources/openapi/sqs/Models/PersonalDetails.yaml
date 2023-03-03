@@ -1,0 +1,57 @@
+title: Contact Details
+description: Voter contact details
+type: object
+x-examples:
+  Minimum data:
+    firstName: Test
+    lastName: Test
+    address:
+      street: Street 1
+      postcode: PC1 2FB
+  Normal ContactDetais:
+    firstName: Foo
+    lastName: Foo
+    email: foo@foo.com
+    dob: '1995-03-02'
+    phone: 07799779977
+    address:
+      street: East Lodge
+      property: Balruddery
+      locality: Invergowrie
+      town: Dundee
+      area: Angus
+      postcode: DD25LF
+      uprn: '117095813'
+    
+properties:
+  firstName:
+    type: string
+    maxLength: 35
+    description: First name
+  middleNames:
+    type: string
+    maxLength: 100
+    description: Middle names (optional)
+  lastName:
+    type: string
+    maxLength: 35
+    description: Last name
+  dob:
+    type: string
+    format: date
+    description: date of birth in ISO8601 format
+  phone:
+    type: string
+    maxLength: 50
+    description: phone number for contact
+  email:
+    type: string
+    format: email
+    maxLength: 255
+    description: email address for contact
+  address:
+    $ref: ./Address.yaml
+required:
+  - firstName
+  - lastName
+  - address

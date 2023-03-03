@@ -1,0 +1,138 @@
+openapi: 3.0.0
+info:
+  title: Approved Postal Application SQS Message
+  version: 1.0.0
+  description: |-
+    Approved Postal application API SQS Message Types for EROP
+
+    Messages defined in this spec are produced by EROP and consumed by EMS.
+
+    Any changes to this spec should be based on joint collaboration and agreement between EROP and EM.
+
+    Whilst this is an openAPI spec, it does not imply being used to define REST APIs, nor is it intended to.
+
+    The `paths` elements are being used to document (at a high level) the SQS queues and the request bodies that are expected
+    to be published to them. **There is no intent to generate or implement SQS queues or listener classes from this document.**
+
+    The `paths` element is only being used in order to maintain the structure of the openApi spec, as `paths` are required
+    elements.
+#
+# --------------------------------------------------------------------------------
+#
+
+paths:
+  #
+  # --------------------------------------------------------------------------------
+  # SQS Queues start here
+  # --------------------------------------------------------------------------------
+  #
+  '/approved-postal-vote-application':
+    post:
+      tags:
+        - SQS queues
+      requestBody:
+        $ref: '#/components/requestBodies/ApprovedPostalVoteApplicationMessage'
+      responses:
+        '204':
+          description: No response content.
+
+components:
+  #
+  # Schema and Enum Definitions
+  # -
+  schemas:
+    ApprovedPostalVoteApplicationMessage:
+      title: ApprovedPostalVoteApplicationMessage
+      x-api-owner: EMS
+      x-api-consumer: EROP
+      type: object
+      x-examples:
+        Example 1:
+          commonDetails:
+            id: 502cf250036469154b4f85fc
+            createdAt: 2022-08-01T14:14:55Z
+            gssCode: T12345678
+            source: web
+            authorisedAt: 2022-08-02T10:10:10Z
+            authorisingStaffId: jsmith99@somecouncil.gov.uk
+            refNum: V3HQ9LKI0W
+            ip: 1.2.3.4
+            lang: en
+            emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+            personalDetails:
+              firstName: First
+              middleNames: Middle
+              lastName: Last
+              dob: '1995-03-02'
+              address:
+                property: Aviation House
+                street: 125 Kingsway
+                locality: Camden
+                town: London
+                area: Greater London
+                postcode: SW112DR
+                uprn: 098765
+              phone: 07799779977
+              email: john@example.com
+            ballotAddress:
+              property: Another House
+              street: 234 Kingsway
+              locality: Camden
+              town: London
+              area: Greater London
+              postcode: SW112DR
+              uprn: '098766'
+            ballotAddressReason: I am away from home for work
+            signature: LzlqLzRBQ...
+            postalVoteUntilFurtherNotice: true
+      properties:
+        commonDetails:
+          $ref: '../sqs/Models/CommonDetails.yaml'
+        personalDetails:
+          $ref: '../sqs/Models/PersonalDetails.yaml'
+        ballotAddress:
+          $ref: '../sqs/Models/Address.yaml'
+        signature:
+          type: string
+          description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
+        ballotAddressReason:
+          type: string
+          description: ' (required only if “ballot” address given) The reason the applicant gave for using a different address for the ballot paper (max 500 utf-8 chars)'
+          maxLength: 500
+        postalVoteUntilFurtherNotice:
+          type: boolean
+          description: Mutually exclusive postal voting limits. True if the elector wishes to vote by post until further notice.
+        postalVoteForSingleDate:
+          type: string
+          format: date
+          description: |
+            If postal application is for a single dates.
+            In ISO8601 date format '2022-08-02'
+        postalVoteStartDate:
+          type: string
+          format: date
+          description: |
+            If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteEndDate must also be present
+            In ISO8601 date format '2022-08-02'
+        postalVoteEndDate:
+          type: string
+          format: date
+          description: |
+            If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteStartDate must also be present
+            In ISO8601 date format '2022-08-02'
+
+      required:
+        - commonDetails
+        - personalDetails
+        - signature
+
+
+  #
+  # Request Body Definitions
+  # --------------------------------------------------------------------------------
+  requestBodies:
+    ApprovedPostalVoteApplicationMessage:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApprovedPostalVoteApplicationMessage'
