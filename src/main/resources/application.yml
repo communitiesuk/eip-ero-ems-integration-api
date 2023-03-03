@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/ems_integration_application
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+
+  liquibase:
+    enabled: false
+
+cloud:
+  aws:
+    region:
+      auto: true
+      use-default-aws-region-chain: true
+    credentials:
+      use-default-aws-credentials-chain: true
+
+sqs:
+  accepted-proxy-application-queue-name: ${SQS_ACCEPTED_PROXY_APPLICATION_QUEUE_NAME}
+  accepted-postal-application-queue-name: ${SQS_ACCEPTED_POSTAL_APPLICATION_QUEUE_NAME}
+  deleted-proxy-application-queue-name: ${SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME}
+  deleted-postal-application-queue-name: ${SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME}
+
+sts:
+  endpoint: ${STS_ENDPOINT}
+
+feature-toggles:
