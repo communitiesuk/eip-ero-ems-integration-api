@@ -78,6 +78,7 @@ The following environment variables must be set in order to run the application:
 3. `AWS_REGION` - the AWS region
 4. `CLOUD_AWS_SQS_ENDPOINT` - optional environment variable used to override the SQS endpoint URI. Primarily
 
+
 #### MYSQL Configuration
 
 For local setup refer to src/main/resources/db/readme.
@@ -94,7 +95,14 @@ The following are overridden by the task definition in AWS:
 * `SPRING_DATASOURCE_URL` - This is set to the deployed RDS' URL.
 * `SPRING_DATASOURCE_DRIVERCLASSNAME` - This is overridden to use the AWS Aurora MySQL JDBC Driver.
 * `SPRING_LIQUIBASE_DRIVERCLASSNAME` - This is overridden to use the AWS Aurora MySQL JDBC Driver.
-*
+* `SQS_ACCEPTED_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the accepted proxy
+  application.
+* `SQS_ACCEPTED_POSTAL_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the accepted postal
+  application.
+* `SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the deleted proxy
+  application.
+* `SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the deleted postal
+  application.
 
 #### Liquibase Configuration
 
