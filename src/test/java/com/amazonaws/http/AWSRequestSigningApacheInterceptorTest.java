@@ -23,7 +23,11 @@
 package com.amazonaws.http;
 
 import com.amazonaws.SignableRequest;
-import com.amazonaws.auth.*;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.auth.Signer;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -69,30 +73,13 @@ public class AWSRequestSigningApacheInterceptorTest {
     }
 
     @Test
-    public void testBadRequest() throws Exception {
+    public void testBadRequest() {
 
         HttpRequest badRequest = new BasicHttpRequest("GET", "?#!@*%");
 
         IOException ex = catchThrowableOfType(() -> createInterceptor().process(badRequest, new BasicHttpContext()), IOException.class);
 
         assertThat(ex).isNotNull();
-    }
-
-    private static class AddHeaderSigner implements Signer {
-        private final String name;
-        private final String value;
-
-        private AddHeaderSigner(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-
-        @Override
-        public void sign(SignableRequest<?> request, AWSCredentials credentials) {
-            request.addHeader(name, value);
-            request.addHeader("resourcePath", request.getResourcePath());
-        }
     }
 
     @Test
@@ -112,6 +99,23 @@ public class AWSRequestSigningApacheInterceptorTest {
         assertThat(request.getFirstHeader("Signature").getValue()).isEqualTo("wuzzle");
         assertThat(request.getFirstHeader("content-length")).isNull();
         assertThat(request.getFirstHeader("resourcePath").getValue()).isEqualTo("/foo-2017-02-25%2Cfoo-2017-02-26/_search");
+    }
+
+    private static class AddHeaderSigner implements Signer {
+        private final String name;
+        private final String value;
+
+        private AddHeaderSigner(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+
+        @Override
+        public void sign(SignableRequest<?> request, AWSCredentials credentials) {
+            request.addHeader(name, value);
+            request.addHeader("resourcePath", request.getResourcePath());
+        }
     }
 
 }
