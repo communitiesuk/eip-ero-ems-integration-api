@@ -11,6 +11,7 @@ openssl req -x509 -newkey rsa:4096 -keyout private-key.pem -out client-cert.pem 
 The certificate was generated with a 10 year (approx - 3650 days) expiry, so expires 09/09/2032
 
 The certificate can be read with
+
 ```shell
 openssl x509 -in src/test/resources/certificates/dwp/client-cert.pem -text
 ```

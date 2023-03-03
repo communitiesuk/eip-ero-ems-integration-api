@@ -181,13 +181,6 @@ ktlint {
     }
 }
 
-kapt {
-    arguments {
-        arg("mapstruct.defaultComponentModel", "spring")
-        arg("mapstruct.unmappedTargetPolicy", "IGNORE")
-    }
-}
-
 /* Configuration for the OWASP dependency check */
 dependencyCheck {
     autoUpdate = true
