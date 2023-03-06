@@ -1,6 +1,7 @@
 title: Approval Details
 description: Approval details
 type: object
+version: 1.0.0
 x-examples:
   Minimum data:
     id: 502cf250036469154b4f85fc

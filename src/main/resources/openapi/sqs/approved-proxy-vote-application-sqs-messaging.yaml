@@ -40,8 +40,8 @@ components:
   # Schema and Enum Definitions
   # -
   schemas:
-    ProxyDetails:
-      title: ProxyDetails
+    ProxyVoteDetails:
+      title: ProxyVoteDetails
       type: object
       properties:
         proxyFirstName:
@@ -135,7 +135,7 @@ components:
             ip: 1.2.3.4
             lang: en
             emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
-          proxyDetails:
+          proxyVoteDetails:
             proxyFirstName: Jane
             proxyMiddleNames: Middle
             proxyLastName: Doe
@@ -151,23 +151,23 @@ components:
             proxyPhone: '07777123456'
             proxyEmail: jane@example.com
             proxyReason: work commitments
-            signature: LzlqLzRBQ...
             proxyVoteUntilFurtherNotice: true
+          signature: LzlqLzRBQ...
 
       properties:
         approvalDetails:
           $ref: '../sqs/Models/ApprovalDetails.yaml'
         applicantDetails:
           $ref: '../sqs/Models/ApplicantDetails.yaml'
-        proxyDetails:
-          $ref: '#/components/schemas/ProxyDetails'
+        proxyVoteDetails:
+          $ref: '#/components/schemas/ProxyVoteDetails'
         signature:
           type: string
           description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
       required:
         - approvalDetails
         - applicantDetails
-        - proxyDetails
+        - proxyVoteDetails
 
 
   #
