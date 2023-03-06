@@ -73,7 +73,7 @@ properties:
 required:
   - firstName
   - lastName
-  - address
+  - registeredAddress
   - refNum
   - ip
   - lang

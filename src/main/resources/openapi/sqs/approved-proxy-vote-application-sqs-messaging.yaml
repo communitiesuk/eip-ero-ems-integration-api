@@ -99,6 +99,11 @@ components:
           description: |
             If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteStartDate must also be present
             In ISO8601 date format '2022-08-02'
+      required:
+        - proxyFirstName
+        - proxyLastName
+        - proxyReason
+        - proxyAddress
     ApprovedProxyVoteApplicationMessage:
       title: ApprovedProxyVoteApplicationMessage
       type: object
