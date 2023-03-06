@@ -77,13 +77,13 @@ class LocalStackContainerConfiguration {
     @Bean
     fun localStackContainerSqsSettings(
         applicationContext: ConfigurableApplicationContext,
-        @Value("\${sqs.accepted-proxy-application-queue-name}") acceptedProxyApplicationQueueName: String,
-        @Value("\${sqs.accepted-postal-application-queue-name}") acceptedPostalApplicationQueueName: String,
+        @Value("\${sqs.approved-proxy-application-queue-name}") approvedProxyApplicationQueueName: String,
+        @Value("\${sqs.approved-postal-application-queue-name}") approvedPostalApplicationQueueName: String,
         @Value("\${sqs.deleted-proxy-application-queue-name}") deletedProxyApplicationQueueName: String,
         @Value("\${sqs.deleted-postal-application-queue-name}") deletedPostalApplicationQueueName: String,
     ): LocalStackContainerSettings {
-        val acceptedProxyApplicationQueueUrl = localStackContainer.createSqsQueue(acceptedProxyApplicationQueueName)
-        val acceptedPostalApplicationQueueUrl = localStackContainer.createSqsQueue(acceptedPostalApplicationQueueName)
+        val approvedProxyApplicationQueueUrl = localStackContainer.createSqsQueue(approvedProxyApplicationQueueName)
+        val approvedPostalApplicationQueueUrl = localStackContainer.createSqsQueue(approvedPostalApplicationQueueName)
         val deletedProxyApplicationQueueUrl = localStackContainer.createSqsQueue(deletedProxyApplicationQueueName)
         val deletedPostalApplicationQueueUrl = localStackContainer.createSqsQueue(deletedPostalApplicationQueueName)
 
@@ -95,8 +95,8 @@ class LocalStackContainerConfiguration {
 
         return LocalStackContainerSettings(
             apiUrl = apiUrl,
-            acceptedProxyApplicationQueueUrl = acceptedProxyApplicationQueueUrl,
-            acceptedPostalApplicationQueueUrl = acceptedPostalApplicationQueueUrl,
+            approvedProxyApplicationQueueUrl = approvedProxyApplicationQueueUrl,
+            approvedPostalApplicationQueueUrl = approvedPostalApplicationQueueUrl,
             deletedProxyApplicationQueueUrl = deletedProxyApplicationQueueUrl,
             deletedPostalApplicationQueueUrl = deletedPostalApplicationQueueUrl
         )
@@ -138,13 +138,13 @@ class LocalStackContainerConfiguration {
 }
 data class LocalStackContainerSettings(
     val apiUrl: String,
-    val acceptedProxyApplicationQueueUrl: String,
-    val acceptedPostalApplicationQueueUrl: String,
+    val approvedProxyApplicationQueueUrl: String,
+    val approvedPostalApplicationQueueUrl: String,
     val deletedProxyApplicationQueueUrl: String,
     val deletedPostalApplicationQueueUrl: String
 ) {
-    val acceptedMappedProxyApplicationQueueUrl = toMappedUrl(acceptedProxyApplicationQueueUrl, apiUrl)
-    val acceptedMappedPostalApplicationQueueUrl = toMappedUrl(acceptedPostalApplicationQueueUrl, apiUrl)
+    val approvedMappedProxyApplicationQueueUrl = toMappedUrl(approvedProxyApplicationQueueUrl, apiUrl)
+    val approvedMappedPostalApplicationQueueUrl = toMappedUrl(approvedPostalApplicationQueueUrl, apiUrl)
     val deletedMappedProxyApplicationQueueUrl = toMappedUrl(deletedProxyApplicationQueueUrl, apiUrl)
     val deletedMappedPostalApplicationQueueUrl = toMappedUrl(deletedPostalApplicationQueueUrl, apiUrl)
 

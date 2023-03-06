@@ -95,9 +95,9 @@ The following are overridden by the task definition in AWS:
 * `SPRING_DATASOURCE_URL` - This is set to the deployed RDS' URL.
 * `SPRING_DATASOURCE_DRIVERCLASSNAME` - This is overridden to use the AWS Aurora MySQL JDBC Driver.
 * `SPRING_LIQUIBASE_DRIVERCLASSNAME` - This is overridden to use the AWS Aurora MySQL JDBC Driver.
-* `SQS_ACCEPTED_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the accepted proxy
+* `SQS_APPROVED_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the approved proxy
   application.
-* `SQS_ACCEPTED_POSTAL_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the accepted postal
+* `SQS_APPROVED_POSTAL_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the approved postal
   application.
 * `SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the deleted proxy
   application.
