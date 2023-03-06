@@ -69,7 +69,6 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.liquibase:liquibase-core")
-    implementation("org.hibernate:hibernate-envers")
 
     // AWS dependencies (that are defined in the BOM io.awspring.cloud:spring-cloud-aws-dependencies)
     implementation("com.amazonaws:aws-java-sdk-sts")
@@ -154,6 +153,24 @@ tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", Ge
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/EMSIntegrationAPIs.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi")
+}
+// Postal SQS Message
+tasks.create(
+    "generate-models-from-openapi-document-approved-postal-vote-application-sqs-messaging.yaml",
+    GenerateTask::class
+) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/approved-postal-vote-application-sqs-messaging.yaml")
+    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
+}
+
+tasks.create(
+    "generate-models-from-openapi-document-approved-proxy-vote-application-sqs-messaging.yaml",
+    GenerateTask::class
+) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/approved-proxy-vote-application-sqs-messaging.yaml")
+    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
 }
 
 // Add the generated code to the source sets

@@ -16,8 +16,8 @@ cloud:
       endpoint: http://localhost:4566
 
 sqs:
-  accepted-proxy-application-queue-name: accepted-proxy-application
-  accepted-postal-application-queue-name: accepted-postal-application
+  approved-proxy-application-queue-name: approved-proxy-application
+  approved-postal-application-queue-name: approved-postal-application
   deleted-proxy-application-queue-name: deleted-proxy-application
   deleted-postal-application-queue-name: deleted-postal-application
 

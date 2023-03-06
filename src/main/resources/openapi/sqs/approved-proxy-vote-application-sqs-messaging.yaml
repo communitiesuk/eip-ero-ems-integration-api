@@ -1,0 +1,181 @@
+openapi: 3.0.0
+info:
+  title: Approved Proxy Application SQS Message
+  version: 1.0.0
+  description: |-
+    Approved Proxy application API SQS Message Types for EROP
+
+    Messages defined in this spec are produced by EROP and consumed by EMS.
+
+    Any changes to this spec should be based on joint collaboration and agreement between EROP and EM.
+
+    Whilst this is an openAPI spec, it does not imply being used to define REST APIs, nor is it intended to.
+
+    The `paths` elements are being used to document (at a high level) the SQS queues and the request bodies that are expected
+    to be published to them. **There is no intent to generate or implement SQS queues or listener classes from this document.**
+
+    The `paths` element is only being used in order to maintain the structure of the openApi spec, as `paths` are required
+    elements.
+#
+# --------------------------------------------------------------------------------
+#
+
+paths:
+  #
+  # --------------------------------------------------------------------------------
+  # SQS Queues start here
+  # --------------------------------------------------------------------------------
+  #
+  '/approved-proxy-vote-application':
+    post:
+      tags:
+        - SQS queues
+      requestBody:
+        $ref: '#/components/requestBodies/ApprovedProxyVoteApplicationMessage'
+      responses:
+        '204':
+          description: No response content.
+components:
+  #
+  # Schema and Enum Definitions
+  # -
+  schemas:
+    ProxyVoteDetails:
+      title: ProxyVoteDetails
+      type: object
+      properties:
+        proxyFirstName:
+          type: string
+          maxLength: 35
+          description: First name
+        proxyMiddleNames:
+          type: string
+          maxLength: 100
+          description: Middle names (optional)
+        proxyLastName:
+          type: string
+          maxLength: 35
+          description: Last name
+        proxyFamilyRelationship:
+          type: string
+          maxLength: 500
+          description: |
+            (optional) the family relationship (if any) of the chosen proxy. The question to users is “What is your proxy’s relationship to you?”
+        proxyPhone:
+          type: string
+          maxLength: 50
+          description: phone number for contact
+        proxyEmail:
+          type: string
+          format: email
+          maxLength: 255
+          description: email address for contact
+        proxyAddress:
+          $ref: './Models/Address.yaml'
+        proxyReason:
+          type: string
+          description: |-
+            a free-form text value containing the applicant’s response to the question “please explain why you are not able to go to your polling station on polling day” for the primary form variant or other text for other form variants (max 500 utf-8 chars)
+            All proxy vote forms, including variants which require supporting documentation, will be handled in the EROP. The ERO user working in that application will review the documentation as required and only accepted applications will be seen on this API. The supporting documentation, if any, will not be sent through here. The field “proxyreason” will contain details for other form variants and may have been filled in by an ERO user.
+          maxLength: 500
+        proxyVoteUntilFurtherNotice:
+          type: boolean
+          description: Mutually exclusive proxy voting limits. True if the elector wishes to vote by proxy until further notice.
+        proxyVoteForSingleDate:
+          type: string
+          format: date
+          description: |
+            If proxy application is for a single date
+            In ISO8601 date format '2022-08-02'
+        proxyVoteStartDate:
+          type: string
+          format: date
+          description: |
+            If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteEndDate must also be present
+            In ISO8601 date format '2022-08-02'
+        proxyVoteEndDate:
+          type: string
+          format: date
+          description: |
+            If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteStartDate must also be present
+            In ISO8601 date format '2022-08-02'
+      required:
+        - proxyFirstName
+        - proxyLastName
+        - proxyReason
+        - proxyAddress
+    ApprovedProxyVoteApplicationMessage:
+      title: ApprovedProxyVoteApplicationMessage
+      type: object
+      x-examples:
+        Example 1:
+          approvalDetails:
+            id: 502cf250036469154b4f85fc
+            createdAt: 2022-08-01T14:14:55Z
+            gssCode: T12345678
+            source: web
+            authorisedAt: 2022-08-02T10:10:10Z
+            authorisingStaffId: jsmith99@somecouncil.gov.uk
+          applicantDetails:
+            firstName: First
+            middleNames: Middle
+            lastName: Last
+            dob: '1995-03-02'
+            registeredAddress:
+              property: Aviation House
+              street: 125 Kingsway
+              locality: Camden
+              town: London
+              area: Greater London
+              postcode: SW112DR
+              uprn: 098765
+            phone: 07799779977
+            email: john@example.com
+            refNum: V3HQ9LKI0W
+            ip: 1.2.3.4
+            lang: en
+            emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+          proxyVoteDetails:
+            proxyFirstName: Jane
+            proxyMiddleNames: Middle
+            proxyLastName: Doe
+            proxyFamilyRelationship: Sister
+            proxyAddress:
+              property: Aviation House
+              street: 125 Kingsway
+              locality: Camden
+              town: London
+              area: Greater London
+              postcode: SW112DR
+              uprn: 098765
+            proxyPhone: '07777123456'
+            proxyEmail: jane@example.com
+            proxyReason: work commitments
+            proxyVoteUntilFurtherNotice: true
+          signature: LzlqLzRBQ...
+
+      properties:
+        approvalDetails:
+          $ref: '../sqs/Models/ApprovalDetails.yaml'
+        applicantDetails:
+          $ref: '../sqs/Models/ApplicantDetails.yaml'
+        proxyVoteDetails:
+          $ref: '#/components/schemas/ProxyVoteDetails'
+        signature:
+          type: string
+          description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
+      required:
+        - approvalDetails
+        - applicantDetails
+        - proxyVoteDetails
+
+
+  #
+  # Request Body Definitions
+  # --------------------------------------------------------------------------------
+  requestBodies:
+    ApprovedProxyVoteApplicationMessage:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApprovedProxyVoteApplicationMessage'
