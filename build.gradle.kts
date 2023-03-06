@@ -15,7 +15,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
     id("org.openapi.generator") version "6.2.1"
-    id("org.owasp.dependencycheck") version "7.4.3"
+    id("org.owasp.dependencycheck") version "8.1.2"
 }
 
 group = "uk.gov.dluhc"
@@ -75,7 +75,7 @@ dependencies {
 
     // mysql
     runtimeOnly("mysql:mysql-connector-java")
-    runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.1")
+    runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.4")
     runtimeOnly("software.amazon.awssdk:rds")
 
     // Schedulling
@@ -205,6 +205,6 @@ dependencyCheck {
     failBuildOnCVSS = 0.toFloat()
     analyzers.assemblyEnabled = false
     analyzers.centralEnabled = true
-    format = HTML
+    format = HTML.name
     suppressionFiles = listOf("owasp.suppressions.xml")
 }
