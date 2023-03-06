@@ -40,61 +40,39 @@ components:
   # Schema and Enum Definitions
   # -
   schemas:
-    ApprovedProxyVoteApplicationMessage:
-      title: ApprovedProxyVoteApplicationMessage
-      x-api-owner: EMS
-      x-api-consumer: EROP
+    ProxyDetails:
+      title: ProxyDetails
       type: object
-      x-examples:
-        Example 1:
-          commonDetails:
-            id: 502cf250036469154b4f85fc
-            createdAt: 2022-08-01T14:14:55Z
-            gssCode: T12345678
-            source: web
-            authorisedAt: 2022-08-02T10:10:10Z
-            authorisingStaffId: jsmith99@somecouncil.gov.uk
-            refNum: V3HQ9LKI0W
-            ip: 1.2.3.4
-            lang: en
-            emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
-            personalDetails:
-              firstName: First
-              middleNames: Middle
-              lastName: Last
-              dob: '1995-03-02'
-              address:
-                property: Aviation House
-                street: 125 Kingsway
-                locality: Camden
-                town: London
-                area: Greater London
-                postcode: SW112DR
-                uprn: 098765
-              phone: 07799779977
-              email: john@example.com
-            ballotAddress:
-              property: Another House
-              street: 234 Kingsway
-              locality: Camden
-              town: London
-              area: Greater London
-              postcode: SW112DR
-              uprn: '098766'
-            ballotAddressReason: I am away from home for work
-            signature: LzlqLzRBQ...
-            postalVoteUntilFurtherNotice: true
       properties:
-        commonDetails:
-          $ref: '../sqs/Models/CommonDetails.yaml'
-        personalDetails:
-          $ref: '../sqs/Models/PersonalDetails.yaml'
-        proxyDetails:
-          $ref: '../sqs/Models/PersonalDetails.yaml'
-        signature:
+        proxyFirstName:
           type: string
-          description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
-        proxyreason:
+          maxLength: 35
+          description: First name
+        proxyMiddleNames:
+          type: string
+          maxLength: 100
+          description: Middle names (optional)
+        proxyLastName:
+          type: string
+          maxLength: 35
+          description: Last name
+        proxyFamilyRelationship:
+          type: string
+          maxLength: 500
+          description: |
+            (optional) the family relationship (if any) of the chosen proxy. The question to users is “What is your proxy’s relationship to you?”
+        proxyPhone:
+          type: string
+          maxLength: 50
+          description: phone number for contact
+        proxyEmail:
+          type: string
+          format: email
+          maxLength: 255
+          description: email address for contact
+        proxyAddress:
+          $ref: './Models/Address.yaml'
+        proxyReason:
           type: string
           description: |-
             a free-form text value containing the applicant’s response to the question “please explain why you are not able to go to your polling station on polling day” for the primary form variant or other text for other form variants (max 500 utf-8 chars)
@@ -121,9 +99,70 @@ components:
           description: |
             If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteStartDate must also be present
             In ISO8601 date format '2022-08-02'
+    ApprovedProxyVoteApplicationMessage:
+      title: ApprovedProxyVoteApplicationMessage
+      type: object
+      x-examples:
+        Example 1:
+          approvalDetails:
+            id: 502cf250036469154b4f85fc
+            createdAt: 2022-08-01T14:14:55Z
+            gssCode: T12345678
+            source: web
+            authorisedAt: 2022-08-02T10:10:10Z
+            authorisingStaffId: jsmith99@somecouncil.gov.uk
+          applicantDetails:
+            firstName: First
+            middleNames: Middle
+            lastName: Last
+            dob: '1995-03-02'
+            registeredAddress:
+              property: Aviation House
+              street: 125 Kingsway
+              locality: Camden
+              town: London
+              area: Greater London
+              postcode: SW112DR
+              uprn: 098765
+            phone: 07799779977
+            email: john@example.com
+            refNum: V3HQ9LKI0W
+            ip: 1.2.3.4
+            lang: en
+            emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+          proxyDetails:
+            proxyFirstName: Jane
+            proxyMiddleNames: Middle
+            proxyLastName: Doe
+            proxyFamilyRelationship: Sister
+            proxyAddress:
+              property: Aviation House
+              street: 125 Kingsway
+              locality: Camden
+              town: London
+              area: Greater London
+              postcode: SW112DR
+              uprn: 098765
+            proxyPhone: '07777123456'
+            proxyEmail: jane@example.com
+            proxyReason: work commitments
+            signature: LzlqLzRBQ...
+            proxyVoteUntilFurtherNotice: true
+
+      properties:
+        approvalDetails:
+          $ref: '../sqs/Models/ApprovalDetails.yaml'
+        applicantDetails:
+          $ref: '../sqs/Models/ApplicantDetails.yaml'
+        proxyDetails:
+          $ref: '#/components/schemas/ProxyDetails'
+        signature:
+          type: string
+          description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
       required:
-        - commonDetails
-        - personalDetails
+        - approvalDetails
+        - applicantDetails
+        - proxyDetails
 
 
   #
