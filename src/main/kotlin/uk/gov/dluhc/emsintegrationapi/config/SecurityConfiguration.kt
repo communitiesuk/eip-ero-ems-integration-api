@@ -1,39 +1,36 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
-import org.springframework.core.env.Environment
+import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod.OPTIONS
-import org.springframework.http.HttpStatus.FORBIDDEN
-import org.springframework.http.HttpStatus.UNAUTHORIZED
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 
+@Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 class SecurityConfiguration(
-    private val environment: Environment,
-    private val cognitoJwtAuthenticationConverter: CognitoJwtAuthenticationConverter
+    @Value("\${dluhc.request.header.name}")
+    private val requestHeaderName: String
 ) {
 
+    companion object {
+        private val BYPASS_URLS_FOR_REQUEST_HEADER_AUTHENTICATION = listOf("/actuator/")
+    }
+
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain =
-        http.also { httpSecurity ->
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        return http.also { httpSecurity ->
             httpSecurity
                 .sessionManagement {
                     it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 }
-                .exceptionHandling {
-                    it.authenticationEntryPoint { _, response, _ ->
-                        response.status = UNAUTHORIZED.value()
-                    }
-                    it.accessDeniedHandler { _, response, _ ->
-                        response.status = FORBIDDEN.value()
-                    }
-                }
                 .cors { }
+                .csrf().disable()
                 .formLogin { it.disable() }
                 .httpBasic { it.disable() }
                 .authorizeRequests {
@@ -41,11 +38,7 @@ class SecurityConfiguration(
                     it.antMatchers("/actuator/**").permitAll()
                     it.anyRequest().authenticated()
                 }
-                .oauth2ResourceServer { oAuth2ResourceServerConfigurer ->
-                    oAuth2ResourceServerConfigurer.jwt {
-                        it.jwtAuthenticationConverter(cognitoJwtAuthenticationConverter)
-                        it.jwkSetUri(environment.getProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri"))
-                    }
-                }
+                .addFilter(EmsIntegrationHeaderAuthenticationFilter(requestHeaderName, BYPASS_URLS_FOR_REQUEST_HEADER_AUTHENTICATION))
         }.build()
+    }
 }

@@ -5,6 +5,9 @@ spring:
   liquibase:
     contexts: ddl
 
+dluhc:
+  request.header.name: client-cert-serial
+
 cloud:
   aws:
     region:

@@ -8,6 +8,9 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     contexts: ${LIQUIBASE_CONTEXTS}
 
+dluhc:
+  request.header.name: ${REQUEST_HEADER_CLIENT_CERT_SERIAL}
+
 cloud:
   aws:
     region:
