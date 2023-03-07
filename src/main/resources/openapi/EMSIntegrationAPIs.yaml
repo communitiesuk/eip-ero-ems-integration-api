@@ -117,7 +117,7 @@ paths:
       description: 'Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and subsequently deleted from the IER system.'
       security:
         - emsCertificateLambdaAuthorizer: []
-      x-extension-1:
+      x-amazon-apigateway-integration:
         type: HTTP_PROXY
         uri: '${base_uri}/proxyVotes/{id}'
         requestParameters:
@@ -183,7 +183,7 @@ components:
         source:
           type: string
           minLength: 10
-          maxLength: 10         
+          maxLength: 10
           description: |
             either “web” for digital applications or “erop” for applications received by post and entered into the EROP
         authorisedAt:
@@ -212,7 +212,7 @@ components:
               type: string
               description: the reference number that was shown to the applicant (digital applications only)
               maxLength: 10
-              example: 'V3HQ9LKI0W'              
+              example: 'V3HQ9LKI0W'
             ip:
               type: string
               maxLength: 45
@@ -264,7 +264,7 @@ components:
             reguprn:
               type: string
               description: Unique Property Reference Number consisting of up to 12 digits in length
-              pattern: '^\d{1,12}$'              
+              pattern: '^\d{1,12}$'
             phone:
               type: string
               maxLength: 50
@@ -407,7 +407,7 @@ components:
         source:
           type: string
           minLength: 10
-          maxLength: 10         
+          maxLength: 10
           description: |
             either “web” for digital applications or “erop” for applications received by post and entered into the EROP
         authorisedAt:
@@ -440,7 +440,7 @@ components:
               type: string
               description: the reference number that was shown to the applicant (digital applications only)
               maxLength: 10
-              example: 'V3HQ9LKI0W'  
+              example: 'V3HQ9LKI0W'
             ip:
               type: string
               maxLength: 45
@@ -492,7 +492,7 @@ components:
             reguprn:
               type: string
               description: Unique Property Reference Number consisting of up to 12 digits in length
-              pattern: '^\d{1,12}$'              
+              pattern: '^\d{1,12}$'
             phone:
               type: string
               maxLength: 50
@@ -542,7 +542,7 @@ components:
             proxyuprn:
               type: string
               description: Unique Property Reference Number consisting of up to 12 digits in length
-              pattern: '^\d{1,12}$'                 
+              pattern: '^\d{1,12}$'
             proxyphone:
               type: string
               maxLength: 50
