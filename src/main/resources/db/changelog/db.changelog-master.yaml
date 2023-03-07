@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - include:
+      file: /db/changelog/create/0001_revinfo.sql
+  - include:
+      file: /db/changelog/create/0002_address.sql
+  - include:
+      file: /db/changelog/create/0003_address_aud.sql
+  - include:
+      file: /db/changelog/create/0004_approved_postal_application.sql
+  - include:
+      file: /db/changelog/create/0005_approved_postal_application_aud.sql
+  - include:
+      file: /db/changelog/create/0006_approved_proxy_application.sql
+  - include:
+      file: /db/changelog/create/0007_approved_proxy_application_aud.sql
