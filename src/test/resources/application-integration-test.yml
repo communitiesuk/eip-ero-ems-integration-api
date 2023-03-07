@@ -5,6 +5,9 @@ spring:
   liquibase:
     enabled: false
 
+dluhc:
+  request.header.name: client-cert-serial
+
 cloud:
   aws:
     region:
