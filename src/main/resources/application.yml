@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: 'eip-ero-ems-integration-api'
   datasource:
     url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/ems_integration_application
     username: ${MYSQL_USER}
