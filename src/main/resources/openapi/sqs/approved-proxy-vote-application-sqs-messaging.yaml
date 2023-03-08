@@ -131,9 +131,9 @@ components:
               uprn: 098765
             phone: 07799779977
             email: john@example.com
-            refNum: V3HQ9LKI0W
-            ip: 1.2.3.4
-            lang: en
+            referenceNumber: V3HQ9LKI0W
+            ipAddress: 1.2.3.4
+            language: en
             emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
           proxyVoteDetails:
             proxyFirstName: Jane

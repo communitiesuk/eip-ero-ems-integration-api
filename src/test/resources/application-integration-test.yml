@@ -3,7 +3,7 @@ spring:
     username: root
     password: password
   liquibase:
-    enabled: false
+    contexts: ddl
 
 dluhc:
   request.header.name: client-cert-serial
