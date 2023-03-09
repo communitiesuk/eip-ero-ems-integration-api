@@ -14,14 +14,7 @@ private val logger = KotlinLogging.logger {}
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
 @AutoConfigureWebTestClient(timeout = "PT5M")
-internal abstract class IntegrationTest {
+abstract class IntegrationTest {
     @Autowired
     protected lateinit var webTestClient: WebTestClient
-
-    companion object {
-        init {
-            MySQLContainerConfiguration.getInstance()
-            LocalStackContainerConfiguration.getInstance()
-        }
-    }
 }
