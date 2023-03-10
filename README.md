@@ -2,7 +2,7 @@
 
 Spring Boot microservice that :
 
-- Consumes approved Postal and Proxy vote application SQS message from EROP and saved into the database
+- Consumes approved/rejected Postal and Proxy vote application SQS message from EROP and saved into the database
 - Exposes secured REST APIs to get and delete approved Postal / Proxy vote applications
 - Publishes SQS messages for each deleted application
 
@@ -95,9 +95,9 @@ The following are overridden by the task definition in AWS:
 * `SPRING_DATASOURCE_URL` - This is set to the deployed RDS' URL.
 * `SPRING_DATASOURCE_DRIVERCLASSNAME` - This is overridden to use the AWS Aurora MySQL JDBC Driver.
 * `SPRING_LIQUIBASE_DRIVERCLASSNAME` - This is overridden to use the AWS Aurora MySQL JDBC Driver.
-* `SQS_APPROVED_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the approved proxy
+* `SQS_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the approved/rejected proxy
   application.
-* `SQS_APPROVED_POSTAL_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the approved postal
+* `SQS_POSTAL_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the approved/rejected postal
   application.
 * `SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the deleted proxy
   application.

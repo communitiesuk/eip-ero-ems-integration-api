@@ -170,20 +170,20 @@ tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", Ge
 }
 // Postal SQS Message
 tasks.create(
-    "generate-models-from-openapi-document-approved-postal-vote-application-sqs-messaging.yaml",
+    "generate-models-from-openapi-document-postal-vote-application-sqs-messaging.yaml",
     GenerateTask::class
 ) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/approved-postal-vote-application-sqs-messaging.yaml")
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/postal-vote-application-sqs-messaging.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
 }
 
 tasks.create(
-    "generate-models-from-openapi-document-approved-proxy-vote-application-sqs-messaging.yaml",
+    "generate-models-from-openapi-document-proxy-vote-application-sqs-messaging.yaml",
     GenerateTask::class
 ) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/approved-proxy-vote-application-sqs-messaging.yaml")
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/proxy-vote-application-sqs-messaging.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
 }
 

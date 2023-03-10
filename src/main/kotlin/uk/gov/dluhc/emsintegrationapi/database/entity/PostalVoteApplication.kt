@@ -14,7 +14,7 @@ import javax.persistence.Version
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)
-class ApprovedPostalVoteApplication(
+class PostalVoteApplication(
     @Id
     val applicationId: String,
 
@@ -52,6 +52,6 @@ class ApprovedPostalVoteApplication(
     @Version
     var version: Long? = null,
 ) {
-    override fun equals(other: Any?) = areEqual(this, other, ApprovedPostalVoteApplication::applicationId)
+    override fun equals(other: Any?) = areEqual(this, other, PostalVoteApplication::applicationId)
     override fun hashCode() = applicationId.hashCode()
 }

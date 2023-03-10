@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  title: Approved Postal Application SQS Message
+  title: Approved/Rejected Postal Application SQS Message
   version: 1.0.0
   description: |-
-    Approved Postal application API SQS Message Types for EROP
+    Approved/Rejected Postal application API SQS Message Types for EROP
 
     Messages defined in this spec are produced by EROP and consumed by EMS.
 
@@ -26,12 +26,12 @@ paths:
   # SQS Queues start here
   # --------------------------------------------------------------------------------
   #
-  '/approved-postal-vote-application':
+  '/postal-vote-application':
     post:
       tags:
         - SQS queues
       requestBody:
-        $ref: '#/components/requestBodies/ApprovedPostalVoteApplicationMessage'
+        $ref: '#/components/requestBodies/PostalVoteApplicationMessage'
       responses:
         '204':
           description: No response content.
@@ -72,8 +72,8 @@ components:
             If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteStartDate must also be present
             In ISO8601 date format '2022-08-02'
 
-    ApprovedPostalVoteApplicationMessage:
-      title: ApprovedPostalVoteApplicationMessage
+    PostalVoteApplicationMessage:
+      title: PostalVoteApplicationMessage
       x-api-owner: EMS
       x-api-consumer: EROP
       type: object
@@ -138,8 +138,8 @@ components:
   # Request Body Definitions
   # --------------------------------------------------------------------------------
   requestBodies:
-    ApprovedPostalVoteApplicationMessage:
+    PostalVoteApplicationMessage:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ApprovedPostalVoteApplicationMessage'
+            $ref: '#/components/schemas/PostalVoteApplicationMessage'

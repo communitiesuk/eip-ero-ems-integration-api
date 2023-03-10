@@ -14,21 +14,21 @@ internal class EntityHelperKtTest {
         val entity1 = createMockEntity(entityId)
         val entity2 = createMockEntity(entityId)
         assertThat(entity1 === entity2).isFalse
-        assertThat(areEqual(entity1, entity2, ApprovedPostalVoteApplication::applicationId)).isTrue
+        assertThat(areEqual(entity1, entity2, PostalVoteApplication::applicationId)).isTrue
     }
 
     @Test
     fun `should return true if two entities reference are same`() {
         val entityId = getRandomAlphaNumeric(24)
         val entity1 = createMockEntity(entityId)
-        assertThat(areEqual(entity1, entity1, ApprovedPostalVoteApplication::applicationId)).isTrue
+        assertThat(areEqual(entity1, entity1, PostalVoteApplication::applicationId)).isTrue
     }
 
     @Test
     fun `should return false if second entity is null`() {
         val entityId = getRandomAlphaNumeric(24)
         val entity1 = createMockEntity(entityId)
-        assertThat(areEqual(entity1, null, ApprovedPostalVoteApplication::applicationId)).isFalse
+        assertThat(areEqual(entity1, null, PostalVoteApplication::applicationId)).isFalse
     }
 
     @Test
@@ -45,8 +45,8 @@ internal class EntityHelperKtTest {
         assertThat(areEqual(entity1, entity2, Dummy1::id)).isFalse
     }
 
-    private fun createMockEntity(applicationId: String): ApprovedPostalVoteApplication {
-        val mockObject: ApprovedPostalVoteApplication = mock()
+    private fun createMockEntity(applicationId: String): PostalVoteApplication {
+        val mockObject: PostalVoteApplication = mock()
         return mockObject.let {
             given(mockObject.applicationId).willReturn(applicationId)
             mockObject

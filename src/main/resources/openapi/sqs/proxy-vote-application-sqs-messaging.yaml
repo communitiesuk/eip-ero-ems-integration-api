@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  title: Approved Proxy Application SQS Message
+  title: Approved/Rejected Proxy Application SQS Message
   version: 1.0.0
   description: |-
-    Approved Proxy application API SQS Message Types for EROP
+    Approved/Rejected Proxy application API SQS Message Types for EROP
 
     Messages defined in this spec are produced by EROP and consumed by EMS.
 
@@ -26,12 +26,12 @@ paths:
   # SQS Queues start here
   # --------------------------------------------------------------------------------
   #
-  '/approved-proxy-vote-application':
+  '/proxy-vote-application':
     post:
       tags:
         - SQS queues
       requestBody:
-        $ref: '#/components/requestBodies/ApprovedProxyVoteApplicationMessage'
+        $ref: '#/components/requestBodies/ProxyVoteApplicationMessage'
       responses:
         '204':
           description: No response content.
@@ -104,8 +104,8 @@ components:
         - proxyLastName
         - proxyReason
         - proxyAddress
-    ApprovedProxyVoteApplicationMessage:
-      title: ApprovedProxyVoteApplicationMessage
+    ProxyVoteApplicationMessage:
+      title: ProxyVoteApplicationMessage
       type: object
       x-examples:
         Example 1:
@@ -174,8 +174,8 @@ components:
   # Request Body Definitions
   # --------------------------------------------------------------------------------
   requestBodies:
-    ApprovedProxyVoteApplicationMessage:
+    ProxyVoteApplicationMessage:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ApprovedProxyVoteApplicationMessage'
+            $ref: '#/components/schemas/ProxyVoteApplicationMessage'

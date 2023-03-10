@@ -22,8 +22,8 @@ cloud:
       use-default-aws-credentials-chain: true
 
 sqs:
-  approved-proxy-application-queue-name: ${SQS_APPROVED_PROXY_APPLICATION_QUEUE_NAME}
-  approved-postal-application-queue-name: ${SQS_APPROVED_POSTAL_APPLICATION_QUEUE_NAME}
+  proxy-application-queue-name: ${SQS_PROXY_APPLICATION_QUEUE_NAME}
+  postal-application-queue-name: ${SQS_POSTAL_APPLICATION_QUEUE_NAME}
   deleted-proxy-application-queue-name: ${SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME}
   deleted-postal-application-queue-name: ${SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME}
 
