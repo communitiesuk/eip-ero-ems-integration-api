@@ -23,7 +23,6 @@ class Address(
     @GenericGenerator(name = "UUID", strategy = UseExistingOrGenerateUUID.NAME)
     @Type(type = UUIDCharType)
     var id: UUID? = null,
-    
     @field:NotNull
     val street: String,
 

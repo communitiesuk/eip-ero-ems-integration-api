@@ -35,7 +35,6 @@ class ApprovedPostalVoteApplication(
     @Enumerated(EnumType.STRING)
     var retentionStatus: RetentionStatus,
 
-
     @CreationTimestamp
     var dateCreated: Instant? = null,
 
