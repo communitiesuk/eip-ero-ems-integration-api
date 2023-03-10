@@ -29,7 +29,7 @@ class ApprovedPostalVoteApplicationRepositoryIntegrationTest : AbstractRepositor
     }
 
     @Test
-    fun `should throw constraint validation error if field value length is more the max column size`() {
+    fun `should throw constraint validation error if field value length is more than the max column size`() {
         val approvedPostalVoteApplication = buildApprovedPostalApplication(
             postalVoteDetails = buildPostalVoteDetailsEntity(
                 ballotAddress = buildAddressEntity(street = getRandomString(256), locality = getRandomString(256))
