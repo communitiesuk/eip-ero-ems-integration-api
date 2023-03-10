@@ -9,7 +9,7 @@ spring:
       hibernate:
         enable_lazy_load_no_trans: true
         format_sql: ${FORMAT_SQL:false}
-        show_sql: ${SHOW_SQL:true}
+        show_sql: ${SHOW_SQL:false}
 dluhc:
   request.header.name: client-cert-serial
 
