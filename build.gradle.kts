@@ -111,6 +111,9 @@ dependencies {
     testImplementation("io.cucumber:cucumber-junit-platform-engine")
     testImplementation("org.junit.platform:junit-platform-suite")
     testImplementation("io.cucumber:cucumber-spring")
+
+    // Logging
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
 }
 
 dependencyManagement {
