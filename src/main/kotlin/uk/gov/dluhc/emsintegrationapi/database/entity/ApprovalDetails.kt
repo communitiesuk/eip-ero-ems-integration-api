@@ -6,15 +6,15 @@ import javax.validation.constraints.NotNull
 
 @Embeddable
 class ApprovalDetails(
-    @NotNull
+    @field:NotNull
     val createdAt: Instant,
-    @NotNull
+    @field:NotNull
     val gssCode: String,
-    @NotNull
+    @field:NotNull
     val authorisedAt: Instant,
-    @NotNull
+    @field:NotNull
     val authorisingStaffId: String,
-    @NotNull
+    @field:NotNull
     val source: String
 ) {
     override fun hashCode() = javaClass.hashCode()

@@ -23,23 +23,27 @@ class Address(
     @GenericGenerator(name = "UUID", strategy = UseExistingOrGenerateUUID.NAME)
     @Type(type = UUIDCharType)
     var id: UUID? = null,
-
-    @NotNull
+    
+    @field:NotNull
     val street: String,
 
     var property: String? = null,
     var locality: String? = null,
     var town: String? = null,
     var area: String? = null,
-    @NotNull
+
+    @field:NotNull
     val postcode: String,
+
     var uprn: String? = null,
-    @NotNull
+
     @CreationTimestamp
     var dateCreated: Instant? = null,
-    @NotNull
+
+    @field:NotNull
     @Enumerated(EnumType.STRING)
     val createdBy: SourceSystem,
+
     @Version
     var version: Long? = null
 ) {

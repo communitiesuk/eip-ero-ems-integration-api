@@ -27,7 +27,7 @@ class ApprovedPostalVoteApplication(
     @Embedded
     var postalVoteDetails: PostalVoteDetails? = null,
 
-    @NotNull
+    @field:NotNull
     val signatureBase64: String,
 
     var removalDateTime: Instant? = null,
@@ -35,14 +35,14 @@ class ApprovedPostalVoteApplication(
     @Enumerated(EnumType.STRING)
     var retentionStatus: RetentionStatus,
 
-    @NotNull
+
     @CreationTimestamp
     var dateCreated: Instant? = null,
 
     @UpdateTimestamp
     var dateUpdated: Instant? = null,
 
-    @NotNull
+    @field:NotNull
     @Enumerated(EnumType.STRING)
     val createdBy: SourceSystem,
 
@@ -51,7 +51,7 @@ class ApprovedPostalVoteApplication(
 
     @Enumerated(EnumType.STRING)
     val status: RecordStatus,
-    @NotNull
+
     @Version
     var version: Long? = null,
 ) {

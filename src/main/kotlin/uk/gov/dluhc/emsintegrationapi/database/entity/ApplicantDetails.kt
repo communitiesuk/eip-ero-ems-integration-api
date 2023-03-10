@@ -12,10 +12,10 @@ import javax.validation.constraints.NotNull
 
 @Embeddable
 class ApplicantDetails(
-    @NotNull
+    @field:NotNull
     val firstName: String,
     var middleNames: String? = null,
-    @NotNull
+    @field:NotNull
     val surname: String,
 
     var email: String? = null,
@@ -33,15 +33,15 @@ class ApplicantDetails(
     @NotFound(action = NotFoundAction.IGNORE)
     val registeredAddress: Address,
 
-    @NotNull
+    @field:NotNull
     val referenceNumber: String,
 
-    @NotNull
+    @field:NotNull
     val ipAddress: String,
 
     var language: String? = null,
 
-    @NotNull
+    @field:NotNull
     val emsElectorId: String
 ) {
     override fun hashCode() = javaClass.hashCode()
