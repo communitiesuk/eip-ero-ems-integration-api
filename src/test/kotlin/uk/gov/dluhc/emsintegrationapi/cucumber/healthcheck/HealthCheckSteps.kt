@@ -18,7 +18,7 @@ class HealthCheckSteps(private val webTestClient: WebTestClient) : En {
         When("I send a health check request") {
             apiResponseSpec = apiHeaderSpec!!.exchange()
         }
-        Then("I will get the status is {string}") { status: String ->
+        Then("I will get the status as {string}") { status: String ->
 
             // Then
             apiResponseSpec!!.expectStatus().isOk
