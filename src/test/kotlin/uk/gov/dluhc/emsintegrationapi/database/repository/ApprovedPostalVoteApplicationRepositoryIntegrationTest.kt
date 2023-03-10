@@ -7,7 +7,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildAddressEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovedPostalApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.getRandomString
-import uk.gov.dluhc.emsintegrationapi.testsupport.validateConstraintViolation
+import uk.gov.dluhc.emsintegrationapi.testsupport.validateEntityMaxSizeConstraintViolation
 
 class ApprovedPostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrationTest() {
     @Autowired
@@ -35,7 +35,7 @@ class ApprovedPostalVoteApplicationRepositoryIntegrationTest : AbstractRepositor
                 ballotAddress = buildAddressEntity(street = getRandomString(256), locality = getRandomString(256))
             )
         )
-        validateConstraintViolation({
+        validateEntityMaxSizeConstraintViolation({
             approvedPostalVoteApplicationRepository.saveAndFlush(
                 approvedPostalVoteApplication
             )
