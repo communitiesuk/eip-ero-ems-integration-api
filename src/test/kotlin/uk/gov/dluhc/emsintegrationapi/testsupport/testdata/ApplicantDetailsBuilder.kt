@@ -12,22 +12,22 @@ fun buildApplicantDetailsEntity(
     surname: String = faker.name().lastName(),
     email: String? = faker.internet().emailAddress(),
     dob: LocalDate? = getRandomDOB(),
-    phoneNumber: String? = faker.phoneNumber().phoneNumber(),
+    phone: String? = faker.phoneNumber().phoneNumber(),
     registeredAddress: Address? = buildAddressEntity(),
     referenceNumber: String? = RandomStringUtils.randomNumeric(10),
     ipAddress: String = getRandomIpAddress(),
     language: String = faker.locale.language,
-    emsElectoralId: String = RandomStringUtils.randomNumeric(20)
+    emsElectorId: String = RandomStringUtils.randomNumeric(20)
 ) = ApplicantDetails(
     firstName = firstName,
     middleNames = middleNames,
     surname = surname,
     email = email,
     dob = dob,
-    phoneNumber = phoneNumber,
+    phone = phone,
     registeredAddress = registeredAddress!!,
     referenceNumber = referenceNumber!!,
     ipAddress = ipAddress,
     language = language,
-    emsElectoralId = emsElectoralId
+    emsElectorId = emsElectorId
 )

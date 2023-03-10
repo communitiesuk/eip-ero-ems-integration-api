@@ -22,7 +22,7 @@ class ApplicantDetails(
 
     var dob: LocalDate? = null,
 
-    var phoneNumber: String? = null,
+    var phone: String? = null,
 
     @OneToOne(
         cascade = [CascadeType.ALL],
@@ -42,7 +42,7 @@ class ApplicantDetails(
     var language: String? = null,
 
     @NotNull
-    val emsElectoralId: String
+    val emsElectorId: String
 ) {
     override fun hashCode() = javaClass.hashCode()
 }
