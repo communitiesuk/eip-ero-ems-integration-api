@@ -12,7 +12,7 @@ import kotlin.random.Random
 const val MIN_AGE = 18
 const val MAX_AGE = 99
 const val MIN_LENGTH = 5
-const val APPLICATION_ID_REGEX = "^[a-fA-F\\d]{24}\$"
+
 fun getRandomIpAddress(): String =
     with(faker.internet()) {
         if (Random.nextBoolean()) ipV4Address() else ipV6Address()
@@ -30,14 +30,13 @@ fun getRandomEroId(): String = "${faker.address().city().lowercase()}-city-counc
 
 fun getRandomEmailAddress(): String = "contact@${getRandomEroId().replaceSpacesWith("-")}.gov.uk"
 
-fun getRandomApplicationId(): String = faker.regexify(APPLICATION_ID_REGEX)
-
 fun getRandomDOB(): LocalDate =
     faker.date().birthday(MIN_AGE, MAX_AGE).toLocalDateTime().toLocalDate()
 
 fun getRandomString(length: Int = MIN_LENGTH): String = RandomStringUtils.randomAlphabetic(length)
 
-fun getRandomAlphaNumeric(length: Int = MIN_LENGTH): String = RandomStringUtils.randomAlphanumeric(length)
+fun getRandomAlphaNumeric(maxLength: Int = MIN_LENGTH): String =
+    RandomStringUtils.randomAlphanumeric(maxLength)
 
 fun getRandomPastDate(inDays: Int = MIN_LENGTH): LocalDate =
     faker.date().past(inDays, TimeUnit.DAYS).toLocalDateTime().toLocalDate()

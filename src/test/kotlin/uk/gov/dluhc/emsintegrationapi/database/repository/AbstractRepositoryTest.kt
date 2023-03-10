@@ -4,7 +4,6 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.data.repository.CrudRepository
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.dluhc.emsintegrationapi.config.MySQLContainerConfiguration
 
@@ -19,9 +18,5 @@ abstract class AbstractRepositoryTest {
         init {
             MySQLContainerConfiguration.getInstance()
         }
-    }
-
-    fun deleteAll(vararg repositories: CrudRepository<*, *>) {
-        repositories.forEach { crudRepository -> crudRepository.deleteAll() }
     }
 }

@@ -10,7 +10,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import java.time.Instant
 
 fun buildApprovedPostalApplication(
-    applicationId: String = getRandomApplicationId(),
+    applicationId: String = getRandomAlphaNumeric(24),
     approvalDetails: ApprovalDetails = buildApprovalDetailsEntity(),
     applicantDetails: ApplicantDetails = buildApplicantDetailsEntity(),
     postalVoteDetails: PostalVoteDetails = buildPostalVoteDetailsEntity(),
