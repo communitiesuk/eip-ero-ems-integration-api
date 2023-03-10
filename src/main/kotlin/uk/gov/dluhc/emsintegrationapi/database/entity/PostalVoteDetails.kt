@@ -28,6 +28,7 @@ class PostalVoteDetails(
     var voteStartDate: LocalDate? = null,
 
     var voteEndDate: LocalDate? = null,
+
     @Column(name = "vote_until_further_notice", columnDefinition = "BIT")
     var voteUntilFurtherNotice: Boolean? = null
 )

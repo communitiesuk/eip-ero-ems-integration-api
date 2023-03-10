@@ -11,13 +11,13 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Version
-import javax.validation.constraints.NotNull
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)
 class ApprovedPostalVoteApplication(
     @Id
     val applicationId: String,
+
     @Embedded
     val approvalDetails: ApprovalDetails,
 
@@ -27,7 +27,6 @@ class ApprovedPostalVoteApplication(
     @Embedded
     var postalVoteDetails: PostalVoteDetails? = null,
 
-    @field:NotNull
     val signatureBase64: String,
 
     var removalDateTime: Instant? = null,
@@ -41,7 +40,6 @@ class ApprovedPostalVoteApplication(
     @UpdateTimestamp
     var dateUpdated: Instant? = null,
 
-    @field:NotNull
     @Enumerated(EnumType.STRING)
     val createdBy: SourceSystem,
 

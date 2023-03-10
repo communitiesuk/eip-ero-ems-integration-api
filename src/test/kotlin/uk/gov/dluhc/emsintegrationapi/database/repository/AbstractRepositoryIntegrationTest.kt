@@ -12,7 +12,7 @@ import uk.gov.dluhc.emsintegrationapi.config.MySQLContainerConfiguration
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EntityScan(basePackages = ["uk.gov.dluhc.emsintegrationapi.database.entity"])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-abstract class AbstractRepositoryTest {
+abstract class AbstractRepositoryIntegrationTest {
 
     companion object {
         init {

@@ -8,20 +8,25 @@ import javax.persistence.Embeddable
 import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.OneToOne
-import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 
 @Embeddable
 class ApplicantDetails(
-    @field:NotNull
+    @field:Size(max = 35)
     val firstName: String,
+
+    @field:Size(max = 100)
     var middleNames: String? = null,
-    @field:NotNull
+
+    @field:Size(max = 35)
     val surname: String,
 
+    @field:Size(max = 255)
     var email: String? = null,
 
     var dob: LocalDate? = null,
 
+    @field:Size(max = 50)
     var phone: String? = null,
 
     @OneToOne(
@@ -33,15 +38,12 @@ class ApplicantDetails(
     @NotFound(action = NotFoundAction.IGNORE)
     val registeredAddress: Address,
 
-    @field:NotNull
     val referenceNumber: String,
 
-    @field:NotNull
     val ipAddress: String,
 
     var language: String? = null,
 
-    @field:NotNull
     val emsElectorId: String
 ) {
     override fun hashCode() = javaClass.hashCode()

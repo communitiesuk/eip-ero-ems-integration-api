@@ -2,19 +2,21 @@ package uk.gov.dluhc.emsintegrationapi.database.entity
 
 import java.time.Instant
 import javax.persistence.Embeddable
-import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 
 @Embeddable
 class ApprovalDetails(
-    @field:NotNull
     val createdAt: Instant,
-    @field:NotNull
+
+    @field:Size(max = 9)
     val gssCode: String,
-    @field:NotNull
+
     val authorisedAt: Instant,
-    @field:NotNull
+
+    @field:Size(max = 255)
     val authorisingStaffId: String,
-    @field:NotNull
+
+    @field:Size(max = 50)
     val source: String
 ) {
     override fun hashCode() = javaClass.hashCode()
