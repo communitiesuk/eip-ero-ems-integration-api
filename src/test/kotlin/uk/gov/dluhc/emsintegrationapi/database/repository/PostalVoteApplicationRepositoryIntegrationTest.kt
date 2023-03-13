@@ -3,7 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.database.repository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalApplication
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 
 class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrationTest() {
     @Autowired
@@ -12,7 +12,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
     @Test
     fun `should save a postal vote application`() {
         // Given
-        val postalVoteApplication = buildPostalApplication()
+        val postalVoteApplication = buildPostalVoteApplication()
 
         // When
         postalVoteApplicationRepository.saveAndFlush(postalVoteApplication)

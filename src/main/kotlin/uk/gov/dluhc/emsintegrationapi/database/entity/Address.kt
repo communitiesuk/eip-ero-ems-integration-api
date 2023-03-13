@@ -1,13 +1,15 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Type
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import uk.gov.dluhc.emsintegrationapi.database.repository.UUIDCharType
 import uk.gov.dluhc.emsintegrationapi.database.repository.UseExistingOrGenerateUUID
 import java.time.Instant
 import java.util.UUID
 import javax.persistence.Entity
+import javax.persistence.EntityListeners
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
@@ -17,6 +19,7 @@ import javax.persistence.Version
 import javax.validation.constraints.Size
 
 @Entity
+@EntityListeners(AuditingEntityListener::class)
 class Address(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "UUID")
@@ -45,7 +48,7 @@ class Address(
     @field:Size(max = 12)
     var uprn: String? = null,
 
-    @CreationTimestamp
+    @CreatedDate
     var dateCreated: Instant? = null,
 
     @Enumerated(EnumType.STRING)

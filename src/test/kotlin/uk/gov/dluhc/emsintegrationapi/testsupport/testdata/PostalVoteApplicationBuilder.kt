@@ -9,7 +9,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import java.time.Instant
 
-fun buildPostalApplication(
+fun buildPostalVoteApplication(
     applicationId: String = getRandomAlphaNumeric(24),
     approvalDetails: ApprovalDetails = buildApprovalDetailsEntity(),
     applicantDetails: ApplicantDetails = buildApplicantDetailsEntity(),

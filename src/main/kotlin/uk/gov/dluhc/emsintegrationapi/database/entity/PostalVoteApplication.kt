@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 import javax.persistence.Embedded
@@ -38,10 +38,10 @@ class PostalVoteApplication(
     @Enumerated(EnumType.STRING)
     var retentionStatus: RetentionStatus,
 
-    @CreationTimestamp
+    @CreatedDate
     var dateCreated: Instant? = null,
 
-    @UpdateTimestamp
+    @LastModifiedDate
     var dateUpdated: Instant? = null,
 
     @Enumerated(EnumType.STRING)

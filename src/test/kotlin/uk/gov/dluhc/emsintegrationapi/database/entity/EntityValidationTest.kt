@@ -7,7 +7,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.isValid
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildAddressEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalApplication
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.getRandomString
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMaxSizeErrorMessage
@@ -17,23 +17,32 @@ internal class EntityValidationTest {
     inner class ValidatePostalVoteApplication {
         @Test
         fun `should not throw constraint violation if a PostalVoteApplication object is valid`() {
-            assertThat(isValid(buildPostalApplication())).isTrue
+            assertThat(isValid(buildPostalVoteApplication())).isTrue
         }
 
         @Test
         fun `should throw constraint violation if a PostalVoteApplication object is not valid`() {
-            assertThat(
-                isValid(
-                    buildPostalApplication(
-                        postalVoteDetails = buildPostalVoteDetailsEntity(
-                            ballotAddress = buildAddressEntity(
-                                street = getRandomString(256)
-
-                            )
-                        )
+            val invalidPostalVoteApplication = buildPostalVoteApplication(
+                postalVoteDetails = buildPostalVoteDetailsEntity(
+                    ballotAddress = buildAddressEntity(
+                        street = getRandomString(256)
                     )
+                ),
+                applicantDetails = buildApplicantDetailsEntity(
+                    firstName = getRandomString(36),
+                ),
+                approvalDetails = buildApprovalDetailsEntity(
+                    gssCode = getRandomString(10),
                 )
-            ).isFalse
+            )
+            validateMaxSizeErrorMessage(
+                invalidPostalVoteApplication,
+                listOf(
+                    Pair("postalVoteDetails.ballotAddress.street", 255),
+                    Pair("applicantDetails.firstName", 35),
+                    Pair("approvalDetails.gssCode", 9),
+                )
+            )
         }
 
         @Test
