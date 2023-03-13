@@ -1,35 +1,24 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport
 
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.catchThrowableOfType
 import java.util.stream.Collectors
 import javax.validation.ConstraintViolation
-import javax.validation.ConstraintViolationException
 import javax.validation.Path
+import javax.validation.Validation
+import javax.validation.Validator
 
-/**
- * Validate the entity's max constraint violations
- * @param functionToBeTested : The function which will trigger the validation
- * @param fieldNamesAndSizeList: a list of field name and it's maximum size configured in entity
- */
-fun validateEntityMaxSizeConstraintViolation(
-    functionToBeTested: () -> Unit,
+val validator: Validator = Validation.buildDefaultValidatorFactory().validator
+
+fun <T> isValid(objectToBeValidated: T) = validator.validate(objectToBeValidated).isEmpty()
+
+fun <T> validateMaxSizeErrorMessage(
+    objectToBeValidated: T,
     fieldNamesAndSizeList: List<Pair<String, Int>>
 ) {
-    validateMaxSizeErrorMessage(
-        catchThrowableOfType(functionToBeTested, ConstraintViolationException::class.java),
-        fieldNamesAndSizeList
-    )
-}
-
-private fun validateMaxSizeErrorMessage(
-    constraintViolationException: ConstraintViolationException,
-    fieldNamesAndSizeList: List<Pair<String, Int>>
-) {
-
-    assertThat(constraintViolationException.constraintViolations.size).isEqualTo(fieldNamesAndSizeList.size)
+    val constraintViolations = validator.validate(objectToBeValidated)
+    assertThat(constraintViolations.size).isEqualTo(fieldNamesAndSizeList.size)
     // Extract the validation error field name and the error message
-    val validationErrors = extractFieldNameErrorMessage(constraintViolationException.constraintViolations)
+    val validationErrors = extractFieldNameErrorMessage(constraintViolations)
 
     // Now validate the expected error message
     fieldNamesAndSizeList.forEach { expectedError ->

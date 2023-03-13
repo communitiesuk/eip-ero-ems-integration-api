@@ -8,6 +8,7 @@ import javax.persistence.Embeddable
 import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.OneToOne
+import javax.validation.Valid
 import javax.validation.constraints.Size
 
 @Embeddable
@@ -36,14 +37,19 @@ class ApplicantDetails(
     )
     @JoinColumn(name = "registered_address_id", nullable = false)
     @NotFound(action = NotFoundAction.IGNORE)
+    @field:Valid
     val registeredAddress: Address,
 
+    @field:Size(max = 10)
     val referenceNumber: String,
 
+    @field:Size(max = 45)
     val ipAddress: String,
 
+    @field:Size(max = 2)
     var language: String? = null,
 
+    @field:Size(max = 255)
     val emsElectorId: String
 ) {
     override fun hashCode() = javaClass.hashCode()

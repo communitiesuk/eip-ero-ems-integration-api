@@ -9,6 +9,8 @@ import javax.persistence.Embeddable
 import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.OneToOne
+import javax.validation.Valid
+import javax.validation.constraints.Size
 
 @Embeddable
 class PostalVoteDetails(
@@ -19,8 +21,10 @@ class PostalVoteDetails(
     )
     @JoinColumn(name = "ballot_address_id")
     @NotFound(action = NotFoundAction.IGNORE)
+    @field:Valid
     var ballotAddress: Address? = null,
 
+    @field:Size(max = 500)
     var ballotAddressReason: String? = null,
 
     var voteForSingleDate: LocalDate? = null,

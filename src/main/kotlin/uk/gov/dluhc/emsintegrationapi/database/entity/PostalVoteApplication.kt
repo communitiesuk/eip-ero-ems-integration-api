@@ -11,6 +11,7 @@ import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Version
+import javax.validation.Valid
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)
@@ -18,12 +19,15 @@ class PostalVoteApplication(
     @Id
     val applicationId: String,
 
+    @field:Valid
     @Embedded
     val approvalDetails: ApprovalDetails,
 
+    @field:Valid
     @Embedded
     val applicantDetails: ApplicantDetails,
 
+    @field:Valid
     @Embedded
     var postalVoteDetails: PostalVoteDetails? = null,
 
