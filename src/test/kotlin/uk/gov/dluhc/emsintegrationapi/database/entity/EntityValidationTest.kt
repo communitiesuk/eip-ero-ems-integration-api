@@ -7,6 +7,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.isValid
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildAddressEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.getRandomString
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMaxSizeErrorMessage
@@ -16,16 +17,19 @@ internal class EntityValidationTest {
     inner class ValidatePostalVoteApplication {
         @Test
         fun `should not throw constraint violation if a PostalVoteApplication object is valid`() {
-            assertThat(isValid(buildPostalVoteDetailsEntity())).isTrue
+            assertThat(isValid(buildPostalApplication())).isTrue
         }
 
         @Test
         fun `should throw constraint violation if a PostalVoteApplication object is not valid`() {
             assertThat(
                 isValid(
-                    buildPostalVoteDetailsEntity(
-                        buildAddressEntity(
-                            street = getRandomString(256)
+                    buildPostalApplication(
+                        postalVoteDetails = buildPostalVoteDetailsEntity(
+                            ballotAddress = buildAddressEntity(
+                                street = getRandomString(256)
+
+                            )
                         )
                     )
                 )
