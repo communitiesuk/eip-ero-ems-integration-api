@@ -1,8 +1,8 @@
 -- liquibase formatted sql
--- changeset Krister.Bone@valtech.com:create_approved_proxy_application_table endDelimiter:;
+-- changeset Krister.Bone@valtech.com:create_proxy_vote_application_table endDelimiter:;
 
-DROP TABLE IF EXISTS `approved_proxy_application`;
-CREATE TABLE `approved_proxy_application`
+DROP TABLE IF EXISTS `proxy_vote_application`;
+CREATE TABLE `proxy_vote_application`
 (
     `application_id`            varchar(24)  NOT NULL,
     `created_at`                timestamp    NOT NULL,
@@ -39,6 +39,6 @@ CREATE TABLE `approved_proxy_application`
     `version`                   bigint       NOT NULL,
     `status`                    varchar(20)  NOT NULL COMMENT 'status of the record, used for soft deletion',
     PRIMARY KEY (`application_id`),
-    UNIQUE KEY `proxy_approved_application_ems_elector_id_unique_idx` (`ems_elector_id`),
-    KEY                         `approved_proxy_application_application_id_status_idx` (`application_id`,`status`)
+    UNIQUE KEY `proxy_vote_application_ems_elector_id_unique_idx` (`ems_elector_id`),
+    KEY                         `proxy_vote_application_application_id_status_idx` (`application_id`,`status`)
 )

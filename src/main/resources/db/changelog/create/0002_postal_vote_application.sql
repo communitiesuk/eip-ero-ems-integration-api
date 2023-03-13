@@ -1,8 +1,8 @@
 -- liquibase formatted sql
--- changeset Krister.Bone@valtech.com:create_approved_postal_application_table endDelimiter:;
+-- changeset Krister.Bone@valtech.com:create_postal_vote_application_table endDelimiter:;
 
-DROP TABLE IF EXISTS `approved_postal_application`;
-CREATE TABLE `approved_postal_application`
+DROP TABLE IF EXISTS `postal_vote_application`;
+CREATE TABLE `postal_vote_application`
 (
     `application_id`            varchar(24)  NOT NULL,
     `created_at`                timestamp    NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE `approved_postal_application`
     `ems_elector_id`            varchar(255) NOT NULL,
     `language`                  char(2),
     `ballot_address_id`         char(36),
-    `ballot_reason`             varchar(500),
+    `ballot_address_reason`     varchar(500),
     `vote_until_further_notice` bit(1),
     `vote_for_single_date`      date,
     `vote_start_date`           date,
@@ -31,10 +31,12 @@ CREATE TABLE `approved_postal_application`
     `removal_date_time`         timestamp,
     `retention_status`          varchar(20)  NOT NULL,
     `date_created`              timestamp    NOT NULL,
+    `date_updated`              timestamp,
     `created_by`                varchar(255) NOT NULL,
+    `updated_by`                varchar(255) NULL,
     `version`                   bigint       NOT NULL,
     `status`                    varchar(20)  NOT NULL COMMENT 'status of the record, used for soft deletion',
     PRIMARY KEY (`application_id`),
-    UNIQUE KEY `postal_approved_application_ems_elector_id_unique_idx` (`ems_elector_id`),
-    KEY                         `approved_postal_application_application_id_status_idx` (`application_id`,`status`)
+    UNIQUE KEY `postal_vote_application_ems_elector_id_unique_idx` (`ems_elector_id`),
+    KEY                         `postal_vote_application_application_id_status_idx` (`application_id`,`status`)
 )

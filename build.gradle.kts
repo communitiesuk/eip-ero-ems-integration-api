@@ -24,8 +24,11 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 ext["snakeyaml.version"] = "1.33"
 extra["springCloudVersion"] = "2.4.2"
-ext["spring-security.version"] = "5.7.5" // Fixed CVE-2022-31690 and CVE-2022-31692 - https://spring.io/blog/2022/10/31/cve-2022-31690-privilege-escalation-in-spring-security-oauth2-client
+ext["spring-security.version"] =
+    "5.7.5" // Fixed CVE-2022-31690 and CVE-2022-31692 - https://spring.io/blog/2022/10/31/cve-2022-31690-privilege-escalation-in-spring-security-oauth2-client
 extra["awsSdkVersion"] = "2.18.9"
+extra["cucumberVersion"] = "7.11.1"
+extra["junitJupiterVersion"] = "5.8.2"
 
 allOpen {
     annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embedabble")
@@ -103,6 +106,12 @@ dependencies {
     testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
     testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
+    // Cucumber support
+    testImplementation("io.cucumber:cucumber-java8")
+    testImplementation("io.cucumber:cucumber-junit-platform-engine")
+    testImplementation("org.junit.platform:junit-platform-suite")
+    testImplementation("io.cucumber:cucumber-spring")
+
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
 }
@@ -111,6 +120,8 @@ dependencyManagement {
     imports {
         mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudVersion")}")
         mavenBom("software.amazon.awssdk:bom:${property("awsSdkVersion")}")
+        mavenBom("io.cucumber:cucumber-bom:${property("cucumberVersion")}")
+        mavenBom("org.junit:junit-bom:${property("junitJupiterVersion")}")
     }
 }
 
@@ -159,20 +170,20 @@ tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", Ge
 }
 // Postal SQS Message
 tasks.create(
-    "generate-models-from-openapi-document-approved-postal-vote-application-sqs-messaging.yaml",
+    "generate-models-from-openapi-document-postal-vote-application-sqs-messaging.yaml",
     GenerateTask::class
 ) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/approved-postal-vote-application-sqs-messaging.yaml")
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/postal-vote-application-sqs-messaging.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
 }
 
 tasks.create(
-    "generate-models-from-openapi-document-approved-proxy-vote-application-sqs-messaging.yaml",
+    "generate-models-from-openapi-document-proxy-vote-application-sqs-messaging.yaml",
     GenerateTask::class
 ) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/approved-proxy-vote-application-sqs-messaging.yaml")
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/proxy-vote-application-sqs-messaging.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
 }
 
