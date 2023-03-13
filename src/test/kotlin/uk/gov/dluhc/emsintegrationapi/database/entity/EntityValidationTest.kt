@@ -33,7 +33,7 @@ internal class EntityValidationTest {
         }
 
         @Test
-        fun `should throw constraint violation of an address object is invalid`() {
+        fun `should throw constraint violations if an address object is invalid`() {
             val address = buildAddressEntity(
                 street = getRandomString(256),
                 locality = getRandomString(256),
@@ -57,7 +57,7 @@ internal class EntityValidationTest {
         }
 
         @Test
-        fun `should throw constraint violation of an applicant object is invalid`() {
+        fun `should throw constraint violation if an applicant object is invalid`() {
 
             val applicantDetails = buildApplicantDetailsEntity(
                 firstName = getRandomString(36),
