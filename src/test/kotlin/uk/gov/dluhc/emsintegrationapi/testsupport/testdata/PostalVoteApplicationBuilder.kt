@@ -7,7 +7,11 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
+import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import java.time.Instant
+import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicantDetails as ApplicantDetailsMessageDto
+import uk.gov.dluhc.emsintegrationapi.messaging.models.ApprovalDetails as ApprovalDetailsMessageDto
+import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteDetails as PostalVoteDetailsMessageDto
 
 fun buildPostalVoteApplication(
     applicationId: String = getRandomAlphaNumeric(24),
@@ -33,4 +37,17 @@ fun buildPostalVoteApplication(
     dateUpdated = dateUpdated,
     updatedBy = updatedBy,
     status = recordStatus
+)
+
+fun buildPostalVoteApplicationMessageDto(
+    applicationId: String = getRandomAlphaNumeric(24),
+    approvalDetails: ApprovalDetailsMessageDto = buildApprovalDetailsMessageDto(applicationId = applicationId),
+    applicantDetails: ApplicantDetailsMessageDto = buildApplicantDetailsMessageDto(),
+    postalVoteDetails: PostalVoteDetailsMessageDto = buildPostalVoteDetailsMessageDto(),
+    signatureBase64: String = getRandomAlphaNumeric(20),
+) = PostalVoteApplicationMessage(
+    approvalDetails = approvalDetails,
+    applicantDetails = applicantDetails,
+    postalVoteDetails = postalVoteDetails,
+    signatureBase64 = signatureBase64,
 )

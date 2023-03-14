@@ -5,13 +5,13 @@ version: 1.0.0
 x-examples:
   Minimum data:
     firstName: Test
-    lastName: Test
+    surname: Test
     address:
       street: Street 1
       postcode: PC1 2FB
   Normal ContactDetais:
     firstName: Foo
-    lastName: Foo
+    surname: Foo
     email: foo@foo.com
     dob: '1995-03-02'
     phone: 07799779977
@@ -33,7 +33,7 @@ properties:
     type: string
     maxLength: 100
     description: Middle names (optional)
-  lastName:
+  surname:
     type: string
     maxLength: 35
     description: Last name
@@ -73,7 +73,7 @@ properties:
     description: the unique ID for this elector as used by the EMS for the current LA/VJ. This will have been returned to the EROP by the EMS over the “EROP to EMS Register Checker API”. See comments in “Elector ID and Identity Matching” above.
 required:
   - firstName
-  - lastName
+  - surname
   - registeredAddress
   - referenceNumber
   - ipAddress
