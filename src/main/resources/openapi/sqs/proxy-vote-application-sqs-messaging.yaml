@@ -78,22 +78,22 @@ components:
             a free-form text value containing the applicant’s response to the question “please explain why you are not able to go to your polling station on polling day” for the primary form variant or other text for other form variants (max 500 utf-8 chars)
             All proxy vote forms, including variants which require supporting documentation, will be handled in the EROP. The ERO user working in that application will review the documentation as required and only accepted applications will be seen on this API. The supporting documentation, if any, will not be sent through here. The field “proxyreason” will contain details for other form variants and may have been filled in by an ERO user.
           maxLength: 500
-        proxyVoteUntilFurtherNotice:
+        voteUntilFurtherNotice:
           type: boolean
           description: Mutually exclusive proxy voting limits. True if the elector wishes to vote by proxy until further notice.
-        proxyVoteForSingleDate:
+        voteForSingleDate:
           type: string
           format: date
           description: |
             If proxy application is for a single date
             In ISO8601 date format '2022-08-02'
-        proxyVoteStartDate:
+        voteStartDate:
           type: string
           format: date
           description: |
             If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteEndDate must also be present
             In ISO8601 date format '2022-08-02'
-        proxyVoteEndDate:
+        voteEndDate:
           type: string
           format: date
           description: |
@@ -119,7 +119,7 @@ components:
           applicantDetails:
             firstName: First
             middleNames: Middle
-            lastName: Last
+            surname: Last
             dob: '1995-03-02'
             registeredAddress:
               property: Aviation House
@@ -151,8 +151,8 @@ components:
             proxyPhone: '07777123456'
             proxyEmail: jane@example.com
             proxyReason: work commitments
-            proxyVoteUntilFurtherNotice: true
-          signature: LzlqLzRBQ...
+            voteUntilFurtherNotice: true
+          signatureBase64: LzlqLzRBQ...
 
       properties:
         approvalDetails:
@@ -161,7 +161,7 @@ components:
           $ref: '../sqs/Models/ApplicantDetails.yaml'
         proxyVoteDetails:
           $ref: '#/components/schemas/ProxyVoteDetails'
-        signature:
+        signatureBase64:
           type: string
           description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
       required:

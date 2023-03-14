@@ -50,22 +50,22 @@ components:
           type: string
           description: ' (required only if “ballot” address given) The reason the applicant gave for using a different address for the ballot paper (max 500 utf-8 chars)'
           maxLength: 500
-        postalVoteUntilFurtherNotice:
+        voteUntilFurtherNotice:
           type: boolean
           description: Mutually exclusive postal voting limits. True if the elector wishes to vote by post until further notice.
-        postalVoteForSingleDate:
+        voteForSingleDate:
           type: string
           format: date
           description: |
             If postal application is for a single dates.
             In ISO8601 date format '2022-08-02'
-        postalVoteStartDate:
+        voteStartDate:
           type: string
           format: date
           description: |
             If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteEndDate must also be present
             In ISO8601 date format '2022-08-02'
-        postalVoteEndDate:
+        voteEndDate:
           type: string
           format: date
           description: |
@@ -89,7 +89,7 @@ components:
           applicantDetails:
             firstName: First
             middleNames: Middle
-            lastName: Last
+            surname: Last
             dob: '1995-03-02'
             registeredAddress:
               property: Aviation House
@@ -115,8 +115,8 @@ components:
               postcode: SW112DR
               uprn: '098766'
             ballotAddressReason: I am away from home for work
-            postalVoteUntilFurtherNotice: true
-          signature: LzlqLzRBQ...
+            voteUntilFurtherNotice: true
+          signatureBase64: LzlqLzRBQ...
       properties:
         approvalDetails:
           $ref: '../sqs/Models/ApprovalDetails.yaml'
@@ -124,14 +124,14 @@ components:
           $ref: '../sqs/Models/ApplicantDetails.yaml'
         postalVoteDetails:
           $ref: '#/components/schemas/PostalVoteDetails'
-        signature:
+        signatureBase64:
           type: string
           description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
 
       required:
         - approvalDetails
         - applicantDetails
-        - signature
+        - signatureBase64
 
 
   #
