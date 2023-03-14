@@ -32,6 +32,7 @@ fun <T, R> validateMappedObject(inputObject: T, mapperFunction: (T) -> R, vararg
  * @param mapperFunction: the mapper function
  * @param fieldNamesToIgnore: the fields to be skipped while comparing the mapped object
  * @param verifications: a function consumes the mapped object, can be used for further assertion on a mapped object
+ * @return object mapped from the input object
  */
 fun <T, R> validateMappedObject(
     inputObject: T,
