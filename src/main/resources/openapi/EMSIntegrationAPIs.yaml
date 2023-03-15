@@ -11,9 +11,16 @@ info:
     
     EMSs can pull OAVA applications from a queue and acknowledge each application as successfully downloaded.
     
+    Authentication to this API is handled via TLS client certificates. Each client EMS system is issued
+    a client certificate by IERDS which will authenticate and identify the client. See doc referenced below.
+    
     See also: 
       = "IER EMS API" for the EMS facing API in IER that relays Register to Vote applications
       = EROP to EMS Register Checker API
+      = "Internet-facing endpoint for EMS API - Guide for EMS Implementers", this document describes the TLS client certificate auth in detail
+    
+    TODO:
+      = need to add support for overseas and BFPO address to postal ballot address
   contact:
     name: Krister Bone
     email: krister.bone@valtech.com
@@ -25,7 +32,7 @@ servers:
 paths:
   /postalVotes/accepted:
     get:
-      summary: For requesting updates about accepted Postal Vote applications
+      summary: For requesting Postal Vote applications received from citizens
       tags:
         - Postal Vote related endpoints
       responses:
@@ -33,9 +40,33 @@ paths:
           $ref: '#/components/responses/PostalVoteAccepted'
       operationId: get-postalVotes-accepted
       description: |
-        This endpoint acts as a notification queue. To ensure resilience against communication failures, reading entries from this queue does not consume them. After successfully receiving a notification from this endpoint, the EMS should call the "DELETE /postalVotes/{id}" endpoint for each notification that it has received.
+        TODO: need to also send rejected applications? Here or a sibling endpoint?
+        
+        ## Overview
+        
+        When an application for a Postal Vote is received via the IER web frontend, it is passed to EROP by IER. When an application is received on paper the ERO will transcribe it into the EROP.
+
+        Postal Vote applications from both sources will be processed in the EROP by ERO staff until the application is accepted or rejected. This includes verifying the identity of the person making the application; verifying that the applicant is a registered elector in the current LA/VJB (see the “EROP to EMS Register Checker API” document); and verifying that the signature is acceptable.
+
+        The record of accepted Postal Votes will continue to be maintained in the elector’s record on the EMS. To facilitate this, notifications of accepted Postal Vote applications are passed from EROP through IER and to EMS via this endpoint.
+        
+        EMS are expected to poll this endpoint regularly and automatically update the corresponding elector records without user intervention. We recommend polling once every 5 minutes.
+        
+        ## Queue Management
+  
+        This endpoint acts as a notification queue. To ensure resilience against communication failures, reading entries from this queue does not consume them. After successfully receiving a notification from this endpoint, the EMS should call the "`DELETE /postalVotes/{id}`" endpoint for each notification that it has received.
 
         The server will not lock or hide records between the GET and DELETE calls, so it is not safe to call this endpoint concurrently from multiple client workers or threads without adding client-side deduplication or idempotency.
+        
+        ## Elector ID and Identity Matching
+        
+        During processing in the EROP, the ERO user will match the received elector’s details (name, DoB, address) to a registered elector in the current LA/VJB. This will be assisted by the “EROP to EMS Register Checker API” connection, or may have proceeded manually if that API has not been implemented for the current LA/VJB or if it failed. Any ambiguity in the matching will have been resolved by the ERO user before the application reaches this queue. The result of this matching will be returned here in the field “emsElectorId”.
+        
+        The receiving EMS system must use this “emsElectorId” to decide which elector’s record to update. The other fields (“fn”, “ln”, “dob”, “reguprn” etc.) are for information and diagnostic purposes only. An EMS system receiving this application MUST NOT automatically override the matching that has been selected by the ERO user in the case of ambiguous names or similar.
+        
+        ## Note about electors applying both to register and for a postal vote
+        
+        We expect many Electors may apply both to Register to Vote and for a Postal Vote at around the same time on the public facing website (one after the other). In that case the Absent Vote application will be held in the EROP (shown as “pending”) and will not appear in this queue until the applicant is registered.
       parameters:
         - schema:
             type: number
@@ -71,7 +102,7 @@ paths:
         - Postal Vote related endpoints
       description: |-
         Postal vote applications that are acknowledged in this way will be removed from the queue immediately, and subsequently deleted from the IER system.
-
+        
         If the specified ID does not exist, or belongs to a postal vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
       security:
         - emsCertificateLambdaAuthorizer: []
@@ -245,7 +276,10 @@ components:
             mn:
               type: string
               maxLength: 100
-              description: Middle names (optional)
+              description: |
+                Middle names (optional)
+                
+                **Note:** The current/old paper forms for absent voting collect fields “First name(s) (in full)” and “Last name” whereas the current Register to Vote online form collects “First name”, “Middle names (optional)” and “Last name”. The new online form for absent votes will follow the latter convention and this API reflects that.
             ln:
               type: string
               maxLength: 35
@@ -326,7 +360,8 @@ components:
               maxLength: 500
             signature:
               type: string
-              description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
+              description: |
+                An image of the applicant’s signature, in Base64 encoded PNG format. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usually under 30KB.
             postalVoteUntilFurtherNotice:
               type: boolean
               description: Mutually exclusive postal voting limits. True if the elector wishes to vote by post until further notice.
