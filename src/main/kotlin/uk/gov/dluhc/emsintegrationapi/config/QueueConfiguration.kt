@@ -25,9 +25,9 @@ class QueueConfiguration(
     fun getQueueNameFrom(queueName: QueueName): String {
         return when (queueName) {
             POSTAL_APPLICATION_QUEUE -> postalApplicationQueueName
-            PROXY_APPLICATION_QUEUE -> postalApplicationQueueName
-            DELETED_POSTAL_APPLICATION_QUEUE -> postalApplicationQueueName
-            DELETED_PROXY_APPLICATION_QUEUE -> postalApplicationQueueName
+            PROXY_APPLICATION_QUEUE -> proxyApplicationQueueName
+            DELETED_POSTAL_APPLICATION_QUEUE -> deletedPostalApplicationQueueName
+            DELETED_PROXY_APPLICATION_QUEUE -> deletedProxyApplicationQueueName
         }
     }
 

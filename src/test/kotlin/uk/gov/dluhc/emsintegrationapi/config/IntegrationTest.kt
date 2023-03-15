@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.transaction.annotation.Transactional
 
 private val logger = KotlinLogging.logger {}
 /**
@@ -14,6 +15,7 @@ private val logger = KotlinLogging.logger {}
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
 @AutoConfigureWebTestClient(timeout = "PT5M")
+@Transactional
 abstract class IntegrationTest {
     @Autowired
     protected lateinit var webTestClient: WebTestClient
