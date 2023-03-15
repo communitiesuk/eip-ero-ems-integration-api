@@ -1,8 +1,19 @@
 openapi: 3.0.0
 info:
-  title: EROP EMS Integration APIs
+  title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
   version: 1.0.0
-  description: EMSs can pull OAVA applications from a queue and ack each application as successfully downloaded.
+  description: |
+    This specification is for an API hosted by EROP (part of IERDS) for EMS clients to fetch
+    details of Postal Vote and Proxy Vote applications made by the public.
+    
+    The term OAVA is used in places, meaning "Online Absent Vote Applications", to encompass
+    Postal Vote and Proxy Vote.
+    
+    EMSs can pull OAVA applications from a queue and acknowledge each application as successfully downloaded.
+    
+    See also: 
+      = "IER EMS API" for the EMS facing API in IER that relays Register to Vote applications
+      = EROP to EMS Register Checker API
   contact:
     name: Krister Bone
     email: krister.bone@valtech.com
