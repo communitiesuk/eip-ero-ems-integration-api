@@ -123,6 +123,8 @@ paths:
         '200':
           $ref: '#/components/responses/ProxyVoteAccepted'
       operationId: get-proxyVotes-accepted
+      description: |
+        All the same workflow considerations described at `/postalVotes/accepted` apply here
       parameters:
         - schema:
             type: number
