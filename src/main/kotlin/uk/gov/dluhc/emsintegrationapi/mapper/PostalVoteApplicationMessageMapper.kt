@@ -14,8 +14,8 @@ class PostalVoteApplicationMessageMapper(
     private val postalVoteDetailsMapper: PostalVoteDetailsMapper
 ) {
 
-    fun mapToEntity(postalVoteApplicationMessage: PostalVoteApplicationMessage?) =
-        postalVoteApplicationMessage?.let {
+    fun mapToEntity(postalVoteApplicationMessage: PostalVoteApplicationMessage) =
+        postalVoteApplicationMessage.let {
             PostalVoteApplication(
                 applicationId = it.approvalDetails.id,
                 approvalDetails = approvalDetailsMapper.mapToApprovalDetails(it.approvalDetails)!!,

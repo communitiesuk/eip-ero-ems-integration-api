@@ -7,6 +7,7 @@ fun <T, R> validateObjects(input: T, output: R, vararg fieldNameToIgnore: String
         .ignoringFields(*fieldNameToIgnore)
         .ignoringCollectionOrder()
         .ignoringActualNullFields()
+        .ignoringExpectedNullFields()
         .isEqualTo(input)
 }
 
@@ -22,7 +23,7 @@ fun <T, R> validateMappedObject(inputObject: T, mapperFunction: (T) -> R, vararg
     // Invoke the mapper function
     val mappedObject = mapperFunction.invoke(inputObject)
     // Validate the input object and mapped object
-    validateObjects(mappedObject, inputObject, *fieldNameToIgnore)
+    validateObjects(inputObject, mappedObject, *fieldNameToIgnore)
     return mappedObject
 }
 
