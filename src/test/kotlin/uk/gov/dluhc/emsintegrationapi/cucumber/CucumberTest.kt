@@ -13,5 +13,5 @@ import org.junit.platform.suite.api.Suite
     key = Constants.GLUE_PROPERTY_NAME,
     value = "uk.gov.dluhc.emsintegrationapi.cucumber"
 )
-@ConfigurationParameter(key = Constants.FILTER_TAGS_PROPERTY_NAME, value = "@Postal")
+@ConfigurationParameter(key = Constants.FILTER_TAGS_PROPERTY_NAME, value = "not @WIP")
 class CucumberTest

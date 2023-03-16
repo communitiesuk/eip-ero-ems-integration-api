@@ -21,10 +21,10 @@ open class DeletePostalRecordStep(
     }
 
     init {
-        Before("@Postal", this::deletePostalEntitiesBefore)
-        After("@Postal", this::deletePostalEntitiesAfter)
-        Before("@PostalMessage", this::deletePostalMessageBefore)
-        After("@PostalMessage", this::deletePostalMessageAfter)
+        Before("@DeletePostalEntity", this::deletePostalEntitiesBefore)
+        After("@DeletePostalEntity", this::deletePostalEntitiesAfter)
+        Before("@DeletePostalMessage", this::deletePostalMessageBefore)
+        After("@DeletePostalMessage", this::deletePostalMessageAfter)
     }
 
     @Transactional
@@ -38,14 +38,14 @@ open class DeletePostalRecordStep(
         logger.info("$beforeOrAfter - All the messages from PostalVoteApplication queue `$queueUrl` have been deleted")
     }
 
-    private fun deletePostalSqsMessages(beforeOrAfter: String) =
-        deleteSqsMessage(localStackContainerSettings.mappedPostalApplicationQueueUrl!!, beforeOrAfter)
+    private fun deletePostalSqsMessage(beforeOrAfter: String) =
+        deleteSqsMessage(localStackContainerSettings.mappedPostalApplicationQueueUrl, beforeOrAfter)
 
     private fun deletePostalEntitiesBefore() = deleteAllPostalRecords(BEFORE)
 
     private fun deletePostalEntitiesAfter() = deleteAllPostalRecords(AFTER)
 
-    private fun deletePostalMessageBefore() = deleteAllPostalRecords(BEFORE)
+    private fun deletePostalMessageBefore() = deletePostalSqsMessage(BEFORE)
 
-    private fun deletePostalMessageAfter() = deleteAllPostalRecords(AFTER)
+    private fun deletePostalMessageAfter() = deletePostalSqsMessage(AFTER)
 }

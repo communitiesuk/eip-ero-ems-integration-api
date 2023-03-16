@@ -9,10 +9,6 @@ class MessageSender<T : Any>(
     private val queueConfiguration: QueueConfiguration,
     private val queueMessagingTemplate: QueueMessagingTemplate
 ) {
-
     fun send(message: T, queueName: QueueConfiguration.QueueName) =
         queueMessagingTemplate.convertAndSend(queueConfiguration.getQueueNameFrom(queueName), message)
-
-    fun send(messages: List<T>, queueName: QueueConfiguration.QueueName) =
-        messages.forEach { send(it, queueName) }
 }

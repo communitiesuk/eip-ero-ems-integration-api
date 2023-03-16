@@ -13,10 +13,10 @@ import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.PROXY_
 @ConfigurationProperties(prefix = SQS_CONFIGURATION_PREFIX)
 @ConstructorBinding
 class QueueConfiguration(
-    val proxyApplicationQueueName: String,
-    val postalApplicationQueueName: String,
-    val deletedProxyApplicationQueueName: String,
-    val deletedPostalApplicationQueueName: String,
+    private val proxyApplicationQueueName: String,
+    private val postalApplicationQueueName: String,
+    private val deletedProxyApplicationQueueName: String,
+    private val deletedPostalApplicationQueueName: String,
 ) {
     companion object {
         const val SQS_CONFIGURATION_PREFIX = "sqs"
