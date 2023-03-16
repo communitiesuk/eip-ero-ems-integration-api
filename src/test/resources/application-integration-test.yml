@@ -20,8 +20,6 @@ cloud:
     credentials:
       access-key: test
       secret-key: test
-    s3:
-      endpoint: http://localhost:4566
 
 sqs:
   proxy-application-queue-name: proxy-application
