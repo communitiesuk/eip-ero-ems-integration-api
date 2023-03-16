@@ -22,7 +22,7 @@ class ProcessPostalVoteApplicationMessageService(
             val postalVoteApplicationEntity =
                 postalVoteApplicationMessageMapper.mapToEntity(postalVoteApplicationMessage)
             logger.debug { "Successfully mapped the message to entity for application = ${approvalDetails.id}" }
-            postalVoteApplicationRepository.save(postalVoteApplicationEntity!!)
+            postalVoteApplicationRepository.save(postalVoteApplicationEntity)
             logger.info { "Successfully saved the application id  = ${approvalDetails.id}" }
         }
     }

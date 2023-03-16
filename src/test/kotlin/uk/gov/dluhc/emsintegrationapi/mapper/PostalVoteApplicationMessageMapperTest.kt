@@ -7,7 +7,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.POSTAL_VOTE_APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMappedObject
-import uk.gov.dluhc.emsintegrationapi.testsupport.validateWithNull
 
 internal class PostalVoteApplicationMessageMapperTest {
     private val addressMapper = AddressMapper()
@@ -35,9 +34,5 @@ internal class PostalVoteApplicationMessageMapperTest {
                 assertThat(it.postalVoteDetails!!.ballotAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
             }
         }
-
-        @Test
-        fun `should return null if the input object is null`() =
-            validateWithNull(postalVoteApplicationMessageMapper::mapToEntity)
     }
 }
