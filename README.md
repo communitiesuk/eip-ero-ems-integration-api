@@ -1,3 +1,6 @@
+> :exclamation: The EMS facing specification for the Postal and Proxy Vote API can be found at:
+[src/main/resources/openapi/EMSIntegrationAPIs.yaml](src/main/resources/openapi/EMSIntegrationAPIs.yaml) :exclamation:
+
 # ems-integration-api
 
 Spring Boot microservice that :
