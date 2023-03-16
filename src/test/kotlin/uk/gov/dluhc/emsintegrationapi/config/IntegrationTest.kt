@@ -14,4 +14,3 @@ private val logger = KotlinLogging.logger {}
 @ActiveProfiles("integration-test")
 @AutoConfigureWebTestClient(timeout = "PT5M")
 abstract class IntegrationTest
-
