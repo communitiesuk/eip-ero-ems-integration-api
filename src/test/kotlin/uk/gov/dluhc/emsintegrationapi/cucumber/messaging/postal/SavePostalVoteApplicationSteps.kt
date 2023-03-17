@@ -4,8 +4,6 @@ import io.cucumber.java8.En
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
@@ -27,10 +25,7 @@ open class SavePostalVoteApplicationSteps(
 
 ) : En {
     private var postalVoteApplicationMessage: PostalVoteApplicationMessage? = null
-
-    @Captor
-    private lateinit var captor: ArgumentCaptor<PostalVoteApplicationMessage>
-
+    
     init {
         Given("a postal vote application with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
             logger.info("Postal application id $applicationId and Elector id = $emsElectorId")
@@ -109,6 +104,7 @@ open class SavePostalVoteApplicationSteps(
 
     @Transactional
     open fun confirmTheApplicationDidNotSave(applicationId: String) {
+        assertThat(applicationId.trim()).hasSizeGreaterThan(1)
         await.during(5, TimeUnit.SECONDS).atMost(6, TimeUnit.SECONDS).untilAsserted {
             val postalVoteEntity = postalVoteApplicationRepository.findById(applicationId)
             assertThat(postalVoteEntity).isEmpty

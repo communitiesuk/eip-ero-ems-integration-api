@@ -25,6 +25,10 @@ open class DeletePostalRecordStep(
         After("@DeletePostalEntity", this::deletePostalEntitiesAfter)
         Before("@DeletePostalMessage", this::deletePostalMessageBefore)
         After("@DeletePostalMessage", this::deletePostalMessageAfter)
+        Before("@DeleteProxyEntity", this::deletePostalEntitiesBefore)
+        After("@DeleteProxyEntity", this::deletePostalEntitiesAfter)
+        Before("@DeleteProxyMessage", this::deletePostalMessageBefore)
+        After("@DeleteProxyMessage", this::deletePostalMessageAfter)
     }
 
     @Transactional

@@ -1,5 +1,5 @@
 @Postal @DeletePostalEntity @DeletePostalMessage
-Feature: Consume Postal Vote Application Message
+Feature: System process an approved/rejected postal vote application message
 
   Scenario Outline: The system process and saves a postal vote application message into the database
     Given a postal vote application with the application id "<PostalApplicationId>" and electoral id "<EmsElectoralId>"
@@ -30,7 +30,7 @@ Feature: Consume Postal Vote Application Message
   Scenario Outline: The system will reject a postal vote application message with an invalid application id, application id must be 24 characters
     Given a postal vote application with the application id "<InvalidPostalApplicationId>" and electoral id "<EmsElectoralId>"
     When I send an sqs message to the postal application queue
-    Then the postal vote application with id "<PostalApplicationId2>" did not save
+    Then the postal vote application with id "<InvalidPostalApplicationId>" did not save
     Examples:
       | InvalidPostalApplicationId | EmsElectoralId                       |
       | 123456                     | e87cbaea-0deb-4058-95c6-8240d426f5e4 |
