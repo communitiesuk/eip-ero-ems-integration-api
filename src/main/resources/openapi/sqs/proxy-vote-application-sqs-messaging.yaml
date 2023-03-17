@@ -52,7 +52,7 @@ components:
           type: string
           maxLength: 100
           description: Middle names (optional)
-        proxyLastName:
+        proxySurname:
           type: string
           maxLength: 35
           description: Last name
@@ -101,7 +101,7 @@ components:
             In ISO8601 date format '2022-08-02'
       required:
         - proxyFirstName
-        - proxyLastName
+        - proxySurname
         - proxyReason
         - proxyAddress
     ProxyVoteApplicationMessage:
@@ -138,7 +138,7 @@ components:
           proxyVoteDetails:
             proxyFirstName: Jane
             proxyMiddleNames: Middle
-            proxyLastName: Doe
+            proxySurname: Doe
             proxyFamilyRelationship: Sister
             proxyAddress:
               property: Aviation House

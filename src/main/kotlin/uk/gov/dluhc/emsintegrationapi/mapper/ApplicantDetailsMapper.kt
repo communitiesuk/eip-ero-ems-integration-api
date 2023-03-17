@@ -1,13 +1,14 @@
 package uk.gov.dluhc.emsintegrationapi.mapper
 
 import org.springframework.stereotype.Component
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicantDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicantDetails as ApplicantDetailsEntity
 
 @Component
 class ApplicantDetailsMapper(private val addressMapper: AddressMapper) {
 
-    fun mapToApplicantEntity(applicantDetails: ApplicantDetails?) = applicantDetails?.let {
+    fun mapToApplicantEntity(applicantDetails: ApplicantDetails, createdBy: SourceSystem) = applicantDetails.let {
         ApplicantDetailsEntity(
             firstName = it.firstName,
             middleNames = it.middleNames,
@@ -19,7 +20,7 @@ class ApplicantDetailsMapper(private val addressMapper: AddressMapper) {
             ipAddress = it.ipAddress,
             language = it.language,
             emsElectorId = it.emsElectorId,
-            registeredAddress = addressMapper.mapToAddressEntity(it.registeredAddress)!!
+            registeredAddress = addressMapper.mapToAddressEntity(it.registeredAddress, createdBy)!!
         )
     }
 }

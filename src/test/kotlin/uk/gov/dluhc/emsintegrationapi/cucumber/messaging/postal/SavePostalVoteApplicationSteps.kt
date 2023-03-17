@@ -9,7 +9,7 @@ import org.mockito.Captor
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.POSTAL_VOTE_APPLICATION_FIELDS_TO_IGNORE
+import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteApplicationMessageMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
@@ -60,7 +60,7 @@ open class SavePostalVoteApplicationSteps(
                     validateObjects(
                         postalVoteApplicationMessage,
                         this,
-                        *POSTAL_VOTE_APPLICATION_FIELDS_TO_IGNORE
+                        *APPLICATION_FIELDS_TO_IGNORE
                     )
                     logger.info("Successfully validated the application with id = $applicationId")
                 }
@@ -103,7 +103,7 @@ open class SavePostalVoteApplicationSteps(
         postalVoteApplicationRepository.saveAndFlush(
             postalVoteApplicationMessageMapper.mapToEntity(
                 postalVoteApplicationMessage
-            )!!
+            )
         )
     }
 
