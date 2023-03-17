@@ -23,7 +23,7 @@ internal class ApprovalDetailsMapperTest {
                 "id", "authorisedAt", "createdAt"
             ) {
                 assertThat(it.output!!.authorisedAt).isEqualTo(instantMapper.toInstant(it.input.authorisedAt))
-                assertThat(it.output!!.createdAt).isEqualTo(instantMapper.toInstant(it.input.createdAt))
+                assertThat(it.output.createdAt).isEqualTo(instantMapper.toInstant(it.input.createdAt))
             }
         }
 

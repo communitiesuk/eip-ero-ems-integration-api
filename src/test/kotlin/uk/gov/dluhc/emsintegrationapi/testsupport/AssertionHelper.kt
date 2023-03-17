@@ -37,7 +37,7 @@ fun <T, R> validateMappedObject(
     val inputObject = buildInputFunction()
     val mappedObject = mapperFunction(inputObject)
     // Let us do additional checks first, if that fails then there is no point of doing full comparison
-    verifications?.let { verifications(TestResult(inputObject, mappedObject)) }
+    verifications(TestResult(inputObject, mappedObject))
     // Validate the input object and mapped object
     validateObjects(inputObject, mappedObject, *fieldNamesToIgnore)
     return TestResult(inputObject, mappedObject)

@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
-import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.PROXY_VOTE_APPLICATION_FIELDS_TO_IGNORE
+import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplicationMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMappedObject
 
@@ -28,7 +28,7 @@ internal class ProxyVoteApplicationMessageMapperTest {
             validateMappedObject(
                 ::buildProxyVoteApplicationMessageDto,
                 proxyVoteApplicationMessageMapper::mapToEntity,
-                *PROXY_VOTE_APPLICATION_FIELDS_TO_IGNORE
+                *APPLICATION_FIELDS_TO_IGNORE
             ) {
                 assertThat(it.output.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.PROXY)
                 assertThat(it.output.proxyVoteDetails.proxyAddress.createdBy).isEqualTo(SourceSystem.PROXY)
