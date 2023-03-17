@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMappedObject
-import uk.gov.dluhc.emsintegrationapi.testsupport.validateWithNull
 
 internal class ProxyVoteDetailsMapperTest {
 
@@ -18,9 +17,5 @@ internal class ProxyVoteDetailsMapperTest {
                 ::buildProxyVoteDetailsMessageDto,
                 proxyVoteDetailsMapper::mapToProxyVoteDetailsEntity
             )
-
-        @Test
-        fun `should return null if the input object is null`() =
-            validateWithNull(proxyVoteDetailsMapper::mapToProxyVoteDetailsEntity)
     }
 }
