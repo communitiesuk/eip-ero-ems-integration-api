@@ -9,10 +9,13 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.getRandomString
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMaxSizeErrorMessage
 
 internal class EntityValidationTest {
+
     @Nested
     inner class ValidatePostalVoteApplication {
         @Test
@@ -44,7 +47,43 @@ internal class EntityValidationTest {
                 )
             )
         }
+    }
 
+    @Nested
+    inner class ValidateProxyVoteApplication {
+        @Test
+        fun `should not throw constraint violation if a ProxyVoteApplication object is valid`() {
+            assertThat(isValid(buildProxyVoteDetailsEntity())).isTrue
+        }
+
+        @Test
+        fun `should throw constraint violation if a ProxyVoteApplication object is not valid`() {
+            val invalidProxyVoteApplication = buildProxyVoteApplication(
+                proxyVoteDetails = buildProxyVoteDetailsEntity(
+                    proxyAddress = buildAddressEntity(
+                        street = getRandomString(256)
+                    )
+                ),
+                applicantDetails = buildApplicantDetailsEntity(
+                    firstName = getRandomString(36),
+                ),
+                approvalDetails = buildApprovalDetailsEntity(
+                    gssCode = getRandomString(10),
+                )
+            )
+            validateMaxSizeErrorMessage(
+                invalidProxyVoteApplication,
+                listOf(
+                    Pair("proxyVoteDetails.proxyAddress.street", 255),
+                    Pair("applicantDetails.firstName", 35),
+                    Pair("approvalDetails.gssCode", 9),
+                )
+            )
+        }
+    }
+
+    @Nested
+    inner class ValidateEmbeddedEntities {
         @Test
         fun `should throw constraint violations if an address object is invalid`() {
             val address = buildAddressEntity(

@@ -3,10 +3,11 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMappedObject
-import uk.gov.dluhc.emsintegrationapi.testsupport.validateWithNull
 
 internal class ApplicantDetailsMapperTest {
 
@@ -14,19 +15,20 @@ internal class ApplicantDetailsMapperTest {
 
     @Nested
     inner class FromApplicantDetailsMessageDtoToEntity {
-        @Test
-        fun `should convert applicant message dto to entity`() {
+        @ParameterizedTest
+        @EnumSource(names = ["POSTAL", "PROXY"])
+        fun `should convert applicant message dto to entity`(sourceSystem: SourceSystem) {
             validateMappedObject(
-                buildApplicantDetailsMessageDto(),
-                applicantDetailsMapper::mapToApplicantEntity,
-                "registeredAddress.createdBy"
+                ::buildApplicantDetailsMessageDto,
+                { applicantDetailsMapper.mapToApplicantEntity(it, sourceSystem) },
+                "registeredAddress.createdBy",
             ) {
-                assertThat(it!!.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
+                assertThat(it.output!!.registeredAddress.createdBy).isEqualTo(sourceSystem)
             }
         }
 
         @Test
         fun `should return null if the input object is null`() =
-            validateWithNull(applicantDetailsMapper::mapToApplicantEntity)
+            assertThat(applicantDetailsMapper.mapToApplicantEntity(null, SourceSystem.PROXY)).isNull()
     }
 }

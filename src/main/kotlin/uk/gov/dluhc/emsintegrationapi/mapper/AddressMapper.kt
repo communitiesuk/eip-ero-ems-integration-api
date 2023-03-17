@@ -7,7 +7,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
 
 @Component
 class AddressMapper {
-    fun mapToAddressEntity(address: Address?) = address?.let {
+    fun mapToAddressEntity(address: Address?, createdBy: SourceSystem) = address?.let {
         AddressEntity(
             street = it.street,
             property = it.property,
@@ -16,7 +16,7 @@ class AddressMapper {
             area = it.area,
             postcode = it.postcode,
             uprn = it.uprn,
-            createdBy = SourceSystem.POSTAL
+            createdBy = createdBy
         )
     }
 }

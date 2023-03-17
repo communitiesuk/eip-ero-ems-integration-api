@@ -1,6 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.mapper
 
 import org.springframework.stereotype.Component
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteDetails as ProxyVoteDetailsEntity
 
@@ -15,7 +16,7 @@ class ProxyVoteDetailsMapper(private val addressMapper: AddressMapper) {
             proxyEmail = it.proxyEmail,
             proxyPhone = it.proxyPhone,
             proxyReason = it.proxyReason,
-            proxyAddress = addressMapper.mapToAddressEntity(it.proxyAddress),
+            proxyAddress = addressMapper.mapToAddressEntity(it.proxyAddress, SourceSystem.PROXY)!!,
             proxyFamilyRelationship = it.proxyFamilyRelationship,
             voteForSingleDate = it.voteForSingleDate,
             voteStartDate = it.voteStartDate,

@@ -18,10 +18,10 @@ fun buildProxyVoteDetailsEntity(
     voteForSingleDate: LocalDate? = getRandomPastDate(),
     voteStartDate: LocalDate? = getRandomPastDate(10),
     voteEndDate: LocalDate? = getRandomPastDate(1),
-    proxyFamilyRelationship: String? =randomString(20),
+    proxyFamilyRelationship: String? = randomString(20),
     voteUntilFurtherNotice: Boolean? = false
 ) = ProxyVoteDetails(
-    proxyFirstName =proxyFirstName,
+    proxyFirstName = proxyFirstName,
     proxyMiddleNames = proxyMiddleNames,
     proxySurname = proxySurname,
     proxyEmail = proxyEmail,
@@ -46,10 +46,10 @@ fun buildProxyVoteDetailsMessageDto(
     voteForSingleDate: LocalDate? = getRandomPastDate(),
     voteStartDate: LocalDate? = getRandomPastDate(10),
     voteEndDate: LocalDate? = getRandomPastDate(1),
-    proxyFamilyRelationship: String? =randomString(20),
+    proxyFamilyRelationship: String? = randomString(20),
     voteUntilFurtherNotice: Boolean? = false
 ) = ProxyVoteDetailsMessageDto(
-    proxyFirstName =proxyFirstName,
+    proxyFirstName = proxyFirstName,
     proxyMiddleNames = proxyMiddleNames,
     proxySurname = proxySurname,
     proxyEmail = proxyEmail,

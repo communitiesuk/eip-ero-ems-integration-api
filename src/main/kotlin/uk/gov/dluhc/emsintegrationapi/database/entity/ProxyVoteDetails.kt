@@ -34,7 +34,7 @@ class ProxyVoteDetails(
     @JoinColumn(name = "proxy_address_id")
     @NotFound(action = NotFoundAction.IGNORE)
     @field:Valid
-    var proxyAddress: Address? = null,
+    val proxyAddress: Address,
 
     @field:Size(max = 500)
     val proxyReason: String,

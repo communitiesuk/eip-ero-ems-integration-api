@@ -19,7 +19,10 @@ class PostalVoteApplicationMessageMapper(
             PostalVoteApplication(
                 applicationId = it.approvalDetails.id,
                 approvalDetails = approvalDetailsMapper.mapToApprovalDetails(it.approvalDetails)!!,
-                applicantDetails = applicantDetailsMapper.mapToApplicantEntity(it.applicantDetails)!!,
+                applicantDetails = applicantDetailsMapper.mapToApplicantEntity(
+                    it.applicantDetails,
+                    SourceSystem.POSTAL
+                )!!,
                 postalVoteDetails = postalVoteDetailsMapper.mapToPostVoteDetailsEntity(it.postalVoteDetails),
                 signatureBase64 = postalVoteApplicationMessage.signatureBase64,
                 createdBy = SourceSystem.POSTAL,

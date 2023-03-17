@@ -26,12 +26,12 @@ internal class PostalVoteApplicationMessageMapperTest {
         fun `should convert postal vote application message to entity`() {
 
             validateMappedObject(
-                buildPostalVoteApplicationMessageDto(),
+                ::buildPostalVoteApplicationMessageDto,
                 postalVoteApplicationMessageMapper::mapToEntity,
                 *POSTAL_VOTE_APPLICATION_FIELDS_TO_IGNORE
             ) {
-                assertThat(it!!.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
-                assertThat(it.postalVoteDetails!!.ballotAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
+                assertThat(it.output.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
+                assertThat(it.output.postalVoteDetails!!.ballotAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
             }
         }
     }

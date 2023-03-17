@@ -17,14 +17,13 @@ internal class ApprovalDetailsMapperTest {
 
         @Test
         fun `should convert applicant message dto to entity`() {
-            val approvalDetailsMessageDto = buildApprovalDetailsMessageDto()
             validateMappedObject(
-                approvalDetailsMessageDto,
+                ::buildApprovalDetailsMessageDto,
                 approvalDetailsMapper::mapToApprovalDetails,
                 "id", "authorisedAt", "createdAt"
             ) {
-                assertThat(it!!.authorisedAt).isEqualTo(instantMapper.toInstant(approvalDetailsMessageDto.authorisedAt))
-                assertThat(it.createdAt).isEqualTo(instantMapper.toInstant(approvalDetailsMessageDto.createdAt))
+                assertThat(it.output!!.authorisedAt).isEqualTo(instantMapper.toInstant(it.input.authorisedAt))
+                assertThat(it.output!!.createdAt).isEqualTo(instantMapper.toInstant(it.input.createdAt))
             }
         }
 
