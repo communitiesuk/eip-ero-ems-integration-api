@@ -16,8 +16,7 @@ internal class ProxyVoteDetailsMapperTest {
         fun `should convert a proxy vote detail message dto to entity`() =
             validateMappedObject(
                 ::buildProxyVoteDetailsMessageDto,
-                proxyVoteDetailsMapper::mapToProxyVoteDetailsEntity,
-                "proxyAddress.createdBy"
+                proxyVoteDetailsMapper::mapToProxyVoteDetailsEntity
             )
 
         @Test

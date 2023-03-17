@@ -20,8 +20,7 @@ internal class ApplicantDetailsMapperTest {
         fun `should convert applicant message dto to entity`(sourceSystem: SourceSystem) {
             validateMappedObject(
                 ::buildApplicantDetailsMessageDto,
-                { applicantDetailsMapper.mapToApplicantEntity(it, sourceSystem) },
-                "registeredAddress.createdBy",
+                { applicantDetailsMapper.mapToApplicantEntity(it, sourceSystem) }
             ) {
                 assertThat(it.output!!.registeredAddress.createdBy).isEqualTo(sourceSystem)
             }

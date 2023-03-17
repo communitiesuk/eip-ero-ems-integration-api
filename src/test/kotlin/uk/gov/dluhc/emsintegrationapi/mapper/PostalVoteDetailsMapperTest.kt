@@ -16,8 +16,7 @@ internal class PostalVoteDetailsMapperTest {
         fun `should convert postal vote details message dto to entity`() {
             validateMappedObject(
                 ::buildPostalVoteDetailsMessageDto,
-                postalVoteDetailsMapper::mapToPostVoteDetailsEntity,
-                "ballotAddress.createdBy"
+                postalVoteDetailsMapper::mapToPostVoteDetailsEntity
             )
         }
 

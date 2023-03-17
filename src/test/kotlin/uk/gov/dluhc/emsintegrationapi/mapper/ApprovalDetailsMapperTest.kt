@@ -20,7 +20,7 @@ internal class ApprovalDetailsMapperTest {
             validateMappedObject(
                 ::buildApprovalDetailsMessageDto,
                 approvalDetailsMapper::mapToApprovalDetails,
-                "id", "authorisedAt", "createdAt"
+                "authorisedAt", "createdAt"
             ) {
                 assertThat(it.output!!.authorisedAt).isEqualTo(instantMapper.toInstant(it.input.authorisedAt))
                 assertThat(it.output.createdAt).isEqualTo(instantMapper.toInstant(it.input.createdAt))
