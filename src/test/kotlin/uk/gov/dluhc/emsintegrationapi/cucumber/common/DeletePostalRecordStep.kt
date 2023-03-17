@@ -53,3 +53,5 @@ open class DeletePostalRecordStep(
 
     private fun deletePostalMessageAfter() = deletePostalSqsMessage(AFTER)
 }
+
+

@@ -7,7 +7,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.ApprovalDetails as Approva
 @Component
 class ApprovalDetailsMapper(private val instantMapper: InstantMapper) {
 
-    fun mapToApprovalDetails(approvalDetails: ApprovalDetails?) = approvalDetails?.let {
+    fun mapToApprovalDetails(approvalDetails: ApprovalDetails) = approvalDetails.let {
         ApprovalDetailsEntity(
             createdAt = instantMapper.toInstant(it.createdAt)!!,
             authorisingStaffId = it.authorisingStaffId,

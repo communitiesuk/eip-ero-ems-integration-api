@@ -18,12 +18,12 @@ class ProxyVoteApplicationMessageMapper(
         proxyVoteApplicationMessage.let {
             ProxyVoteApplication(
                 applicationId = it.approvalDetails.id,
-                approvalDetails = approvalDetailsMapper.mapToApprovalDetails(it.approvalDetails)!!,
+                approvalDetails = approvalDetailsMapper.mapToApprovalDetails(it.approvalDetails),
                 applicantDetails = applicantDetailsMapper.mapToApplicantEntity(
                     it.applicantDetails,
                     SourceSystem.PROXY
-                )!!,
-                proxyVoteDetails = proxyVoteDetailsMapper.mapToProxyVoteDetailsEntity(it.proxyVoteDetails)!!,
+                ),
+                proxyVoteDetails = proxyVoteDetailsMapper.mapToProxyVoteDetailsEntity(it.proxyVoteDetails),
                 signatureBase64 = it.signatureBase64,
                 createdBy = SourceSystem.PROXY,
                 retentionStatus = RetentionStatus.RETAIN,

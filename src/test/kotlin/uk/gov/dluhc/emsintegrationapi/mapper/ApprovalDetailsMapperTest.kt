@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMappedObject
-import uk.gov.dluhc.emsintegrationapi.testsupport.validateWithNull
 
 internal class ApprovalDetailsMapperTest {
 
@@ -22,13 +21,9 @@ internal class ApprovalDetailsMapperTest {
                 approvalDetailsMapper::mapToApprovalDetails,
                 "authorisedAt", "createdAt"
             ) {
-                assertThat(it.output!!.authorisedAt).isEqualTo(instantMapper.toInstant(it.input.authorisedAt))
+                assertThat(it.output.authorisedAt).isEqualTo(instantMapper.toInstant(it.input.authorisedAt))
                 assertThat(it.output.createdAt).isEqualTo(instantMapper.toInstant(it.input.createdAt))
             }
         }
-
-        @Test
-        fun `should return null if the input object is null`() =
-            validateWithNull(approvalDetailsMapper::mapToApprovalDetails)
     }
 }
