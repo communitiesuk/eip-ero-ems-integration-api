@@ -25,7 +25,6 @@ open class SaveProxyVoteApplicationSteps(
 
 ) : En {
     private var proxyVoteApplicationMessage: ProxyVoteApplicationMessage? = null
-    
     init {
         Given("a proxy vote application with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
             logger.info("Proxy application id $applicationId and Elector id = $emsElectorId")
