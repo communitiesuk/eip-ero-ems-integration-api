@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.confirmTheEntityDoesExist
+import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.confirmTheEntityDoesNotExist
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteApplicationMessageMapper
@@ -105,5 +105,5 @@ open class SaveProxyVoteApplicationSteps(
 
     @Transactional
     open fun confirmTheApplicationDidNotSave(applicationId: String) =
-        confirmTheEntityDoesExist(proxyVoteApplicationRepository, applicationId)
+        confirmTheEntityDoesNotExist(proxyVoteApplicationRepository, applicationId)
 }

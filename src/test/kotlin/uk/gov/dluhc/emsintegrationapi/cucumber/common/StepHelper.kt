@@ -23,7 +23,7 @@ class StepHelper {
             logger.info("$testPhase - All the messages from queue `$queueUrl` have been deleted")
         }
 
-        fun confirmTheEntityDoesExist(repository: CrudRepository<*, String>, id: String) {
+        fun confirmTheEntityDoesNotExist(repository: CrudRepository<*, String>, id: String) {
             assertThat(id.trim()).hasSizeGreaterThan(1)
             await.during(5, TimeUnit.SECONDS).atMost(6, TimeUnit.SECONDS).untilAsserted {
                 assertThat(repository.findById(id)).isEmpty
