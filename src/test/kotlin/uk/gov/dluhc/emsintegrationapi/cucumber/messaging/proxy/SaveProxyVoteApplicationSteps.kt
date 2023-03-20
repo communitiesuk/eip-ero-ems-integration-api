@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
+import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.confirmTheEntityDoesExist
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteApplicationMessageMapper
@@ -25,6 +26,7 @@ open class SaveProxyVoteApplicationSteps(
 
 ) : En {
     private var proxyVoteApplicationMessage: ProxyVoteApplicationMessage? = null
+
     init {
         Given("a proxy vote application with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
             logger.info("Proxy application id $applicationId and Elector id = $emsElectorId")
@@ -102,11 +104,6 @@ open class SaveProxyVoteApplicationSteps(
     }
 
     @Transactional
-    open fun confirmTheApplicationDidNotSave(applicationId: String) {
-        assertThat(applicationId.trim()).hasSizeGreaterThan(1)
-        await.during(5, TimeUnit.SECONDS).atMost(6, TimeUnit.SECONDS).untilAsserted {
-            val proxyVoteEntity = proxyVoteApplicationRepository.findById(applicationId)
-            assertThat(proxyVoteEntity).isEmpty
-        }
-    }
+    open fun confirmTheApplicationDidNotSave(applicationId: String) =
+        confirmTheEntityDoesExist(proxyVoteApplicationRepository, applicationId)
 }
