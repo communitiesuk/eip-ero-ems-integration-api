@@ -7,7 +7,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteDetails as ProxyV
 
 @Component
 class ProxyVoteDetailsMapper(private val addressMapper: AddressMapper) {
-
     fun mapToProxyVoteDetailsEntity(proxyVoteDetails: ProxyVoteDetails) = proxyVoteDetails.let {
         ProxyVoteDetailsEntity(
             proxyFirstName = it.proxyFirstName,

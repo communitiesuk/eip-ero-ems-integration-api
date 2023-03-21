@@ -7,7 +7,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicantDetails as Applic
 
 @Component
 class ApplicantDetailsMapper(private val addressMapper: AddressMapper) {
-
     fun mapToApplicantEntity(applicantDetails: ApplicantDetails, createdBy: SourceSystem) = applicantDetails.let {
         ApplicantDetailsEntity(
             firstName = it.firstName,

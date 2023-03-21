@@ -4,10 +4,9 @@ import io.cucumber.java8.En
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
+import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.confirmTheEntityDoesNotExist
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteApplicationMessageMapper
@@ -27,9 +26,6 @@ open class SavePostalVoteApplicationSteps(
 
 ) : En {
     private var postalVoteApplicationMessage: PostalVoteApplicationMessage? = null
-
-    @Captor
-    private lateinit var captor: ArgumentCaptor<PostalVoteApplicationMessage>
 
     init {
         Given("a postal vote application with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
@@ -108,10 +104,6 @@ open class SavePostalVoteApplicationSteps(
     }
 
     @Transactional
-    open fun confirmTheApplicationDidNotSave(applicationId: String) {
-        await.during(5, TimeUnit.SECONDS).atMost(6, TimeUnit.SECONDS).untilAsserted {
-            val postalVoteEntity = postalVoteApplicationRepository.findById(applicationId)
-            assertThat(postalVoteEntity).isEmpty
-        }
-    }
+    open fun confirmTheApplicationDidNotSave(applicationId: String) =
+        confirmTheEntityDoesNotExist(postalVoteApplicationRepository, applicationId)
 }
