@@ -12,7 +12,7 @@ on:
       app:
         required: false
         type: string
-        default: ems-integration-api
+        default: ems-integr-api
       ecr_repo:
         required: false
         type: string
