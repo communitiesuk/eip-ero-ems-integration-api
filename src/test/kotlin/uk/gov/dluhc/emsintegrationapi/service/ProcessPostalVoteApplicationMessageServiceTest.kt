@@ -10,7 +10,7 @@ import org.mockito.kotlin.verify
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteApplicationMessageMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessageDto
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 
 @ExtendWith(MockitoExtension::class)
 internal class ProcessPostalVoteApplicationMessageServiceTest {
@@ -26,7 +26,7 @@ internal class ProcessPostalVoteApplicationMessageServiceTest {
 
     @Test
     fun `should save postal vote application`() {
-        val postalVoteApplicationMessage = buildPostalVoteApplicationMessageDto()
+        val postalVoteApplicationMessage = buildPostalVoteApplicationMessage()
 
         val mappedEntity = buildPostalVoteApplication(applicationId = postalVoteApplicationMessage.approvalDetails.id)
         given(postalVoteApplicationMessageMapper.mapToEntity(postalVoteApplicationMessage)).willReturn(mappedEntity)

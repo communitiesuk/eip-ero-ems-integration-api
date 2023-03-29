@@ -14,7 +14,7 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.ApprovalDetails as Approv
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteDetails as ProxyVoteDetailsMessageDto
 
 fun buildProxyVoteApplication(
-    applicationId: String = getRandomAlphaNumeric(24),
+    applicationId: String = getIerDsApplicationId(),
     approvalDetails: ApprovalDetails = buildApprovalDetailsEntity(),
     applicantDetails: ApplicantDetails = buildApplicantDetailsEntity(),
     proxyVoteDetails: ProxyVoteDetails = buildProxyVoteDetailsEntity(),
