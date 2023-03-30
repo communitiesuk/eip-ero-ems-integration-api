@@ -1,6 +1,8 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
 import mu.KotlinLogging
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -22,12 +24,12 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         const val ROOT_PATH = "/postalVotes"
         const val ACCEPTED = "/accepted"
         const val PAGE_SIZE_PARAM = "pageSize"
-        const val API_CONFIG_PREFIX = "dluhc"
-        const val DEFAULT_PAGE_SIZE = "$API_CONFIG_PREFIX.default-page-size"
     }
 
     @GetMapping(ACCEPTED)
+    @PreAuthorize("isAuthenticated()")
     fun getGetPostalVoteApplications(
+        authentication: Authentication,
         @Min(1)
         @Max(500)
         @RequestParam(
@@ -35,6 +37,8 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
             required = false
         ) pageSize: Int?
     ): PostalVoteAcceptedResponse {
-        return postalVoteApplicationService.getPostalVoteApplications(pageSize)
+        val serialNumber = authentication.credentials.toString()
+        logger.info { "Processing a get request with page size =$pageSize and certificate serial no =$" }
+        return postalVoteApplicationService.getPostalVoteApplications(serialNumber, pageSize)
     }
 }

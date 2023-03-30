@@ -19,9 +19,10 @@ class PostalVoteApplicationService(
     private val postalVoteMapper: PostalVoteMapper
 ) {
     @Transactional(readOnly = true)
-    fun getPostalVoteApplications(pageSize: Int?): PostalVoteAcceptedResponse {
+    fun getPostalVoteApplications(certificateSerialNumber: String, pageSize: Int?): PostalVoteAcceptedResponse {
         val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
-        logger.info("Fetching $pageSize applications from DB")
+        // TODO - Serial number validation
+        logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber")
         val postalApplicationsList =
             postalVoteApplicationRepository.findByStatusOrderByDateCreated(
                 RecordStatus.RECEIVED,

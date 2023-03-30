@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.springframework.data.repository.CrudRepository
 import java.util.concurrent.TimeUnit
+import java.util.stream.IntStream
 
 private val logger = KotlinLogging.logger { }
 
@@ -28,6 +29,15 @@ class StepHelper {
             await.during(5, TimeUnit.SECONDS).atMost(6, TimeUnit.SECONDS).untilAsserted {
                 assertThat(repository.findById(id)).isEmpty
             }
+        }
+
+        fun <T> saveRecords(
+            repository: CrudRepository<T, *>,
+            numberOfRecords: Int,
+            buildFunction: () -> T
+        ): Iterable<T> {
+            val listOfEntities = IntStream.range(1, numberOfRecords).mapToObj { buildFunction() }.toList()
+            return repository.saveAll(listOfEntities)
         }
     }
 

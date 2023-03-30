@@ -110,7 +110,10 @@ internal class PostalVoteApplicationServiceTest {
         given { postalVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockPostalVotes)
 
         val postalVoteAcceptedResponse =
-            postalVoteApplicationService.getPostalVoteApplications(pageSize = pageSizeRequested)
+            postalVoteApplicationService.getPostalVoteApplications(
+                certificateSerialNumber = "test",
+                pageSize = pageSizeRequested
+            )
 
         assertThat(postalVoteAcceptedResponse.pageSize).isEqualTo(numberOfRecordsToBeReturned)
         // the attribute name 'proxyVotes' to postalVotes, awaiting final spec from EMS

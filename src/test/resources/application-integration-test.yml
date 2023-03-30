@@ -12,7 +12,7 @@ spring:
         show_sql: ${SHOW_SQL:false}
 dluhc:
   request.header.name: client-cert-serial
-
+  default-page-size: 20
 cloud:
   aws:
     region:
