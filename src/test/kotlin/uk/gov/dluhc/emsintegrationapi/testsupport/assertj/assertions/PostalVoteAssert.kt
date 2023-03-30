@@ -1,17 +1,19 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions
 
 import org.assertj.core.api.AbstractAssert
+import org.assertj.core.api.Assertions
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicantDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteDetails
+import uk.gov.dluhc.emsintegrationapi.mapper.InstantMapper
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveNullValues
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveSameValues
 
 class PostalVoteAssert(private val actual: PostalVote) :
     AbstractAssert<PostalVoteAssert, PostalVote>(actual, PostalVoteAssert::class.java) {
-
+    private val instantMapper = InstantMapper()
     companion object {
         private val BALLOT_ADDRESS_FIELDS = arrayOf(
             "ballotproperty",
@@ -56,12 +58,17 @@ class PostalVoteAssert(private val actual: PostalVote) :
             "email"
         )
 
+        private val APPROVAL_FIELDS_WITHOUT_DATE_FIELDS =
+            arrayOf("gssCode", "source", "authorisingStaffId")
+
         fun assertThat(actual: PostalVote) = PostalVoteAssert(actual)
     }
 
     fun hasCorrectFieldsFromPostalApplication(postalVoteApplication: PostalVoteApplication) = validate {
         isNotNull
         with(postalVoteApplication) {
+            Assertions.assertThat(actual.id).isEqualTo(this.applicationId)
+            hasApprovalDetails(this)
             hasCorrectAddressFields(
                 applicantDetails.registeredAddress!!,
                 REGISTERED_ADDRESS_FIELDS
@@ -69,6 +76,21 @@ class PostalVoteAssert(private val actual: PostalVote) :
             hasApplicantDetails(applicantDetails)
         }
     }
+
+    private fun hasApprovalDetails(postalVoteApplication: PostalVoteApplication) =
+        validate {
+            with(postalVoteApplication.approvalDetails) {
+                haveSameValues(
+                    actual,
+                    APPROVAL_FIELDS_WITHOUT_DATE_FIELDS,
+                    this
+                )
+                Assertions.assertThat(actual.createdAt)
+                    .isEqualTo(instantMapper.toOffsetDateTime(this.createdAt))
+                Assertions.assertThat(actual.authorisedAt)
+                    .isEqualTo(instantMapper.toOffsetDateTime(this.authorisedAt))
+            }
+        }
 
     private fun hasApplicantDetails(applicantDetails: ApplicantDetails) = validate {
         haveSameValues(actual.detail, APPLICANT_FIELDS, applicantDetails, APPLICANT_ENTITY_FIELDS)

@@ -57,13 +57,13 @@ fun <T, R> haveSameValues(
     actualObject: T,
     actualFieldsToBeCompared: Array<String>,
     inputObject: R,
-    inputFieldsToBeCompared: Array<String>
+    inputFieldsToBeCompared: Array<String>? = actualFieldsToBeCompared
 ) {
     assertThat(actualObject).isNotNull
     assertThat(inputObject).isNotNull
     assertThat(actualObject).extracting(*actualFieldsToBeCompared)
         .containsOnly(
-            *extractFieldValues(inputObject, *inputFieldsToBeCompared)
+            *extractFieldValues(inputObject, *inputFieldsToBeCompared!!)
         )
 }
 
