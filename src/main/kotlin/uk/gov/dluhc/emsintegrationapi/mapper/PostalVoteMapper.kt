@@ -7,6 +7,9 @@ import uk.gov.dluhc.emsintegrationapi.models.PostalVoteDetail
 
 @Component
 class PostalVoteMapper(private val instantMapper: InstantMapper) {
+    fun mapFromEntities(postalApplications: List<PostalVoteApplication>) =
+        postalApplications.map { entity -> mapFromEntity(entity) }
+
     fun mapFromEntity(postalVoteApplication: PostalVoteApplication): PostalVote {
         return with(postalVoteApplication) {
             val registeredAddress = applicantDetails.registeredAddress

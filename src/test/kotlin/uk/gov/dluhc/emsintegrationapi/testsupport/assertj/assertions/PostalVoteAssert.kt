@@ -70,7 +70,7 @@ class PostalVoteAssert(private val actual: PostalVote) :
             Assertions.assertThat(actual.id).isEqualTo(this.applicationId)
             hasApprovalDetails(this)
             hasCorrectAddressFields(
-                applicantDetails.registeredAddress!!,
+                applicantDetails.registeredAddress,
                 REGISTERED_ADDRESS_FIELDS
             )
             hasApplicantDetails(applicantDetails)
