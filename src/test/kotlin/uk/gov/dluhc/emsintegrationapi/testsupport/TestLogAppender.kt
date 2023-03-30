@@ -23,10 +23,13 @@ class TestLogAppender : AppenderBase<ILoggingEvent>() {
         fun hasNoLogMatchingRegex(pattern: String, level: Level): Boolean =
             logList.firstOrNull { hasMessageMatchingRegex(it, Regex(pattern), level) } == null
 
+        fun getLogEventMatchingRegex(pattern: String, level: Level): ILoggingEvent? =
+            logList.firstOrNull { hasMessageMatchingRegex(it, Regex(pattern), level) }
+
         private fun hasMessage(event: ILoggingEvent, message: String, level: Level): Boolean {
             val throwableProxy = event.throwableProxy
             return (
-                message == event.formattedMessage || (throwableProxy != null && message == throwableProxy.message)
+                message == event.formattedMessage || (throwableProxy != null && throwableProxy.message != null && message == throwableProxy.message)
                 ) && event.level == level
         }
 

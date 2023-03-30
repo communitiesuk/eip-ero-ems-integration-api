@@ -1,6 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata
 
 import org.apache.commons.lang3.RandomStringUtils
+import org.apache.commons.lang3.RandomUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.replaceSpacesWith
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import java.time.Instant
@@ -12,6 +13,8 @@ import kotlin.random.Random
 const val MIN_AGE = 18
 const val MAX_AGE = 99
 const val MIN_LENGTH = 5
+
+fun getIerDsApplicationId(): String = randomHexadecimalString(24)
 
 fun getRandomIpAddress(): String =
     with(faker.internet()) {
@@ -40,3 +43,11 @@ fun getRandomAlphaNumeric(maxLength: Int = MIN_LENGTH): String =
 
 fun getRandomPastDate(inDays: Int = MIN_LENGTH): LocalDate =
     faker.date().past(inDays, TimeUnit.DAYS).toLocalDateTime().toLocalDate()
+
+fun randomHexadecimalString(size: Int): String {
+    var generated = ""
+    while (generated.length <= size) {
+        generated += Integer.toHexString(RandomUtils.nextInt())
+    }
+    return generated.substring(0, size)
+}
