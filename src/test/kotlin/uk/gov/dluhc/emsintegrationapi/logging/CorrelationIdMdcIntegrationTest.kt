@@ -1,11 +1,15 @@
 package uk.gov.dluhc.emsintegrationapi.logging
 
 import ch.qos.logback.classic.Level
+import io.awspring.cloud.messaging.core.QueueMessagingTemplate
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
+import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ILoggingEventAssert.Companion.assertThat
@@ -23,6 +27,14 @@ import java.util.concurrent.TimeUnit
  * These tests do not include all controllers, listeners e.t.c. We simply test one of each to prove the mdc logging is in place.
  */
 internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
+    @Autowired
+    protected lateinit var sqsMessagingTemplate: QueueMessagingTemplate
+
+    @Autowired
+    protected lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
+
+    @Value("\${sqs.postal-application-queue-name}")
+    protected lateinit var postalApplicationQueueName: String
 
     @Nested
     inner class PostalVoteApplicationSqs {
