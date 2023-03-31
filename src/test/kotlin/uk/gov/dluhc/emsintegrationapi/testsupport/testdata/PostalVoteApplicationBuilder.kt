@@ -39,8 +39,8 @@ fun buildPostalVoteApplication(
     status = recordStatus
 )
 
-fun buildPostalVoteApplicationMessageDto(
-    applicationId: String = getRandomAlphaNumeric(24),
+fun buildPostalVoteApplicationMessage(
+    applicationId: String = getIerDsApplicationId(),
     approvalDetails: ApprovalDetailsMessageDto = buildApprovalDetailsMessageDto(applicationId = applicationId),
     applicantDetails: ApplicantDetailsMessageDto = buildApplicantDetailsMessageDto(),
     postalVoteDetails: PostalVoteDetailsMessageDto = buildPostalVoteDetailsMessageDto(),

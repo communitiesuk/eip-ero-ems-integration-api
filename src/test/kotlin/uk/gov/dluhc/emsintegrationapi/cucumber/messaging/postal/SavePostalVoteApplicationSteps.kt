@@ -13,7 +13,7 @@ import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteApplicationMessageMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsMessageDto
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessageDto
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateObjects
 import java.util.concurrent.TimeUnit
 
@@ -31,7 +31,7 @@ open class SavePostalVoteApplicationSteps(
         Given("a postal vote application with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
             logger.info("Postal application id $applicationId and Elector id = $emsElectorId")
             postalVoteApplicationMessage =
-                buildPostalVoteApplicationMessageDto(
+                buildPostalVoteApplicationMessage(
                     applicationId = applicationId,
                     applicantDetails = buildApplicantDetailsMessageDto(emsElectorId = emsElectorId)
                 )
@@ -82,7 +82,7 @@ open class SavePostalVoteApplicationSteps(
     }
 
     private fun buildPostalVoteApplicationWith(applicationId: String, emsElectorId: String) =
-        buildPostalVoteApplicationMessageDto(
+        buildPostalVoteApplicationMessage(
             applicationId = applicationId,
             applicantDetails = buildApplicantDetailsMessageDto(emsElectorId = emsElectorId)
         )
