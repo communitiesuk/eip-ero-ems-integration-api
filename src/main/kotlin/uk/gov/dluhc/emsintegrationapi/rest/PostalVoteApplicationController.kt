@@ -35,7 +35,7 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         pageSize: Int?
     ): PostalVoteAcceptedResponse {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing a get request with page size =$pageSize and certificate serial no =$" }
+        logger.info { "Processing a get request with page size =$pageSize and certificate serial no =$serialNumber" }
         return postalVoteApplicationService.getPostalVoteApplications(serialNumber, pageSize)
     }
 }
