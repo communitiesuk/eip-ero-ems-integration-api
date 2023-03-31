@@ -7,6 +7,6 @@ import java.time.ZoneOffset
 
 @Component
 class InstantMapper {
-    fun toInstant(offsetDateTime: OffsetDateTime?): Instant? = offsetDateTime?.toInstant()
-    fun toOffsetDateTime(instant: Instant?): OffsetDateTime? = instant?.atOffset(ZoneOffset.UTC)
+    fun toInstant(offsetDateTime: OffsetDateTime): Instant = offsetDateTime.toInstant()
+    fun toOffsetDateTime(instant: Instant): OffsetDateTime = instant.atOffset(ZoneOffset.UTC)
 }

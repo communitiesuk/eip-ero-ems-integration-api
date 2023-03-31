@@ -32,13 +32,15 @@ class PostalVoteAssert(private val actual: PostalVote) :
             "postalVoteUntilFurtherNotice",
             "postalVoteForSingleDate",
             "postalVoteStartDate",
-            "postalVoteEndDate"
+            "postalVoteEndDate",
+            "ballotAddressReason"
         )
         private val POSTAL_VOTE_ENTITY_FIELDS = arrayOf(
             "voteUntilFurtherNotice",
             "voteForSingleDate",
             "voteStartDate",
-            "voteEndDate"
+            "voteEndDate",
+            "ballotAddressReason"
         )
         private val REGISTERED_ADDRESS_FIELDS =
             arrayOf("regproperty", "regstreet", "regpostcode", "regarea", "regtown", "reglocality", "reguprn")

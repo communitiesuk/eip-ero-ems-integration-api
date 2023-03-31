@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -40,10 +41,16 @@ internal class PostalVoteApplicationServiceTest {
 
     @Nested
     inner class PageSizeIsNotProvided {
+        @BeforeEach
+        fun beforeEach() {
+            given(apiProperties.defaultPageSize).willReturn(defaultPageSize)
+        }
+
         @AfterEach
         fun afterEach() {
             verify(apiProperties).defaultPageSize
         }
+
         @Test
         fun `should return maximum of 100 postal vote applications`() {
             // Given
@@ -64,6 +71,7 @@ internal class PostalVoteApplicationServiceTest {
 
     @Nested
     inner class PageSizeIsProvided {
+
         @AfterEach
         fun afterEach() {
             verifyNoInteractions(apiProperties)
@@ -89,11 +97,6 @@ internal class PostalVoteApplicationServiceTest {
 
     private fun validateFetchPostalVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
         // Given
-
-        if (pageSizeRequested == null) {
-            given(apiProperties.defaultPageSize).willReturn(defaultPageSize)
-        }
-
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
                 buildPostalVoteApplication(applicationId = it.toString())
