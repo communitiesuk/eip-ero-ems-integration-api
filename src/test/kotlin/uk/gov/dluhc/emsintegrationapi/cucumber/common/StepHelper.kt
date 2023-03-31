@@ -5,6 +5,7 @@ import com.amazonaws.services.sqs.model.PurgeQueueRequest
 import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
+import org.springframework.aop.framework.AopProxyUtils
 import org.springframework.data.repository.CrudRepository
 import java.util.concurrent.TimeUnit
 import java.util.stream.IntStream
@@ -16,7 +17,7 @@ class StepHelper {
     companion object {
         fun deleteRecords(repository: CrudRepository<*, *>, testPhase: TestPhase) {
             repository.deleteAll()
-            logger.info("$testPhase - ${repository.javaClass.simpleName} - records have been deleted")
+            logger.info("$testPhase - ${AopProxyUtils.proxiedUserInterfaces(repository)[0]} - records have been deleted")
         }
 
         fun deleteSqsMessage(amazonSQSAsync: AmazonSQSAsync, queueUrl: String, testPhase: TestPhase) {
@@ -35,10 +36,8 @@ class StepHelper {
             repository: CrudRepository<T, *>,
             numberOfRecords: Int,
             buildFunction: () -> T
-        ): Iterable<T> {
-            val listOfEntities = IntStream.range(1, numberOfRecords).mapToObj { buildFunction() }.toList()
-            return repository.saveAll(listOfEntities)
-        }
+        ): MutableIterable<T> =
+            repository.saveAll(IntStream.rangeClosed(1, numberOfRecords).mapToObj { buildFunction() }.toList())
     }
 
     enum class TestPhase {

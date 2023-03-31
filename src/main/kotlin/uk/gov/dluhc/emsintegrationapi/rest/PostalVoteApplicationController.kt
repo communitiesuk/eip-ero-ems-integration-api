@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.PAGE_SIZE_PARAM
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteAcceptedResponse
 import uk.gov.dluhc.emsintegrationapi.rest.PostalVoteApplicationController.Companion.ROOT_PATH
 import uk.gov.dluhc.emsintegrationapi.service.PostalVoteApplicationService
-import javax.validation.constraints.Max
-import javax.validation.constraints.Min
 
 private val logger = KotlinLogging.logger { }
 
@@ -23,19 +22,17 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
     companion object {
         const val ROOT_PATH = "/postalVotes"
         const val ACCEPTED = "/accepted"
-        const val PAGE_SIZE_PARAM = "pageSize"
     }
 
     @GetMapping(ACCEPTED)
     @PreAuthorize("isAuthenticated()")
     fun getGetPostalVoteApplications(
         authentication: Authentication,
-        @Min(1)
-        @Max(500)
         @RequestParam(
             name = PAGE_SIZE_PARAM,
             required = false
-        ) pageSize: Int?
+        )
+        pageSize: Int?
     ): PostalVoteAcceptedResponse {
         val serialNumber = authentication.credentials.toString()
         logger.info { "Processing a get request with page size =$pageSize and certificate serial no =$" }
