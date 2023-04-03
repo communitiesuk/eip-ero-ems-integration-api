@@ -18,7 +18,7 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
                 detail = ProxyVoteDetail(
                     refNum = applicantDetails.referenceNumber,
                     ip = applicantDetails.ipAddress,
-                    lang = applicantDetails.language!!,
+                    lang = applicantDetails.language,
                     emsElectorId = applicantDetails.emsElectorId,
                     fn = applicantDetails.firstName,
                     ln = applicantDetails.surname,
@@ -54,10 +54,10 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
                     proxyVoteEndDate = proxyVoteDetails.voteEndDate,
                 ),
                 id = applicationId,
-                createdAt = instantMapper.toOffsetDateTime(approvalDetails.createdAt)!!,
+                createdAt = instantMapper.toOffsetDateTime(approvalDetails.createdAt),
                 gssCode = approvalDetails.gssCode,
                 source = approvalDetails.source,
-                authorisedAt = instantMapper.toOffsetDateTime(approvalDetails.authorisedAt)!!,
+                authorisedAt = instantMapper.toOffsetDateTime(approvalDetails.authorisedAt),
                 authorisingStaffId = approvalDetails.authorisingStaffId,
             )
         }

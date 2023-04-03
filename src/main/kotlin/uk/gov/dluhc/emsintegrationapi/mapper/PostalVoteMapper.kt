@@ -18,7 +18,7 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                 detail = PostalVoteDetail(
                     refNum = applicantDetails.referenceNumber,
                     ip = applicantDetails.ipAddress,
-                    lang = applicantDetails.language!!,
+                    lang = applicantDetails.language,
                     emsElectorId = applicantDetails.emsElectorId,
                     fn = applicantDetails.firstName,
                     ln = applicantDetails.surname,
@@ -45,12 +45,13 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                     postalVoteForSingleDate = postalVoteDetails?.voteForSingleDate,
                     postalVoteStartDate = postalVoteDetails?.voteStartDate,
                     postalVoteEndDate = postalVoteDetails?.voteEndDate,
+                    ballotAddressReason = postalVoteDetails?.ballotAddressReason,
                 ),
                 id = applicationId,
-                createdAt = instantMapper.toOffsetDateTime(approvalDetails.createdAt)!!,
+                createdAt = instantMapper.toOffsetDateTime(approvalDetails.createdAt),
                 gssCode = approvalDetails.gssCode,
                 source = approvalDetails.source,
-                authorisedAt = instantMapper.toOffsetDateTime(approvalDetails.authorisedAt)!!,
+                authorisedAt = instantMapper.toOffsetDateTime(approvalDetails.authorisedAt),
                 authorisingStaffId = approvalDetails.authorisingStaffId,
             )
         }

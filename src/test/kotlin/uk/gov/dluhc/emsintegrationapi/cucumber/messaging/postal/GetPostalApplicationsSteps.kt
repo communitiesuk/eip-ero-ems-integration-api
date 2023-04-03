@@ -12,8 +12,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteAcceptedResponse
-import uk.gov.dluhc.emsintegrationapi.rest.PostalVoteApplicationController.Companion.ACCEPTED
-import uk.gov.dluhc.emsintegrationapi.rest.PostalVoteApplicationController.Companion.ROOT_PATH
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.PostalVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 
@@ -28,6 +26,11 @@ class GetPostalApplicationsSteps(
     private var postalVoteAcceptedResponse: PostalVoteAcceptedResponse? = null
     private val apiClient = ApiClient(webClient, apiProperties)
     private var responseSpec: WebTestClient.ResponseSpec? = null
+
+    companion object {
+        const val ROOT_PATH = "/postalVotes"
+        const val ACCEPTED = "/accepted"
+    }
 
     init {
         Given("there are {int} postal vote applications exist with the status {string}") { numberOfRecords: Int, recordStatus: String ->
@@ -49,8 +52,7 @@ class GetPostalApplicationsSteps(
             )
         }
         Then("I received a response with {int} postal vote applications") { expectedPageSize: Int ->
-
-            logger.info("Expected number of post vote applications $expectedPageSize")
+            logger.info("Expected number of postal vote applications = $expectedPageSize")
             assertThat(postalVoteAcceptedResponse).isNotNull
             assertThat(postalVoteAcceptedResponse!!.proxyVotes).hasSize(expectedPageSize)
             validateTheResponse()

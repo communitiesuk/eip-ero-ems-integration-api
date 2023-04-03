@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -40,26 +41,28 @@ internal class PostalVoteApplicationServiceTest {
 
     @Nested
     inner class PageSizeIsNotProvided {
+
+        @BeforeEach
+        fun beforeEach() {
+            given(apiProperties.defaultPageSize).willReturn(defaultPageSize)
+        }
+
         @AfterEach
         fun afterEach() {
             verify(apiProperties).defaultPageSize
         }
+
         @Test
-        fun `should return maximum of 100 postal vote applications`() {
-            // Given
+        fun `should return maximum of 100 postal vote applications`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
-        }
 
         @Test
-        fun `system does not have requested number of records in the DB`() {
-            // Given validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
+        fun `system does not have requested number of records in the DB`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = null)
-        }
 
         @Test
-        fun `system does not have any records`() {
+        fun `system does not have any records`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = null)
-        }
     }
 
     @Nested
@@ -70,30 +73,20 @@ internal class PostalVoteApplicationServiceTest {
         }
 
         @Test
-        fun `should return maximum of 100 postal vote applications`() {
-            // Given
+        fun `should return maximum of 100 postal vote applications`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = 200)
-        }
 
         @Test
-        fun `system does not have requested number of records in the DB`() {
-            // Given validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
+        fun `system does not have requested number of records in the DB`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = 100)
-        }
 
         @Test
-        fun `system does not have any records`() {
+        fun `system does not have any records`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = 100)
-        }
     }
 
     private fun validateFetchPostalVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
         // Given
-
-        if (pageSizeRequested == null) {
-            given(apiProperties.defaultPageSize).willReturn(defaultPageSize)
-        }
-
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
                 buildPostalVoteApplication(applicationId = it.toString())

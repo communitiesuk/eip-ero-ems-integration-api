@@ -47,7 +47,7 @@ class ApplicantDetails(
     val ipAddress: String,
 
     @field:Size(max = 2)
-    var language: String? = null,
+    val language: String,
 
     @field:Size(max = 255)
     val emsElectorId: String

@@ -106,7 +106,6 @@ internal class ProxyVoteApplicationServiceTest {
             )
 
         assertThat(proxyVoteAcceptedResponse.pageSize).isEqualTo(numberOfRecordsToBeReturned)
-        // the attribute name 'proxyVotes' to proxyVotes, awaiting final spec from EMS
         assertThat(proxyVoteAcceptedResponse.proxyVotes).isEqualTo(mockProxyVotes)
     }
 }
