@@ -109,9 +109,9 @@ class PostalVoteAssert(private val actual: PostalVote) :
         )
     }
 
-    fun doesNotHaveBallotAddress() = validate { haveNullValues(actual.detail, BALLOT_ADDRESS_FIELDS) }
+    fun doesNotHaveBallotAddress() = validate { haveNullValues(actual.detail, *BALLOT_ADDRESS_FIELDS) }
 
-    fun doesNotHavePostalVoteDetails() = validate { haveNullValues(actual.detail, POSTAL_VOTE_FIELDS) }
+    fun doesNotHavePostalVoteDetails() = validate { haveNullValues(actual.detail, *POSTAL_VOTE_FIELDS) }
 
     private fun hasCorrectAddressFields(address: Address?, addressFields: Array<String>) =
         validate { haveSameValues(actual.detail, addressFields, address, ADDRESS_ENTITY_FIELDS) }

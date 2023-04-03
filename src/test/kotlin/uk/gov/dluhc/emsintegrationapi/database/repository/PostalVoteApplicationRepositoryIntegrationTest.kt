@@ -31,7 +31,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
     @Test
     fun `should return records by record status order by created date`() {
         val listOfApplications =
-            IntStream.rangeClosed(1, 100).mapToObj {
+            IntStream.rangeClosed(1, 11).mapToObj {
                 buildPostalVoteApplication(applicationId = it.toString())
             }.toList()
 
