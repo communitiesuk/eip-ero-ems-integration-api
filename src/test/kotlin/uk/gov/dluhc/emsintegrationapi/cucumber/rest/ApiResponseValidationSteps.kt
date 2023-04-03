@@ -1,10 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.cucumber.rest
 
 import io.cucumber.java8.En
-import mu.KotlinLogging
 import org.assertj.core.api.Assertions.assertThat
-
-private val logger = KotlinLogging.logger { }
 
 class ApiResponseValidationSteps(val apiResponse: ApiResponse) : En {
     init {
