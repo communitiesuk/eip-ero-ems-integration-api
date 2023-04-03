@@ -1,14 +1,20 @@
 package uk.gov.dluhc.emsintegrationapi.logging
 
 import ch.qos.logback.classic.Level
+import com.amazonaws.services.sqs.AmazonSQSAsync
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
+import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteRecords
+import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteSqsMessage
+import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.TestPhase
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
@@ -36,8 +42,24 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
     @Value("\${sqs.postal-application-queue-name}")
     protected lateinit var postalApplicationQueueName: String
 
+    @Autowired
+    protected lateinit var amazonSQSAsync: AmazonSQSAsync
+
     @Nested
     inner class PostalVoteApplicationSqs {
+
+        @BeforeEach
+        fun deletePostalRecordsBefore() {
+            deleteRecords(postalVoteApplicationRepository, TestPhase.BEFORE)
+            deleteSqsMessage(amazonSQSAsync, postalApplicationQueueName, TestPhase.BEFORE)
+        }
+
+        @AfterEach
+        fun deletePostalRecordsAfter() {
+            deleteRecords(postalVoteApplicationRepository, TestPhase.AFTER)
+            deleteSqsMessage(amazonSQSAsync, postalApplicationQueueName, TestPhase.AFTER)
+        }
+
         @Test
         fun `should log consistent correlation id upon application creation`() {
             val payload = buildPostalVoteApplicationMessage()
