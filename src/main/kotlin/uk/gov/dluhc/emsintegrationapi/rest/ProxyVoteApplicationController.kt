@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.rest
 import mu.KotlinLogging
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,7 +17,7 @@ private val logger = KotlinLogging.logger { }
 
 @RestController
 @CrossOrigin
-
+@Validated
 @RequestMapping("/proxyVotes")
 class ProxyVoteApplicationController(private val proxyVoteApplicationService: ProxyVoteApplicationService) {
 
@@ -28,6 +29,7 @@ class ProxyVoteApplicationController(private val proxyVoteApplicationService: Pr
             name = PAGE_SIZE_PARAM,
             required = false
         )
+        @ValidPageSize
         pageSize: Int?
     ): ProxyVoteAcceptedResponse {
         val serialNumber = authentication.credentials.toString()

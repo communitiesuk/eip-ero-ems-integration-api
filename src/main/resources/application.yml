@@ -14,6 +14,7 @@ spring:
 dluhc:
   request.header.name: ${REQUEST_HEADER_CLIENT_CERT_SERIAL}
   default-page-size: ${DEFAULT_PAGE_SIZE:100}
+  max-page-size: ${DEFAULT_PAGE_SIZE:500}
 
 cloud:
   aws:
