@@ -61,6 +61,7 @@ fun <T, R> haveSameValues(
 ) {
     assertThat(actualObject).isNotNull
     assertThat(inputObject).isNotNull
+    assertThat(actualFieldsToBeCompared.size).isEqualTo(actualFieldsToBeCompared.size)
     assertThat(actualObject).extracting(*actualFieldsToBeCompared)
         .containsOnly(
             *extractFieldValues(inputObject, *inputFieldsToBeCompared!!)
@@ -69,8 +70,9 @@ fun <T, R> haveSameValues(
 
 fun <T> haveNullValues(
     actualObject: T,
-    actualFieldsToBeCompared: Array<String>,
+    vararg actualFieldsToBeCompared: String,
 ) {
+    assertThat(actualFieldsToBeCompared).isNotEmpty
     assertThat(actualObject).isNotNull
     assertThat(actualObject).extracting(*actualFieldsToBeCompared).containsNull()
 }

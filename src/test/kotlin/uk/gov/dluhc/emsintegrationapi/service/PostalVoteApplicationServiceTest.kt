@@ -41,6 +41,7 @@ internal class PostalVoteApplicationServiceTest {
 
     @Nested
     inner class PageSizeIsNotProvided {
+
         @BeforeEach
         fun beforeEach() {
             given(apiProperties.defaultPageSize).willReturn(defaultPageSize)
@@ -52,47 +53,36 @@ internal class PostalVoteApplicationServiceTest {
         }
 
         @Test
-        fun `should return maximum of 100 postal vote applications`() {
-            // Given
+        fun `should return maximum of 100 postal vote applications`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
-        }
 
         @Test
-        fun `system does not have requested number of records in the DB`() {
-            // Given validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
+        fun `system does not have requested number of records in the DB`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = null)
-        }
 
         @Test
-        fun `system does not have any records`() {
+        fun `system does not have any records`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = null)
-        }
     }
 
     @Nested
     inner class PageSizeIsProvided {
-
         @AfterEach
         fun afterEach() {
             verifyNoInteractions(apiProperties)
         }
 
         @Test
-        fun `should return maximum of 100 postal vote applications`() {
-            // Given
+        fun `should return maximum of 100 postal vote applications`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = 200)
-        }
 
         @Test
-        fun `system does not have requested number of records in the DB`() {
-            // Given validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
+        fun `system does not have requested number of records in the DB`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = 100)
-        }
 
         @Test
-        fun `system does not have any records`() {
+        fun `system does not have any records`() =
             validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = 100)
-        }
     }
 
     private fun validateFetchPostalVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {

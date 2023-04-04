@@ -9,29 +9,29 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.PAGE_SIZE_PARAM
-import uk.gov.dluhc.emsintegrationapi.models.PostalVoteAcceptedResponse
-import uk.gov.dluhc.emsintegrationapi.service.PostalVoteApplicationService
+import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteAcceptedResponse
+import uk.gov.dluhc.emsintegrationapi.service.ProxyVoteApplicationService
 
 private val logger = KotlinLogging.logger { }
 
 @RestController
 @CrossOrigin
 
-@RequestMapping("/postalVotes")
-class PostalVoteApplicationController(private val postalVoteApplicationService: PostalVoteApplicationService) {
+@RequestMapping("/proxyVotes")
+class ProxyVoteApplicationController(private val proxyVoteApplicationService: ProxyVoteApplicationService) {
 
     @GetMapping("/accepted")
     @PreAuthorize("isAuthenticated()")
-    fun getPostalVoteApplications(
+    fun getProxyVoteApplications(
         authentication: Authentication,
         @RequestParam(
             name = PAGE_SIZE_PARAM,
             required = false
         )
         pageSize: Int?
-    ): PostalVoteAcceptedResponse {
+    ): ProxyVoteAcceptedResponse {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing a get postal vote applications request with page size =$pageSize and certificate serial no =$serialNumber" }
-        return postalVoteApplicationService.getPostalVoteApplications(serialNumber, pageSize)
+        logger.info { "Processing a get proxy vote applications request with page size =$pageSize and certificate serial no =$serialNumber" }
+        return proxyVoteApplicationService.getProxyVoteApplications(serialNumber, pageSize)
     }
 }

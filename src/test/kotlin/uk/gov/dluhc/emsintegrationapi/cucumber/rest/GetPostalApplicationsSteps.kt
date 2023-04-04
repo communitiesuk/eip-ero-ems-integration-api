@@ -1,4 +1,4 @@
-package uk.gov.dluhc.emsintegrationapi.cucumber.messaging.postal
+package uk.gov.dluhc.emsintegrationapi.cucumber.rest
 
 import io.cucumber.java8.En
 import mu.KotlinLogging
@@ -20,12 +20,12 @@ private val logger = KotlinLogging.logger { }
 class GetPostalApplicationsSteps(
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository,
     webClient: WebTestClient,
-    apiProperties: ApiProperties
+    apiProperties: ApiProperties,
+    val apiResponse: ApiResponse
 ) : En {
     private var postalVoteApplicationsMap: Map<String, PostalVoteApplication>? = null
     private var postalVoteAcceptedResponse: PostalVoteAcceptedResponse? = null
     private val apiClient = ApiClient(webClient, apiProperties)
-    private var responseSpec: WebTestClient.ResponseSpec? = null
 
     companion object {
         const val ROOT_PATH = "/postalVotes"
@@ -52,7 +52,6 @@ class GetPostalApplicationsSteps(
             )
         }
         Then("I received a response with {int} postal vote applications") { expectedPageSize: Int ->
-
             logger.info("Expected number of postal vote applications = $expectedPageSize")
             assertThat(postalVoteAcceptedResponse).isNotNull
             assertThat(postalVoteAcceptedResponse!!.proxyVotes).hasSize(expectedPageSize)
@@ -67,11 +66,7 @@ class GetPostalApplicationsSteps(
             )
         }
         When("I send a get postal vote applications request without a certificate serial number in the request header") {
-            responseSpec = apiClient.get(getPath(), attachSerialNumber = false)
-        }
-        Then("I receive error with response status as {int}") { httpStatus: Int ->
-            assertThat(responseSpec).isNotNull
-            responseSpec!!.expectStatus().isEqualTo(httpStatus)
+            apiResponse.responseSpec = apiClient.get(getPath(), attachSerialNumber = false)
         }
     }
 
