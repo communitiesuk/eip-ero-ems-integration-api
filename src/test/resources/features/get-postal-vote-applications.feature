@@ -3,11 +3,12 @@ Feature: Get Postal Vote Application ( Default page size is 20, max page size is
 
   Scenario: System returns http status 403 if certificate serial number is not attached to the request
     When I send a get postal vote applications request without a certificate serial number in the request header
-    Then I receive error with response status as 403
+    Then I received an error with the response status as 403
 
   Scenario: System rejects the request with status code 400 if the page size is greater than (configured page size 20)
     When I send a get postal vote applications request with the page size 51
-    Then I receive error with response status as 400
+    Then I received an error with the response status as 400
+    And it has an error message of "The page size must be greater than or equal to 1 and less than or equal to 50"
 
   Scenario: System does not have any postal vote applications
     When I send a get postal vote applications request with the page size 10
