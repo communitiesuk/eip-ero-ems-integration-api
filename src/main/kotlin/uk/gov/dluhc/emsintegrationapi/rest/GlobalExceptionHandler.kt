@@ -21,7 +21,7 @@ class GlobalExceptionHandler {
         } else {
             "Validation error"
         }
-        logger.warn { "Error occurred = $errorMessage" }
+        logger.warn { "Validation error occurred: $errorMessage" }
         return errorMessage
     }
 }
