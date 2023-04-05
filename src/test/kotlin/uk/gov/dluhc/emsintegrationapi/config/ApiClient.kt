@@ -11,6 +11,13 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
         fun buildUriStringWithQueryParam(path: String, pageSize: Int) = UriComponentsBuilder.fromUriString(path)
             .queryParam(PAGE_SIZE_PARAM, pageSize)
             .build().toUriString()
+
+        fun <T> validateStatusAndGetResponse(
+            apiResponse: WebTestClient.ResponseSpec,
+            expectedHttpStatus: Int,
+            type: Class<T>
+        ): T? =
+            apiResponse.expectStatus().isEqualTo(expectedHttpStatus).returnResult(type).responseBody.blockFirst()
     }
 
     fun get(
