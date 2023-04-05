@@ -25,9 +25,9 @@ class ApiProperties(
     @PostConstruct
     fun validate() {
         when {
-            maxPageSize < MAX_PAGE_SIZE_MIN_VALUE -> throw RuntimeException("The max page size must be greater than or equal to $MAX_PAGE_SIZE_MIN_VALUE")
-            defaultPageSize < DEFAULT_PAGE_SIZE_MIN_VALUE -> throw RuntimeException("The default page size value must be greater than or equal to $DEFAULT_PAGE_SIZE_MIN_VALUE")
-            defaultPageSize > maxPageSize -> throw RuntimeException("The default page size value ($defaultPageSize) must be less than max page size value ($maxPageSize)")
+            maxPageSize < MAX_PAGE_SIZE_MIN_VALUE -> throw ApplicationConfigurationException("The $MAX_PAGE_SIZE value must be greater than or equal to $MAX_PAGE_SIZE_MIN_VALUE")
+            defaultPageSize < DEFAULT_PAGE_SIZE_MIN_VALUE -> throw ApplicationConfigurationException("The $DEFAULT_PAGE_SIZE value must be greater than or equal to $DEFAULT_PAGE_SIZE_MIN_VALUE")
+            defaultPageSize > maxPageSize -> throw ApplicationConfigurationException("The $DEFAULT_PAGE_SIZE value ($defaultPageSize) must be less than $MAX_PAGE_SIZE value ($maxPageSize)")
         }
     }
 }
