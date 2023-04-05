@@ -5,7 +5,7 @@ Feature: Get Postal Vote Application ( Default page size is 20, max page size is
     When I send a get postal vote applications request without a certificate serial number in the request header
     Then I received an error with the response status as 403
 
-  Scenario: System rejects the request with status code 400 if the page size is greater than (configured page size 20)
+  Scenario: System rejects the request with status code 400 if the page size is greater than the configured page size 50
     When I send a get postal vote applications request with the page size 51
     Then I received an error with the response status as 400
     And it has an error message of "The page size must be greater than or equal to 1 and less than or equal to 50"
