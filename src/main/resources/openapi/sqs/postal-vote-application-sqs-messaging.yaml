@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Approved/Rejected Postal Application SQS Message
-  version: 1.0.0
+  version: 1.0.1
   description: |-
     Approved/Rejected Postal application API SQS Message Types for EROP
 
@@ -132,7 +132,16 @@ components:
         - approvalDetails
         - applicantDetails
         - signatureBase64
-
+    EmsConfirmedReceiptMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          description: the IER ID of the application
+          pattern: '^[a-fA-F\d]{24}$'
+          example: 502cf250036469154b4f85fc
+      required:
+        - id
 
   #
   # Request Body Definitions
@@ -143,3 +152,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PostalVoteApplicationMessage'
+    EmsConfirmedReceiptMessage:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmsConfirmedReceiptMessage'
+

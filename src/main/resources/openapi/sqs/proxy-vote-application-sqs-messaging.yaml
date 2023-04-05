@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Approved/Rejected Proxy Application SQS Message
-  version: 1.0.0
+  version: 1.0.1
   description: |-
     Approved/Rejected Proxy application API SQS Message Types for EROP
 
@@ -168,7 +168,16 @@ components:
         - approvalDetails
         - applicantDetails
         - proxyVoteDetails
-
+    EmsConfirmedReceiptMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          description: the IER ID of the application
+          pattern: '^[a-fA-F\d]{24}$'
+          example: 502cf250036469154b4f85fc
+      required:
+        - id
 
   #
   # Request Body Definitions
@@ -179,3 +188,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProxyVoteApplicationMessage'
+    EmsConfirmedReceiptMessage:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmsConfirmedReceiptMessage'
