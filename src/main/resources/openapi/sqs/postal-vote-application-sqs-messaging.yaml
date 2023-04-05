@@ -143,6 +143,7 @@ components:
       required:
         - id
 
+  #
   # Request Body Definitions
   # --------------------------------------------------------------------------------
   requestBodies:
