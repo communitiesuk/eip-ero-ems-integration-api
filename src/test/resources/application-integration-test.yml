@@ -2,6 +2,7 @@ spring:
   datasource:
     username: root
     password: password
+    readOnlyUrl: ${spring.datasource.url}?readonly=true
   liquibase:
     contexts: ddl
   jpa:
@@ -12,7 +13,7 @@ spring:
         show_sql: ${SHOW_SQL:false}
 dluhc:
   request.header.name: client-cert-serial
-
+  default-page-size: 20
 cloud:
   aws:
     region:

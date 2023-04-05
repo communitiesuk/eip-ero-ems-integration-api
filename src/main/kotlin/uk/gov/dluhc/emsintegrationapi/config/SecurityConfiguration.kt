@@ -1,6 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod.OPTIONS
@@ -14,8 +13,7 @@ import org.springframework.security.web.SecurityFilterChain
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class SecurityConfiguration(
-    @Value("\${dluhc.request.header.name}")
-    private val requestHeaderName: String
+    private val apiProperties: ApiProperties
 ) {
 
     companion object {
@@ -38,7 +36,12 @@ class SecurityConfiguration(
                     it.antMatchers("/actuator/**").permitAll()
                     it.anyRequest().authenticated()
                 }
-                .addFilter(EmsIntegrationHeaderAuthenticationFilter(requestHeaderName, BYPASS_URLS_FOR_REQUEST_HEADER_AUTHENTICATION))
+                .addFilter(
+                    EmsIntegrationHeaderAuthenticationFilter(
+                        apiProperties.requestHeaderName,
+                        BYPASS_URLS_FOR_REQUEST_HEADER_AUTHENTICATION
+                    )
+                )
         }.build()
     }
 }

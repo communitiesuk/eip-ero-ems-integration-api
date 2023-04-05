@@ -3,6 +3,7 @@ spring:
     name: 'eip-ero-ems-integration-api'
   datasource:
     url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/ems_integration_application
+    readOnlyUrl: ${SPRING_DATASOURCE_READONLYURL}
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
 
@@ -12,6 +13,7 @@ spring:
 
 dluhc:
   request.header.name: ${REQUEST_HEADER_CLIENT_CERT_SERIAL}
+  default-page-size: ${DEFAULT_PAGE_SIZE:100}
 
 cloud:
   aws:

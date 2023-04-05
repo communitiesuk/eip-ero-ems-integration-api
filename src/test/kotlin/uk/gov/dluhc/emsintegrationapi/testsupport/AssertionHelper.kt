@@ -1,6 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.extractor.Extractors
 
 fun <T, R> validateObjects(input: T, output: R, vararg fieldNameToIgnore: String?) {
     assertThat(output).usingRecursiveComparison()
@@ -41,4 +42,37 @@ fun <T, R> validateMappedObject(
     // Validate the input object and mapped object
     validateObjects(inputObject, mappedObject, *fieldNamesToIgnore)
     return TestResult(inputObject, mappedObject)
+}
+
+fun <T> extractFieldValues(fromObject: T, vararg fieldNames: String): Array<Any> =
+    Extractors.byName(*fieldNames).apply(fromObject)
+        .toArray()
+
+/**
+ *
+ * This function compares the field values extracted from the actual object and same fields (but names are different) from input object.
+ * Note: This function is useful where the generated object attributes have values from multiple nested object from an input object
+ */
+fun <T, R> haveSameValues(
+    actualObject: T,
+    actualFieldsToBeCompared: Array<String>,
+    inputObject: R,
+    inputFieldsToBeCompared: Array<String>? = actualFieldsToBeCompared
+) {
+    assertThat(actualObject).isNotNull
+    assertThat(inputObject).isNotNull
+    assertThat(actualFieldsToBeCompared.size).isEqualTo(actualFieldsToBeCompared.size)
+    assertThat(actualObject).extracting(*actualFieldsToBeCompared)
+        .containsOnly(
+            *extractFieldValues(inputObject, *inputFieldsToBeCompared!!)
+        )
+}
+
+fun <T> haveNullValues(
+    actualObject: T,
+    vararg actualFieldsToBeCompared: String,
+) {
+    assertThat(actualFieldsToBeCompared).isNotEmpty
+    assertThat(actualObject).isNotNull
+    assertThat(actualObject).extracting(*actualFieldsToBeCompared).containsNull()
 }

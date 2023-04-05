@@ -17,7 +17,7 @@ fun buildPostalVoteApplication(
     applicationId: String = getRandomAlphaNumeric(24),
     approvalDetails: ApprovalDetails = buildApprovalDetailsEntity(),
     applicantDetails: ApplicantDetails = buildApplicantDetailsEntity(),
-    postalVoteDetails: PostalVoteDetails = buildPostalVoteDetailsEntity(),
+    postalVoteDetails: PostalVoteDetails? = buildPostalVoteDetailsEntity(),
     signatureBase64: String = getRandomAlphaNumeric(20),
     removalDateTime: Instant? = null,
     retentionStatus: RetentionStatus = RetentionStatus.RETAIN,
@@ -39,8 +39,8 @@ fun buildPostalVoteApplication(
     status = recordStatus
 )
 
-fun buildPostalVoteApplicationMessageDto(
-    applicationId: String = getRandomAlphaNumeric(24),
+fun buildPostalVoteApplicationMessage(
+    applicationId: String = getIerDsApplicationId(),
     approvalDetails: ApprovalDetailsMessageDto = buildApprovalDetailsMessageDto(applicationId = applicationId),
     applicantDetails: ApplicantDetailsMessageDto = buildApplicantDetailsMessageDto(),
     postalVoteDetails: PostalVoteDetailsMessageDto = buildPostalVoteDetailsMessageDto(),
