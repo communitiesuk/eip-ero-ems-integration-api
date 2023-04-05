@@ -41,7 +41,7 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
             .returnResult(responseType).responseBody.blockFirst()
     }
 
-    fun withSerialNumber(
+    private fun withSerialNumber(
         requestHeadersSpec: WebTestClient.RequestHeadersSpec<*>,
         serialNumber: String
     ): WebTestClient.RequestHeadersSpec<*> = requestHeadersSpec.header(apiProperties.requestHeaderName, serialNumber)
