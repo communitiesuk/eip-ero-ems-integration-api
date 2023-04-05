@@ -95,7 +95,8 @@ For local setup refer to src/main/resources/db/readme.
 
 The following are overridden by the task definition in AWS:
 
-* `SPRING_DATASOURCE_URL` - This is set to the deployed RDS' URL.
+* `SPRING_DATASOURCE_URL` - This is set to the deployed RDS URL.
+* `SPRING_DATASOURCE_READONLYURL` - This is set to the reader node RDS URL.
 * `SPRING_DATASOURCE_DRIVERCLASSNAME` - This is overridden to use the AWS Aurora MySQL JDBC Driver.
 * `SPRING_LIQUIBASE_DRIVERCLASSNAME` - This is overridden to use the AWS Aurora MySQL JDBC Driver.
 * `SQS_PROXY_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the approved/rejected proxy
@@ -106,9 +107,12 @@ The following are overridden by the task definition in AWS:
   application.
 * `SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the deleted postal
   application.
+* `REQUEST_HEADER_CLIENT_CERT_SERIAL` - the name of the request header to set the serial number, must present in every
+  api request except health check
+* `DEFAULT_PAGE_SIZE` - The default page size if a GET request did not pass the page size parameter
+* `MAX_PAGE_SIZE` - This is the maximum number of records can be fetched by the application.
 
 #### Liquibase Configuration
-
 * `LIQUIBASE_CONTEXT` Contexts for liquibase scripts. For local setup use ddl.
 
 ### Authentication and authorisation
