@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
-import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
+import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
@@ -48,11 +48,11 @@ class PostalVoteApplicationService(
                 postalVoteApplication.status = RecordStatus.DELETED
                 postalVoteApplication.updatedBy = SourceSystem.EMS
                 postalVoteApplicationRepository.saveAndFlush(postalVoteApplication)
-                logger.info { "Sending receipt to postal vote application for $postalVoteApplicationId" }
                 messageSender.send(
                     EmsConfirmedReceiptMessage(postalVoteApplicationId),
-                    QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
+                    DELETED_POSTAL_APPLICATION_QUEUE
                 )
+                logger.info { "Confirmation message sent to the postal vote application for $postalVoteApplicationId" }
             } else {
                 logger.warn {
                     "The status of the postal vote application with id $postalVoteApplicationId" +
