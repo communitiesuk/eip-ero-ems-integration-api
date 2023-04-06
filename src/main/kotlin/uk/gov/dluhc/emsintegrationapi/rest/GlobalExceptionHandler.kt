@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import uk.gov.dluhc.emsintegrationapi.service.ApplicationNotFoundException
 import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
 
@@ -23,5 +24,12 @@ class GlobalExceptionHandler {
         }
         logger.warn { "Validation error occurred: $errorMessage" }
         return errorMessage
+    }
+
+    @ExceptionHandler(ApplicationNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleApplicationNotFound(e: ApplicationNotFoundException): String {
+        logger.error { e.message }
+        return e.message!!
     }
 }

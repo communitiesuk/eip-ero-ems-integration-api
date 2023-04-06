@@ -41,6 +41,17 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
             .returnResult(responseType).responseBody.blockFirst()
     }
 
+    fun delete(
+        uri: String,
+        attachSerialNumber: Boolean = true,
+        serialNumber: String = DEFAULT_SERIAL_NUMBER,
+    ): WebTestClient.ResponseSpec {
+        val requestHeadersSpec = if (attachSerialNumber) withSerialNumber(webClient.delete().uri(uri), serialNumber)
+        else webClient.delete().uri(uri)
+        return requestHeadersSpec
+            .exchange()
+    }
+
     private fun withSerialNumber(
         requestHeadersSpec: WebTestClient.RequestHeadersSpec<*>,
         serialNumber: String

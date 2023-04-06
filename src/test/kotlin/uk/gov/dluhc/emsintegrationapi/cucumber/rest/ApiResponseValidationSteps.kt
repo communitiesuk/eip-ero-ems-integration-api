@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 
 class ApiResponseValidationSteps(val apiResponse: ApiResponse) : En {
     init {
-        Then("I received an error with the response status as {int}") { httpStatus: Int ->
+        Then("I received the http status {int}") { httpStatus: Int ->
             assertThat(apiResponse.responseSpec).isNotNull
             apiResponse.responseSpec!!.expectStatus().isEqualTo(httpStatus)
         }

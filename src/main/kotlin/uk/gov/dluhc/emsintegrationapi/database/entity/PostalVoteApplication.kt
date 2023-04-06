@@ -51,7 +51,7 @@ class PostalVoteApplication(
     var updatedBy: SourceSystem? = null,
 
     @Enumerated(EnumType.STRING)
-    val status: RecordStatus,
+    var status: RecordStatus,
 
     @Version
     var version: Long? = null,

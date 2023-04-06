@@ -5,21 +5,31 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
+import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
+import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteMapper
+import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
+import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
+import uk.gov.dluhc.emsintegrationapi.service.ApplicationType.POSTAL
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
+import java.util.Optional
 import java.util.stream.IntStream
 
 @ExtendWith(MockitoExtension::class)
@@ -33,6 +43,9 @@ internal class PostalVoteApplicationServiceTest {
 
     @Mock
     private lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
+
+    @Mock
+    private lateinit var messageSender: MessageSender<EmsConfirmedReceiptMessage>
 
     @InjectMocks
     private lateinit var postalVoteApplicationService: PostalVoteApplicationService
@@ -111,5 +124,62 @@ internal class PostalVoteApplicationServiceTest {
         assertThat(postalVoteAcceptedResponse.pageSize).isEqualTo(numberOfRecordsToBeReturned)
         // the attribute name 'proxyVotes' to postalVotes, awaiting final spec from EMS
         assertThat(postalVoteAcceptedResponse.proxyVotes).isEqualTo(mockPostalVotes)
+    }
+
+    @Nested
+    inner class ConfirmReceipt {
+        @Test
+        fun `should update the record status to be DELETED and send a confirmation message`() {
+            // Given
+            val postalVoteApplicationCaptor = argumentCaptor<PostalVoteApplication>()
+            val postalVoteApplication = buildPostalVoteApplication()
+            given(postalVoteApplicationRepository.findById(postalVoteApplication.applicationId)).willReturn(
+                Optional.of(
+                    postalVoteApplication
+                )
+            )
+            // When
+            postalVoteApplicationService.confirmReceipt(postalVoteApplication.applicationId)
+
+            // Then
+            verify(postalVoteApplicationRepository).saveAndFlush(postalVoteApplicationCaptor.capture())
+            val applicationSaved = postalVoteApplicationCaptor.firstValue
+            assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
+            assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
+            verify(messageSender).send(
+                EmsConfirmedReceiptMessage(postalVoteApplication.applicationId),
+                DELETED_POSTAL_APPLICATION_QUEUE
+            )
+        }
+
+        @Test
+        fun `should throw application not found exception if a given record does not exist in the db`() {
+            val applicationId = "SomeId"
+            val applicationNotFoundException =
+                assertThrows<ApplicationNotFoundException> { postalVoteApplicationService.confirmReceipt(applicationId) }
+            assertThat(applicationNotFoundException.message).isEqualTo("The ${POSTAL.displayName} application could not be found with id `$applicationId`")
+            verifyNoInteractions(messageSender)
+        }
+
+        @Test
+        fun `should ignore the update request and do not send a message if the application status is DELETED`() {
+            // Given
+            val postalVoteApplication = buildPostalVoteApplication(
+                recordStatus = RecordStatus.DELETED
+            )
+            given(postalVoteApplicationRepository.findById(postalVoteApplication.applicationId)).willReturn(
+                Optional.of(
+                    postalVoteApplication
+                )
+            )
+            // When
+            postalVoteApplicationService.confirmReceipt(postalVoteApplication.applicationId)
+
+            // Then
+            verify(postalVoteApplicationRepository).findById(postalVoteApplication.applicationId)
+            // Make sure that save and flush did not call
+            verifyNoMoreInteractions(postalVoteApplicationRepository)
+            verifyNoMoreInteractions(messageSender)
+        }
     }
 }
