@@ -22,6 +22,8 @@ open class DeleteProxyRecordStep(
         After("@DeleteProxyEntity", ::deleteProxyEntitiesAfter)
         Before("@DeleteProxyMessage", ::deleteProxyMessageBefore)
         After("@DeleteProxyMessage", ::deleteProxyMessageAfter)
+        Before("@DeleteProxyConfirmationMessage", ::deleteProxyConfirmationMessageBefore)
+        After("@DeleteProxyConfirmationMessage", ::deleteProxyConfirmationMessageAfter)
     }
 
     @Transactional
@@ -40,5 +42,19 @@ open class DeleteProxyRecordStep(
     private fun deleteProxyMessageAfter() =
         deleteSqsMessage(
             amazonSQSAsync, queueConfiguration.getQueueNameFrom(PROXY_APPLICATION_QUEUE), AFTER
+        )
+
+    private fun deleteProxyConfirmationMessageBefore() =
+        deleteSqsMessage(
+            amazonSQSAsync,
+            queueConfiguration.getQueueNameFrom(QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE),
+            BEFORE
+        )
+
+    private fun deleteProxyConfirmationMessageAfter() =
+        deleteSqsMessage(
+            amazonSQSAsync,
+            queueConfiguration.getQueueNameFrom(QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE),
+            AFTER
         )
 }
