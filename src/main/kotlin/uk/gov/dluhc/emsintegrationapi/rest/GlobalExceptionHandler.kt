@@ -30,6 +30,6 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun handleApplicationNotFound(e: ApplicationNotFoundException): String {
         logger.error { e.message }
-        return e.message!!
+        return e.message
     }
 }
