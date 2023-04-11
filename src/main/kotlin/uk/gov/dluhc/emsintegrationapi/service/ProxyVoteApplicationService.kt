@@ -42,7 +42,7 @@ class ProxyVoteApplicationService(
     fun confirmReceipt(
         proxyVoteApplicationId: String,
     ) {
-        logger.info("Updating the postal vote application with the id $proxyVoteApplicationId with status ${RecordStatus.DELETED}")
+        logger.info("Updating the proxy vote application with the id $proxyVoteApplicationId with status ${RecordStatus.DELETED}")
         proxyVoteApplicationRepository.findById(proxyVoteApplicationId).map { proxyVoteApplication ->
             if (proxyVoteApplication.status != RecordStatus.DELETED) {
                 proxyVoteApplication.status = RecordStatus.DELETED
