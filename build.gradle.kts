@@ -100,6 +100,10 @@ dependencies {
     testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
     testImplementation("net.datafaker:datafaker:1.6.0")
 
+    // caching
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("com.github.ben-manes.caffeine:caffeine")
+
     // AWS library to support tests
     testImplementation("software.amazon.awssdk:auth")
     // Libraries to support creating JWTs in tests
@@ -185,6 +189,18 @@ tasks.create(
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/sqs/proxy-vote-application-sqs-messaging.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
+}
+
+tasks.create("api-generate IERApi model", GenerateTask::class) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/external/ier/reference/IER-EROP-APIs.yaml")
+    packageName.set("uk.gov.dluhc.external.ier")
+}
+
+tasks.create("api-generate EROManagementApi model", GenerateTask::class) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/external/EROManagementAPIs.yaml")
+    packageName.set("uk.gov.dluhc.eromanagementapi")
 }
 
 // Add the generated code to the source sets
