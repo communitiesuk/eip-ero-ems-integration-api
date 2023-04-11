@@ -23,8 +23,8 @@ open class DeletePostalRecordStep(
         After("@DeletePostalEntity", ::deletePostalEntitiesAfter)
         Before("@DeletePostalMessage", ::deletePostalMessageBefore)
         After("@DeletePostalMessage", ::deletePostalMessageAfter)
-        Before("@DeleteConfirmationMessage", ::deletePostalConfirmationMessageBefore)
-        After("@DeleteConfirmationMessage", ::deletePostalConfirmationMessageAfter)
+        Before("@DeletePostalConfirmationMessage", ::deletePostalConfirmationMessageBefore)
+        After("@DeletePostalConfirmationMessage", ::deletePostalConfirmationMessageAfter)
     }
 
     @Transactional

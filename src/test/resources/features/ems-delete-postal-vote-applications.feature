@@ -15,7 +15,7 @@ Feature: The EMS send a delete request on confirming a given Postal Vote Applica
     Then I received the http status 404
     And it has an error message of "The Postal application could not be found with id `502cf250036469154b4f85fb`"
 
-  @DeletePostalEntity @DeleteConfirmationMessage
+  @DeletePostalEntity @DeletePostalConfirmationMessage
   Scenario: System returns http status 204 on successful deletion
     Given a postal vote application with the application id "502cf250036469154b4f85fb" and electoral id "e87cbaea-0deb-4058-95c6-8240d426f5e1" exists
     When the EMS send a delete request to "/postalVotes/accepted" with an application id "502cf250036469154b4f85fb"
@@ -23,7 +23,7 @@ Feature: The EMS send a delete request on confirming a given Postal Vote Applica
     And the "deleted-postal-application" queue has a confirmation message for the application id "502cf250036469154b4f85fb"
     And I received the http status 204
 
-  @DeletePostalEntity
+  @DeletePostalEntity @DeletePostalConfirmationMessage
   Scenario: System ignores the request if current status of the postal vote application is DELETED
     Given a postal vote application with the application id "502cf250036469154b4f85fb" and electoral id "e87cbaea-0deb-4058-95c6-8240d426f5e1" exists
     When the EMS send a delete request to "/postalVotes/accepted" with an application id "502cf250036469154b4f85fb"

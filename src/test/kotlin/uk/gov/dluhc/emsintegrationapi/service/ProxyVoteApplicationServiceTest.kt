@@ -5,21 +5,30 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
+import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
+import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteMapper
+import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
+import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
+import java.util.Optional
 import java.util.stream.IntStream
 
 @ExtendWith(MockitoExtension::class)
@@ -33,6 +42,9 @@ internal class ProxyVoteApplicationServiceTest {
 
     @Mock
     private lateinit var proxyVoteApplicationRepository: ProxyVoteApplicationRepository
+
+    @Mock
+    private lateinit var messageSender: MessageSender<EmsConfirmedReceiptMessage>
 
     @InjectMocks
     private lateinit var proxyVoteApplicationService: ProxyVoteApplicationService
@@ -107,5 +119,62 @@ internal class ProxyVoteApplicationServiceTest {
 
         assertThat(proxyVoteAcceptedResponse.pageSize).isEqualTo(numberOfRecordsToBeReturned)
         assertThat(proxyVoteAcceptedResponse.proxyVotes).isEqualTo(mockProxyVotes)
+    }
+
+    @Nested
+    inner class ConfirmReceipt {
+        @Test
+        fun `should update the record status to be DELETED and send a confirmation message`() {
+            // Given
+            val proxyVoteApplicationCaptor = argumentCaptor<ProxyVoteApplication>()
+            val proxyVoteApplication = buildProxyVoteApplication()
+            given(proxyVoteApplicationRepository.findById(proxyVoteApplication.applicationId)).willReturn(
+                Optional.of(
+                    proxyVoteApplication
+                )
+            )
+            // When
+            proxyVoteApplicationService.confirmReceipt(proxyVoteApplication.applicationId)
+
+            // Then
+            verify(proxyVoteApplicationRepository).saveAndFlush(proxyVoteApplicationCaptor.capture())
+            val applicationSaved = proxyVoteApplicationCaptor.firstValue
+            assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
+            assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
+            verify(messageSender).send(
+                EmsConfirmedReceiptMessage(proxyVoteApplication.applicationId),
+                QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
+            )
+        }
+
+        @Test
+        fun `should throw application not found exception if a given record does not exist in the db`() {
+            val applicationId = "SomeId"
+            val applicationNotFoundException =
+                assertThrows<ApplicationNotFoundException> { proxyVoteApplicationService.confirmReceipt(applicationId) }
+            assertThat(applicationNotFoundException.message).isEqualTo("The ${ApplicationType.PROXY.displayName} application could not be found with id `$applicationId`")
+            verifyNoInteractions(messageSender)
+        }
+
+        @Test
+        fun `should ignore the update request and do not send a message if the application status is DELETED`() {
+            // Given
+            val proxyVoteApplication = buildProxyVoteApplication(
+                recordStatus = RecordStatus.DELETED
+            )
+            given(proxyVoteApplicationRepository.findById(proxyVoteApplication.applicationId)).willReturn(
+                Optional.of(
+                    proxyVoteApplication
+                )
+            )
+            // When
+            proxyVoteApplicationService.confirmReceipt(proxyVoteApplication.applicationId)
+
+            // Then
+            verify(proxyVoteApplicationRepository).findById(proxyVoteApplication.applicationId)
+            // Make sure that save and flush did not call
+            verifyNoMoreInteractions(proxyVoteApplicationRepository)
+            verifyNoMoreInteractions(messageSender)
+        }
     }
 }
