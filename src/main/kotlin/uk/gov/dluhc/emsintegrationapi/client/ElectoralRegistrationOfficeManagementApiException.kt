@@ -1,4 +1,4 @@
-package uk.gov.dluhc.registercheckerapi.client
+package uk.gov.dluhc.emsintegrationapi.client
 
 /**
  * Exception classes used when calling `ero-management-api` is not successful.

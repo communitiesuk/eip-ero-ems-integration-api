@@ -1,4 +1,4 @@
-package uk.gov.dluhc.registercheckerapi.client
+package uk.gov.dluhc.emsintegrationapi.client
 
 import mu.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
@@ -8,8 +8,8 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
+import uk.gov.dluhc.emsintegrationapi.config.ERO_CERTIFICATE_MAPPING_CACHE
 import uk.gov.dluhc.external.ier.models.EROCertificateMapping
-import uk.gov.dluhc.registercheckerapi.config.ERO_CERTIFICATE_MAPPING_CACHE
 
 private val logger = KotlinLogging.logger {}
 

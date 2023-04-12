@@ -5,7 +5,7 @@ import org.owasp.dependencycheck.reporting.ReportGenerator.Format.HTML
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-    id("org.springframework.boot") version "2.7.7"
+    id("org.springframework.boot") version "2.7.10"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.7.21"
     kotlin("kapt") version "1.7.21"
@@ -55,6 +55,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -77,13 +78,16 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-sts")
 
     // mysql
-    runtimeOnly("mysql:mysql-connector-java")
+    runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.4")
     runtimeOnly("software.amazon.awssdk:rds")
 
     // Schedulling
     implementation("net.javacrumbs.shedlock:shedlock-spring:4.43.0")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.43.0")
+
+    // AWS signer using SDK V2 library is available at https://mvnrepository.com/artifact/io.github.acm19/aws-request-signing-apache-interceptor/2.1.1
+    implementation("io.github.acm19:aws-request-signing-apache-interceptor:2.1.1")
 
     // Test implementations
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -103,6 +107,9 @@ dependencies {
     // caching
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine")
+
+    // sts
+    implementation("software.amazon.awssdk:sts")
 
     // AWS library to support tests
     testImplementation("software.amazon.awssdk:auth")

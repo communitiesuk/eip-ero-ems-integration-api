@@ -1,4 +1,4 @@
-package uk.gov.dluhc.registercheckerapi.client
+package uk.gov.dluhc.emsintegrationapi.client
 
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus.NOT_FOUND
