@@ -16,6 +16,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
     id("org.openapi.generator") version "6.2.1"
     id("org.owasp.dependencycheck") version "8.1.2"
+    id("org.liquibase.gradle") version "2.0.4"
 }
 
 group = "uk.gov.dluhc"
@@ -46,6 +47,12 @@ apply(plugin = "org.jetbrains.kotlin.jvm")
 apply(plugin = "org.jetbrains.kotlin.plugin.spring")
 apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
 apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
+apply(plugin = "org.liquibase.gradle")
+
+liquibase {
+    activities.register("main")
+    runList = "main"
+}
 
 dependencies {
     // framework
@@ -114,6 +121,14 @@ dependencies {
 
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
+    // Liquibase plugin for local development
+    val liquibaseRuntime by configurations
+    liquibaseRuntime("org.liquibase:liquibase-core")
+    liquibaseRuntime("mysql:mysql-connector-java")
+    liquibaseRuntime("org.springframework.boot:spring-boot")
+    liquibaseRuntime("info.picocli:picocli:4.6.1")
+    liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
+    liquibaseRuntime("org.yaml:snakeyaml:1.8")
 }
 
 dependencyManagement {
