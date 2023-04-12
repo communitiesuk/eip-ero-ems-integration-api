@@ -40,7 +40,6 @@ class IerIntegrationSteps(
         }
         Then("I received mapping response with the Ero Id {string}") { expectedEroId: String ->
             assertThat(eroCertificateMapping).isNotNull.extracting("eroId").isEqualTo(expectedEroId)
-
         }
         And("I waited for {long} seconds") { delayInSeconds: Long ->
             logger.info { "Waiting started for $certificateSerialNumber" }

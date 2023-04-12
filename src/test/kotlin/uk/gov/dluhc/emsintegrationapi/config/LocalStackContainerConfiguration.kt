@@ -134,4 +134,3 @@ data class LocalStackContainerSettings(
     val deletedProxyApplicationQueueUrl: String,
     val deletedPostalApplicationQueueUrl: String
 )
-
