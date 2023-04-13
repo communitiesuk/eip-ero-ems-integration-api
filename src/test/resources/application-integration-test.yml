@@ -18,7 +18,7 @@ dluhc:
 cloud:
   aws:
     region:
-      static: us-east-1
+      static: eu-west-2
     credentials:
       access-key: test
       secret-key: test
@@ -31,3 +31,12 @@ sqs:
 
 sts:
   endpoint: sts.amazonaws.com
+
+api:
+  ero-management:
+    url: http://replaced-by-wireMockServer-bean
+  ier:
+    base.url: http://replaced-by-wireMockServer-bean
+    sts.assume.role: arn:aws:iam::1234567890987:role/grant-me-access-to-ier
+
+caching.time-to-live: PT2S
