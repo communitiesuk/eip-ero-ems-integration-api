@@ -5,5 +5,3 @@ databaseChangeLog:
       file: /db/changelog/create/0002_postal_vote_application.sql
   - include:
       file: /db/changelog/create/0003_proxy_vote_application.sql
-  - include:
-      file: /db/changelog/create/0004_EIP1_5436_postal_vote_application_index.xml
