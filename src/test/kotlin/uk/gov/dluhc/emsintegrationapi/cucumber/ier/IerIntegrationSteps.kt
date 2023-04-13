@@ -23,8 +23,6 @@ class IerIntegrationSteps(
     private var certificateSerialNumber: String? = null
     private var eroId: String? = null
     private var eroCertificateMapping: EROCertificateMapping? = null
-
-    // Time being supporting two gss code, will change it later
     private var gssCodes: List<String>? = null
 
     init {
@@ -32,7 +30,7 @@ class IerIntegrationSteps(
         Before("@IerClient", ::tearDown)
         After("@IerClient", ::tearDown)
 
-        Given("the certificate serial number {string} mapped to Ero Id {string}") { certificateSerialNumber: String, eroId: String ->
+        Given("the certificate serial number {string} mapped to the ERO Id {string}") { certificateSerialNumber: String, eroId: String ->
             this.certificateSerialNumber = certificateSerialNumber
             this.eroId = eroId
             wireMockService.stubIerApiGetEroIdentifier(certificateSerialNumber, eroId)
@@ -41,7 +39,7 @@ class IerIntegrationSteps(
             eroCertificateMapping = ierApiClient.getEroIdentifier(certificateSerialNumber!!)
             logger.info { "Certificate Mapping received for $certificateSerialNumber" }
         }
-        Then("I received mapping response with the Ero Id {string}") { expectedEroId: String ->
+        Then("I received mapping response with the ERO Id {string}") { expectedEroId: String ->
             assertThat(eroCertificateMapping).isNotNull.extracting("eroId").isEqualTo(expectedEroId)
         }
         And("I waited for {long} seconds") { delayInSeconds: Long ->
@@ -58,7 +56,7 @@ class IerIntegrationSteps(
         Then("the system sent a request to get the mapping") {
             wireMockService.verifyWiremockGetInvokedFor(certificateSerialNumber!!)
         }
-        Given("the gss codes {string} and {string} mapped to ERO Id") { gssCode1: String, gssCode2: String ->
+        Given("the gss codes {string} and {string} mapped to the ERO Id") { gssCode1: String, gssCode2: String ->
             wireMockService.stubEroManagementGetEro(eroId!!, gssCode1, gssCode2)
         }
         And("I send a request to get the gss codes") {
