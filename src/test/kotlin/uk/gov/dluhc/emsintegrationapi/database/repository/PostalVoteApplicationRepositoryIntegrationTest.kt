@@ -59,10 +59,9 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
     }
 
     @Test
-    fun `should return records by gsscode and record status order by created date`() {
+    fun `should return records by gss codes and record status order by created date`() {
         // Given
-        val gssCode = "1234"
-        val approvalDetailsValid = buildApprovalDetailsEntity(gssCode = gssCode)
+        val approvalDetailsValid = buildApprovalDetailsEntity(gssCode = GSS_CODE_1)
         val approvalDetailsInvalid = buildApprovalDetailsEntity(gssCode = "5678")
         val listOfApplications =
             IntStream.rangeClosed(1, 30).mapToObj {
@@ -78,16 +77,16 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
 
         // When
         val applicationsReceived =
-            postalVoteApplicationRepository.findByApprovalDetailsGssCodeAndStatusOrderByDateCreated(
-                gssCode,
+            postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+                listOf(GSS_CODE_1, "9010"),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
             )
 
         // That
-        val size = applicationsReceived.size
-        assertThat(size).isLessThan(11)
-        assertThat(applicationsReceived[0].dateCreated).isBefore(applicationsReceived[size - 1].dateCreated)
+        val numberOfApplicationsReceived = applicationsReceived.size
+        assertThat(numberOfApplicationsReceived).isLessThan(11)
+        assertThat(applicationsReceived[0].dateCreated).isBefore(applicationsReceived[numberOfApplicationsReceived - 1].dateCreated)
         applicationsReceived.forEachIndexed { index, postalVoteApplication ->
             assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
             if (index > 0) {
@@ -96,7 +95,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
                         ChronoUnit.SECONDS
                     )
                 )
-                assertThat(postalVoteApplication.approvalDetails.gssCode).isEqualTo(gssCode)
+                assertThat(postalVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE_1)
             }
         }
     }
