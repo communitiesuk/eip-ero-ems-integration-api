@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.client
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowableOfType
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.anyString
@@ -59,7 +59,7 @@ internal class IerApiClientTest {
             .willThrow(HttpClientErrorException(HttpStatus.NOT_FOUND, "No ero found"))
 
         // When
-        val ex = Assertions.catchThrowableOfType(
+        val ex = catchThrowableOfType(
             { ierApiClient.getEroIdentifier(certificateSerial) },
             IerEroNotFoundException::class.java
         )
@@ -82,7 +82,7 @@ internal class IerApiClientTest {
             .willThrow(HttpClientErrorException(HttpStatus.FORBIDDEN, exceptionMessage))
 
         // When
-        val ex = Assertions.catchThrowableOfType(
+        val ex = catchThrowableOfType(
             { ierApiClient.getEroIdentifier(certificateSerial) },
             IerGeneralException::class.java
         )
@@ -104,7 +104,7 @@ internal class IerApiClientTest {
             .willThrow(HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR))
 
         // When
-        val ex = Assertions.catchThrowableOfType(
+        val ex = catchThrowableOfType(
             { ierApiClient.getEroIdentifier(certificateSerial) },
             IerGeneralException::class.java
         )

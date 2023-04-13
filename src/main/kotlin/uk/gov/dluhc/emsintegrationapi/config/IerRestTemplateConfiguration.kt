@@ -28,7 +28,7 @@ class IerRestTemplateConfiguration(
 
     companion object {
         private const val API_GATEWAY_SERVICE_NAME = "execute-api"
-        private const val STS_SESSION_NAME = "RegisterChecker_IER_Session"
+        private const val STS_SESSION_NAME = "EMS_Integration_API_IER_Session"
     }
 
     @Bean
