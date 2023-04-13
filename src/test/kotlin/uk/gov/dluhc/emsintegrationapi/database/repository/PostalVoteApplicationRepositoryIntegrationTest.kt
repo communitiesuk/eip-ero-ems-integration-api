@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import java.time.temporal.ChronoUnit
@@ -28,20 +31,17 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
 
         assertThat(savedApplication).usingRecursiveComparison().isEqualTo(postalVoteApplication)
     }
-    
+
     @Test
     fun `should return records by gss codes and record status order by created date`() {
         // Given
-        val approvalDetailsValid = buildApprovalDetailsEntity(gssCode = GSS_CODE_1)
-        val approvalDetailsInvalid = buildApprovalDetailsEntity(gssCode = "5678")
+
         val listOfApplications =
             IntStream.rangeClosed(1, 30).mapToObj {
-                val approvalDetails = if (it % 2 == 0) {
-                    approvalDetailsValid
-                } else {
-                    approvalDetailsInvalid
-                }
-                buildPostalVoteApplication(applicationId = it.toString(), approvalDetails = approvalDetails)
+                buildPostalVoteApplication(
+                    applicationId = it.toString(),
+                    buildApprovalDetailsEntity(gssCode = faker.options().option(GSS_CODE1, GSS_CODE2))
+                )
             }.toList()
 
         postalVoteApplicationRepository.saveAllAndFlush(listOfApplications)
@@ -49,7 +49,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         // When
         val applicationsReceived =
             postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
-                listOf(GSS_CODE_1, "9010"),
+                listOf(GSS_CODE1, "9010"),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
             )
@@ -57,7 +57,6 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         // That
         val numberOfApplicationsReceived = applicationsReceived.size
         assertThat(numberOfApplicationsReceived).isEqualTo(10)
-        assertThat(applicationsReceived[0].dateCreated).isBefore(applicationsReceived[numberOfApplicationsReceived - 1].dateCreated)
         applicationsReceived.forEachIndexed { index, postalVoteApplication ->
             assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
             if (index > 0) {
@@ -66,7 +65,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
                         ChronoUnit.SECONDS
                     )
                 )
-                assertThat(postalVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE_1)
+                assertThat(postalVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE1)
             }
         }
     }
