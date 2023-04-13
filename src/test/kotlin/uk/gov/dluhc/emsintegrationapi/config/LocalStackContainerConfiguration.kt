@@ -1,12 +1,8 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider
-import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService
-import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClient
 import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KotlinLogging
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ConfigurableApplicationContext
@@ -18,6 +14,8 @@ import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.sts.StsClient
 import java.net.URI
 
 private val logger = KotlinLogging.logger {}
@@ -29,45 +27,54 @@ private val logger = KotlinLogging.logger {}
 class LocalStackContainerConfiguration {
 
     companion object {
-        // TODO the default region should be eu-west-2 but it currently causes the build to fail...
-        const val DEFAULT_REGION = "us-east-1"
         const val DEFAULT_PORT = 4566
         const val DEFAULT_ACCESS_KEY_ID = "test"
         const val DEFAULT_SECRET_KEY = "test"
 
         val objectMapper = ObjectMapper()
-        val localStackContainer: GenericContainer<*> = getInstance()
-        private var container: GenericContainer<*>? = null
 
         /**
          * Creates and starts LocalStack configured with a basic (empty) SQS service.
          * Returns the container that can subsequently be used for further setup and configuration.
          */
-        fun getInstance(): GenericContainer<*> {
-            if (container == null) {
-                container = GenericContainer(
-                    DockerImageName.parse("localstack/localstack:1.1.0")
-                ).withEnv(
-                    mapOf(
-                        "SERVICES" to "sqs, sts",
-                        "AWS_DEFAULT_REGION" to DEFAULT_REGION,
-                    )
+        @Bean
+        fun localstackContainer(@Value("\${cloud.aws.region.static}") region: String): GenericContainer<*> {
+            return GenericContainer(
+                DockerImageName.parse("localstack/localstack:1.1.0")
+            ).withEnv(
+                mapOf(
+                    "SERVICES" to "sqs, sts",
+                    "AWS_DEFAULT_REGION" to region,
                 )
-                    .withReuse(true)
-                    .withExposedPorts(DEFAULT_PORT)
-                    .withCreateContainerCmdModifier { it.withName("ems-integration-api-integration-test-localstack") }
-                    .apply {
-                        start()
-                    }
-            }
-
-            return container!!
+            )
+                .withReuse(true)
+                .withExposedPorts(DEFAULT_PORT)
+                .withCreateContainerCmdModifier { it.withName("ems-integration-api-integration-test-localstack") }
+                .apply {
+                    start()
+                }
         }
     }
 
     @Bean
     fun awsBasicCredentialsProvider(): AwsCredentialsProvider =
         StaticCredentialsProvider.create(AwsBasicCredentials.create(DEFAULT_ACCESS_KEY_ID, DEFAULT_SECRET_KEY))
+
+    @Bean
+    @Primary
+    fun localStackStsClient(
+        @Value("\${cloud.aws.region.static}") region: String,
+        @Qualifier("localstackContainer") localStackContainer: GenericContainer<*>,
+        awsCredentialsProvider: AwsCredentialsProvider
+    ): StsClient {
+
+        val uri = URI.create("http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}")
+        return StsClient.builder()
+            .credentialsProvider(awsCredentialsProvider)
+            .region(Region.of(region))
+            .endpointOverride(uri)
+            .build()
+    }
 
     /**
      * Uses the localstack container to configure the various services.
@@ -76,6 +83,7 @@ class LocalStackContainerConfiguration {
      */
     @Bean
     fun localStackContainerSqsSettings(
+        @Qualifier("localstackContainer") localStackContainer: GenericContainer<*>,
         applicationContext: ConfigurableApplicationContext,
         @Value("\${sqs.proxy-application-queue-name}") proxyApplicationQueueName: String,
         @Value("\${sqs.postal-application-queue-name}") postalApplicationQueueName: String,
@@ -118,23 +126,6 @@ class LocalStackContainerConfiguration {
             it["QueueUrl"] as String
         }
     }
-
-    @Bean
-    @Primary
-    fun localStackStsClient(): AWSSecurityTokenService =
-        AWSSecurityTokenServiceClient.builder()
-            .withCredentials(
-                AWSStaticCredentialsProvider(
-                    BasicAWSCredentials(DEFAULT_ACCESS_KEY_ID, DEFAULT_SECRET_KEY)
-                )
-            )
-            .withEndpointConfiguration(
-                EndpointConfiguration(
-                    "http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}",
-                    DEFAULT_REGION
-                )
-            )
-            .build()
 }
 data class LocalStackContainerSettings(
     val apiUrl: String,
@@ -142,23 +133,4 @@ data class LocalStackContainerSettings(
     val postalApplicationQueueUrl: String,
     val deletedProxyApplicationQueueUrl: String,
     val deletedPostalApplicationQueueUrl: String
-) {
-    val mappedProxyApplicationQueueUrl = toMappedUrl(proxyApplicationQueueUrl, apiUrl)
-    val mappedPostalApplicationQueueUrl = toMappedUrl(postalApplicationQueueUrl, apiUrl)
-    val deletedMappedProxyApplicationQueueUrl = toMappedUrl(deletedProxyApplicationQueueUrl, apiUrl)
-    val deletedMappedPostalApplicationQueueUrl = toMappedUrl(deletedPostalApplicationQueueUrl, apiUrl)
-
-    private fun toMappedUrl(rawUrlString: String, apiUrlString: String): String {
-        val rawUrl = URI.create(rawUrlString)
-        val apiUrl = URI.create(apiUrlString)
-        return URI(
-            rawUrl.scheme,
-            rawUrl.userInfo,
-            apiUrl.host,
-            apiUrl.port,
-            rawUrl.path,
-            rawUrl.query,
-            rawUrl.fragment
-        ).toASCIIString()
-    }
-}
+)
