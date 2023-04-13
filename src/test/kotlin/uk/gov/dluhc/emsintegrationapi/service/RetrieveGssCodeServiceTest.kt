@@ -33,13 +33,16 @@ internal class RetrieveGssCodeServiceTest {
     @InjectMocks
     private lateinit var retrieveGssCodeService: RetrieveGssCodeService
 
+    companion object {
+        val certificateSerial = "123456789"
+    }
+
     @Nested
     inner class GetGssCodeFromCertificateSerial {
 
         @Test
         fun `should throw IER not found exception given IER API client throws IER not found exception`() {
             // Given
-            val certificateSerial = "123456789"
 
             val expected = IerEroNotFoundException(certificateSerial)
             given(ierApiClient.getEroIdentifier(any())).willThrow(expected)
@@ -59,8 +62,6 @@ internal class RetrieveGssCodeServiceTest {
         @Test
         fun `should throw general IER exception given IER API client throws general exception`() {
             // Given
-            val certificateSerial = "123456789"
-
             val expected = IerGeneralException("Error getting eroId for certificate serial $certificateSerial")
             given(ierApiClient.getEroIdentifier(any())).willThrow(expected)
 
@@ -79,7 +80,6 @@ internal class RetrieveGssCodeServiceTest {
         @Test
         fun `should throw ERO not found exception given ERO API client throws not found exception`() {
             // Given
-            val certificateSerial = "123456789"
             val eroIdFromIerApi = getRandomEroId()
             val expected = ElectoralRegistrationOfficeNotFoundException(certificateSerial)
 
@@ -101,7 +101,6 @@ internal class RetrieveGssCodeServiceTest {
         @Test
         fun `should throw general ERO exception given ERO API client throws general exception`() {
             // Given
-            val certificateSerial = "123456789"
             val eroIdFromIerApi = getRandomEroId()
             val expected = ElectoralRegistrationOfficeGeneralException("Some error getting ERO $eroIdFromIerApi")
 
@@ -122,7 +121,6 @@ internal class RetrieveGssCodeServiceTest {
         @Test
         fun `should return empty gssCode when valid certificateSerial provided`() {
             // Given
-            val certificateSerial = "123456789"
             val eroIdFromIerApi = getRandomEroId()
 
             given(ierApiClient.getEroIdentifier(any())).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
@@ -141,7 +139,6 @@ internal class RetrieveGssCodeServiceTest {
         @Test
         fun `should return one gssCode when valid certificateSerial provided`() {
             // Given
-            val certificateSerial = "123456789"
             val eroIdFromIerApi = getRandomEroId()
             val expectedGssCodes = listOf(getRandomGssCode())
 
@@ -160,7 +157,6 @@ internal class RetrieveGssCodeServiceTest {
         @Test
         fun `should return multiple gssCodes when valid certificateSerial provided`() {
             // Given
-            val certificateSerial = "123456789"
             val eroIdFromIerApi = getRandomEroId()
             val gssCodeFromEroApi = getRandomGssCode()
             val anotherGssCodeFromEroApi = getRandomGssCode()

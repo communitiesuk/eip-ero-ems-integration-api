@@ -1,5 +1,5 @@
 @IerClient
-Feature: Get ERO identifier from IER by certificate serial number
+Feature: Get ERO ID by certificate serial number and fetch GSS Code by ERO ID
 
   Scenario: Get ERO certificate mapping by certificate serial number
     Given the certificate serial number "1234567891" mapped to Ero Id "camden-city-council"
@@ -23,3 +23,9 @@ Feature: Get ERO identifier from IER by certificate serial number
     When I send a request to get the mapping by serial number
     And I received mapping response with the Ero Id "bristol-city-council"
     Then the system sent 2 get mapping requests
+
+  Scenario: Get GSS Code by ERO ID
+    Given the certificate serial number "1234567891" mapped to Ero Id "camden-city-council"
+    And the gss codes "E12345678" and "E12345679" mapped to ERO Id
+    When I send a request to get the gss codes
+    Then I received the gss codes "E12345678" and "E12345679"
