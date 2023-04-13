@@ -7,6 +7,7 @@ import org.awaitility.kotlin.await
 import org.springframework.cache.CacheManager
 import uk.gov.dluhc.emsintegrationapi.client.IerApiClient
 import uk.gov.dluhc.emsintegrationapi.config.ERO_CERTIFICATE_MAPPING_CACHE
+import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.service.RetrieveGssCodeService
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.external.ier.models.EROCertificateMapping
@@ -27,8 +28,8 @@ class IerIntegrationSteps(
 
     init {
 
-        Before("@IerClient", ::tearDown)
-        After("@IerClient", ::tearDown)
+        Before("@ClearCache", ::tearDown)
+        After("@ClearCache", ::tearDown)
 
         Given("the certificate serial number {string} mapped to the ERO Id {string}") { certificateSerialNumber: String, eroId: String ->
             this.certificateSerialNumber = certificateSerialNumber
@@ -70,6 +71,7 @@ class IerIntegrationSteps(
 
     private fun tearDown() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
+        cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         wireMockService.resetAllStubsAndMappings()
     }
 }

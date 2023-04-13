@@ -28,36 +28,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
 
         assertThat(savedApplication).usingRecursiveComparison().isEqualTo(postalVoteApplication)
     }
-
-    @Test
-    fun `should return records by record status order by created date`() {
-        val listOfApplications =
-            IntStream.rangeClosed(1, 11).mapToObj {
-                buildPostalVoteApplication(applicationId = it.toString())
-            }.toList()
-
-        postalVoteApplicationRepository.saveAllAndFlush(listOfApplications)
-
-        val applicationsReceived =
-            postalVoteApplicationRepository.findByStatusOrderByDateCreated(
-                RecordStatus.RECEIVED,
-                Pageable.ofSize(10)
-            )
-
-        assertThat(applicationsReceived).hasSize(10)
-        assertThat(applicationsReceived[0].dateCreated).isBefore(applicationsReceived[9].dateCreated)
-        applicationsReceived.forEachIndexed { index, postalVoteApplication ->
-            assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
-            if (index > 0) {
-                assertThat(postalVoteApplication.dateCreated!!.truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
-                    applicationsReceived[index - 1].dateCreated!!.truncatedTo(
-                        ChronoUnit.SECONDS
-                    )
-                )
-            }
-        }
-    }
-
+    
     @Test
     fun `should return records by gss codes and record status order by created date`() {
         // Given

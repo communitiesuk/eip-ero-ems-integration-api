@@ -1,4 +1,4 @@
-@IerClient
+@IerClient @ClearCache
 Feature: Get ERO ID by certificate serial number and fetch GSS Code by ERO ID
 
   Scenario: Get ERO certificate mapping by certificate serial number

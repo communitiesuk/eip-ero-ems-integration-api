@@ -22,14 +22,17 @@ class PostalVoteApplicationService(
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository,
     private val postalVoteMapper: PostalVoteMapper,
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
+    private val retrieveGssCodeService: RetrieveGssCodeService
 ) {
     @Transactional(readOnly = true)
     fun getPostalVoteApplications(certificateSerialNumber: String, pageSize: Int?): PostalVoteAcceptedResponse {
+        logger.info { "Fetching GSS Codes for $certificateSerialNumber" }
+        val gssCodes = retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
         val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
-        // TODO - Serial number validation
-        logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber")
+        logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
         val postalApplicationsList =
-            postalVoteApplicationRepository.findByStatusOrderByDateCreated(
+            postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+                gssCodes,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(numberOfRecordsToFetch)
             )
