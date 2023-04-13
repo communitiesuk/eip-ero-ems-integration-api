@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import java.time.temporal.ChronoUnit
 import java.util.stream.IntStream
@@ -53,6 +54,48 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
                         ChronoUnit.SECONDS
                     )
                 )
+            }
+        }
+    }
+
+    @Test
+    fun `should return records by gss codes and record status order by created date`() {
+        // Given
+        val approvalDetailsValid = buildApprovalDetailsEntity(gssCode = GSS_CODE_1)
+        val approvalDetailsInvalid = buildApprovalDetailsEntity(gssCode = "5678")
+        val listOfApplications =
+            IntStream.rangeClosed(1, 30).mapToObj {
+                val approvalDetails = if (it % 2 == 0) {
+                    approvalDetailsValid
+                } else {
+                    approvalDetailsInvalid
+                }
+                buildPostalVoteApplication(applicationId = it.toString(), approvalDetails = approvalDetails)
+            }.toList()
+
+        postalVoteApplicationRepository.saveAllAndFlush(listOfApplications)
+
+        // When
+        val applicationsReceived =
+            postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+                listOf(GSS_CODE_1, "9010"),
+                RecordStatus.RECEIVED,
+                Pageable.ofSize(10)
+            )
+
+        // That
+        val numberOfApplicationsReceived = applicationsReceived.size
+        assertThat(numberOfApplicationsReceived).isEqualTo(10)
+        assertThat(applicationsReceived[0].dateCreated).isBefore(applicationsReceived[numberOfApplicationsReceived - 1].dateCreated)
+        applicationsReceived.forEachIndexed { index, postalVoteApplication ->
+            assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
+            if (index > 0) {
+                assertThat(postalVoteApplication.dateCreated!!.truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
+                    applicationsReceived[index - 1].dateCreated!!.truncatedTo(
+                        ChronoUnit.SECONDS
+                    )
+                )
+                assertThat(postalVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE_1)
             }
         }
     }

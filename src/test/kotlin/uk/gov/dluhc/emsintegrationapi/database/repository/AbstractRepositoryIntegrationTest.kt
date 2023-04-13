@@ -15,6 +15,7 @@ import uk.gov.dluhc.emsintegrationapi.config.MySQLContainerConfiguration
 abstract class AbstractRepositoryIntegrationTest {
 
     companion object {
+        const val GSS_CODE_1 = "E12345678"
         init {
             MySQLContainerConfiguration.getInstance()
         }
