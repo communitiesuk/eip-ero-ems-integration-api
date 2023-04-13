@@ -43,12 +43,14 @@ class IerIntegrationSteps(
         }
         And("I waited for {long} seconds") { delayInSeconds: Long ->
             logger.info { "Waiting started for $certificateSerialNumber" }
-            await.pollDelay(Duration.ofSeconds(delayInSeconds))
+            await.pollDelay(Duration.ofSeconds(delayInSeconds)).untilAsserted {
+                assertThat(true).isEqualTo(true)
+            }
             logger.info { "Waiting ended for $certificateSerialNumber" }
         }
-        Then("the system did not send a request to get the mapping") {
-            // Make sure that wiremock called only once
-            wireMockService.verifyIerGetEroIdentifierCalledOnce() // a bit confusing, this is for previous step
+        Then("the system sent only one get mapping request", wireMockService::verifyIerGetEroIdentifierCalledOnce)
+        Then("the system sent {int} get mapping requests") { times: Int ->
+            wireMockService.verifyIerGetEroIdentifierCalled(times)
         }
         Then("the system sent a request to get the mapping") {
             wireMockService.verifyWiremockGetInvokedFor(certificateSerialNumber!!)
