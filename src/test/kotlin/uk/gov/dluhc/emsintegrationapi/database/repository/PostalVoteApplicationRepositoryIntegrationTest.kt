@@ -85,7 +85,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
 
         // That
         val numberOfApplicationsReceived = applicationsReceived.size
-        assertThat(numberOfApplicationsReceived).isLessThan(11)
+        assertThat(numberOfApplicationsReceived).isEqualTo(10)
         assertThat(applicationsReceived[0].dateCreated).isBefore(applicationsReceived[numberOfApplicationsReceived - 1].dateCreated)
         applicationsReceived.forEachIndexed { index, postalVoteApplication ->
             assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
