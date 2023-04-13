@@ -33,4 +33,13 @@ sqs:
 sts:
   endpoint: ${STS_ENDPOINT}
 
+api:
+  ero-management:
+    url: ${API_ERO_MANAGEMENT_URL}
+  ier:
+    base.url: ${API_IER_BASE_URL}
+    sts.assume.role: ${API_IER_STS_ASSUME_ROLE}
+
+caching.time-to-live: PT1H
+
 feature-toggles:

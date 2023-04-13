@@ -51,3 +51,11 @@ fun randomHexadecimalString(size: Int): String {
     }
     return generated.substring(0, size)
 }
+
+fun getRandomEroName() = "${faker.address().city()} City Council"
+
+fun getRandomLocalAuthorityName() = "${faker.address().city()} City Council"
+
+fun getRandomPhoneNumber(): String = faker.phoneNumber().cellPhone()
+
+fun getRandomWebsiteAddress(): String = "https://www.${getRandomEroId().replaceSpacesWith("-")}.gov.uk"
