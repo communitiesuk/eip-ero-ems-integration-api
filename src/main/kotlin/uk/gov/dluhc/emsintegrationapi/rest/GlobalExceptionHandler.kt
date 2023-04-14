@@ -39,7 +39,7 @@ class GlobalExceptionHandler {
         ]
     )
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun handleApplicationNotFound(emsIntegrationException: EMSIntegrationException): String {
+    fun handleResourceNotFound(emsIntegrationException: EMSIntegrationException): String {
         logger.warn { emsIntegrationException.message }
         return emsIntegrationException.message
     }
