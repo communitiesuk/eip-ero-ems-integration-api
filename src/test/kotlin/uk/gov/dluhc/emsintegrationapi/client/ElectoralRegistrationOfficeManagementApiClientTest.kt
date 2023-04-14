@@ -93,7 +93,7 @@ internal class ElectoralRegistrationOfficeManagementApiClientTest {
         )
 
         val expectedException =
-            ElectoralRegistrationOfficeGeneralException("Error 500 INTERNAL_SERVER_ERROR getting ERO $eroId")
+            ElectoralRegistrationOfficeGeneralException("Unable to retrieve GSS Codes for $eroId due to error: [500 INTERNAL_SERVER_ERROR]")
 
         // When
         val ex = catchThrowableOfType(

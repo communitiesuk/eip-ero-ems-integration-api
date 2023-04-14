@@ -28,6 +28,8 @@ import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.service.ApplicationType.POSTAL
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import java.util.Optional
 import java.util.stream.IntStream
@@ -46,6 +48,9 @@ internal class PostalVoteApplicationServiceTest {
 
     @Mock
     private lateinit var messageSender: MessageSender<EmsConfirmedReceiptMessage>
+
+    @Mock
+    private lateinit var retrieveGssCodeService: RetrieveGssCodeService
 
     @InjectMocks
     private lateinit var postalVoteApplicationService: PostalVoteApplicationService
@@ -99,6 +104,13 @@ internal class PostalVoteApplicationServiceTest {
     }
 
     private fun validateFetchPostalVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
+        val certificateSerialNumber = "test"
+        val gssCodes = listOf(GSS_CODE1, GSS_CODE2)
+        given { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber) }.willReturn(
+            listOf(
+                GSS_CODE1, GSS_CODE2
+            )
+        )
         // Given
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
@@ -108,7 +120,8 @@ internal class PostalVoteApplicationServiceTest {
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj { mock<PostalVote>() }.toList()
 
         given(
-            postalVoteApplicationRepository.findByStatusOrderByDateCreated(
+            postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+                gssCodes,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(pageSizeRequested ?: defaultPageSize)
             )

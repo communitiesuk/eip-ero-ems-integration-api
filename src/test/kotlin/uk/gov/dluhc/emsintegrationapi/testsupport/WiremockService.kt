@@ -99,19 +99,33 @@ class WiremockService(private val wireMockServer: WireMockServer) {
         )
     }
 
-    fun stubEroManagementGetEroThrowsNotFoundError() {
+    fun stubEroManagementGetEroThrowsNotFoundError(eroId: String) {
+        stubEroManagementGetEroThrowsException(eroId, 404)
+    }
+
+    fun stubEroManagementGetEroThrowsInternalServerError(eroId: String) {
+        stubEroManagementGetEroThrowsException(eroId, 500)
+    }
+
+    fun stubEroManagementGetEroThrowsException(
+        eroId: String,
+        httpStatusCode: Int,
+        message: String = "Error"
+    ) {
         wireMockServer.stubFor(
-            get(urlPathMatching(ERO_MANAGEMENT_ERO_GET_URL))
+            get(urlPathMatching("/ero-management-api/eros/$eroId"))
                 .willReturn(
                     responseDefinition()
-                        .withStatus(404)
+                        .withStatus(httpStatusCode)
+                        .withBody(message)
                 )
         )
     }
 
     private fun stubIerApiGetEroIdentifierThrowsException(
         certificateSerial: String,
-        httpStatusCode: Int
+        httpStatusCode: Int,
+        message: String = "Error"
     ) {
         wireMockServer.stubFor(
             get(urlEqualTo(buildGetIerEndpointUrl(certificateSerial)))
@@ -119,6 +133,7 @@ class WiremockService(private val wireMockServer: WireMockServer) {
                 .willReturn(
                     responseDefinition()
                         .withStatus(httpStatusCode)
+                        .withBody(message)
                 )
         )
     }

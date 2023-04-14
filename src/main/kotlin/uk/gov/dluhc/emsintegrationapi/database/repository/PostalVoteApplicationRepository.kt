@@ -11,12 +11,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 interface PostalVoteApplicationRepository :
     JpaRepository<PostalVoteApplication, String>,
     JpaSpecificationExecutor<PostalVoteApplication> {
-
-    fun findByStatusOrderByDateCreated(
-        status: RecordStatus,
-        pageable: Pageable
-    ): List<PostalVoteApplication>
-
     fun findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
         gssCode: List<String>,
         status: RecordStatus,

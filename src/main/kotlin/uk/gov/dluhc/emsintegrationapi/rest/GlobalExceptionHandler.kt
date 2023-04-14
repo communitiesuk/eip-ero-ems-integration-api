@@ -5,6 +5,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import uk.gov.dluhc.emsintegrationapi.client.ElectoralRegistrationOfficeGeneralException
+import uk.gov.dluhc.emsintegrationapi.client.ElectoralRegistrationOfficeNotFoundException
+import uk.gov.dluhc.emsintegrationapi.client.IerEroNotFoundException
+import uk.gov.dluhc.emsintegrationapi.client.IerGeneralException
+import uk.gov.dluhc.emsintegrationapi.exception.EMSIntegrationException
 import uk.gov.dluhc.emsintegrationapi.service.ApplicationNotFoundException
 import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
@@ -26,10 +31,28 @@ class GlobalExceptionHandler {
         return errorMessage
     }
 
-    @ExceptionHandler(ApplicationNotFoundException::class)
+    @ExceptionHandler(
+        value = [
+            ApplicationNotFoundException::class,
+            IerEroNotFoundException::class,
+            ElectoralRegistrationOfficeNotFoundException::class
+        ]
+    )
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun handleApplicationNotFound(e: ApplicationNotFoundException): String {
-        logger.error { e.message }
-        return e.message
+    fun handleResourceNotFound(emsIntegrationException: EMSIntegrationException): String {
+        logger.warn { emsIntegrationException.message }
+        return emsIntegrationException.message
+    }
+
+    @ExceptionHandler(
+        value = [
+            IerGeneralException::class,
+            ElectoralRegistrationOfficeGeneralException::class
+        ]
+    )
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleIerApiException(emsIntegrationException: EMSIntegrationException): String {
+        logger.error(emsIntegrationException.message)
+        return emsIntegrationException.message
     }
 }
