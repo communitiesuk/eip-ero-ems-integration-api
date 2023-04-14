@@ -5,6 +5,8 @@ import java.time.Instant
 import java.time.ZoneOffset
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ApprovalDetails as ApprovalDetailsMessageDto
 
+const val GSS_CODE1 = "E12345678"
+const val GSS_CODE2 = "E12345679"
 fun buildApprovalDetailsEntity(
     createdAt: Instant = getPastDateTime(),
     gssCode: String = getRandomGssCode(),
