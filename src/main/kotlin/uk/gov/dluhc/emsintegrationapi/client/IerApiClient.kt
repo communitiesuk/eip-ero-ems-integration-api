@@ -60,9 +60,7 @@ class IerApiClient(
     ): IerApiException {
         when (httpClientEx.statusCode) {
             HttpStatus.NOT_FOUND -> throw IerEroNotFoundException(certificateSerial)
-            else -> {
-                throw logAndThrowGeneralException(httpClientEx, certificateSerial)
-            }
+            else -> throw logAndThrowGeneralException(httpClientEx, certificateSerial)
         }
     }
 
