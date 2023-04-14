@@ -19,6 +19,34 @@ Feature: Get Postal Vote Application ( Default page size is 20, max page size is
     When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
     Then I received a response with 0 postal vote applications
 
+  @ClearCache
+  Scenario: System returns http status 404 if the attached certificate serial number does not exist
+    Given the certificate serial "INVALID123" does not exist in ERO
+    When I send a get postal vote applications request with the page size 10 and the certificate serial number "INVALID123"
+    Then I received the http status 404
+    And it has an error message of "The EROCertificateMapping for certificateSerial=[INVALID123] could not be found"
+
+  @ClearCache
+  Scenario: System returns http status 500 if ERO could not process the get mapping request
+    Given the ERO could not process the get mapping request for "1234567899"
+    When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567899"
+    Then I received the http status 500
+    And it has an error message of "Unable to retrieve EROCertificateMapping for certificate serial [1234567899] due to error: [500 Server Error: \"Error\"]"
+
+  @ClearCache
+  Scenario: System returns http status 404 if ERO Mapping Id does not exist
+    Given the ERO Id "camden-city-council" does not exist in ERO
+    When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
+    Then I received the http status 404
+    And it has an error message of "The ERO camden-city-council could not be found"
+
+  @ClearCache
+  Scenario: System returns http status 500 if ERO could not process the get gss code request
+    Given the ERO could not process the get gss codes request for "camden-city-council"
+    When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
+    Then I received the http status 500
+    And the error message contains "Unable to retrieve GSS Codes for camden-city-council due to error: [500 Internal Server Error from GET"
+
   @DeletePostalEntity @ClearCache
   Scenario: System returns postal vote applications of a given page size
     Given there are 20 postal vote applications exist with the status "RECEIVED" and GSS Codes "E12345678","E12345679"
@@ -36,3 +64,4 @@ Feature: Get Postal Vote Application ( Default page size is 20, max page size is
     Given there are 21 postal vote applications exist with the status "RECEIVED" and GSS Codes "E12345678","E12345679"
     When I send a get postal vote request without the page size and with the certificate serial number "1234567891"
     Then I received a response with 20 postal vote applications
+

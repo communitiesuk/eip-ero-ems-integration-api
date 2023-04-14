@@ -37,12 +37,20 @@ class ElectoralRegistrationOfficeManagementApiClient(private val eroManagementWe
             handleWebClientResponseException(ex, eroId)
         } else {
             logger.error(ex) { "Unhandled exception thrown by WebClient" }
-            Mono.error(ElectoralRegistrationOfficeGeneralException("Unhandled error getting ERO $eroId"))
+            Mono.error(generalException(eroId, ex))
         }
 
-    private fun handleWebClientResponseException(ex: WebClientResponseException, eroId: String): Mono<ElectoralRegistrationOfficeResponse> =
+    private fun handleWebClientResponseException(
+        ex: WebClientResponseException,
+        eroId: String
+    ): Mono<ElectoralRegistrationOfficeResponse> =
         if (ex.statusCode == NOT_FOUND)
             Mono.error(ElectoralRegistrationOfficeNotFoundException(eroId))
-        else
-            Mono.error(ElectoralRegistrationOfficeGeneralException("Error ${ex.message} getting ERO $eroId"))
+        else {
+            logger.error(ex) { "Error fetching GSS Code for $eroId" }
+            Mono.error(generalException(eroId, ex))
+        }
+
+    private fun generalException(eroId: String, ex: Throwable) =
+        ElectoralRegistrationOfficeGeneralException("Unable to retrieve GSS Codes for $eroId due to error: [${ex.message}]")
 }

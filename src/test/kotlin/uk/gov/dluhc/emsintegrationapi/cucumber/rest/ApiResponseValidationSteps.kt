@@ -13,5 +13,9 @@ class ApiResponseValidationSteps(val apiResponse: ApiResponse) : En {
             val message = apiResponse.responseSpec!!.returnResult(String::class.java).responseBody.blockFirst()
             assertThat(message).isEqualTo(errorMessage)
         }
+        And("the error message contains {string}") { errorMessage: String ->
+            val message = apiResponse.responseSpec!!.returnResult(String::class.java).responseBody.blockFirst()
+            assertThat(message).contains(errorMessage)
+        }
     }
 }

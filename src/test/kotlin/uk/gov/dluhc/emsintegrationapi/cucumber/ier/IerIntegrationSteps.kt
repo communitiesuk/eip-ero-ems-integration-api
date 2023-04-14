@@ -67,6 +67,25 @@ class IerIntegrationSteps(
             assertThat(gssCodes).hasSize(2)
             assertThat(gssCodes).containsOnly(gssCode1, gssCode2)
         }
+        Given("the certificate serial {string} does not exist in ERO") { invalidSerialNumber: String ->
+            wireMockService.stubIerApiGetEroIdentifierThrowsNotFoundError(invalidSerialNumber)
+        }
+        Given("the ERO could not process the get mapping request for {string}") { validSerialNumber: String ->
+            wireMockService.stubIerApiGetEroIdentifierThrowsInternalServerError(validSerialNumber)
+        }
+        Then(
+            "the system sent only one get gss codes request",
+            wireMockService::verifyEroManagementGetEroIdentifierCalledOnce
+        )
+        Then("the system sent {int} get gss codes requests") { times: Int ->
+            wireMockService.verifyEroManagementGetEroIdentifierCalled(times)
+        }
+        Given("the ERO Id {string} does not exist in ERO") { eroId: String ->
+            wireMockService.stubEroManagementGetEroThrowsNotFoundError(eroId)
+        }
+        Given("the ERO could not process the get gss codes request for {string}") { eroId: String ->
+            wireMockService.stubEroManagementGetEroThrowsInternalServerError(eroId)
+        }
     }
 
     private fun tearDown() {

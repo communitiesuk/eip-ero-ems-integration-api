@@ -59,10 +59,7 @@ class IerApiClient(
         certificateSerial: String
     ): IerApiException {
         when (httpClientEx.statusCode) {
-            HttpStatus.NOT_FOUND -> throw IerEroNotFoundException(certificateSerial).apply {
-                logger.warn { "HttpClientErrorException: [${httpClientEx.message}]" }
-            }
-
+            HttpStatus.NOT_FOUND -> throw IerEroNotFoundException(certificateSerial)
             else -> {
                 throw logAndThrowGeneralException(httpClientEx, certificateSerial)
             }
@@ -72,10 +69,9 @@ class IerApiClient(
     private fun logAndThrowGeneralException(
         restClientException: RestClientException,
         certificateSerial: String
-    ): IerGeneralException {
-        val message = "Unable to retrieve EROCertificateMapping for certificate serial [$certificateSerial] due to error: [${restClientException.message}]"
-        throw IerGeneralException(message).apply {
-            logger.error { "Error: [${restClientException.message}]" }
-        }
-    }
+    ): IerGeneralException =
+        throw IerGeneralException(
+            "Unable to retrieve EROCertificateMapping for certificate serial " +
+                "[$certificateSerial] due to error: [${restClientException.message}]"
+        )
 }

@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.client
 
-import uk.gov.dluhc.emsintegrationapi.exception.ResourceNotFoundException
+import uk.gov.dluhc.emsintegrationapi.exception.EMSIntegrationException
 
 /**
  * Exception classes used when calling `ier-api` is unsuccessful.
@@ -8,10 +8,10 @@ import uk.gov.dluhc.emsintegrationapi.exception.ResourceNotFoundException
  * underlying exception and technology.
  * This abstracts the consuming code from having to deal with, for example, a RestException
  */
-abstract class IerApiException(private val errorMessage: String) : ResourceNotFoundException(errorMessage)
+abstract class IerApiException(private val errorMessage: String) : EMSIntegrationException(errorMessage)
 
 class IerEroNotFoundException(certificateSerial: String) :
-    IerApiException("EROCertificateMapping for certificateSerial=[$certificateSerial] not found")
+    IerApiException("The EROCertificateMapping for certificateSerial=[$certificateSerial] could not be found")
 
 class IerGeneralException(message: String) :
     IerApiException(message)
