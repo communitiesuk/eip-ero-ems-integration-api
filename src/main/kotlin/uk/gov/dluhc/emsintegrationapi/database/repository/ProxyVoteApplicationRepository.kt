@@ -11,12 +11,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 interface ProxyVoteApplicationRepository :
     JpaRepository<ProxyVoteApplication, String>,
     JpaSpecificationExecutor<ProxyVoteApplication> {
-
-    fun findByStatusOrderByDateCreated(
-        status: RecordStatus,
-        pageable: Pageable
-    ): List<ProxyVoteApplication>
-
     fun findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
         gssCode: List<String>,
         status: RecordStatus,

@@ -22,14 +22,17 @@ class ProxyVoteApplicationService(
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository,
     private val proxyVoteMapper: ProxyVoteMapper,
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
+    private val retrieveGssCodeService: RetrieveGssCodeService
 ) {
     @Transactional(readOnly = true)
     fun getProxyVoteApplications(certificateSerialNumber: String, pageSize: Int?): ProxyVoteAcceptedResponse {
+        logger.info { "Proxy Service fetching GSS Codes for $certificateSerialNumber" }
+        val gssCodes = retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
         val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
-        // TODO - Serial number validation
-        logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber")
+        logger.info("Fetching $pageSize proxy vote applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
         val proxyApplicationsList =
-            proxyVoteApplicationRepository.findByStatusOrderByDateCreated(
+            proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+                gssCodes,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(numberOfRecordsToFetch)
             )
