@@ -19,9 +19,9 @@ Feature: Get Proxy Vote Application ( Default page size is 20, max page size is 
     Then I received a response with 0 proxy vote applications
 
   @ClearCache
-  Scenario: System does not have any postal vote applications
+  Scenario: System does not have any proxy vote applications
     When I send a get proxy vote applications request with the page size 10 and the certificate serial number "1234567891"
-    Then I received a response with 0 postal vote applications
+    Then I received a response with 0 proxy vote applications
 
   @ClearCache
   Scenario: System returns http status 404 if the attached certificate serial number does not exist
