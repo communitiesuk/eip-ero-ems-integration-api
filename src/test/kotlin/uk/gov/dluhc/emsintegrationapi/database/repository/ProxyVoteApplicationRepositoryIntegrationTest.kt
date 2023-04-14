@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 import java.time.temporal.ChronoUnit
 import java.util.stream.IntStream
@@ -53,6 +57,44 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
                         ChronoUnit.SECONDS
                     )
                 )
+            }
+        }
+    }
+
+    @Test
+    fun `should return records by gss codes and record status order by created date`() {
+        // Given
+
+        val listOfApplications =
+            IntStream.rangeClosed(1, 30).mapToObj {
+                buildProxyVoteApplication(
+                    applicationId = it.toString(),
+                    buildApprovalDetailsEntity(gssCode = faker.options().option(GSS_CODE1, GSS_CODE2))
+                )
+            }.toList()
+
+        proxyVoteApplicationRepository.saveAllAndFlush(listOfApplications)
+
+        // When
+        val applicationsReceived =
+            proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+                listOf(GSS_CODE1, "9010"),
+                RecordStatus.RECEIVED,
+                Pageable.ofSize(10)
+            )
+
+        // That
+        val numberOfApplicationsReceived = applicationsReceived.size
+        assertThat(numberOfApplicationsReceived).isEqualTo(10)
+        applicationsReceived.forEachIndexed { index, proxyVoteApplication ->
+            assertThat(proxyVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
+            if (index > 0) {
+                assertThat(proxyVoteApplication.dateCreated!!.truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
+                    applicationsReceived[index - 1].dateCreated!!.truncatedTo(
+                        ChronoUnit.SECONDS
+                    )
+                )
+                assertThat(proxyVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE1)
             }
         }
     }

@@ -16,4 +16,10 @@ interface ProxyVoteApplicationRepository :
         status: RecordStatus,
         pageable: Pageable
     ): List<ProxyVoteApplication>
+
+    fun findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+        gssCode: List<String>,
+        status: RecordStatus,
+        pageable: Pageable
+    ): List<ProxyVoteApplication>
 }
