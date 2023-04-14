@@ -24,7 +24,7 @@ class GetPostalApplicationsSteps(
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository,
     webClient: WebTestClient,
     apiProperties: ApiProperties,
-    val apiResponse: ApiResponse
+    private val apiResponse: ApiResponse
 ) : En {
     private var postalVoteApplicationsMap: Map<String, PostalVoteApplication>? = null
     private var postalVoteAcceptedResponse: PostalVoteAcceptedResponse? = null

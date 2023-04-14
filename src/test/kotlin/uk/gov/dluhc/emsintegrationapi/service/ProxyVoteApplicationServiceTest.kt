@@ -27,6 +27,8 @@ import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 import java.util.Optional
 import java.util.stream.IntStream
@@ -45,6 +47,9 @@ internal class ProxyVoteApplicationServiceTest {
 
     @Mock
     private lateinit var messageSender: MessageSender<EmsConfirmedReceiptMessage>
+
+    @Mock
+    private lateinit var retrieveGssCodeService: RetrieveGssCodeService
 
     @InjectMocks
     private lateinit var proxyVoteApplicationService: ProxyVoteApplicationService
@@ -95,7 +100,13 @@ internal class ProxyVoteApplicationServiceTest {
     }
 
     private fun validateFetchProxyVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
-
+        val certificateSerialNumber = "test"
+        val gssCodes = listOf(GSS_CODE1, GSS_CODE2)
+        given { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber) }.willReturn(
+            listOf(
+                GSS_CODE1, GSS_CODE2
+            )
+        )
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
                 buildProxyVoteApplication(applicationId = it.toString())
@@ -104,7 +115,8 @@ internal class ProxyVoteApplicationServiceTest {
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj { mock<ProxyVote>() }.toList()
 
         given(
-            proxyVoteApplicationRepository.findByStatusOrderByDateCreated(
+            proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+                gssCodes,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(pageSizeRequested ?: defaultPageSize)
             )
