@@ -45,7 +45,7 @@ paths:
         - Postal Vote related endpoints
       responses:
         '200':
-          $ref: '#/components/responses/ProxyVoteApplications'
+          $ref: '#/components/responses/PostalVoteApplications'
       operationId: get-postal-votes
       description: |
         ## Overview
@@ -54,7 +54,7 @@ paths:
 
         Postal Vote applications from both sources will be processed in EROP by ERO staff until the application is either accepted or rejected. 
         
-        Accepted applications will have verifyied the identity of the person making the application; verified that the applicant is a registered elector in the current LA/VJB (see "Register Checker API” https://github.com/cabinetoffice/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml); and verified that the signature is acceptable.
+        Accepted applications will have verified the identity of the person making the application; verified that the applicant is a registered elector in the current LA/VJB (see "Register Checker API” https://github.com/cabinetoffice/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml); and verified that the signature is acceptable.
 
         If any of the above conditions can't be satisfied, applications will be rejected.
 
@@ -138,7 +138,7 @@ paths:
           $ref: '#/components/responses/ProxyVoteApplications'
       operationId: get-proxy-votes
       description: |
-        All the same workflow considerations described at `/postalyotes` apply here
+        All the same workflow considerations described at `/proxyyotes` apply here
       parameters:
         - schema:
             type: number
