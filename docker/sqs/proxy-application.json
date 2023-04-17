@@ -1,0 +1,54 @@
+{
+  "approvalDetails": {
+    "id": "%%APPLICATION_ID%%",
+    "createdAt": "2023-04-09T17:39:15Z",
+    "gssCode": "E68604812",
+    "source": "fXrumiivIV",
+    "authorisedAt": "2023-04-10T20:00:09Z",
+    "authorisingStaffId": "contact@bahringerside-city-council.gov.uk"
+  },
+  "applicantDetails": {
+    "firstName": "Ignacio",
+    "surname": "Rippin",
+    "registeredAddress": {
+      "street": "Roma Mountain",
+      "postcode": "C3P 1UL",
+      "property": "31079",
+      "locality": "Turner Grove",
+      "town": "Kelleyburgh",
+      "area": "Louisiana",
+      "uprn": "747998123554"
+    },
+    "referenceNumber": "3049591823",
+    "ipAddress": "1b8b:b72e:1aba:155b:a86c:fc28:1de8:9589",
+    "language": "en",
+    "emsElectorId": "%%ELECTOR_ID%%",
+    "middleNames": "Henry",
+    "dob": "1999-08-05",
+    "phone": "(01865)-48-0440",
+    "email": "eli.goodwin@hotmail.com"
+  },
+  "proxyVoteDetails": {
+    "proxyFirstName": "Antonia",
+    "proxySurname": "Koelpin",
+    "proxyAddress": {
+      "street": "West Inlet",
+      "postcode": "FA2N 5NN",
+      "property": "516",
+      "locality": "Judi Walks",
+      "town": "Doyleview",
+      "area": "Alabama",
+      "uprn": "452964374812"
+    },
+    "proxyReason": "WhVrWWBQxM",
+    "proxyMiddleNames": "Kenda",
+    "proxyFamilyRelationship": "PAh53yXi5WnhtC9mrF2H",
+    "proxyPhone": "(01223)-18-1906",
+    "proxyEmail": "caleb.hammes@hotmail.com",
+    "voteUntilFurtherNotice": false,
+    "voteForSingleDate": "2023-04-10",
+    "voteStartDate": "2023-04-04",
+    "voteEndDate": "2023-04-12"
+  },
+  "signatureBase64": "ZLGGNZr5FcVBdKLtCiVw"
+}
