@@ -29,9 +29,6 @@ sqs:
   deleted-proxy-application-queue-name: deleted-proxy-application
   deleted-postal-application-queue-name: deleted-postal-application
 
-sts:
-  endpoint: sts.amazonaws.com
-
 api:
   ero-management:
     url: http://replaced-by-wireMockServer-bean
