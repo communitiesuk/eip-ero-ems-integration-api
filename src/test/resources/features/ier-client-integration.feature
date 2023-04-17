@@ -37,6 +37,7 @@ Feature: Get ERO ID by certificate serial number and Get GSS Codes by ERO ID
     Then I received the gss codes "E12345678" and "E12345679"
     When I send a request to get the gss codes
     Then the system sent only one get gss codes request
+    Then I received the gss codes "E12345678" and "E12345679"
 
   Scenario: Get GSS Codes By ERO ID - the system clear the cache once TTL (2 seconds) is passed
     Given the certificate serial number "1234567891" mapped to the ERO Id "camden-city-council"
@@ -46,3 +47,4 @@ Feature: Get ERO ID by certificate serial number and Get GSS Codes by ERO ID
     And I waited for 3 seconds
     When I send a request to get the gss codes
     Then the system sent 2 get gss codes requests
+    Then I received the gss codes "E12345678" and "E12345679"

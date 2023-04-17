@@ -16,4 +16,9 @@ interface PostalVoteApplicationRepository :
         status: RecordStatus,
         pageable: Pageable
     ): List<PostalVoteApplication>
+
+    fun findByApplicationIdAndApprovalDetailsGssCodeIn(
+        applicationId: String,
+        gssCode: List<String>,
+    ): PostalVoteApplication?
 }
