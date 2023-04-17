@@ -28,7 +28,7 @@ import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.service.ApplicationType.POSTAL
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import java.util.stream.IntStream
@@ -57,7 +57,7 @@ internal class PostalVoteApplicationServiceTest {
     companion object {
         private const val DEFAULT_PAGE_SIZE = 100
         private const val CERTIFICATE_SERIAL_NUMBER = "test"
-        private val GSS_CODES = listOf(GSS_CODE1, GSS_CODE2)
+        private val GSS_CODES = listOf(GSS_CODE, GSS_CODE2)
     }
 
     @BeforeEach
@@ -114,7 +114,6 @@ internal class PostalVoteApplicationServiceTest {
     }
 
     private fun validateFetchPostalVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
-
         // Given
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
