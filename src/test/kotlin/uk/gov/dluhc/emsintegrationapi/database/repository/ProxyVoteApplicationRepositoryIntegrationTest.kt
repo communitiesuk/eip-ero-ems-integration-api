@@ -69,4 +69,66 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
             }
         }
     }
+
+    @Test
+    fun `should not return record by invalid application id and invalid gss codes`() {
+        // When
+        val proxyVoteApplication =
+            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                "invalidApplicationId",
+                listOf("invalidGGSCode")
+            )
+
+        // That
+        assertThat(proxyVoteApplication).isNull()
+    }
+
+    @Test
+    fun `should not return record by application id and invalid gss codes`() {
+        // Given
+        val applicationId = "applicationId"
+        val proxyApplication =
+            buildProxyVoteApplication(
+                applicationId = applicationId,
+                buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+            )
+
+        proxyVoteApplicationRepository.saveAndFlush(proxyApplication)
+
+        // When
+        val proxyVoteApplication =
+            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                applicationId,
+                listOf("invalidGGSCode")
+            )
+
+        // That
+        assertThat(proxyVoteApplication).isNull()
+    }
+    @Test
+    fun `should return record by application id and gss codes`() {
+        // Given
+        val listOfApplications =
+            IntStream.rangeClosed(1, 2).mapToObj {
+                buildProxyVoteApplication(
+                    applicationId = it.toString(),
+                    buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+                )
+            }.toList()
+
+        proxyVoteApplicationRepository.saveAllAndFlush(listOfApplications)
+        val applicationId = listOfApplications[0].applicationId
+
+        // When
+        val proxyVoteApplication =
+            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                applicationId,
+                listOf(GSS_CODE1, "9010")
+            )
+
+        // That
+        assertThat(proxyVoteApplication).isNotNull
+        assertThat(proxyVoteApplication?.applicationId).isEqualTo(applicationId)
+        assertThat(proxyVoteApplication?.approvalDetails?.gssCode).isEqualTo(GSS_CODE1)
+    }
 }
