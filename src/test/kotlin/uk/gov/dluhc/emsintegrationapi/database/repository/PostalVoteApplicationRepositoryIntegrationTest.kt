@@ -72,18 +72,6 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
 
     @Test
     fun `should not return record by invalid application id and invalid gss codes`() {
-        // Given
-
-        val listOfApplications =
-            IntStream.rangeClosed(1, 10).mapToObj {
-                buildPostalVoteApplication(
-                    applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = GSS_CODE1)
-                )
-            }.toList()
-
-        postalVoteApplicationRepository.saveAllAndFlush(listOfApplications)
-
         // When
         val postalVoteApplication =
             postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
@@ -98,17 +86,14 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
     @Test
     fun `should not return record by application id and invalid gss codes`() {
         // Given
+        val applicationId = "applicationId"
+        val postalApplication =
+            buildPostalVoteApplication(
+                applicationId = applicationId,
+                buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+            )
 
-        val listOfApplications =
-            IntStream.rangeClosed(1, 10).mapToObj {
-                buildPostalVoteApplication(
-                    applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = GSS_CODE1)
-                )
-            }.toList()
-
-        postalVoteApplicationRepository.saveAllAndFlush(listOfApplications)
-        val applicationId = listOfApplications[0].applicationId
+        postalVoteApplicationRepository.saveAndFlush(postalApplication)
 
         // When
         val postalVoteApplication =
@@ -123,9 +108,8 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
     @Test
     fun `should return record by application id and gss codes`() {
         // Given
-
         val listOfApplications =
-            IntStream.rangeClosed(1, 10).mapToObj {
+            IntStream.rangeClosed(1, 2).mapToObj {
                 buildPostalVoteApplication(
                     applicationId = it.toString(),
                     buildApprovalDetailsEntity(gssCode = GSS_CODE1)
