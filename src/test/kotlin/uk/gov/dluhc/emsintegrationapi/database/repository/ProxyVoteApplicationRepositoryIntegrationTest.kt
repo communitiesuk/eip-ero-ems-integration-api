@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.getRandomGssCode
 import java.time.temporal.ChronoUnit
 import java.util.stream.IntStream
 
@@ -40,7 +41,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
             IntStream.rangeClosed(1, 30).mapToObj {
                 buildProxyVoteApplication(
                     applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = faker.options().option(GSS_CODE1, GSS_CODE2))
+                    buildApprovalDetailsEntity(gssCode = faker.options().option(GSS_CODE, GSS_CODE2))
                 )
             }.toList()
 
@@ -49,7 +50,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         // When
         val applicationsReceived =
             proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
-                listOf(GSS_CODE1, "9010"),
+                listOf(GSS_CODE, getRandomGssCode()),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
             )
@@ -65,13 +66,21 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
                         ChronoUnit.SECONDS
                     )
                 )
-                assertThat(proxyVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE1)
+                assertThat(proxyVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE)
             }
         }
     }
 
     @Test
     fun `should not return record by invalid application id and invalid gss codes`() {
+        // Given
+        val applicationId = "applicationId"
+        val proxyApplication =
+            buildProxyVoteApplication(
+                applicationId = applicationId,
+                buildApprovalDetailsEntity(gssCode = GSS_CODE)
+            )
+        proxyVoteApplicationRepository.saveAndFlush(proxyApplication)
         // When
         val proxyVoteApplication =
             proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
@@ -90,7 +99,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         val proxyApplication =
             buildProxyVoteApplication(
                 applicationId = applicationId,
-                buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+                buildApprovalDetailsEntity(gssCode = GSS_CODE)
             )
 
         proxyVoteApplicationRepository.saveAndFlush(proxyApplication)
@@ -112,7 +121,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
             IntStream.rangeClosed(1, 2).mapToObj {
                 buildProxyVoteApplication(
                     applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+                    buildApprovalDetailsEntity(gssCode = GSS_CODE)
                 )
             }.toList()
 
@@ -123,12 +132,12 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         val proxyVoteApplication =
             proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
                 applicationId,
-                listOf(GSS_CODE1, "9010")
+                listOf(GSS_CODE, "9010")
             )
 
         // That
         assertThat(proxyVoteApplication).isNotNull
         assertThat(proxyVoteApplication?.applicationId).isEqualTo(applicationId)
-        assertThat(proxyVoteApplication?.approvalDetails?.gssCode).isEqualTo(GSS_CODE1)
+        assertThat(proxyVoteApplication?.approvalDetails?.gssCode).isEqualTo(GSS_CODE)
     }
 }

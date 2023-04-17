@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
@@ -40,7 +40,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
             IntStream.rangeClosed(1, 30).mapToObj {
                 buildPostalVoteApplication(
                     applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = faker.options().option(GSS_CODE1, GSS_CODE2))
+                    buildApprovalDetailsEntity(gssCode = faker.options().option(GSS_CODE, GSS_CODE2))
                 )
             }.toList()
 
@@ -49,7 +49,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         // When
         val applicationsReceived =
             postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
-                listOf(GSS_CODE1, "9010"),
+                listOf(GSS_CODE, "9010"),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
             )
@@ -65,13 +65,21 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
                         ChronoUnit.SECONDS
                     )
                 )
-                assertThat(postalVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE1)
+                assertThat(postalVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE)
             }
         }
     }
 
     @Test
     fun `should not return record by invalid application id and invalid gss codes`() {
+        // Given
+        val applicationId = "applicationId"
+        val postalApplication =
+            buildPostalVoteApplication(
+                applicationId = applicationId,
+                buildApprovalDetailsEntity(gssCode = GSS_CODE)
+            )
+        postalVoteApplicationRepository.saveAndFlush(postalApplication)
         // When
         val postalVoteApplication =
             postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
@@ -90,7 +98,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         val postalApplication =
             buildPostalVoteApplication(
                 applicationId = applicationId,
-                buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+                buildApprovalDetailsEntity(gssCode = GSS_CODE)
             )
 
         postalVoteApplicationRepository.saveAndFlush(postalApplication)
@@ -112,7 +120,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
             IntStream.rangeClosed(1, 2).mapToObj {
                 buildPostalVoteApplication(
                     applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+                    buildApprovalDetailsEntity(gssCode = GSS_CODE)
                 )
             }.toList()
 
@@ -123,12 +131,12 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         val postalVoteApplication =
             postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
                 applicationId,
-                listOf(GSS_CODE1, "9010")
+                listOf(GSS_CODE, "9010")
             )
 
         // That
         assertThat(postalVoteApplication).isNotNull
         assertThat(postalVoteApplication?.applicationId).isEqualTo(applicationId)
-        assertThat(postalVoteApplication?.approvalDetails?.gssCode).isEqualTo(GSS_CODE1)
+        assertThat(postalVoteApplication?.approvalDetails?.gssCode).isEqualTo(GSS_CODE)
     }
 }
