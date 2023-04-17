@@ -19,6 +19,6 @@ interface PostalVoteApplicationRepository :
 
     fun findByApplicationIdAndApprovalDetailsGssCodeIn(
         applicationId: String,
-        gssCode: List<String>,
+        gssCode: List<String>
     ): PostalVoteApplication?
 }

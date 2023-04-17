@@ -69,4 +69,66 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
             }
         }
     }
+
+    @Test
+    fun `should not return record by invalid application id and invalid gss codes`() {
+        // When
+        val postalVoteApplication =
+            postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                "invalidApplicationId",
+                listOf("invalidGGSCode")
+            )
+
+        // That
+        assertThat(postalVoteApplication).isNull()
+    }
+
+    @Test
+    fun `should not return record by application id and invalid gss codes`() {
+        // Given
+        val applicationId = "applicationId"
+        val postalApplication =
+            buildPostalVoteApplication(
+                applicationId = applicationId,
+                buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+            )
+
+        postalVoteApplicationRepository.saveAndFlush(postalApplication)
+
+        // When
+        val postalVoteApplication =
+            postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                applicationId,
+                listOf("invalidGGSCode")
+            )
+
+        // That
+        assertThat(postalVoteApplication).isNull()
+    }
+    @Test
+    fun `should return record by application id and gss codes`() {
+        // Given
+        val listOfApplications =
+            IntStream.rangeClosed(1, 2).mapToObj {
+                buildPostalVoteApplication(
+                    applicationId = it.toString(),
+                    buildApprovalDetailsEntity(gssCode = GSS_CODE1)
+                )
+            }.toList()
+
+        postalVoteApplicationRepository.saveAllAndFlush(listOfApplications)
+        val applicationId = listOfApplications[0].applicationId
+
+        // When
+        val postalVoteApplication =
+            postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                applicationId,
+                listOf(GSS_CODE1, "9010")
+            )
+
+        // That
+        assertThat(postalVoteApplication).isNotNull
+        assertThat(postalVoteApplication?.applicationId).isEqualTo(applicationId)
+        assertThat(postalVoteApplication?.approvalDetails?.gssCode).isEqualTo(GSS_CODE1)
+    }
 }
