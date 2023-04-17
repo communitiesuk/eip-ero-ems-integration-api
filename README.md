@@ -68,7 +68,9 @@ This will build a docker image for the Spring Boot application.
 
 ## Running the application
 
-Either `./gradlew bootRun` or run the class `EmsIntegrationApiApplication`
+See [docker/README.md](docker/README.md)
+
+Alternatively, either `./gradlew bootRun` or run the class `EmsIntegrationApiApplication`
 
 ### TODO: establish what env vars are actually needed...
 
@@ -111,6 +113,9 @@ The following are overridden by the task definition in AWS:
   api request except health check
 * `DEFAULT_PAGE_SIZE` - The default page size if a GET request did not pass the page size parameter
 * `MAX_PAGE_SIZE` - This is the maximum number of records can be fetched by the application.
+* `API_ERO_MANAGEMENT_URL` - the base URL of the ERO Management REST API service.
+* `API_IER_BASE_URL` - the base URL of the IER REST API service.
+* `API_IER_STS_ASSUME_ROLE` - the IAM role in IER's AWS subscription that should be assumed in order to invoke IER REST API services.
 
 #### Liquibase Configuration
 * `LIQUIBASE_CONTEXT` Contexts for liquibase scripts. For local setup use ddl.
