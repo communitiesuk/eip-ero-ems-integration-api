@@ -1,0 +1,22 @@
+{
+  "mappings" : [ {
+    "id" : "ecbe8004-9d3b-404b-a69d-bd3109cee0a9",
+    "request" : {
+      "url" : "/ier-ero/ero?certificateSerial=543219999",
+      "method" : "GET",
+      "headers" : {
+        "Authorization" : {
+          "matches" : "AWS4-HMAC-SHA256 Credential=.*, SignedHeaders=accept;accept-encoding;host;x-amz-date;x-amz-security-token, Signature=.*"
+        }
+      }
+    },
+    "response" : {
+      "status" : 200,
+      "body" : "{\n    \"eroId\": \"camden-city-council\",\n    \"certificateSerial\": \"543219999\"\n}",
+      "headers" : {
+        "Content-Type" : "application/json"
+      }
+    },
+    "uuid" : "ecbe8004-9d3b-404b-a69d-bd3109cee0a9"
+  } ]
+}

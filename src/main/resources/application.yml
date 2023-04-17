@@ -30,9 +30,6 @@ sqs:
   deleted-proxy-application-queue-name: ${SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME}
   deleted-postal-application-queue-name: ${SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME}
 
-sts:
-  endpoint: ${STS_ENDPOINT}
-
 api:
   ero-management:
     url: ${API_ERO_MANAGEMENT_URL}

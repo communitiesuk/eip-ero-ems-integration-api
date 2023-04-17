@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.config
 import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheInterceptor
 import org.apache.http.impl.client.HttpClientBuilder
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,6 +16,7 @@ import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain
 import software.amazon.awssdk.services.sts.StsClient
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest
+import java.net.URI
 
 /**
  * Configuration class exposing a configured [RestTemplate] suitable for calling IER REST APIs.
@@ -67,9 +69,19 @@ class IerRestTemplateConfiguration(
     }
 
     @Bean
+    @ConditionalOnProperty(name = ["sts.endpoint"], matchIfMissing = true, havingValue = "ignore")
     fun stsClient(): StsClient =
         StsClient.builder()
             .credentialsProvider(DefaultCredentialsProvider.create())
             .region(DefaultAwsRegionProviderChain().region)
+            .build()
+
+    @Bean
+    @ConditionalOnProperty(name = ["sts.endpoint"])
+    fun stsClientWithDefinedEndpoint(@Value("\${sts.endpoint}") endpoint: String): StsClient =
+        StsClient.builder()
+            .credentialsProvider(DefaultCredentialsProvider.create())
+            .region(DefaultAwsRegionProviderChain().region)
+            .endpointOverride(URI.create(endpoint))
             .build()
 }
