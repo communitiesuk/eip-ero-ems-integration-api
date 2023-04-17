@@ -31,7 +31,6 @@ import uk.gov.dluhc.emsintegrationapi.service.ApplicationType.POSTAL
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
-import java.util.Optional
 import java.util.stream.IntStream
 
 @ExtendWith(MockitoExtension::class)
@@ -55,14 +54,25 @@ internal class PostalVoteApplicationServiceTest {
     @InjectMocks
     private lateinit var postalVoteApplicationService: PostalVoteApplicationService
 
-    private val defaultPageSize = 100
+    companion object {
+        private const val DEFAULT_PAGE_SIZE = 100
+        private const val CERTIFICATE_SERIAL_NUMBER = "test"
+        private val GSS_CODES = listOf(GSS_CODE, GSS_CODE2)
+    }
+
+    @BeforeEach
+    private fun setup() {
+        given { retrieveGssCodeService.getGssCodeFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+            GSS_CODES
+        )
+    }
 
     @Nested
     inner class PageSizeIsNotProvided {
 
         @BeforeEach
         fun beforeEach() {
-            given(apiProperties.defaultPageSize).willReturn(defaultPageSize)
+            given(apiProperties.defaultPageSize).willReturn(DEFAULT_PAGE_SIZE)
         }
 
         @AfterEach
@@ -104,13 +114,6 @@ internal class PostalVoteApplicationServiceTest {
     }
 
     private fun validateFetchPostalVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
-        val certificateSerialNumber = "test"
-        val gssCodes = listOf(GSS_CODE, GSS_CODE2)
-        given { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber) }.willReturn(
-            listOf(
-                GSS_CODE, GSS_CODE2
-            )
-        )
         // Given
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
@@ -121,9 +124,9 @@ internal class PostalVoteApplicationServiceTest {
 
         given(
             postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
-                gssCodes,
+                GSS_CODES,
                 RecordStatus.RECEIVED,
-                Pageable.ofSize(pageSizeRequested ?: defaultPageSize)
+                Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
             )
         ).willReturn(savedApplications)
         given { postalVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockPostalVotes)
@@ -146,13 +149,14 @@ internal class PostalVoteApplicationServiceTest {
             // Given
             val postalVoteApplicationCaptor = argumentCaptor<PostalVoteApplication>()
             val postalVoteApplication = buildPostalVoteApplication()
-            given(postalVoteApplicationRepository.findById(postalVoteApplication.applicationId)).willReturn(
-                Optional.of(
-                    postalVoteApplication
+            given(
+                postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                    postalVoteApplication.applicationId,
+                    GSS_CODES
                 )
-            )
+            ).willReturn(postalVoteApplication)
             // When
-            postalVoteApplicationService.confirmReceipt(postalVoteApplication.applicationId)
+            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId)
 
             // Then
             verify(postalVoteApplicationRepository).saveAndFlush(postalVoteApplicationCaptor.capture())
@@ -169,7 +173,12 @@ internal class PostalVoteApplicationServiceTest {
         fun `should throw application not found exception if a given record does not exist in the db`() {
             val applicationId = "SomeId"
             val applicationNotFoundException =
-                assertThrows<ApplicationNotFoundException> { postalVoteApplicationService.confirmReceipt(applicationId) }
+                assertThrows<ApplicationNotFoundException> {
+                    postalVoteApplicationService.confirmReceipt(
+                        CERTIFICATE_SERIAL_NUMBER,
+                        applicationId
+                    )
+                }
             assertThat(applicationNotFoundException.message).isEqualTo("The ${POSTAL.displayName} application could not be found with id `$applicationId`")
             verifyNoInteractions(messageSender)
         }
@@ -180,16 +189,21 @@ internal class PostalVoteApplicationServiceTest {
             val postalVoteApplication = buildPostalVoteApplication(
                 recordStatus = RecordStatus.DELETED
             )
-            given(postalVoteApplicationRepository.findById(postalVoteApplication.applicationId)).willReturn(
-                Optional.of(
-                    postalVoteApplication
+            given(
+                postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                    postalVoteApplication.applicationId,
+                    GSS_CODES
                 )
-            )
+            ).willReturn(postalVoteApplication)
+
             // When
-            postalVoteApplicationService.confirmReceipt(postalVoteApplication.applicationId)
+            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId)
 
             // Then
-            verify(postalVoteApplicationRepository).findById(postalVoteApplication.applicationId)
+            verify(postalVoteApplicationRepository).findByApplicationIdAndApprovalDetailsGssCodeIn(
+                postalVoteApplication.applicationId,
+                GSS_CODES
+            )
             // Make sure that save and flush did not call
             verifyNoMoreInteractions(postalVoteApplicationRepository)
             verifyNoMoreInteractions(messageSender)

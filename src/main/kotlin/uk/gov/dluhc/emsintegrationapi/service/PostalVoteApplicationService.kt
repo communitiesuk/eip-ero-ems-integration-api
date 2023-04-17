@@ -26,8 +26,7 @@ class PostalVoteApplicationService(
 ) {
     @Transactional(readOnly = true)
     fun getPostalVoteApplications(certificateSerialNumber: String, pageSize: Int?): PostalVoteAcceptedResponse {
-        logger.info { "Fetching GSS Codes for $certificateSerialNumber" }
-        val gssCodes = retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
+        val gssCodes = getGssCodes(certificateSerialNumber)
         val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
         val postalApplicationsList =
@@ -43,30 +42,39 @@ class PostalVoteApplicationService(
 
     @Transactional
     fun confirmReceipt(
+        certificateSerialNumber: String,
         postalVoteApplicationId: String,
     ) {
+        val gssCodes = getGssCodes(certificateSerialNumber)
         logger.info("Updating the postal vote application with the id $postalVoteApplicationId with status ${RecordStatus.DELETED}")
-        postalVoteApplicationRepository.findById(postalVoteApplicationId).map { postalVoteApplication ->
-            if (postalVoteApplication.status != RecordStatus.DELETED) {
-                postalVoteApplication.status = RecordStatus.DELETED
-                postalVoteApplication.updatedBy = SourceSystem.EMS
-                postalVoteApplicationRepository.saveAndFlush(postalVoteApplication)
-                messageSender.send(
-                    EmsConfirmedReceiptMessage(postalVoteApplicationId),
-                    DELETED_POSTAL_APPLICATION_QUEUE
-                )
-                logger.info { "Confirmation message sent to the postal vote application for $postalVoteApplicationId" }
-            } else {
-                logger.warn {
-                    "The status of the postal vote application with id $postalVoteApplicationId" +
-                        " is already ${RecordStatus.DELETED}, so ignoring the request "
+        postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            postalVoteApplicationId,
+            gssCodes
+        )
+            ?.let { postalVoteApplication ->
+                if (postalVoteApplication.status != RecordStatus.DELETED) {
+                    postalVoteApplication.status = RecordStatus.DELETED
+                    postalVoteApplication.updatedBy = SourceSystem.EMS
+                    postalVoteApplicationRepository.saveAndFlush(postalVoteApplication)
+                    messageSender.send(
+                        EmsConfirmedReceiptMessage(postalVoteApplicationId),
+                        DELETED_POSTAL_APPLICATION_QUEUE
+                    )
+                    logger.info { "Confirmation message sent to the postal vote application for $postalVoteApplicationId" }
+                } else {
+                    logger.warn {
+                        "The status of the postal vote application with id $postalVoteApplicationId" +
+                            " is already ${RecordStatus.DELETED}, so ignoring the request "
+                    }
                 }
-            }
-        }.orElseThrow {
-            ApplicationNotFoundException(
-                applicationId = postalVoteApplicationId,
-                applicationType = ApplicationType.POSTAL
-            )
-        }
+            } ?: throw ApplicationNotFoundException(
+            applicationId = postalVoteApplicationId,
+            applicationType = ApplicationType.POSTAL
+        )
+    }
+
+    private fun getGssCodes(certificateSerialNumber: String): List<String> {
+        logger.info { "Fetching GSS Codes for $certificateSerialNumber" }
+        return retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
     }
 }

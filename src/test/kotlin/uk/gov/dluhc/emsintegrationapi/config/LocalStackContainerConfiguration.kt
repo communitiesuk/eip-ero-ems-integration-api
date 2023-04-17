@@ -2,7 +2,6 @@ package uk.gov.dluhc.emsintegrationapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KotlinLogging
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ConfigurableApplicationContext
@@ -30,29 +29,28 @@ class LocalStackContainerConfiguration {
         const val DEFAULT_PORT = 4566
         const val DEFAULT_ACCESS_KEY_ID = "test"
         const val DEFAULT_SECRET_KEY = "test"
+        const val DEFAULT_REGION = "eu-west-2"
 
         val objectMapper = ObjectMapper()
-
-        /**
-         * Creates and starts LocalStack configured with a basic (empty) SQS service.
-         * Returns the container that can subsequently be used for further setup and configuration.
-         */
-        @Bean
-        fun localstackContainer(@Value("\${cloud.aws.region.static}") region: String): GenericContainer<*> {
-            return GenericContainer(
-                DockerImageName.parse("localstack/localstack:1.1.0")
-            ).withEnv(
-                mapOf(
-                    "SERVICES" to "sqs, sts",
-                    "AWS_DEFAULT_REGION" to region,
+        var localStackContainer: GenericContainer<*>? = localstackContainer()
+        private fun localstackContainer(): GenericContainer<*>? {
+            if (localStackContainer == null) {
+                localStackContainer = GenericContainer(
+                    DockerImageName.parse("localstack/localstack:1.1.0")
+                ).withEnv(
+                    mapOf(
+                        "SERVICES" to "sqs, sts",
+                        "AWS_DEFAULT_REGION" to DEFAULT_REGION,
+                    )
                 )
-            )
-                .withReuse(true)
-                .withExposedPorts(DEFAULT_PORT)
-                .withCreateContainerCmdModifier { it.withName("ems-integration-api-integration-test-localstack") }
-                .apply {
-                    start()
-                }
+                    .withReuse(true)
+                    .withExposedPorts(DEFAULT_PORT)
+                    .withCreateContainerCmdModifier { it.withName("ems-integration-api-integration-test-localstack") }
+                    .apply {
+                        start()
+                    }
+            }
+            return localStackContainer
         }
     }
 
@@ -63,15 +61,14 @@ class LocalStackContainerConfiguration {
     @Bean
     @Primary
     fun localStackStsClient(
-        @Value("\${cloud.aws.region.static}") region: String,
-        @Qualifier("localstackContainer") localStackContainer: GenericContainer<*>,
         awsCredentialsProvider: AwsCredentialsProvider
     ): StsClient {
 
-        val uri = URI.create("http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}")
+        val uri =
+            URI.create("http://${localStackContainer!!.host}:${localStackContainer!!.getMappedPort(DEFAULT_PORT)}")
         return StsClient.builder()
             .credentialsProvider(awsCredentialsProvider)
-            .region(Region.of(region))
+            .region(Region.of(DEFAULT_REGION))
             .endpointOverride(uri)
             .build()
     }
@@ -83,19 +80,18 @@ class LocalStackContainerConfiguration {
      */
     @Bean
     fun localStackContainerSqsSettings(
-        @Qualifier("localstackContainer") localStackContainer: GenericContainer<*>,
         applicationContext: ConfigurableApplicationContext,
         @Value("\${sqs.proxy-application-queue-name}") proxyApplicationQueueName: String,
         @Value("\${sqs.postal-application-queue-name}") postalApplicationQueueName: String,
         @Value("\${sqs.deleted-proxy-application-queue-name}") deletedProxyApplicationQueueName: String,
         @Value("\${sqs.deleted-postal-application-queue-name}") deletedPostalApplicationQueueName: String,
     ): LocalStackContainerSettings {
-        val proxyApplicationQueueUrl = localStackContainer.createSqsQueue(proxyApplicationQueueName)
-        val postalApplicationQueueUrl = localStackContainer.createSqsQueue(postalApplicationQueueName)
-        val deletedProxyApplicationQueueUrl = localStackContainer.createSqsQueue(deletedProxyApplicationQueueName)
-        val deletedPostalApplicationQueueUrl = localStackContainer.createSqsQueue(deletedPostalApplicationQueueName)
+        val proxyApplicationQueueUrl = localStackContainer!!.createSqsQueue(proxyApplicationQueueName)
+        val postalApplicationQueueUrl = localStackContainer!!.createSqsQueue(postalApplicationQueueName)
+        val deletedProxyApplicationQueueUrl = localStackContainer!!.createSqsQueue(deletedProxyApplicationQueueName)
+        val deletedPostalApplicationQueueUrl = localStackContainer!!.createSqsQueue(deletedPostalApplicationQueueName)
 
-        val apiUrl = "http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}"
+        val apiUrl = "http://${localStackContainer!!.host}:${localStackContainer!!.getMappedPort(DEFAULT_PORT)}"
 
         TestPropertyValues.of(
             "cloud.aws.sqs.endpoint=$apiUrl",
@@ -127,6 +123,7 @@ class LocalStackContainerConfiguration {
         }
     }
 }
+
 data class LocalStackContainerSettings(
     val apiUrl: String,
     val proxyApplicationQueueUrl: String,

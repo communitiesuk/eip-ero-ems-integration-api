@@ -16,6 +16,10 @@ class DeleteApplicationSteps(
         When("the EMS send a delete request to {string} with an application id {string}") { deletePath: String, applicationId: String ->
             apiResponse.responseSpec = apiClient.delete("$deletePath/$applicationId")
         }
+        When("the EMS send a delete request to {string} with an application id {string} and the certificate serial number {string}") { deletePath: String, applicationId: String, certificateSerialNumber: String ->
+            apiResponse.responseSpec =
+                apiClient.delete("$deletePath/$applicationId", serialNumber = certificateSerialNumber)
+        }
         When("the EMS send a delete request to {string} with an application id {string} and without the certificate serial number in the request header") { deletePath: String, applicationId: String ->
             apiResponse.responseSpec = apiClient.delete("$deletePath/$applicationId", attachSerialNumber = false)
         }
