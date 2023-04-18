@@ -43,30 +43,36 @@ class ProxyVoteApplicationService(
 
     @Transactional
     fun confirmReceipt(
+        certificateSerialNumber: String,
         proxyVoteApplicationId: String,
     ) {
+        val gssCodes = getGssCodes(certificateSerialNumber)
         logger.info("Updating the proxy vote application with the id $proxyVoteApplicationId with status ${RecordStatus.DELETED}")
-        proxyVoteApplicationRepository.findById(proxyVoteApplicationId).map { proxyVoteApplication ->
-            if (proxyVoteApplication.status != RecordStatus.DELETED) {
-                proxyVoteApplication.status = RecordStatus.DELETED
-                proxyVoteApplication.updatedBy = SourceSystem.EMS
-                proxyVoteApplicationRepository.saveAndFlush(proxyVoteApplication)
-                messageSender.send(
-                    EmsConfirmedReceiptMessage(proxyVoteApplicationId),
-                    QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
-                )
-                logger.info { "Confirmation message sent to the proxy vote application for $proxyVoteApplicationId" }
-            } else {
-                logger.warn {
-                    "The status of the proxy vote application with id $proxyVoteApplicationId" +
-                        " is already ${RecordStatus.DELETED}, so ignoring the request "
+        proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(proxyVoteApplicationId, gssCodes)
+            ?.let { proxyVoteApplication ->
+                if (proxyVoteApplication.status != RecordStatus.DELETED) {
+                    proxyVoteApplication.status = RecordStatus.DELETED
+                    proxyVoteApplication.updatedBy = SourceSystem.EMS
+                    proxyVoteApplicationRepository.saveAndFlush(proxyVoteApplication)
+                    messageSender.send(
+                        EmsConfirmedReceiptMessage(proxyVoteApplicationId),
+                        QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
+                    )
+                    logger.info { "Confirmation message sent to the proxy vote application for $proxyVoteApplicationId" }
+                } else {
+                    logger.warn {
+                        "The status of the proxy vote application with id $proxyVoteApplicationId" +
+                            " is already ${RecordStatus.DELETED}, so ignoring the request "
+                    }
                 }
-            }
-        }.orElseThrow {
-            ApplicationNotFoundException(
-                applicationId = proxyVoteApplicationId,
-                applicationType = ApplicationType.PROXY
-            )
-        }
+            } ?: throw ApplicationNotFoundException(
+            applicationId = proxyVoteApplicationId,
+            applicationType = ApplicationType.PROXY
+        )
+    }
+
+    private fun getGssCodes(certificateSerialNumber: String): List<String> {
+        logger.info { "Fetching GSS Codes for $certificateSerialNumber" }
+        return retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
     }
 }
