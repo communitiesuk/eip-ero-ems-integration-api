@@ -6,6 +6,8 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateObjects
 
 class EmsProxyApplicationConfirmationSteps(
@@ -22,6 +24,15 @@ class EmsProxyApplicationConfirmationSteps(
         And("the system ignores request and did not update the proxy application with the id {string}") { applicationId: String ->
             val applicationFromDB = proxyVoteApplicationRepository.findById(applicationId).get()
             validateObjects(proxyVoteApplication, applicationFromDB)
+        }
+        Given("a proxy vote application with the application id {string}, status {string} and GSS Code {string} exist") { applicationId: String, status: String, gssCode: String ->
+            proxyVoteApplicationRepository.saveAndFlush(
+                buildProxyVoteApplication(
+                    applicationId = applicationId,
+                    recordStatus = RecordStatus.valueOf(status),
+                    approvalDetails = buildApprovalDetailsEntity(gssCode = gssCode)
+                )
+            )
         }
     }
 }

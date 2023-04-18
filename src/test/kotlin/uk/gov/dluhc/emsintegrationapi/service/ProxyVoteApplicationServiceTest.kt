@@ -30,7 +30,6 @@ import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
-import java.util.Optional
 import java.util.stream.IntStream
 
 @ExtendWith(MockitoExtension::class)
@@ -54,13 +53,24 @@ internal class ProxyVoteApplicationServiceTest {
     @InjectMocks
     private lateinit var proxyVoteApplicationService: ProxyVoteApplicationService
 
-    private val defaultPageSize = 100
+    companion object {
+        private const val DEFAULT_PAGE_SIZE = 100
+        private const val CERTIFICATE_SERIAL_NUMBER = "test"
+        private val GSS_CODES = listOf(GSS_CODE, GSS_CODE2)
+    }
+
+    @BeforeEach
+    private fun setup() {
+        given { retrieveGssCodeService.getGssCodeFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+            GSS_CODES
+        )
+    }
 
     @Nested
     inner class PageSizeIsNotProvided {
         @BeforeEach
         fun beforeEach() {
-            given(apiProperties.defaultPageSize).willReturn(defaultPageSize)
+            given(apiProperties.defaultPageSize).willReturn(DEFAULT_PAGE_SIZE)
         }
 
         @AfterEach
@@ -100,13 +110,7 @@ internal class ProxyVoteApplicationServiceTest {
     }
 
     private fun validateFetchProxyVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
-        val certificateSerialNumber = "test"
-        val gssCodes = listOf(GSS_CODE, GSS_CODE2)
-        given { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber) }.willReturn(
-            listOf(
-                GSS_CODE, GSS_CODE2
-            )
-        )
+        // Given
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
                 buildProxyVoteApplication(applicationId = it.toString())
@@ -116,9 +120,9 @@ internal class ProxyVoteApplicationServiceTest {
 
         given(
             proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
-                gssCodes,
+                GSS_CODES,
                 RecordStatus.RECEIVED,
-                Pageable.ofSize(pageSizeRequested ?: defaultPageSize)
+                Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
             )
         ).willReturn(savedApplications)
         given { proxyVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockProxyVotes)
@@ -140,13 +144,14 @@ internal class ProxyVoteApplicationServiceTest {
             // Given
             val proxyVoteApplicationCaptor = argumentCaptor<ProxyVoteApplication>()
             val proxyVoteApplication = buildProxyVoteApplication()
-            given(proxyVoteApplicationRepository.findById(proxyVoteApplication.applicationId)).willReturn(
-                Optional.of(
-                    proxyVoteApplication
+            given(
+                proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                    proxyVoteApplication.applicationId,
+                    GSS_CODES
                 )
-            )
+            ).willReturn(proxyVoteApplication)
             // When
-            proxyVoteApplicationService.confirmReceipt(proxyVoteApplication.applicationId)
+            proxyVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId)
 
             // Then
             verify(proxyVoteApplicationRepository).saveAndFlush(proxyVoteApplicationCaptor.capture())
@@ -163,7 +168,12 @@ internal class ProxyVoteApplicationServiceTest {
         fun `should throw application not found exception if a given record does not exist in the db`() {
             val applicationId = "SomeId"
             val applicationNotFoundException =
-                assertThrows<ApplicationNotFoundException> { proxyVoteApplicationService.confirmReceipt(applicationId) }
+                assertThrows<ApplicationNotFoundException> {
+                    proxyVoteApplicationService.confirmReceipt(
+                        CERTIFICATE_SERIAL_NUMBER,
+                        applicationId
+                    )
+                }
             assertThat(applicationNotFoundException.message).isEqualTo("The ${ApplicationType.PROXY.displayName} application could not be found with id `$applicationId`")
             verifyNoInteractions(messageSender)
         }
@@ -174,16 +184,21 @@ internal class ProxyVoteApplicationServiceTest {
             val proxyVoteApplication = buildProxyVoteApplication(
                 recordStatus = RecordStatus.DELETED
             )
-            given(proxyVoteApplicationRepository.findById(proxyVoteApplication.applicationId)).willReturn(
-                Optional.of(
-                    proxyVoteApplication
+            given(
+                proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                    proxyVoteApplication.applicationId,
+                    GSS_CODES
                 )
-            )
+            ).willReturn(proxyVoteApplication)
+
             // When
-            proxyVoteApplicationService.confirmReceipt(proxyVoteApplication.applicationId)
+            proxyVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId)
 
             // Then
-            verify(proxyVoteApplicationRepository).findById(proxyVoteApplication.applicationId)
+            verify(proxyVoteApplicationRepository).findByApplicationIdAndApprovalDetailsGssCodeIn(
+                proxyVoteApplication.applicationId,
+                GSS_CODES
+            )
             // Make sure that save and flush did not call
             verifyNoMoreInteractions(proxyVoteApplicationRepository)
             verifyNoMoreInteractions(messageSender)

@@ -55,7 +55,8 @@ class ProxyVoteApplicationController(private val proxyVoteApplicationService: Pr
         )
         applicationId: String
     ) {
-        logger.info { "Processing EMS confirmation of a proxy vote application with the id $applicationId" }
-        proxyVoteApplicationService.confirmReceipt(applicationId)
+        val serialNumber = authentication.credentials.toString()
+        logger.info { "Processing EMS confirmation of a proxy vote application with the id $applicationId and certificate serial no=$serialNumber" }
+        proxyVoteApplicationService.confirmReceipt(serialNumber, applicationId)
     }
 }
