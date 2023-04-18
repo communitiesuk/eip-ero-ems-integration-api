@@ -234,7 +234,6 @@ components:
             - ln
             - regstreet
             - regpostcode
-            - signature
           properties:
             refNum:
               type: string
