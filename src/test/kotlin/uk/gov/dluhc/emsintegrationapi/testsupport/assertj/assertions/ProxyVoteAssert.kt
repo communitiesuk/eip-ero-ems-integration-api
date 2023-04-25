@@ -84,7 +84,7 @@ class ProxyVoteAssert(private val actual: ProxyVote) :
 
     private fun hasApprovalDetails(proxyVoteApplication: ProxyVoteApplication) =
         validate {
-            with(proxyVoteApplication.approvalDetails) {
+            with(proxyVoteApplication.applicationDetails) {
                 haveSameValues(
                     actual,
                     APPROVAL_FIELDS_WITHOUT_DATE_FIELDS,

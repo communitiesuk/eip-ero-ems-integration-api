@@ -81,7 +81,7 @@ class PostalVoteAssert(private val actual: PostalVote) :
 
     private fun hasApprovalDetails(postalVoteApplication: PostalVoteApplication) =
         validate {
-            with(postalVoteApplication.approvalDetails) {
+            with(postalVoteApplication.applicationDetails) {
                 haveSameValues(
                     actual,
                     APPROVAL_FIELDS_WITHOUT_DATE_FIELDS,

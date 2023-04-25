@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.dluhc.emsintegrationapi.testsupport.isValid
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildAddressEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsEntity
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
@@ -34,7 +34,7 @@ internal class EntityValidationTest {
                 applicantDetails = buildApplicantDetailsEntity(
                     firstName = getRandomString(36),
                 ),
-                approvalDetails = buildApprovalDetailsEntity(
+                applicationDetails = buildApplicationDetailsEntity(
                     gssCode = getRandomString(10),
                 )
             )
@@ -67,7 +67,7 @@ internal class EntityValidationTest {
                 applicantDetails = buildApplicantDetailsEntity(
                     firstName = getRandomString(36),
                 ),
-                approvalDetails = buildApprovalDetailsEntity(
+                applicationDetails = buildApplicationDetailsEntity(
                     gssCode = getRandomString(10),
                 )
             )
@@ -141,7 +141,7 @@ internal class EntityValidationTest {
 
         @Test
         fun `should throw constraint violations if an approval details object is invalid`() {
-            val approvalDetails = buildApprovalDetailsEntity(
+            val approvalDetails = buildApplicationDetailsEntity(
                 gssCode = getRandomString(10),
                 authorisingStaffId = getRandomString(256),
                 source = getRandomString(51)

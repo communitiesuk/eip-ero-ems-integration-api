@@ -6,7 +6,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateObjects
 
@@ -30,7 +30,7 @@ class EmsPostalApplicationConfirmationSteps(
                 buildPostalVoteApplication(
                     applicationId = applicationId,
                     recordStatus = RecordStatus.valueOf(status),
-                    approvalDetails = buildApprovalDetailsEntity(gssCode = gssCode)
+                    applicationDetails = buildApplicationDetailsEntity(gssCode = gssCode)
                 )
             )
         }

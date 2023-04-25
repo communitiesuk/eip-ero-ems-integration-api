@@ -63,10 +63,12 @@ properties:
     description: |
       the IP address from which the application was received (digital applications only)
   language:
+    title: ApplicationLanguage
+    description: Enum indicating “en” or “cy” according to which language the applicant used
     type: string
-    minLength: 2
-    maxLength: 2
-    description: “en” or “cy” according to which language the applicant used
+    enum:
+      - en
+      - cy
   emsElectorId:
     type: string
     maxLength: 255

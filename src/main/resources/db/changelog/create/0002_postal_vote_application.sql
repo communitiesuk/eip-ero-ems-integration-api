@@ -27,7 +27,7 @@ CREATE TABLE `postal_vote_application`
     `vote_for_single_date`      date,
     `vote_start_date`           date,
     `vote_end_date`             date,
-    `signature_base64`          text         NOT NULL,
+    `signature_base64`          text,
     `removal_date_time`         timestamp,
     `retention_status`          varchar(20)  NOT NULL,
     `date_created`              timestamp    NOT NULL,
@@ -36,9 +36,12 @@ CREATE TABLE `postal_vote_application`
     `updated_by`                varchar(255) NULL,
     `version`                   bigint       NOT NULL,
     `status`                    varchar(20)  NOT NULL COMMENT 'status of the record, used for soft deletion',
+    `application_status`        varchar(20)  NOT NULL,
+    `signature_waived`          bit(1),
+    `signatureWaivedReason`     varchar(250),
     PRIMARY KEY (`application_id`),
     UNIQUE KEY `postal_vote_application_ems_elector_id_unique_idx` (`ems_elector_id`),
-    KEY `postal_vote_application_application_id_status_idx` (`application_id`,`status`),
-    KEY `postal_vote_application_application_id_gss_code_idx` (`application_id`,`gss_code`),
-    KEY `postal_vote_application_gss_code_idx` (`gss_code`)
+    KEY                         `postal_vote_application_application_id_status_idx` (`application_id`,`status`),
+    KEY                         `postal_vote_application_application_id_gss_code_idx` (`application_id`,`gss_code`),
+    KEY                         `postal_vote_application_gss_code_idx` (`gss_code`)
 )

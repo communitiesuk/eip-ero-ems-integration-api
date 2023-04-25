@@ -8,7 +8,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import java.time.temporal.ChronoUnit
 import java.util.stream.IntStream
@@ -40,7 +40,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
             IntStream.rangeClosed(1, 30).mapToObj {
                 buildPostalVoteApplication(
                     applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = faker.options().option(GSS_CODE, GSS_CODE2))
+                    buildApplicationDetailsEntity(gssCode = faker.options().option(GSS_CODE, GSS_CODE2))
                 )
             }.toList()
 
@@ -65,7 +65,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
                         ChronoUnit.SECONDS
                     )
                 )
-                assertThat(postalVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE)
+                assertThat(postalVoteApplication.applicationDetails.gssCode).isEqualTo(GSS_CODE)
             }
         }
     }
@@ -77,7 +77,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         val postalApplication =
             buildPostalVoteApplication(
                 applicationId = applicationId,
-                buildApprovalDetailsEntity(gssCode = GSS_CODE)
+                buildApplicationDetailsEntity(gssCode = GSS_CODE)
             )
         postalVoteApplicationRepository.saveAndFlush(postalApplication)
         // When
@@ -98,7 +98,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         val postalApplication =
             buildPostalVoteApplication(
                 applicationId = applicationId,
-                buildApprovalDetailsEntity(gssCode = GSS_CODE)
+                buildApplicationDetailsEntity(gssCode = GSS_CODE)
             )
 
         postalVoteApplicationRepository.saveAndFlush(postalApplication)
@@ -120,7 +120,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
             IntStream.rangeClosed(1, 2).mapToObj {
                 buildPostalVoteApplication(
                     applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = GSS_CODE)
+                    buildApplicationDetailsEntity(gssCode = GSS_CODE)
                 )
             }.toList()
 
@@ -137,6 +137,6 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         // That
         assertThat(postalVoteApplication).isNotNull
         assertThat(postalVoteApplication?.applicationId).isEqualTo(applicationId)
-        assertThat(postalVoteApplication?.approvalDetails?.gssCode).isEqualTo(GSS_CODE)
+        assertThat(postalVoteApplication?.applicationDetails?.gssCode).isEqualTo(GSS_CODE)
     }
 }

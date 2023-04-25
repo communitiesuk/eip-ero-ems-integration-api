@@ -15,7 +15,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationR
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteAcceptedResponse
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.PostalVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 
 private val logger = KotlinLogging.logger { }
@@ -42,7 +42,9 @@ class GetPostalApplicationsSteps(
             ) {
                 buildPostalVoteApplication(
                     recordStatus = RecordStatus.valueOf(recordStatus),
-                    approvalDetails = buildApprovalDetailsEntity(gssCode = faker.options().option(gssCode1, gssCode2))
+                    applicationDetails = buildApplicationDetailsEntity(
+                        gssCode = faker.options().option(gssCode1, gssCode2)
+                    )
                 )
             }
             // Let us create a map out of it so it will easy for validation

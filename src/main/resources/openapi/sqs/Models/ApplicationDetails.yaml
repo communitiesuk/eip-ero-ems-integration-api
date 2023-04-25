@@ -1,5 +1,5 @@
-title: Approval Details
-description: Approval details
+title: Application Details
+description: Application Details
 type: object
 version: 1.0.0
 x-examples:
@@ -10,7 +10,9 @@ x-examples:
     source: web
     authorisedAt: 2022-08-02T10:10:10Z
     authorisingStaffId: jsmith99@somecouncil.gov.uk
-
+    applicationStatus: approved
+    signatureWaived: true
+    signatureWaivedReason: disabled
 properties:
   id:
     type: string
@@ -41,6 +43,28 @@ properties:
     maxLength: 255
     format: email
     description: the id of the ERO user who approved this application in the EROP
+  applicationStatus:
+    description: Enum indicating if an application is approved or rejected.
+    type: string
+    enum:
+      - approved
+      - rejected
+  signature:
+    type: string
+    format: byte
+    description: |
+      Base64 encoded signature image of the applicant’s signature, in Base64 encoded PNG format. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usually under 30KB.
+  signatureWaived:
+    type: boolean
+    default: false
+    description: |
+      Where an Elector has been granted a signature waiver. If 'true', then no signature will be provided and a signatureWaivedReason will be supplied.
+  signatureWaivedReason:
+    type: string
+    maxLength: 500
+    default: false
+    description: |
+      Where an Elector has been granted a signature waiver, this field will contain a descriptin of the reason for the waiver.
 required:
   - id
   - createdAt
@@ -48,3 +72,4 @@ required:
   - source
   - authorisedAt
   - authorisingStaffId
+  - applicationStatus

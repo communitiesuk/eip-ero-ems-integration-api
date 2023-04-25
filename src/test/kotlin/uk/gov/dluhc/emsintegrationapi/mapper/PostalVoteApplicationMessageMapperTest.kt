@@ -13,7 +13,7 @@ internal class PostalVoteApplicationMessageMapperTest {
     private val instantMapper = InstantMapper()
     private val applicantDetailsMapper = ApplicantDetailsMapper(addressMapper)
     private val postalVoteDetailsMapper = PostalVoteDetailsMapper(addressMapper)
-    private val approvalDetailsMapper = ApprovalDetailsMapper(instantMapper)
+    private val approvalDetailsMapper = ApplicationDetailsMapper(instantMapper)
     private val postalVoteApplicationMessageMapper = PostalVoteApplicationMessageMapper(
         applicantDetailsMapper = applicantDetailsMapper,
         postalVoteDetailsMapper = postalVoteDetailsMapper,

@@ -15,7 +15,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteAcceptedResponse
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ProxyVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 
 private val logger = KotlinLogging.logger { }
@@ -44,7 +44,9 @@ class GetProxyApplicationsSteps(
             ) {
                 buildProxyVoteApplication(
                     recordStatus = RecordStatus.valueOf(recordStatus),
-                    approvalDetails = buildApprovalDetailsEntity(gssCode = faker.options().option(gssCode1, gssCode2))
+                    applicationDetails = buildApplicationDetailsEntity(
+                        gssCode = faker.options().option(gssCode1, gssCode2)
+                    )
                 )
             }
             // Let us create a map out of it so it will be easy for the validation
