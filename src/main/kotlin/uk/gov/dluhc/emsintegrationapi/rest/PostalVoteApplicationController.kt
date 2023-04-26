@@ -27,10 +27,10 @@ private val logger = KotlinLogging.logger { }
 @RestController
 @CrossOrigin
 @Validated
-@RequestMapping("/postalVotes")
+@RequestMapping("/postalvotes")
 class PostalVoteApplicationController(private val postalVoteApplicationService: PostalVoteApplicationService) {
 
-    @GetMapping("/accepted")
+    @GetMapping
     @PreAuthorize(IS_AUTHENTICATED)
     fun getPostalVoteApplications(
         authentication: Authentication,
@@ -46,7 +46,7 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         return postalVoteApplicationService.getPostalVoteApplications(serialNumber, pageSize)
     }
 
-    @DeleteMapping("/accepted/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize(IS_AUTHENTICATED)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun emsAccepted(

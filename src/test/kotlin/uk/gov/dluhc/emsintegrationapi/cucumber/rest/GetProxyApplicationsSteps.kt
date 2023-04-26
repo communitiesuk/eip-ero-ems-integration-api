@@ -31,7 +31,7 @@ class GetProxyApplicationsSteps(
     private val apiClient = ApiClient(webClient, apiProperties)
 
     companion object {
-        const val ACCEPTED_PATH = "/proxyVotes/accepted"
+        const val ACCEPTED_PATH = "/proxyvotes"
     }
 
     init {

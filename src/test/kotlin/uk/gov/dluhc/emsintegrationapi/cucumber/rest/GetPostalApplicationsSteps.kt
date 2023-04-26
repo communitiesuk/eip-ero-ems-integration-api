@@ -31,7 +31,7 @@ class GetPostalApplicationsSteps(
     private val apiClient = ApiClient(webClient, apiProperties)
 
     companion object {
-        const val ACCEPTED_PATH = "/postalVotes/accepted"
+        const val ACCEPTED_PATH = "/postalvotes"
     }
 
     init {

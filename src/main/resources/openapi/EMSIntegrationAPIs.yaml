@@ -122,7 +122,7 @@ paths:
         - emsCertificateLambdaAuthorizer: []
       x-amazon-apigateway-integration:
         type: HTTP_PROXY
-        uri: '${base_uri}/proxyvotes/{id}'
+        uri: '${base_uri}/postalvotes/{id}'
         requestParameters:
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
@@ -578,7 +578,7 @@ components:
                 Where an Elector has been granted a signature waiver. If 'true', then no signature will be provided and a signatureWaivedReason will be supplied.
             signatureWaivedReason:
               type: string
-              maxLength: 500
+              maxLength: 250
               default: false
               description: |
                 Where an Elector has been granted a signature waiver, this field will contain a descriptin of the reason for the waiver.

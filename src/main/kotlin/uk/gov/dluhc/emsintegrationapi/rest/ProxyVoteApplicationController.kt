@@ -24,10 +24,10 @@ private val logger = KotlinLogging.logger { }
 @RestController
 @CrossOrigin
 @Validated
-@RequestMapping("/proxyVotes")
+@RequestMapping("/proxyvotes")
 class ProxyVoteApplicationController(private val proxyVoteApplicationService: ProxyVoteApplicationService) {
 
-    @GetMapping("/accepted")
+    @GetMapping
     @PreAuthorize("isAuthenticated()")
     fun getProxyVoteApplications(
         authentication: Authentication,
@@ -43,7 +43,7 @@ class ProxyVoteApplicationController(private val proxyVoteApplicationService: Pr
         return proxyVoteApplicationService.getProxyVoteApplications(serialNumber, pageSize)
     }
 
-    @DeleteMapping("/accepted/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize(ApplicationConstants.IS_AUTHENTICATED)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun emsAccepted(
