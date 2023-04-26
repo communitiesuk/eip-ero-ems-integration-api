@@ -1,14 +1,14 @@
 @Proxy @DeleteProxyEntity @DeleteProxyMessage
 Feature: System process an approved/rejected proxy vote application message
 
-  Scenario Outline: The system process and saves a proxy vote application message into the database
-    Given a proxy vote application with the application id "<ProxyApplicationId>" and electoral id "<EmsElectoralId>"
+  Scenario Outline: The system process and saves a approved/rejected proxy vote application message into the database
+    Given a proxy vote application with the application id "<ProxyApplicationId>", electoral id "<EmsElectoralId>" and status "<ApplicationStatus>"
     When I send an sqs message to the proxy application queue
-    Then the proxy vote application has been successfully saved with the application id "<ProxyApplicationId>" and electoral id "<EmsElectoralId>"
+    Then the "<ApplicationStatus>" proxy vote application has been successfully saved with the application id "<ProxyApplicationId>" and electoral id "<EmsElectoralId>"
     Examples:
-      | ProxyApplicationId       | EmsElectoralId                       |
-      | 602cf250036469154b4f85fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 |
-      | 602cf250036469154b4f85fb | e87cbaea-0deb-4058-95c6-8240d426f5e2 |
+      | ProxyApplicationId       | EmsElectoralId                       | ApplicationStatus |
+      | 602cf250036469154b4f85fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 | APPROVED          |
+      | 602cf250036469154b4f85fb | e87cbaea-0deb-4058-95c6-8240d426f5e2 | REJECTED          |
 
   Scenario Outline: The system does not allow two different proxy applications having same id and a different ems electoral id
     Given a proxy vote application with the application id "<ProxyApplicationId>" and electoral id "<EmsElectoralId>" exists
@@ -28,10 +28,10 @@ Feature: System process an approved/rejected proxy vote application message
       | 602cf250036469154b4f85fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 | 602cf250036469154b4f85fb |
 
   Scenario Outline: The system will reject a proxy vote application message with an invalid application id, application id must be 24 characters
-    Given a proxy vote application with the application id "<InvalidProxyApplicationId>" and electoral id "<EmsElectoralId>"
+    Given a proxy vote application with the application id "<ProxyApplicationId>", electoral id "<EmsElectoralId>" and status "<ApplicationStatus>"
     When I send an sqs message to the proxy application queue
     Then the proxy vote application with id "<InvalidProxyApplicationId>" did not save
     Examples:
-      | InvalidProxyApplicationId | EmsElectoralId                       |
-      | 123456                    | e87cbaea-0deb-4058-95c6-8240d426f5e4 |
-      | 123457                    | e87cbaea-0deb-4058-95c6-8240d426f5e6 |
+      | InvalidProxyApplicationId | EmsElectoralId                       | ApplicationStatus |
+      | 123456                    | e87cbaea-0deb-4058-95c6-8240d426f5e4 | APPROVED          |
+      | 123457                    | e87cbaea-0deb-4058-95c6-8240d426f5e6 | REJECTED          |

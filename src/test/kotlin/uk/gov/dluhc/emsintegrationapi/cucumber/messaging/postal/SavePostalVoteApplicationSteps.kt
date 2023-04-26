@@ -11,8 +11,10 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationR
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteApplicationMessageMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
+import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsMessageDto
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateObjects
 import java.util.concurrent.TimeUnit
@@ -28,11 +30,15 @@ open class SavePostalVoteApplicationSteps(
     private var postalVoteApplicationMessage: PostalVoteApplicationMessage? = null
 
     init {
-        Given("a postal vote application with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
-            logger.info("Postal application id $applicationId and Elector id = $emsElectorId")
+        Given("a postal vote application with the application id {string}, electoral id {string} and status {string}") { applicationId: String, emsElectorId: String, applicationStatus: String ->
             postalVoteApplicationMessage =
                 buildPostalVoteApplicationMessage(
                     applicationId = applicationId,
+                    applicationDetails = buildApplicationDetailsMessageDto(
+                        applicationStatus = ApplicationDetails.ApplicationStatus.valueOf(
+                            applicationStatus
+                        )
+                    ),
                     applicantDetails = buildApplicantDetailsMessageDto(emsElectorId = emsElectorId)
                 )
         }
@@ -47,18 +53,21 @@ open class SavePostalVoteApplicationSteps(
             )
         }
 
-        Then("the postal vote application has been successfully saved with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
+        Then("the {string} postal vote application has been successfully saved with the application id {string} and electoral id {string}") { applicationStatus: String, applicationId: String, emsElectorId: String ->
             logger.info("The saved Postal application has id $applicationId and Elector id = $emsElectorId")
 
             await.atMost(5, TimeUnit.SECONDS).untilAsserted {
-                val savedEntity = postalVoteApplicationRepository.findById(applicationId)
-                if (savedEntity.isPresent) {
+                val optSavedEntity = postalVoteApplicationRepository.findById(applicationId)
+                if (optSavedEntity.isPresent) {
+                    val savedEntity = optSavedEntity.get()
                     validateObjects(
                         postalVoteApplicationMessage,
-                        this,
+                        savedEntity,
                         *APPLICATION_FIELDS_TO_IGNORE
                     )
-                    logger.info("Successfully validated the application with id = $applicationId")
+                    assertThat(savedEntity.applicantDetails.emsElectorId).isEqualTo(emsElectorId)
+                    assertThat(savedEntity.applicationDetails.applicationStatus).isEqualTo(applicationStatus)
+                    logger.info("Successfully validated the application with the id = $applicationId")
                 }
             }
         }

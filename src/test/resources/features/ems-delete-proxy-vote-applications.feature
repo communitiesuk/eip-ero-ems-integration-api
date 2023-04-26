@@ -6,7 +6,7 @@ Feature: The EMS send a delete request on confirming a given Proxy Vote Applicat
     And the gss codes "E12345678" and "E12345679" mapped to the ERO Id
 
   Scenario: System returns http status 403 if certificate serial number is not attached to the request
-    When the EMS send a delete request to "/proxyvotes/" with an application id "502cf250036469154b4f85fb" and without the certificate serial number in the request header
+    When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and without the certificate serial number in the request header
     Then I received the http status 403
 
   Scenario: System rejects the request with status code 400 if the application id format is invalid

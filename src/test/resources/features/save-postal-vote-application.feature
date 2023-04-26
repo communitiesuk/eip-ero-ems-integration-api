@@ -2,13 +2,13 @@
 Feature: System process an approved/rejected postal vote application message
 
   Scenario Outline: The system process and saves a postal vote application message into the database
-    Given a postal vote application with the application id "<PostalApplicationId>" and electoral id "<EmsElectoralId>"
+    Given a postal vote application with the application id "<ProxyApplicationId>", electoral id "<EmsElectoralId>" and status "<ApplicationStatus>"
     When I send an sqs message to the postal application queue
-    Then the postal vote application has been successfully saved with the application id "<PostalApplicationId>" and electoral id "<EmsElectoralId>"
+    Then the "<ApplicationStatus>" postal vote application has been successfully saved with the application id "<PostalApplicationId>" and electoral id "<EmsElectoralId>"
     Examples:
-      | PostalApplicationId      | EmsElectoralId                       |
-      | 502cf250036469154b4f85fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 |
-      | 502cf250036469154b4f85fb | e87cbaea-0deb-4058-95c6-8240d426f5e2 |
+      | PostalApplicationId      | EmsElectoralId                       | ApplicationStatus |
+      | 502cf250036469154b4f85fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 | APPROVED          |
+      | 502cf250036469154b4f85fb | e87cbaea-0deb-4058-95c6-8240d426f5e2 | REJECTED          |
 
   Scenario Outline: The system does not allow two different postal applications having same id and a different ems electoral id
     Given a postal vote application with the application id "<PostalApplicationId>" and electoral id "<EmsElectoralId>" exists
@@ -28,10 +28,10 @@ Feature: System process an approved/rejected postal vote application message
       | 502cf250036469154b4f85fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 | 502cf250036469154b4f85fb |
 
   Scenario Outline: The system will reject a postal vote application message with an invalid application id, application id must be 24 characters
-    Given a postal vote application with the application id "<InvalidPostalApplicationId>" and electoral id "<EmsElectoralId>"
+    Given a postal vote application with the application id "<ProxyApplicationId>", electoral id "<EmsElectoralId>" and status "<ApplicationStatus>"
     When I send an sqs message to the postal application queue
     Then the postal vote application with id "<InvalidPostalApplicationId>" did not save
     Examples:
-      | InvalidPostalApplicationId | EmsElectoralId                       |
-      | 123456                     | e87cbaea-0deb-4058-95c6-8240d426f5e4 |
-      | 123457                     | e87cbaea-0deb-4058-95c6-8240d426f5e6 |
+      | InvalidPostalApplicationId | EmsElectoralId                       | ApplicationStatus |
+      | 123456                     | e87cbaea-0deb-4058-95c6-8240d426f5e4 | APPROVED          |
+      | 123457                     | e87cbaea-0deb-4058-95c6-8240d426f5e6 | REJECTED          |

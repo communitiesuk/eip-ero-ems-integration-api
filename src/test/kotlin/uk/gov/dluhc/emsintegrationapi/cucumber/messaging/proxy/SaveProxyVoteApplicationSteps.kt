@@ -11,8 +11,10 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteApplicationMessageMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
+import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsMessageDto
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplicationMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateObjects
 import java.util.concurrent.TimeUnit
@@ -28,11 +30,16 @@ open class SaveProxyVoteApplicationSteps(
     private var proxyVoteApplicationMessage: ProxyVoteApplicationMessage? = null
 
     init {
-        Given("a proxy vote application with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
+        Given("a proxy vote application with the application id {string}, electoral id {string} and status {string}") { applicationId: String, emsElectorId: String, applicationStatus: String ->
             logger.info("Proxy application id $applicationId and Elector id = $emsElectorId")
             proxyVoteApplicationMessage =
                 buildProxyVoteApplicationMessageDto(
                     applicationId = applicationId,
+                    applicationDetails = buildApplicationDetailsMessageDto(
+                        applicationStatus = ApplicationDetails.ApplicationStatus.valueOf(
+                            applicationStatus
+                        )
+                    ),
                     applicantDetails = buildApplicantDetailsMessageDto(emsElectorId = emsElectorId)
                 )
         }
@@ -47,18 +54,19 @@ open class SaveProxyVoteApplicationSteps(
             )
         }
 
-        Then("the proxy vote application has been successfully saved with the application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
-            logger.info("The saved Proxy application has id $applicationId and Elector id = $emsElectorId")
-
+        Then("the {string} proxy vote application has been successfully saved with the application id {string} and electoral id {string}") { applicationStatus: String, applicationId: String, emsElectorId: String ->
             await.atMost(5, TimeUnit.SECONDS).untilAsserted {
-                val savedEntity = proxyVoteApplicationRepository.findById(applicationId)
-                if (savedEntity.isPresent) {
+                val optSavedEntity = proxyVoteApplicationRepository.findById(applicationId)
+                if (optSavedEntity.isPresent) {
+                    val savedEntity = optSavedEntity.get()
                     validateObjects(
                         proxyVoteApplicationMessage,
-                        this,
+                        savedEntity,
                         *APPLICATION_FIELDS_TO_IGNORE
                     )
-                    logger.info("Successfully validated the application with id = $applicationId")
+                    assertThat(savedEntity.applicantDetails.emsElectorId).isEqualTo(emsElectorId)
+                    assertThat(savedEntity.applicationDetails.applicationStatus).isEqualTo(applicationStatus)
+                    logger.info("Successfully validated the application with the id = $applicationId")
                 }
             }
         }
