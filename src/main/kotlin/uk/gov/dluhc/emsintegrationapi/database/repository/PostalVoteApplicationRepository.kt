@@ -11,13 +11,13 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 interface PostalVoteApplicationRepository :
     JpaRepository<PostalVoteApplication, String>,
     JpaSpecificationExecutor<PostalVoteApplication> {
-    fun findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+    fun findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
         gssCode: List<String>,
         status: RecordStatus,
         pageable: Pageable
     ): List<PostalVoteApplication>
 
-    fun findByApplicationIdAndApprovalDetailsGssCodeIn(
+    fun findByApplicationIdAndApplicationDetailsGssCodeIn(
         applicationId: String,
         gssCode: List<String>
     ): PostalVoteApplication?

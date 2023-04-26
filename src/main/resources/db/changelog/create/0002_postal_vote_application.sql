@@ -38,7 +38,7 @@ CREATE TABLE `postal_vote_application`
     `status`                    varchar(20)  NOT NULL COMMENT 'status of the record, used for soft deletion',
     `application_status`        varchar(20)  NOT NULL,
     `signature_waived`          bit(1),
-    `signatureWaivedReason`     varchar(250),
+    `signature_waived_reason`   varchar(250),
     PRIMARY KEY (`application_id`),
     UNIQUE KEY `postal_vote_application_ems_elector_id_unique_idx` (`ems_elector_id`),
     KEY                         `postal_vote_application_application_id_status_idx` (`application_id`,`status`),

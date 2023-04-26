@@ -12,7 +12,7 @@ import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.saveR
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.models.PostalVoteAcceptedResponse
+import uk.gov.dluhc.emsintegrationapi.models.PostalVoteApplications
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.PostalVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
@@ -27,7 +27,7 @@ class GetPostalApplicationsSteps(
     private val apiResponse: ApiResponse
 ) : En {
     private var postalVoteApplicationsMap: Map<String, PostalVoteApplication>? = null
-    private var postalVoteAcceptedResponse: PostalVoteAcceptedResponse? = null
+    private var postalVoteApplications: PostalVoteApplications? = null
     private val apiClient = ApiClient(webClient, apiProperties)
 
     companion object {
@@ -59,14 +59,14 @@ class GetPostalApplicationsSteps(
         }
         Then("I received a response with {int} postal vote applications") { expectedPageSize: Int ->
             logger.info("Expected number of postal vote applications = $expectedPageSize")
-            postalVoteAcceptedResponse =
+            postalVoteApplications =
                 validateStatusAndGetResponse(
                     apiResponse.responseSpec!!,
                     expectedHttpStatus = 200,
-                    PostalVoteAcceptedResponse::class.java
+                    PostalVoteApplications::class.java
                 )
-            assertThat(postalVoteAcceptedResponse).isNotNull
-            assertThat(postalVoteAcceptedResponse!!.proxyVotes).hasSize(expectedPageSize)
+            assertThat(postalVoteApplications).isNotNull
+            assertThat(postalVoteApplications!!.proxyVotes).hasSize(expectedPageSize)
             validateTheResponse()
         }
         When("I send a get postal vote request without the page size and with the certificate serial number {string}") { certificateSerialNumber: String ->
@@ -79,7 +79,7 @@ class GetPostalApplicationsSteps(
     }
 
     private fun validateTheResponse() {
-        postalVoteAcceptedResponse!!.proxyVotes!!.forEach { postalVote ->
+        postalVoteApplications!!.proxyVotes!!.forEach { postalVote ->
             PostalVoteAssert.assertThat(postalVote)
                 .hasCorrectFieldsFromPostalApplication(postalVoteApplicationsMap!![postalVote.id]!!)
         }

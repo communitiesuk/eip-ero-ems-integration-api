@@ -30,7 +30,7 @@ class ProxyVoteApplication(
     @field:Valid
     @Embedded
     val proxyVoteDetails: ProxyVoteDetails,
-    
+
     var removalDateTime: Instant? = null,
 
     @Enumerated(EnumType.STRING)

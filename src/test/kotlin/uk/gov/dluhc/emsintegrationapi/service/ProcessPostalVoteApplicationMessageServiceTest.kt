@@ -28,7 +28,8 @@ internal class ProcessPostalVoteApplicationMessageServiceTest {
     fun `should save postal vote application`() {
         val postalVoteApplicationMessage = buildPostalVoteApplicationMessage()
 
-        val mappedEntity = buildPostalVoteApplication(applicationId = postalVoteApplicationMessage.approvalDetails.id)
+        val mappedEntity =
+            buildPostalVoteApplication(applicationId = postalVoteApplicationMessage.applicationDetails.id)
         given(postalVoteApplicationMessageMapper.mapToEntity(postalVoteApplicationMessage)).willReturn(mappedEntity)
 
         processPostalVoteApplicationMessageService.process(postalVoteApplicationMessage)

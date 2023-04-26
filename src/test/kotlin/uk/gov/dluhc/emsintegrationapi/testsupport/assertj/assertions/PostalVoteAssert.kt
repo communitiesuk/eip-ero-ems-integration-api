@@ -46,11 +46,10 @@ class PostalVoteAssert(private val actual: PostalVote) :
             arrayOf("regproperty", "regstreet", "regpostcode", "regarea", "regtown", "reglocality", "reguprn")
 
         private val APPLICANT_FIELDS =
-            arrayOf("refNum", "ip", "lang", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
+            arrayOf("refNum", "ip", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
         private val APPLICANT_ENTITY_FIELDS = arrayOf(
             "referenceNumber",
             "ipAddress",
-            "language",
             "emsElectorId",
             "firstName",
             "surname",
@@ -60,7 +59,7 @@ class PostalVoteAssert(private val actual: PostalVote) :
             "email"
         )
 
-        private val APPROVAL_FIELDS_WITHOUT_DATE_FIELDS =
+        private val APPLICATION_DETAILS_FIELDS_WITHOUT_DATE_FIELDS =
             arrayOf("gssCode", "source", "authorisingStaffId")
 
         fun assertThat(actual: PostalVote) = PostalVoteAssert(actual)
@@ -84,7 +83,7 @@ class PostalVoteAssert(private val actual: PostalVote) :
             with(postalVoteApplication.applicationDetails) {
                 haveSameValues(
                     actual,
-                    APPROVAL_FIELDS_WITHOUT_DATE_FIELDS,
+                    APPLICATION_DETAILS_FIELDS_WITHOUT_DATE_FIELDS,
                     this
                 )
                 Assertions.assertThat(actual.createdAt)
@@ -96,13 +95,16 @@ class PostalVoteAssert(private val actual: PostalVote) :
 
     private fun hasApplicantDetails(applicantDetails: ApplicantDetails) = validate {
         haveSameValues(actual.detail, APPLICANT_FIELDS, applicantDetails, APPLICANT_ENTITY_FIELDS)
+        Assertions.assertThat(actual.detail.lang.name).isEqualTo(applicantDetails.language.name)
     }
 
     fun hasPostalVoteDetails(postalVoteDetails: PostalVoteDetails?) = validate {
+        isNotNull
         haveSameValues(actual.detail, POSTAL_VOTE_FIELDS, postalVoteDetails, POSTAL_VOTE_ENTITY_FIELDS)
     }
 
     fun hasBallotAddress(ballotAddress: Address) = validate {
+        isNotNull
         haveSameValues(
             actual.detail,
             BALLOT_ADDRESS_FIELDS,

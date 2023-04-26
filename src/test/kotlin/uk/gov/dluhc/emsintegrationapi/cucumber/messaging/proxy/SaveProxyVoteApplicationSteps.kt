@@ -89,7 +89,7 @@ open class SaveProxyVoteApplicationSteps(
 
     private fun sendMessage(proxyVoteApplicationMessage: ProxyVoteApplicationMessage) {
         with(proxyVoteApplicationMessage) {
-            logger.info("Send proxy application with id = ${approvalDetails.id} and electoral id = ${applicantDetails.emsElectorId} the queue")
+            logger.info("Send proxy application with id = ${applicationDetails.id} and electoral id = ${applicantDetails.emsElectorId} the queue")
             messageSender.send(proxyVoteApplicationMessage, QueueConfiguration.QueueName.PROXY_APPLICATION_QUEUE)
         }
     }

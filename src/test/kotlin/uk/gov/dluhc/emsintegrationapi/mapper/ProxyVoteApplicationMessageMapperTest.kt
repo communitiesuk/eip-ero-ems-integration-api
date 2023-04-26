@@ -13,11 +13,11 @@ internal class ProxyVoteApplicationMessageMapperTest {
     private val instantMapper = InstantMapper()
     private val applicantDetailsMapper = ApplicantDetailsMapper(addressMapper)
     private val proxyVoteDetailsMapper = ProxyVoteDetailsMapper(addressMapper)
-    private val approvalDetailsMapper = ApplicationDetailsMapper(instantMapper)
+    private val applicationDetailsMapper = ApplicationDetailsMapper(instantMapper)
     private val proxyVoteApplicationMessageMapper = ProxyVoteApplicationMessageMapper(
         applicantDetailsMapper = applicantDetailsMapper,
         proxyVoteDetailsMapper = proxyVoteDetailsMapper,
-        approvalDetailsMapper = approvalDetailsMapper
+        applicationDetailsMapper = applicationDetailsMapper
     )
 
     @Nested

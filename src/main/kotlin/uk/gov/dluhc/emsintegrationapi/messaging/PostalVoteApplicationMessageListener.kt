@@ -15,7 +15,7 @@ class PostalVoteApplicationMessageListener(private val processPostalVoteApplicat
     @SqsListener("\${sqs.postal-application-queue-name}")
     fun handleMessage(@Valid @Payload postalVoteApplicationMessage: PostalVoteApplicationMessage) {
         with(postalVoteApplicationMessage) {
-            logger.info("Postal Vote Application Message received with an application id = ${approvalDetails.id}")
+            logger.info("Postal Vote Application Message received with an application id = ${applicationDetails.id}")
             processPostalVoteApplicationMessageService.process(this)
         }
     }

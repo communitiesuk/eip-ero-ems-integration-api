@@ -48,7 +48,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
 
         // When
         val applicationsReceived =
-            postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+            postalVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 listOf(GSS_CODE, "9010"),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
@@ -82,7 +82,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         postalVoteApplicationRepository.saveAndFlush(postalApplication)
         // When
         val postalVoteApplication =
-            postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 "invalidApplicationId",
                 listOf("invalidGGSCode")
             )
@@ -105,7 +105,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
 
         // When
         val postalVoteApplication =
-            postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 applicationId,
                 listOf("invalidGGSCode")
             )
@@ -129,7 +129,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
 
         // When
         val postalVoteApplication =
-            postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 applicationId,
                 listOf(GSS_CODE, "9010")
             )

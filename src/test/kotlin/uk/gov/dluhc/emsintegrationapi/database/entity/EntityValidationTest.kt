@@ -43,7 +43,7 @@ internal class EntityValidationTest {
                 listOf(
                     Pair("postalVoteDetails.ballotAddress.street", 255),
                     Pair("applicantDetails.firstName", 35),
-                    Pair("approvalDetails.gssCode", 9),
+                    Pair("applicationDetails.gssCode", 9),
                 )
             )
         }
@@ -76,7 +76,7 @@ internal class EntityValidationTest {
                 listOf(
                     Pair("proxyVoteDetails.proxyAddress.street", 255),
                     Pair("applicantDetails.firstName", 35),
-                    Pair("approvalDetails.gssCode", 9),
+                    Pair("applicationDetails.gssCode", 9),
                 )
             )
         }
@@ -119,7 +119,7 @@ internal class EntityValidationTest {
                 phone = getRandomString(51),
                 referenceNumber = getRandomString(11),
                 ipAddress = getRandomString(46),
-                language = getRandomString(3),
+                language = ApplicantDetails.Language.CY,
                 emsElectorId = getRandomString(256),
             )
 
@@ -133,7 +133,6 @@ internal class EntityValidationTest {
                     Pair("phone", 50),
                     Pair("referenceNumber", 10),
                     Pair("ipAddress", 45),
-                    Pair("language", 2),
                     Pair("emsElectorId", 255),
                 )
             )
@@ -141,13 +140,13 @@ internal class EntityValidationTest {
 
         @Test
         fun `should throw constraint violations if an approval details object is invalid`() {
-            val approvalDetails = buildApplicationDetailsEntity(
+            val applicationDetails = buildApplicationDetailsEntity(
                 gssCode = getRandomString(10),
                 authorisingStaffId = getRandomString(256),
                 source = getRandomString(51)
             )
             validateMaxSizeErrorMessage(
-                approvalDetails,
+                applicationDetails,
                 listOf(
                     Pair("gssCode", 9),
                     Pair("authorisingStaffId", 255),

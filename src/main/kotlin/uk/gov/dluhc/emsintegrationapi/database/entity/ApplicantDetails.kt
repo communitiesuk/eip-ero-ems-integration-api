@@ -55,7 +55,7 @@ class ApplicantDetails(
     val emsElectorId: String
 ) {
     override fun hashCode() = javaClass.hashCode()
-    
+
     enum class Language {
         EN,
         CY

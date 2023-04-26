@@ -12,7 +12,7 @@ import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.saveR
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteAcceptedResponse
+import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ProxyVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
@@ -27,7 +27,7 @@ class GetProxyApplicationsSteps(
     private val apiResponse: ApiResponse
 ) : En {
     private var proxyVoteApplicationsMap: Map<String, ProxyVoteApplication>? = null
-    private var proxyVoteAcceptedResponse: ProxyVoteAcceptedResponse? = null
+    private var proxyVoteApplications: ProxyVoteApplications? = null
     private val apiClient = ApiClient(webClient, apiProperties)
 
     companion object {
@@ -61,13 +61,13 @@ class GetProxyApplicationsSteps(
         }
         Then("I received a response with {int} proxy vote applications") { expectedPageSize: Int ->
             logger.info("Expected number of proxy vote applications = $expectedPageSize")
-            proxyVoteAcceptedResponse = validateStatusAndGetResponse(
+            proxyVoteApplications = validateStatusAndGetResponse(
                 apiResponse.responseSpec!!,
                 expectedHttpStatus = 200,
-                ProxyVoteAcceptedResponse::class.java
+                ProxyVoteApplications::class.java
             )
-            assertThat(proxyVoteAcceptedResponse).isNotNull
-            assertThat(proxyVoteAcceptedResponse!!.proxyVotes).hasSize(expectedPageSize)
+            assertThat(proxyVoteApplications).isNotNull
+            assertThat(proxyVoteApplications!!.proxyVotes).hasSize(expectedPageSize)
             validateTheResponse()
         }
         When("I send a get proxy vote request without the page size and with the certificate serial number {string}") { certificateSerialNumber: String ->
@@ -80,7 +80,7 @@ class GetProxyApplicationsSteps(
     }
 
     private fun validateTheResponse() {
-        proxyVoteAcceptedResponse!!.proxyVotes!!.forEach { proxyVote ->
+        proxyVoteApplications!!.proxyVotes!!.forEach { proxyVote ->
             ProxyVoteAssert.assertThat(proxyVote)
                 .hasCorrectFieldsFromProxyApplication(proxyVoteApplicationsMap!![proxyVote.id]!!)
         }

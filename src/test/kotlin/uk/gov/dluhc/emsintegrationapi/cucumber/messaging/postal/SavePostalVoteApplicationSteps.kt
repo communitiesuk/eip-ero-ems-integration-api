@@ -89,7 +89,7 @@ open class SavePostalVoteApplicationSteps(
 
     private fun sendMessage(postalVoteApplicationMessage: PostalVoteApplicationMessage) {
         with(postalVoteApplicationMessage) {
-            logger.info("Send postal application with id = ${approvalDetails.id} and electoral id = ${applicantDetails.emsElectorId} the queue")
+            logger.info("Send postal application with id = ${applicationDetails.id} and electoral id = ${applicantDetails.emsElectorId} the queue")
             messageSender.send(postalVoteApplicationMessage, QueueConfiguration.QueueName.POSTAL_APPLICATION_QUEUE)
         }
     }

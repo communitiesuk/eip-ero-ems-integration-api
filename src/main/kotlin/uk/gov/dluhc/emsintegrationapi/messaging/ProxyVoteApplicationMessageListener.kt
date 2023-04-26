@@ -15,7 +15,7 @@ class ProxyVoteApplicationMessageListener(private val proxyVoteApplicationMessag
     @SqsListener("\${sqs.proxy-application-queue-name}")
     fun handleMessage(@Valid @Payload proxyVoteApplicationMessage: ProxyVoteApplicationMessage) {
         with(proxyVoteApplicationMessage) {
-            logger.info("Proxy Vote Application Message received with an application id = ${approvalDetails.id}")
+            logger.info("Proxy Vote Application Message received with an application id = ${applicationDetails.id}")
             proxyVoteApplicationMessageService.process(this)
         }
     }

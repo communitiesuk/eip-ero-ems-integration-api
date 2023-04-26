@@ -18,12 +18,12 @@ class ProcessProxyVoteApplicationMessageService(
     fun process(proxyVoteApplicationMessage: ProxyVoteApplicationMessage) {
 
         with(proxyVoteApplicationMessage) {
-            logger.info { "Processing proxy vote application with id = ${approvalDetails.id}" }
+            logger.info { "Processing proxy vote application with id = ${applicationDetails.id}" }
             val proxyVoteApplicationEntity =
                 proxyVoteApplicationMessageMapper.mapToEntity(this)
-            logger.debug { "Successfully mapped the proxy application message to entity for application = ${approvalDetails.id}" }
+            logger.debug { "Successfully mapped the proxy application message to entity for application = ${applicationDetails.id}" }
             proxyVoteApplicationRepository.save(proxyVoteApplicationEntity)
-            logger.info { "Successfully saved the proxy application with the id  = ${approvalDetails.id}" }
+            logger.info { "Successfully saved the proxy application with the id  = ${applicationDetails.id}" }
         }
     }
 }

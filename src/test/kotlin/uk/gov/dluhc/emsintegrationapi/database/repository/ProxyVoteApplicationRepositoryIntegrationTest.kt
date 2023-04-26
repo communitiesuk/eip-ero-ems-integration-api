@@ -49,7 +49,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
 
         // When
         val applicationsReceived =
-            proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+            proxyVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 listOf(GSS_CODE, getRandomGssCode()),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
@@ -83,7 +83,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         proxyVoteApplicationRepository.saveAndFlush(proxyApplication)
         // When
         val proxyVoteApplication =
-            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 "invalidApplicationId",
                 listOf("invalidGGSCode")
             )
@@ -106,7 +106,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
 
         // When
         val proxyVoteApplication =
-            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 applicationId,
                 listOf("invalidGGSCode")
             )
@@ -130,7 +130,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
 
         // When
         val proxyVoteApplication =
-            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 applicationId,
                 listOf(GSS_CODE, "9010")
             )

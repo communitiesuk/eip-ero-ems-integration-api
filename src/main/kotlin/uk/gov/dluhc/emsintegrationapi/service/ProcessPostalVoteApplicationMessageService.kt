@@ -18,12 +18,12 @@ class ProcessPostalVoteApplicationMessageService(
     fun process(postalVoteApplicationMessage: PostalVoteApplicationMessage) {
 
         with(postalVoteApplicationMessage) {
-            logger.info { "Processing postal vote application with id = ${approvalDetails.id}" }
+            logger.info { "Processing postal vote application with id = ${applicationDetails.id}" }
             val postalVoteApplicationEntity =
                 postalVoteApplicationMessageMapper.mapToEntity(this)
-            logger.debug { "Successfully mapped the postal application message to entity for application = ${approvalDetails.id}" }
+            logger.debug { "Successfully mapped the postal application message to entity for application = ${applicationDetails.id}" }
             postalVoteApplicationRepository.save(postalVoteApplicationEntity)
-            logger.info { "Successfully saved the postal application with the id  = ${approvalDetails.id}" }
+            logger.info { "Successfully saved the postal application with the id  = ${applicationDetails.id}" }
         }
     }
 }

@@ -30,7 +30,7 @@ class PostalVoteApplication(
     @field:Valid
     @Embedded
     var postalVoteDetails: PostalVoteDetails? = null,
-    
+
     var removalDateTime: Instant? = null,
 
     @Enumerated(EnumType.STRING)
