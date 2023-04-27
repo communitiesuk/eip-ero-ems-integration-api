@@ -22,14 +22,14 @@ Feature: The EMS send a delete request on confirming a given Postal Vote Applica
 
   @ClearCache @DeletePostalEntity
   Scenario: System returns http status 404 if the gss codes retrieved from ERO and the application gss code are different.
-    Given a postal vote application with the application id "502cf250036469154b4f85fc", status "RECEIVED" and GSS Code "E12345699" exist
+    Given a postal vote application with the application id "502cf250036469154b4f85fc", status "RECEIVED" and GSS Code "E12345699" exists
     When the EMS send a delete request to "/postalvotes" with an application id "502cf250036469154b4f85fc" and the certificate serial number "1234567891"
     Then I received the http status 404
     And it has an error message of "The Postal application could not be found with id `502cf250036469154b4f85fc`"
 
   @DeletePostalEntity @DeletePostalConfirmationMessage @ClearCache
   Scenario: System returns http status 204 on successful deletion
-    Given a postal vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exist
+    Given a postal vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
     When the EMS send a delete request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
     Then the system updated the postal application with the id "502cf250036469154b4f85fb" status as "DELETED"
     And the "deleted-postal-application" queue has a confirmation message for the application id "502cf250036469154b4f85fb"
@@ -37,7 +37,7 @@ Feature: The EMS send a delete request on confirming a given Postal Vote Applica
 
   @DeletePostalEntity @DeletePostalConfirmationMessage @ClearCache
   Scenario: System ignores the request if current status of the postal vote application is DELETED
-    Given a postal vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exist
+    Given a postal vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
     When the EMS send a delete request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
     Then the system updated the postal application with the id "502cf250036469154b4f85fb" status as "DELETED"
     And the "deleted-postal-application" queue has a confirmation message for the application id "502cf250036469154b4f85fb"

@@ -1,5 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions
 
+import org.apache.commons.codec.binary.Base64
 import org.assertj.core.api.AbstractAssert
 import org.assertj.core.api.Assertions
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
@@ -78,7 +79,6 @@ class ProxyVoteAssert(actual: ProxyVote) :
                 REGISTERED_ADDRESS_FIELDS
             )
             hasApplicantDetails(applicantDetails)
-            Assertions.assertThat(actual.detail.signature).isEqualTo(this.applicationDetails.signatureBase64)
         }
     }
 
@@ -110,6 +110,14 @@ class ProxyVoteAssert(actual: ProxyVote) :
             proxyDetails.proxyAddress,
             ADDRESS_ENTITY_FIELDS
         )
+    }
+
+    fun hasSignature(base64Signature: String) =
+        validate { Assertions.assertThat(actual.detail.signature).isEqualTo(Base64.decodeBase64(base64Signature)) }
+
+    fun hasSignatureWaiver(waiverReason: String) = validate {
+        Assertions.assertThat(actual.detail.signatureWaived).isTrue
+        Assertions.assertThat(actual.detail.signatureWaivedReason).isEqualTo(waiverReason)
     }
 
     private fun hasCorrectRegisteredAddress(address: Address?, addressFields: Array<String>) =

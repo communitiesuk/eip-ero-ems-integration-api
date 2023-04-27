@@ -22,14 +22,14 @@ Feature: The EMS send a delete request on confirming a given Proxy Vote Applicat
 
   @ClearCache @DeleteProxyEntity
   Scenario: System returns http status 404 if the gss codes retrieved from ERO and the application gss code are different.
-    Given a proxy vote application with the application id "502cf250036469154b4f85fc", status "RECEIVED" and GSS Code "E12345699" exist
+    Given a proxy vote application with the application id "502cf250036469154b4f85fc", status "RECEIVED" and GSS Code "E12345699" exists
     When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fc" and the certificate serial number "1234567891"
     Then I received the http status 404
     And it has an error message of "The Proxy application could not be found with id `502cf250036469154b4f85fc`"
 
   @DeleteProxyEntity @DeleteProxyConfirmationMessage @ClearCache
   Scenario: System returns http status 204 on successful deletion
-    Given a proxy vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exist
+    Given a proxy vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
     When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
     Then the system updated the proxy application with the id "502cf250036469154b4f85fb" status as "DELETED"
     And the "deleted-proxy-application" queue has a confirmation message for the application id "502cf250036469154b4f85fb"
@@ -37,7 +37,7 @@ Feature: The EMS send a delete request on confirming a given Proxy Vote Applicat
 
   @DeleteProxyEntity @DeleteProxyConfirmationMessage @ClearCache
   Scenario: System ignores the request if current status of the proxy vote application is DELETED
-    Given a proxy vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exist
+    Given a proxy vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
     When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
     Then the system updated the proxy application with the id "502cf250036469154b4f85fb" status as "DELETED"
     And the "deleted-proxy-application" queue has a confirmation message for the application id "502cf250036469154b4f85fb"

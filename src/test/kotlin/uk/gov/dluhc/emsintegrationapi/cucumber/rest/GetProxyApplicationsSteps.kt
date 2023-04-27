@@ -15,6 +15,8 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ProxyVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_BASE64_STRING
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 
@@ -35,7 +37,7 @@ class GetProxyApplicationsSteps(
     }
 
     init {
-        Given("there are {int} proxy vote applications exist with the status {string} and GSS Codes {string},{string}") { numberOfRecords: Int, recordStatus: String, gssCode1: String, gssCode2: String ->
+        Given("there are {int} proxy vote applications without signature exist with the status {string} and GSS Codes {string},{string}") { numberOfRecords: Int, recordStatus: String, gssCode1: String, gssCode2: String ->
             logger.info(
                 "Creating $numberOfRecords of proxy vote applications"
             )
@@ -45,7 +47,9 @@ class GetProxyApplicationsSteps(
                 buildProxyVoteApplication(
                     recordStatus = RecordStatus.valueOf(recordStatus),
                     applicationDetails = buildApplicationDetailsEntity(
-                        gssCode = faker.options().option(gssCode1, gssCode2)
+                        gssCode = faker.options().option(gssCode1, gssCode2),
+                        signatureWaived = true,
+                        signatureWaivedReason = SIGNATURE_WAIVER_REASON
                     )
                 )
             }
@@ -59,16 +63,13 @@ class GetProxyApplicationsSteps(
                 serialNumber = certificateSerialNumber
             )
         }
-        Then("I received a response with {int} proxy vote applications") { expectedPageSize: Int ->
-            logger.info("Expected number of proxy vote applications = $expectedPageSize")
-            proxyVoteApplications = validateStatusAndGetResponse(
-                apiResponse.responseSpec!!,
-                expectedHttpStatus = 200,
-                ProxyVoteApplications::class.java
-            )
-            assertThat(proxyVoteApplications).isNotNull
-            assertThat(proxyVoteApplications!!.proxyVotes).hasSize(expectedPageSize)
-            validateTheResponse()
+        Then("I received a response with {int} proxy vote applications with signature waiver") { expectedPageSize: Int ->
+            logger.info("Expected number of proxy vote applications with signature waiver = $expectedPageSize")
+            validateResponse(hasSignature = false, expectedPageSize)
+        }
+        Then("I received a response with {int} proxy vote applications with signature") { expectedPageSize: Int ->
+            logger.info("Expected number of proxy vote applications with signature = $expectedPageSize")
+            validateResponse(hasSignature = true, expectedPageSize)
         }
         When("I send a get proxy vote request without the page size and with the certificate serial number {string}") { certificateSerialNumber: String ->
             logger.info { "Sending get request without page size" }
@@ -77,12 +78,58 @@ class GetProxyApplicationsSteps(
         When("I send a get proxy vote applications request without a certificate serial number in the request header") {
             apiResponse.responseSpec = apiClient.get(ACCEPTED_PATH, attachSerialNumber = false)
         }
+        Given("a proxy vote application with the application id {string}, status {string} and GSS Code {string} exists") { applicationId: String, status: String, gssCode: String ->
+            proxyVoteApplicationRepository.saveAndFlush(
+                buildProxyVoteApplication(
+                    applicationId = applicationId,
+                    recordStatus = RecordStatus.valueOf(status),
+                    applicationDetails = buildApplicationDetailsEntity(gssCode = gssCode)
+                )
+            )
+        }
+        Given("there are {int} proxy vote applications exist with the signature, status {string} and GSS Codes {string},{string}") { numberOfRecords: Int, recordStatus: String, gssCode1: String, gssCode2: String ->
+            logger.info("Creating $numberOfRecords of proxy vote applications with signature")
+            val proxyVoteApplications = saveRecords(
+                proxyVoteApplicationRepository, numberOfRecords
+            ) {
+                buildProxyVoteApplication(
+                    recordStatus = RecordStatus.valueOf(recordStatus),
+                    applicationDetails = buildApplicationDetailsEntity(
+                        gssCode = faker.options().option(gssCode1, gssCode2),
+                        signatureBase64 = SIGNATURE_BASE64_STRING
+                    )
+                )
+            }
+            proxyVoteApplicationsMap = proxyVoteApplications.associateBy { it.applicationId }
+        }
     }
 
-    private fun validateTheResponse() {
+    private fun validateResponse(hasSignature: Boolean, expectedPageSize: Int) {
+        proxyVoteApplications =
+            validateStatusAndGetResponse(
+                apiResponse.responseSpec!!,
+                expectedHttpStatus = 200,
+                ProxyVoteApplications::class.java
+            )
+        assertThat(proxyVoteApplications).isNotNull
+        assertThat(proxyVoteApplications!!.proxyVotes).hasSize(expectedPageSize)
+
+        if (hasSignature) validateApplicationsWithSignature() else validateApplicationsWithoutSignature()
+    }
+
+    private fun validateApplicationsWithoutSignature() {
         proxyVoteApplications!!.proxyVotes!!.forEach { proxyVote ->
             ProxyVoteAssert.assertThat(proxyVote)
                 .hasCorrectFieldsFromProxyApplication(proxyVoteApplicationsMap!![proxyVote.id]!!)
+                .hasSignatureWaiver(SIGNATURE_WAIVER_REASON)
+        }
+    }
+
+    private fun validateApplicationsWithSignature() {
+        proxyVoteApplications!!.proxyVotes!!.forEach { proxyVote ->
+            ProxyVoteAssert.assertThat(proxyVote)
+                .hasCorrectFieldsFromProxyApplication(proxyVoteApplicationsMap!![proxyVote.id]!!)
+                .hasSignature(SIGNATURE_BASE64_STRING)
         }
     }
 }
