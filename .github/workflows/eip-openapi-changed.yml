@@ -22,7 +22,7 @@ jobs:
             github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: 'eip-ero-infra',
-              workflow_id: 'openapi-changed.yml',
+              workflow_id: 'eip-openapi-changed.yml',
               ref: 'eip-main',
               inputs: {
                 file_to_update: 'src/main/resources/openapi/EMSIntegrationAPIs.yaml',
@@ -41,6 +41,7 @@ jobs:
               ref: 'eip-main',
               inputs: {
                 file_to_update: 'src/main/resources/openapi/EMSIntegrationAPIs.yaml',
-                repo: 'eip-ero-ems-integration-api'
+                repo: 'eip-ero-ems-integration-api',
+                branch: 'eip-main'
               }
             });
