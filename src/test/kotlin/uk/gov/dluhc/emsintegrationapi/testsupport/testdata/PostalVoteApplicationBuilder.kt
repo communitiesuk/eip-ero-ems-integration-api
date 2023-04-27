@@ -38,8 +38,7 @@ fun buildPostalVoteApplication(
 )
 
 fun buildPostalVoteApplicationMessage(
-    applicationId: String = getIerDsApplicationId(),
-    applicationDetails: ApplicationDetailsMessageDto = buildApplicationDetailsMessageDto(applicationId = applicationId),
+    applicationDetails: ApplicationDetailsMessageDto = buildApplicationDetailsMessageDto(),
     applicantDetails: ApplicantDetailsMessageDto = buildApplicantDetailsMessageDto(),
     postalVoteDetails: PostalVoteDetailsMessageDto = buildPostalVoteDetailsMessageDto(),
 ) = PostalVoteApplicationMessage(

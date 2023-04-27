@@ -38,8 +38,7 @@ fun buildProxyVoteApplication(
 )
 
 fun buildProxyVoteApplicationMessageDto(
-    applicationId: String = getRandomAlphaNumeric(24),
-    applicationDetails: ApplicationDetailsMessageDto = buildApplicationDetailsMessageDto(applicationId = applicationId),
+    applicationDetails: ApplicationDetailsMessageDto = buildApplicationDetailsMessageDto(),
     applicantDetails: ApplicantDetailsMessageDto = buildApplicantDetailsMessageDto(),
     proxyVoteDetails: ProxyVoteDetailsMessageDto = buildProxyVoteDetailsMessageDto(),
 ) = ProxyVoteApplicationMessage(
