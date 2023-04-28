@@ -1,5 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions
 
+import org.apache.commons.codec.binary.Base64
 import org.assertj.core.api.AbstractAssert
 import org.assertj.core.api.Assertions
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
@@ -11,9 +12,10 @@ import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveNullValues
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveSameValues
 
-class PostalVoteAssert(private val actual: PostalVote) :
+class PostalVoteAssert(actual: PostalVote) :
     AbstractAssert<PostalVoteAssert, PostalVote>(actual, PostalVoteAssert::class.java) {
     private val instantMapper = InstantMapper()
+
     companion object {
         private val BALLOT_ADDRESS_FIELDS = arrayOf(
             "ballotproperty",
@@ -46,11 +48,10 @@ class PostalVoteAssert(private val actual: PostalVote) :
             arrayOf("regproperty", "regstreet", "regpostcode", "regarea", "regtown", "reglocality", "reguprn")
 
         private val APPLICANT_FIELDS =
-            arrayOf("refNum", "ip", "lang", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
+            arrayOf("refNum", "ip", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
         private val APPLICANT_ENTITY_FIELDS = arrayOf(
             "referenceNumber",
             "ipAddress",
-            "language",
             "emsElectorId",
             "firstName",
             "surname",
@@ -60,7 +61,7 @@ class PostalVoteAssert(private val actual: PostalVote) :
             "email"
         )
 
-        private val APPROVAL_FIELDS_WITHOUT_DATE_FIELDS =
+        private val APPLICATION_DETAILS_FIELDS_WITHOUT_DATE_FIELDS =
             arrayOf("gssCode", "source", "authorisingStaffId")
 
         fun assertThat(actual: PostalVote) = PostalVoteAssert(actual)
@@ -70,7 +71,7 @@ class PostalVoteAssert(private val actual: PostalVote) :
         isNotNull
         with(postalVoteApplication) {
             Assertions.assertThat(actual.id).isEqualTo(this.applicationId)
-            hasApprovalDetails(this)
+            hasApplicationDetails(this)
             hasCorrectAddressFields(
                 applicantDetails.registeredAddress,
                 REGISTERED_ADDRESS_FIELDS
@@ -79,12 +80,12 @@ class PostalVoteAssert(private val actual: PostalVote) :
         }
     }
 
-    private fun hasApprovalDetails(postalVoteApplication: PostalVoteApplication) =
+    private fun hasApplicationDetails(postalVoteApplication: PostalVoteApplication) =
         validate {
-            with(postalVoteApplication.approvalDetails) {
+            with(postalVoteApplication.applicationDetails) {
                 haveSameValues(
                     actual,
-                    APPROVAL_FIELDS_WITHOUT_DATE_FIELDS,
+                    APPLICATION_DETAILS_FIELDS_WITHOUT_DATE_FIELDS,
                     this
                 )
                 Assertions.assertThat(actual.createdAt)
@@ -96,13 +97,16 @@ class PostalVoteAssert(private val actual: PostalVote) :
 
     private fun hasApplicantDetails(applicantDetails: ApplicantDetails) = validate {
         haveSameValues(actual.detail, APPLICANT_FIELDS, applicantDetails, APPLICANT_ENTITY_FIELDS)
+        Assertions.assertThat(actual.detail.lang.name).isEqualTo(applicantDetails.language.name)
     }
 
     fun hasPostalVoteDetails(postalVoteDetails: PostalVoteDetails?) = validate {
+        isNotNull
         haveSameValues(actual.detail, POSTAL_VOTE_FIELDS, postalVoteDetails, POSTAL_VOTE_ENTITY_FIELDS)
     }
 
     fun hasBallotAddress(ballotAddress: Address) = validate {
+        isNotNull
         haveSameValues(
             actual.detail,
             BALLOT_ADDRESS_FIELDS,
@@ -114,6 +118,25 @@ class PostalVoteAssert(private val actual: PostalVote) :
     fun doesNotHaveBallotAddress() = validate { haveNullValues(actual.detail, *BALLOT_ADDRESS_FIELDS) }
 
     fun doesNotHavePostalVoteDetails() = validate { haveNullValues(actual.detail, *POSTAL_VOTE_FIELDS) }
+
+    fun hasSignature(base64Signature: String) =
+        validate { Assertions.assertThat(actual.detail.signature).isEqualTo(Base64.decodeBase64(base64Signature)) }
+
+    fun signatureWaived() = validate {
+        Assertions.assertThat(actual.detail.signatureWaived).isTrue
+    }
+
+    fun hasSignatureWaiverReason(waiverReason: String) = validate {
+        Assertions.assertThat(actual.detail.signatureWaivedReason).isEqualTo(waiverReason)
+    }
+
+    fun hasNoSignature() =
+        validate { Assertions.assertThat(actual.detail.signature).isNull() }
+
+    fun hasNoSignatureWaiver() = validate {
+        Assertions.assertThat(actual.detail.signatureWaived).isNull()
+        Assertions.assertThat(actual.detail.signatureWaivedReason).isNull()
+    }
 
     private fun hasCorrectAddressFields(address: Address?, addressFields: Array<String>) =
         validate { haveSameValues(actual.detail, addressFields, address, ADDRESS_ENTITY_FIELDS) }

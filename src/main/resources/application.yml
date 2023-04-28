@@ -1,4 +1,6 @@
 spring:
+  codec:
+    max-in-memory-size: ${CODEC_MAX_MEMORY_SIZE_IN_MB:25MB}
   application:
     name: 'eip-ero-ems-integration-api'
   datasource:
@@ -40,3 +42,4 @@ api:
 caching.time-to-live: PT1H
 
 feature-toggles:
+

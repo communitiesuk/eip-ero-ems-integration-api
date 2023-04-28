@@ -115,7 +115,10 @@ The following are overridden by the task definition in AWS:
 * `MAX_PAGE_SIZE` - This is the maximum number of records can be fetched by the application.
 * `API_ERO_MANAGEMENT_URL` - the base URL of the ERO Management REST API service.
 * `API_IER_BASE_URL` - the base URL of the IER REST API service.
-* `API_IER_STS_ASSUME_ROLE` - the IAM role in IER's AWS subscription that should be assumed in order to invoke IER REST API services.
+* `API_IER_STS_ASSUME_ROLE` - the IAM role in IER's AWS subscription that should be assumed in order to invoke IER REST
+  API services.
+* `CODEC_MAX_MEMORY_SIZE_IN_MB` - Override default memory (256KB) with a higher value to support applications with
+  signature byte array
 
 #### Liquibase Configuration
 * `LIQUIBASE_CONTEXT` Contexts for liquibase scripts. For local setup use ddl.

@@ -10,21 +10,20 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMess
 @Component
 class PostalVoteApplicationMessageMapper(
     private val applicantDetailsMapper: ApplicantDetailsMapper,
-    private val approvalDetailsMapper: ApprovalDetailsMapper,
+    private val applicationDetailsMapper: ApplicationDetailsMapper,
     private val postalVoteDetailsMapper: PostalVoteDetailsMapper
 ) {
 
     fun mapToEntity(postalVoteApplicationMessage: PostalVoteApplicationMessage) =
         postalVoteApplicationMessage.let {
             PostalVoteApplication(
-                applicationId = it.approvalDetails.id,
-                approvalDetails = approvalDetailsMapper.mapToApprovalDetails(it.approvalDetails),
+                applicationId = it.applicationDetails.id,
+                applicationDetails = applicationDetailsMapper.mapToApplicationDetails(it.applicationDetails),
                 applicantDetails = applicantDetailsMapper.mapToApplicantEntity(
                     it.applicantDetails,
                     SourceSystem.POSTAL
                 ),
                 postalVoteDetails = postalVoteDetailsMapper.mapToPostVoteDetailsEntity(it.postalVoteDetails),
-                signatureBase64 = postalVoteApplicationMessage.signatureBase64,
                 createdBy = SourceSystem.POSTAL,
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED

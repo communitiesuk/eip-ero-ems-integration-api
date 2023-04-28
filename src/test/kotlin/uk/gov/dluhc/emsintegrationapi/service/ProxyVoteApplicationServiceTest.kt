@@ -119,7 +119,7 @@ internal class ProxyVoteApplicationServiceTest {
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj { mock<ProxyVote>() }.toList()
 
         given(
-            proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+            proxyVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 GSS_CODES,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
@@ -127,14 +127,14 @@ internal class ProxyVoteApplicationServiceTest {
         ).willReturn(savedApplications)
         given { proxyVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockProxyVotes)
 
-        val proxyVoteAcceptedResponse =
+        val proxyVoteApplications =
             proxyVoteApplicationService.getProxyVoteApplications(
                 certificateSerialNumber = "test",
                 pageSize = pageSizeRequested
             )
 
-        assertThat(proxyVoteAcceptedResponse.pageSize).isEqualTo(numberOfRecordsToBeReturned)
-        assertThat(proxyVoteAcceptedResponse.proxyVotes).isEqualTo(mockProxyVotes)
+        assertThat(proxyVoteApplications.pageSize).isEqualTo(numberOfRecordsToBeReturned)
+        assertThat(proxyVoteApplications.proxyVotes).isEqualTo(mockProxyVotes)
     }
 
     @Nested
@@ -145,7 +145,7 @@ internal class ProxyVoteApplicationServiceTest {
             val proxyVoteApplicationCaptor = argumentCaptor<ProxyVoteApplication>()
             val proxyVoteApplication = buildProxyVoteApplication()
             given(
-                proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                     proxyVoteApplication.applicationId,
                     GSS_CODES
                 )
@@ -185,7 +185,7 @@ internal class ProxyVoteApplicationServiceTest {
                 recordStatus = RecordStatus.DELETED
             )
             given(
-                proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                     proxyVoteApplication.applicationId,
                     GSS_CODES
                 )
@@ -195,7 +195,7 @@ internal class ProxyVoteApplicationServiceTest {
             proxyVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId)
 
             // Then
-            verify(proxyVoteApplicationRepository).findByApplicationIdAndApprovalDetailsGssCodeIn(
+            verify(proxyVoteApplicationRepository).findByApplicationIdAndApplicationDetailsGssCodeIn(
                 proxyVoteApplication.applicationId,
                 GSS_CODES
             )

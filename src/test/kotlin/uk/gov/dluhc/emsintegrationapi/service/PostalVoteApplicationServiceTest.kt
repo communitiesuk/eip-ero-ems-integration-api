@@ -123,7 +123,7 @@ internal class PostalVoteApplicationServiceTest {
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj { mock<PostalVote>() }.toList()
 
         given(
-            postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+            postalVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 GSS_CODES,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
@@ -131,15 +131,15 @@ internal class PostalVoteApplicationServiceTest {
         ).willReturn(savedApplications)
         given { postalVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockPostalVotes)
 
-        val postalVoteAcceptedResponse =
+        val postalVoteApplications =
             postalVoteApplicationService.getPostalVoteApplications(
                 certificateSerialNumber = "test",
                 pageSize = pageSizeRequested
             )
 
-        assertThat(postalVoteAcceptedResponse.pageSize).isEqualTo(numberOfRecordsToBeReturned)
+        assertThat(postalVoteApplications.pageSize).isEqualTo(numberOfRecordsToBeReturned)
         // the attribute name 'proxyVotes' to postalVotes, awaiting final spec from EMS
-        assertThat(postalVoteAcceptedResponse.proxyVotes).isEqualTo(mockPostalVotes)
+        assertThat(postalVoteApplications.proxyVotes).isEqualTo(mockPostalVotes)
     }
 
     @Nested
@@ -150,7 +150,7 @@ internal class PostalVoteApplicationServiceTest {
             val postalVoteApplicationCaptor = argumentCaptor<PostalVoteApplication>()
             val postalVoteApplication = buildPostalVoteApplication()
             given(
-                postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                     postalVoteApplication.applicationId,
                     GSS_CODES
                 )
@@ -190,7 +190,7 @@ internal class PostalVoteApplicationServiceTest {
                 recordStatus = RecordStatus.DELETED
             )
             given(
-                postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+                postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                     postalVoteApplication.applicationId,
                     GSS_CODES
                 )
@@ -200,7 +200,7 @@ internal class PostalVoteApplicationServiceTest {
             postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId)
 
             // Then
-            verify(postalVoteApplicationRepository).findByApplicationIdAndApprovalDetailsGssCodeIn(
+            verify(postalVoteApplicationRepository).findByApplicationIdAndApplicationDetailsGssCodeIn(
                 postalVoteApplication.applicationId,
                 GSS_CODES
             )

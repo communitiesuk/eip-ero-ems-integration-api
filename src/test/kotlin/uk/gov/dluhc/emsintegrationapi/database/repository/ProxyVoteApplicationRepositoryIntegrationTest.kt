@@ -8,7 +8,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.getRandomGssCode
 import java.time.temporal.ChronoUnit
@@ -41,7 +41,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
             IntStream.rangeClosed(1, 30).mapToObj {
                 buildProxyVoteApplication(
                     applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = faker.options().option(GSS_CODE, GSS_CODE2))
+                    buildApplicationDetailsEntity(gssCode = faker.options().option(GSS_CODE, GSS_CODE2))
                 )
             }.toList()
 
@@ -49,7 +49,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
 
         // When
         val applicationsReceived =
-            proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+            proxyVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 listOf(GSS_CODE, getRandomGssCode()),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
@@ -66,7 +66,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
                         ChronoUnit.SECONDS
                     )
                 )
-                assertThat(proxyVoteApplication.approvalDetails.gssCode).isEqualTo(GSS_CODE)
+                assertThat(proxyVoteApplication.applicationDetails.gssCode).isEqualTo(GSS_CODE)
             }
         }
     }
@@ -78,12 +78,12 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         val proxyApplication =
             buildProxyVoteApplication(
                 applicationId = applicationId,
-                buildApprovalDetailsEntity(gssCode = GSS_CODE)
+                buildApplicationDetailsEntity(gssCode = GSS_CODE)
             )
         proxyVoteApplicationRepository.saveAndFlush(proxyApplication)
         // When
         val proxyVoteApplication =
-            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 "invalidApplicationId",
                 listOf("invalidGGSCode")
             )
@@ -99,14 +99,14 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         val proxyApplication =
             buildProxyVoteApplication(
                 applicationId = applicationId,
-                buildApprovalDetailsEntity(gssCode = GSS_CODE)
+                buildApplicationDetailsEntity(gssCode = GSS_CODE)
             )
 
         proxyVoteApplicationRepository.saveAndFlush(proxyApplication)
 
         // When
         val proxyVoteApplication =
-            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 applicationId,
                 listOf("invalidGGSCode")
             )
@@ -121,7 +121,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
             IntStream.rangeClosed(1, 2).mapToObj {
                 buildProxyVoteApplication(
                     applicationId = it.toString(),
-                    buildApprovalDetailsEntity(gssCode = GSS_CODE)
+                    buildApplicationDetailsEntity(gssCode = GSS_CODE)
                 )
             }.toList()
 
@@ -130,7 +130,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
 
         // When
         val proxyVoteApplication =
-            proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+            proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                 applicationId,
                 listOf(GSS_CODE, "9010")
             )
@@ -138,6 +138,6 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         // That
         assertThat(proxyVoteApplication).isNotNull
         assertThat(proxyVoteApplication?.applicationId).isEqualTo(applicationId)
-        assertThat(proxyVoteApplication?.approvalDetails?.gssCode).isEqualTo(GSS_CODE)
+        assertThat(proxyVoteApplication?.applicationDetails?.gssCode).isEqualTo(GSS_CODE)
     }
 }

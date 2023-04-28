@@ -28,7 +28,7 @@ internal class ProcessProxyVoteApplicationMessageServiceTest {
     fun `should save a proxy vote application`() {
         val proxyVoteApplicationMessage = buildProxyVoteApplicationMessageDto()
 
-        val mappedEntity = buildProxyVoteApplication(applicationId = proxyVoteApplicationMessage.approvalDetails.id)
+        val mappedEntity = buildProxyVoteApplication(applicationId = proxyVoteApplicationMessage.applicationDetails.id)
         given(proxyVoteApplicationMessageMapper.mapToEntity(proxyVoteApplicationMessage)).willReturn(mappedEntity)
 
         processProxyVoteApplicationMessageService.process(proxyVoteApplicationMessage)

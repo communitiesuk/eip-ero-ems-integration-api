@@ -10,21 +10,20 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteApplicationMessa
 @Component
 class ProxyVoteApplicationMessageMapper(
     private val applicantDetailsMapper: ApplicantDetailsMapper,
-    private val approvalDetailsMapper: ApprovalDetailsMapper,
+    private val applicationDetailsMapper: ApplicationDetailsMapper,
     private val proxyVoteDetailsMapper: ProxyVoteDetailsMapper
 ) {
 
     fun mapToEntity(proxyVoteApplicationMessage: ProxyVoteApplicationMessage) =
         proxyVoteApplicationMessage.let {
             ProxyVoteApplication(
-                applicationId = it.approvalDetails.id,
-                approvalDetails = approvalDetailsMapper.mapToApprovalDetails(it.approvalDetails),
+                applicationId = it.applicationDetails.id,
+                applicationDetails = applicationDetailsMapper.mapToApplicationDetails(it.applicationDetails),
                 applicantDetails = applicantDetailsMapper.mapToApplicantEntity(
                     it.applicantDetails,
                     SourceSystem.PROXY
                 ),
                 proxyVoteDetails = proxyVoteDetailsMapper.mapToProxyVoteDetailsEntity(it.proxyVoteDetails),
-                signatureBase64 = it.signatureBase64,
                 createdBy = SourceSystem.PROXY,
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED

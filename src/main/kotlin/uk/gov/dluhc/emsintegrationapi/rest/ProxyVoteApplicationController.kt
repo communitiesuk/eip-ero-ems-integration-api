@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.PAGE_SIZE_PARAM
-import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteAcceptedResponse
+import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
 import uk.gov.dluhc.emsintegrationapi.service.ProxyVoteApplicationService
 import javax.validation.constraints.Pattern
 
@@ -24,10 +24,10 @@ private val logger = KotlinLogging.logger { }
 @RestController
 @CrossOrigin
 @Validated
-@RequestMapping("/proxyVotes")
+@RequestMapping("/proxyvotes")
 class ProxyVoteApplicationController(private val proxyVoteApplicationService: ProxyVoteApplicationService) {
 
-    @GetMapping("/accepted")
+    @GetMapping
     @PreAuthorize("isAuthenticated()")
     fun getProxyVoteApplications(
         authentication: Authentication,
@@ -37,13 +37,13 @@ class ProxyVoteApplicationController(private val proxyVoteApplicationService: Pr
         )
         @ValidPageSize
         pageSize: Int?
-    ): ProxyVoteAcceptedResponse {
+    ): ProxyVoteApplications {
         val serialNumber = authentication.credentials.toString()
         logger.info { "Processing a get proxy vote applications request with page size =$pageSize and certificate serial no =$serialNumber" }
         return proxyVoteApplicationService.getProxyVoteApplications(serialNumber, pageSize)
     }
 
-    @DeleteMapping("/accepted/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize(ApplicationConstants.IS_AUTHENTICATED)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun emsAccepted(

@@ -18,7 +18,7 @@ fun buildApplicantDetailsEntity(
     registeredAddress: Address? = buildAddressEntity(),
     referenceNumber: String? = RandomStringUtils.randomNumeric(10),
     ipAddress: String = getRandomIpAddress(),
-    language: String = faker.locale.language,
+    language: ApplicantDetails.Language = ApplicantDetails.Language.EN,
     emsElectorId: String = RandomStringUtils.randomNumeric(20)
 ) = ApplicantDetails(
     firstName = firstName,
@@ -44,7 +44,7 @@ fun buildApplicantDetailsMessageDto(
     registeredAddress: AddressMessageDto? = buildAddressMessageDto(),
     referenceNumber: String? = RandomStringUtils.randomNumeric(10),
     ipAddress: String = getRandomIpAddress(),
-    language: String = faker.locale.language,
+    language: ApplicantDetailsMessageDto.Language = ApplicantDetailsMessageDto.Language.EN,
     emsElectorId: String = RandomStringUtils.randomNumeric(20)
 ) = ApplicantDetailsMessageDto(
     firstName = firstName,

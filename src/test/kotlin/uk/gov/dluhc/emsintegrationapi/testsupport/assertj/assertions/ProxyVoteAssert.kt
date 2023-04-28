@@ -1,5 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions
 
+import org.apache.commons.codec.binary.Base64
 import org.assertj.core.api.AbstractAssert
 import org.assertj.core.api.Assertions
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
@@ -10,9 +11,10 @@ import uk.gov.dluhc.emsintegrationapi.mapper.InstantMapper
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveSameValues
 
-class ProxyVoteAssert(private val actual: ProxyVote) :
+class ProxyVoteAssert(actual: ProxyVote) :
     AbstractAssert<ProxyVoteAssert, ProxyVote>(actual, ProxyVoteAssert::class.java) {
     private val instantMapper = InstantMapper()
+
     companion object {
         private val PROXY_ADDRESS_FIELDS = arrayOf(
             "proxyproperty",
@@ -47,11 +49,10 @@ class ProxyVoteAssert(private val actual: ProxyVote) :
             arrayOf("regproperty", "regstreet", "regpostcode", "regarea", "regtown", "reglocality", "reguprn")
 
         private val APPLICANT_FIELDS =
-            arrayOf("refNum", "ip", "lang", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
+            arrayOf("refNum", "ip", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
         private val APPLICANT_ENTITY_FIELDS = arrayOf(
             "referenceNumber",
             "ipAddress",
-            "language",
             "emsElectorId",
             "firstName",
             "surname",
@@ -61,7 +62,7 @@ class ProxyVoteAssert(private val actual: ProxyVote) :
             "email"
         )
 
-        private val APPROVAL_FIELDS_WITHOUT_DATE_FIELDS =
+        private val APPLICATION_DETAILS_FIELDS_WITHOUT_DATE_FIELDS =
             arrayOf("gssCode", "source", "authorisingStaffId")
 
         fun assertThat(actual: ProxyVote) = ProxyVoteAssert(actual)
@@ -72,22 +73,21 @@ class ProxyVoteAssert(private val actual: ProxyVote) :
         with(proxyVoteApplication) {
             Assertions.assertThat(actual.id).isEqualTo(this.applicationId)
             hasProxyDetails(this.proxyVoteDetails)
-            hasApprovalDetails(this)
+            hasApplicationDetails(this)
             hasCorrectRegisteredAddress(
                 applicantDetails.registeredAddress,
                 REGISTERED_ADDRESS_FIELDS
             )
             hasApplicantDetails(applicantDetails)
-            Assertions.assertThat(actual.detail.signature).isEqualTo(this.signatureBase64)
         }
     }
 
-    private fun hasApprovalDetails(proxyVoteApplication: ProxyVoteApplication) =
+    private fun hasApplicationDetails(proxyVoteApplication: ProxyVoteApplication) =
         validate {
-            with(proxyVoteApplication.approvalDetails) {
+            with(proxyVoteApplication.applicationDetails) {
                 haveSameValues(
                     actual,
-                    APPROVAL_FIELDS_WITHOUT_DATE_FIELDS,
+                    APPLICATION_DETAILS_FIELDS_WITHOUT_DATE_FIELDS,
                     this
                 )
                 Assertions.assertThat(actual.createdAt)
@@ -99,6 +99,7 @@ class ProxyVoteAssert(private val actual: ProxyVote) :
 
     private fun hasApplicantDetails(applicantDetails: ApplicantDetails) = validate {
         haveSameValues(actual.detail, APPLICANT_FIELDS, applicantDetails, APPLICANT_ENTITY_FIELDS)
+        Assertions.assertThat(actual.detail.lang.name).isEqualTo(applicantDetails.language.name)
     }
 
     private fun hasProxyDetails(proxyDetails: ProxyVoteDetails) = validate {
@@ -109,6 +110,25 @@ class ProxyVoteAssert(private val actual: ProxyVote) :
             proxyDetails.proxyAddress,
             ADDRESS_ENTITY_FIELDS
         )
+    }
+
+    fun hasSignature(base64Signature: String) =
+        validate { Assertions.assertThat(actual.detail.signature).isEqualTo(Base64.decodeBase64(base64Signature)) }
+
+    fun signatureWaived() = validate {
+        Assertions.assertThat(actual.detail.signatureWaived).isTrue
+    }
+
+    fun hasSignatureWaiverReason(waiverReason: String) = validate {
+        Assertions.assertThat(actual.detail.signatureWaivedReason).isEqualTo(waiverReason)
+    }
+
+    fun hasNoSignature() =
+        validate { Assertions.assertThat(actual.detail.signature).isNull() }
+
+    fun hasNoSignatureWaiver() = validate {
+        Assertions.assertThat(actual.detail.signatureWaived).isNull()
+        Assertions.assertThat(actual.detail.signatureWaivedReason).isNull()
     }
 
     private fun hasCorrectRegisteredAddress(address: Address?, addressFields: Array<String>) =

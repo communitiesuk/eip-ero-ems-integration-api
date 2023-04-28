@@ -5,6 +5,8 @@ import org.hibernate.annotations.NotFoundAction
 import java.time.LocalDate
 import javax.persistence.CascadeType
 import javax.persistence.Embeddable
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.OneToOne
@@ -46,11 +48,16 @@ class ApplicantDetails(
     @field:Size(max = 45)
     val ipAddress: String,
 
-    @field:Size(max = 2)
-    val language: String,
+    @Enumerated(EnumType.STRING)
+    val language: Language,
 
     @field:Size(max = 255)
     val emsElectorId: String
 ) {
     override fun hashCode() = javaClass.hashCode()
+
+    enum class Language {
+        EN,
+        CY
+    }
 }

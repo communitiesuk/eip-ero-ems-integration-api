@@ -12,7 +12,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
-import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteAcceptedResponse
+import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
 
 private val logger = KotlinLogging.logger { }
 
@@ -25,20 +25,20 @@ class ProxyVoteApplicationService(
     private val retrieveGssCodeService: RetrieveGssCodeService
 ) {
     @Transactional(readOnly = true)
-    fun getProxyVoteApplications(certificateSerialNumber: String, pageSize: Int?): ProxyVoteAcceptedResponse {
+    fun getProxyVoteApplications(certificateSerialNumber: String, pageSize: Int?): ProxyVoteApplications {
         logger.info { "Proxy Service fetching GSS Codes for $certificateSerialNumber" }
         val gssCodes = retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
         val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize proxy vote applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
         val proxyApplicationsList =
-            proxyVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+            proxyVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 gssCodes,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(numberOfRecordsToFetch)
             )
         val actualPageSize = proxyApplicationsList.size
         logger.info("The actual number of records fetched is $actualPageSize")
-        return ProxyVoteAcceptedResponse(actualPageSize, proxyVoteMapper.mapFromEntities(proxyApplicationsList))
+        return ProxyVoteApplications(actualPageSize, proxyVoteMapper.mapFromEntities(proxyApplicationsList))
     }
 
     @Transactional
@@ -48,7 +48,10 @@ class ProxyVoteApplicationService(
     ) {
         val gssCodes = getGssCodes(certificateSerialNumber)
         logger.info("Updating the proxy vote application with the id $proxyVoteApplicationId with status ${RecordStatus.DELETED}")
-        proxyVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(proxyVoteApplicationId, gssCodes)
+        proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
+            proxyVoteApplicationId,
+            gssCodes
+        )
             ?.let { proxyVoteApplication ->
                 if (proxyVoteApplication.status != RecordStatus.DELETED) {
                     proxyVoteApplication.status = RecordStatus.DELETED

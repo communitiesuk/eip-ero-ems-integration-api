@@ -18,7 +18,7 @@ import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.A
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.APPLICATION_ID_REGEX
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.IS_AUTHENTICATED
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.PAGE_SIZE_PARAM
-import uk.gov.dluhc.emsintegrationapi.models.PostalVoteAcceptedResponse
+import uk.gov.dluhc.emsintegrationapi.models.PostalVoteApplications
 import uk.gov.dluhc.emsintegrationapi.service.PostalVoteApplicationService
 import javax.validation.constraints.Pattern
 
@@ -27,10 +27,10 @@ private val logger = KotlinLogging.logger { }
 @RestController
 @CrossOrigin
 @Validated
-@RequestMapping("/postalVotes")
+@RequestMapping("/postalvotes")
 class PostalVoteApplicationController(private val postalVoteApplicationService: PostalVoteApplicationService) {
 
-    @GetMapping("/accepted")
+    @GetMapping
     @PreAuthorize(IS_AUTHENTICATED)
     fun getPostalVoteApplications(
         authentication: Authentication,
@@ -40,13 +40,13 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         )
         @ValidPageSize
         pageSize: Int?
-    ): PostalVoteAcceptedResponse {
+    ): PostalVoteApplications {
         val serialNumber = authentication.credentials.toString()
         logger.info { "Processing a get postal vote applications request with page size =$pageSize and certificate serial no =$serialNumber" }
         return postalVoteApplicationService.getPostalVoteApplications(serialNumber, pageSize)
     }
 
-    @DeleteMapping("/accepted/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize(IS_AUTHENTICATED)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun emsAccepted(

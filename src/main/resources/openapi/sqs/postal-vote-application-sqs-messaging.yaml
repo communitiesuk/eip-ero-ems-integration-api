@@ -79,13 +79,15 @@ components:
       type: object
       x-examples:
         Example 1:
-          approvalDetails:
+          applicationDetails:
             id: 502cf250036469154b4f85fc
             createdAt: 2022-08-01T14:14:55Z
             gssCode: T12345678
             source: web
             authorisedAt: 2022-08-02T10:10:10Z
             authorisingStaffId: jsmith99@somecouncil.gov.uk
+            signature: LzlqLzRBQ...
+            applicationStatus: approved
           applicantDetails:
             firstName: First
             middleNames: Middle
@@ -116,22 +118,17 @@ components:
               uprn: '098766'
             ballotAddressReason: I am away from home for work
             voteUntilFurtherNotice: true
-          signatureBase64: LzlqLzRBQ...
       properties:
-        approvalDetails:
-          $ref: '../sqs/Models/ApprovalDetails.yaml'
+        applicationDetails:
+          $ref: '../sqs/Models/ApplicationDetails.yaml'
         applicantDetails:
           $ref: '../sqs/Models/ApplicantDetails.yaml'
         postalVoteDetails:
           $ref: '#/components/schemas/PostalVoteDetails'
-        signatureBase64:
-          type: string
-          description: ' an image of the applicant’s signature, in Base64 encoded PNG format.The signature image will be a Base64 string encoding a PNG image. The image will be 1050 pixels wide and 300 pixels high, corresponding to a scan of the paper forms at 300 dpi. The image will be black and white only. The image will be cropped so that the signature fills the box with a small white margin. The data length is usuall'
 
       required:
-        - approvalDetails
+        - applicationDetails
         - applicantDetails
-        - signatureBase64
     EmsConfirmedReceiptMessage:
       type: object
       properties:

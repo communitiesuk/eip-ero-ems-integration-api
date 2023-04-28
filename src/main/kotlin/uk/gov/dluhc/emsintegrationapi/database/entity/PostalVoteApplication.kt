@@ -21,7 +21,7 @@ class PostalVoteApplication(
 
     @field:Valid
     @Embedded
-    val approvalDetails: ApprovalDetails,
+    val applicationDetails: ApplicationDetails,
 
     @field:Valid
     @Embedded
@@ -30,8 +30,6 @@ class PostalVoteApplication(
     @field:Valid
     @Embedded
     var postalVoteDetails: PostalVoteDetails? = null,
-
-    val signatureBase64: String,
 
     var removalDateTime: Instant? = null,
 

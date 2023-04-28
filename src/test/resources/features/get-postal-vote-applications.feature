@@ -17,7 +17,7 @@ Feature: Get Postal Vote Application ( Default page size is 20, max page size is
   @ClearCache
   Scenario: System does not have any postal vote applications
     When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
-    Then I received a response with 0 postal vote applications
+    Then I received a response with 0 postal vote applications with signature
 
   @ClearCache
   Scenario: System returns http status 404 if the attached certificate serial number does not exist
@@ -49,19 +49,25 @@ Feature: Get Postal Vote Application ( Default page size is 20, max page size is
 
   @DeletePostalEntity @ClearCache
   Scenario: System returns postal vote applications of a given page size
-    Given there are 20 postal vote applications exist with the status "RECEIVED" and GSS Codes "E12345678","E12345679"
+    Given there are 20 postal vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
     When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
-    Then I received a response with 10 postal vote applications
+    Then I received a response with 10 postal vote applications with signature
 
   @DeletePostalEntity @ClearCache
   Scenario: System does not have requested number of postal applications
-    Given there are 2 postal vote applications exist with the status "RECEIVED" and GSS Codes "E12345678","E12345679"
+    Given there are 2 postal vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
     When I send a get postal vote applications request with the page size 3 and the certificate serial number "1234567891"
-    Then I received a response with 2 postal vote applications
+    Then I received a response with 2 postal vote applications with signature
 
   @DeletePostalEntity @ClearCache
   Scenario: System returns default number of records if page size is not specified
-    Given there are 21 postal vote applications exist with the status "RECEIVED" and GSS Codes "E12345678","E12345679"
+    Given there are 21 postal vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
     When I send a get postal vote request without the page size and with the certificate serial number "1234567891"
-    Then I received a response with 20 postal vote applications
+    Then I received a response with 20 postal vote applications with signature
+
+  @DeletePostalEntity @ClearCache
+  Scenario: System returns postal vote applications with signature waiver reason
+    Given there are 21 postal vote applications without signature exist with the status "RECEIVED" and GSS Codes "E12345678","E12345679"
+    When I send a get postal vote request without the page size and with the certificate serial number "1234567891"
+    Then I received a response with 20 postal vote applications with signature waiver
 

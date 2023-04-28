@@ -6,8 +6,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApprovalDetailsEntity
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateObjects
 
 class EmsPostalApplicationConfirmationSteps(
@@ -24,15 +22,6 @@ class EmsPostalApplicationConfirmationSteps(
         And("the system ignores request and did not update the postal application with the id {string}") { applicationId: String ->
             val applicationFromDB = postalVoteApplicationRepository.findById(applicationId).get()
             validateObjects(postalVoteApplication, applicationFromDB)
-        }
-        Given("a postal vote application with the application id {string}, status {string} and GSS Code {string} exist") { applicationId: String, status: String, gssCode: String ->
-            postalVoteApplicationRepository.saveAndFlush(
-                buildPostalVoteApplication(
-                    applicationId = applicationId,
-                    recordStatus = RecordStatus.valueOf(status),
-                    approvalDetails = buildApprovalDetailsEntity(gssCode = gssCode)
-                )
-            )
         }
     }
 }

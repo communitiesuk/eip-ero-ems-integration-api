@@ -73,7 +73,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
             )
 
             await.atMost(10, TimeUnit.SECONDS).untilAsserted {
-                assertThat(postalVoteApplicationRepository.findById(payload.approvalDetails.id)).isNotNull
+                assertThat(postalVoteApplicationRepository.findById(payload.applicationDetails.id)).isNotNull
 
                 assertThat(
                     // first message that is reliably logged

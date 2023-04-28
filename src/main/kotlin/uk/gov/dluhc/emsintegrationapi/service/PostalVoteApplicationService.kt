@@ -12,7 +12,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationR
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
-import uk.gov.dluhc.emsintegrationapi.models.PostalVoteAcceptedResponse
+import uk.gov.dluhc.emsintegrationapi.models.PostalVoteApplications
 
 private val logger = KotlinLogging.logger { }
 
@@ -25,19 +25,19 @@ class PostalVoteApplicationService(
     private val retrieveGssCodeService: RetrieveGssCodeService
 ) {
     @Transactional(readOnly = true)
-    fun getPostalVoteApplications(certificateSerialNumber: String, pageSize: Int?): PostalVoteAcceptedResponse {
+    fun getPostalVoteApplications(certificateSerialNumber: String, pageSize: Int?): PostalVoteApplications {
         val gssCodes = getGssCodes(certificateSerialNumber)
         val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
         val postalApplicationsList =
-            postalVoteApplicationRepository.findByApprovalDetailsGssCodeInAndStatusOrderByDateCreated(
+            postalVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 gssCodes,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(numberOfRecordsToFetch)
             )
         val actualPageSize = postalApplicationsList.size
         logger.info("The actual number of records fetched is $actualPageSize")
-        return PostalVoteAcceptedResponse(actualPageSize, postalVoteMapper.mapFromEntities(postalApplicationsList))
+        return PostalVoteApplications(actualPageSize, postalVoteMapper.mapFromEntities(postalApplicationsList))
     }
 
     @Transactional
@@ -47,7 +47,7 @@ class PostalVoteApplicationService(
     ) {
         val gssCodes = getGssCodes(certificateSerialNumber)
         logger.info("Updating the postal vote application with the id $postalVoteApplicationId with status ${RecordStatus.DELETED}")
-        postalVoteApplicationRepository.findByApplicationIdAndApprovalDetailsGssCodeIn(
+        postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
             postalVoteApplicationId,
             gssCodes
         )

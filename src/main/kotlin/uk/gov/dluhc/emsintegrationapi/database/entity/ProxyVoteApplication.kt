@@ -21,7 +21,7 @@ class ProxyVoteApplication(
 
     @field:Valid
     @Embedded
-    val approvalDetails: ApprovalDetails,
+    val applicationDetails: ApplicationDetails,
 
     @field:Valid
     @Embedded
@@ -30,8 +30,6 @@ class ProxyVoteApplication(
     @field:Valid
     @Embedded
     val proxyVoteDetails: ProxyVoteDetails,
-
-    val signatureBase64: String?,
 
     var removalDateTime: Instant? = null,
 

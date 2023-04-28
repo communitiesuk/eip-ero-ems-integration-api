@@ -17,7 +17,7 @@ class ApplicantDetailsMapper(private val addressMapper: AddressMapper) {
             phone = it.phone,
             referenceNumber = it.referenceNumber,
             ipAddress = it.ipAddress,
-            language = it.language,
+            language = ApplicantDetailsEntity.Language.valueOf(it.language.name),
             emsElectorId = it.emsElectorId,
             registeredAddress = addressMapper.mapToAddressEntity(it.registeredAddress, createdBy)!!
         )

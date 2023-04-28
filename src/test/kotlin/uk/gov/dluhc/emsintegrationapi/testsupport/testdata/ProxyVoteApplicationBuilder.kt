@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata
 
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicantDetails
-import uk.gov.dluhc.emsintegrationapi.database.entity.ApprovalDetails
+import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
@@ -10,15 +10,14 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteApplicationMessage
 import java.time.Instant
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicantDetails as ApplicantDetailsMessageDto
-import uk.gov.dluhc.emsintegrationapi.messaging.models.ApprovalDetails as ApprovalDetailsMessageDto
+import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicationDetails as ApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteDetails as ProxyVoteDetailsMessageDto
 
 fun buildProxyVoteApplication(
     applicationId: String = getIerDsApplicationId(),
-    approvalDetails: ApprovalDetails = buildApprovalDetailsEntity(),
+    applicationDetails: ApplicationDetails = buildApplicationDetailsEntity(),
     applicantDetails: ApplicantDetails = buildApplicantDetailsEntity(),
     proxyVoteDetails: ProxyVoteDetails = buildProxyVoteDetailsEntity(),
-    signatureBase64: String = getRandomAlphaNumeric(20),
     removalDateTime: Instant? = null,
     retentionStatus: RetentionStatus = RetentionStatus.RETAIN,
     createdBy: SourceSystem = SourceSystem.POSTAL,
@@ -27,10 +26,9 @@ fun buildProxyVoteApplication(
     recordStatus: RecordStatus = RecordStatus.RECEIVED
 ) = ProxyVoteApplication(
     applicationId = applicationId,
-    approvalDetails = approvalDetails,
+    applicationDetails = applicationDetails,
     applicantDetails = applicantDetails,
     proxyVoteDetails = proxyVoteDetails,
-    signatureBase64 = signatureBase64,
     removalDateTime = removalDateTime,
     retentionStatus = retentionStatus,
     createdBy = createdBy,
@@ -40,14 +38,11 @@ fun buildProxyVoteApplication(
 )
 
 fun buildProxyVoteApplicationMessageDto(
-    applicationId: String = getRandomAlphaNumeric(24),
-    approvalDetails: ApprovalDetailsMessageDto = buildApprovalDetailsMessageDto(applicationId = applicationId),
+    applicationDetails: ApplicationDetailsMessageDto = buildApplicationDetailsMessageDto(),
     applicantDetails: ApplicantDetailsMessageDto = buildApplicantDetailsMessageDto(),
     proxyVoteDetails: ProxyVoteDetailsMessageDto = buildProxyVoteDetailsMessageDto(),
-    signatureBase64: String = getRandomAlphaNumeric(20),
 ) = ProxyVoteApplicationMessage(
-    approvalDetails = approvalDetails,
+    applicationDetails = applicationDetails,
     applicantDetails = applicantDetails,
     proxyVoteDetails = proxyVoteDetails,
-    signatureBase64 = signatureBase64,
 )
