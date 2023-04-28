@@ -4,6 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ProxyVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveNullValues
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_BASE64_STRING
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteDetailsEntity
 
@@ -12,10 +15,13 @@ internal class ProxyVoteMapperTest {
     private val proxyVoteMapper = ProxyVoteMapper(instantMapper = InstantMapper())
 
     @Test
-    fun `should map from a proxy vote application entity`() {
-        val proxyVoteApplication = buildProxyVoteApplication()
+    fun `should map from a proxy vote application entity with signature`() {
+        val proxyVoteApplication =
+            buildProxyVoteApplication(applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING))
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)
+            .hasSignature(SIGNATURE_BASE64_STRING)
+            .hasNoSignatureWaiver()
     }
 
     @Test
@@ -53,5 +59,20 @@ internal class ProxyVoteMapperTest {
             ProxyVoteAssert.assertThat(proxyVote)
                 .hasCorrectFieldsFromProxyApplication(proxyVoteApplications[index])
         }
+    }
+
+    @Test
+    fun `should map from a proxy vote application entity with signature waiver`() {
+        val proxyVoteApplication =
+            buildProxyVoteApplication(
+                applicationDetails = buildApplicationDetailsEntity(
+                    signatureWaivedReason = SIGNATURE_WAIVER_REASON,
+                    signatureWaived = true
+                )
+            )
+        val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
+        ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)
+            .hasSignatureWaiver(SIGNATURE_WAIVER_REASON)
+            .hasNoSignature()
     }
 }

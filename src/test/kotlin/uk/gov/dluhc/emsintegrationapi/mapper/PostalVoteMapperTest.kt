@@ -2,6 +2,9 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 
 import org.junit.jupiter.api.Test
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.PostalVoteAssert
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_BASE64_STRING
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsEntity
 
@@ -10,12 +13,15 @@ internal class PostalVoteMapperTest {
     private val postalVoteMapper = PostalVoteMapper(instantMapper = InstantMapper())
 
     @Test
-    fun `should map from a postal vote application entity`() {
-        val postalVoteApplication = buildPostalVoteApplication()
+    fun `should map from a postal vote application entity with signature`() {
+        val postalVoteApplication =
+            buildPostalVoteApplication(applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING))
         val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
         PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasPostalVoteDetails(postalVoteApplication.postalVoteDetails)
             .hasBallotAddress(postalVoteApplication.postalVoteDetails?.ballotAddress!!)
+            .hasSignature(SIGNATURE_BASE64_STRING)
+            .hasNoSignatureWaiver()
     }
 
     @Test
@@ -38,5 +44,22 @@ internal class PostalVoteMapperTest {
         PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasPostalVoteDetails(postalVoteApplication.postalVoteDetails)
             .doesNotHaveBallotAddress()
+    }
+
+    @Test
+    fun `should map from a postal vote application entity with signature waiver`() {
+        val postalVoteApplication =
+            buildPostalVoteApplication(
+                applicationDetails = buildApplicationDetailsEntity(
+                    signatureWaivedReason = SIGNATURE_WAIVER_REASON,
+                    signatureWaived = true
+                )
+            )
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
+        PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
+            .hasPostalVoteDetails(postalVoteApplication.postalVoteDetails)
+            .hasBallotAddress(postalVoteApplication.postalVoteDetails?.ballotAddress!!)
+            .hasSignatureWaiver(SIGNATURE_WAIVER_REASON)
+            .hasNoSignature()
     }
 }

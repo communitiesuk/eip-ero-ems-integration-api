@@ -12,9 +12,10 @@ import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveNullValues
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveSameValues
 
-class PostalVoteAssert(private val actual: PostalVote) :
+class PostalVoteAssert(actual: PostalVote) :
     AbstractAssert<PostalVoteAssert, PostalVote>(actual, PostalVoteAssert::class.java) {
     private val instantMapper = InstantMapper()
+
     companion object {
         private val BALLOT_ADDRESS_FIELDS = arrayOf(
             "ballotproperty",
@@ -124,6 +125,14 @@ class PostalVoteAssert(private val actual: PostalVote) :
     fun hasSignatureWaiver(waiverReason: String) = validate {
         Assertions.assertThat(actual.detail.signatureWaived).isTrue
         Assertions.assertThat(actual.detail.signatureWaivedReason).isEqualTo(waiverReason)
+    }
+
+    fun hasNoSignature() =
+        validate { Assertions.assertThat(actual.detail.signature).isNull() }
+
+    fun hasNoSignatureWaiver() = validate {
+        Assertions.assertThat(actual.detail.signatureWaived).isNull()
+        Assertions.assertThat(actual.detail.signatureWaivedReason).isNull()
     }
 
     private fun hasCorrectAddressFields(address: Address?, addressFields: Array<String>) =

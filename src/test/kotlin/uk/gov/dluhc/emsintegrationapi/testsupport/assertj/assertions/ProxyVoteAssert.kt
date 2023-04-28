@@ -120,6 +120,14 @@ class ProxyVoteAssert(actual: ProxyVote) :
         Assertions.assertThat(actual.detail.signatureWaivedReason).isEqualTo(waiverReason)
     }
 
+    fun hasNoSignature() =
+        validate { Assertions.assertThat(actual.detail.signature).isNull() }
+
+    fun hasNoSignatureWaiver() = validate {
+        Assertions.assertThat(actual.detail.signatureWaived).isNull()
+        Assertions.assertThat(actual.detail.signatureWaivedReason).isNull()
+    }
+
     private fun hasCorrectRegisteredAddress(address: Address?, addressFields: Array<String>) =
         validate { haveSameValues(actual.detail, addressFields, address, ADDRESS_ENTITY_FIELDS) }
 
