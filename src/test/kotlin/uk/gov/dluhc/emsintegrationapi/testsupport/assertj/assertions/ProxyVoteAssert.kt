@@ -127,7 +127,7 @@ class ProxyVoteAssert(actual: ProxyVote) :
         validate { Assertions.assertThat(actual.detail.signature).isNull() }
 
     fun hasNoSignatureWaiver() = validate {
-        Assertions.assertThat(actual.detail.signatureWaived).isFalse
+        Assertions.assertThat(actual.detail.signatureWaived).isNull()
         Assertions.assertThat(actual.detail.signatureWaivedReason).isNull()
     }
 
