@@ -109,6 +109,7 @@ class GetPostalApplicationsSteps(
                 expectedHttpStatus = 200,
                 PostalVoteApplications::class.java
             )
+
         assertThat(postalVoteApplications).isNotNull
         assertThat(postalVoteApplications!!.proxyVotes).hasSize(expectedPageSize)
 
@@ -120,6 +121,7 @@ class GetPostalApplicationsSteps(
             PostalVoteAssert.assertThat(postalVote)
                 .hasCorrectFieldsFromPostalApplication(postalVoteApplicationsMap!![postalVote.id]!!)
                 .hasSignatureWaiver(SIGNATURE_WAIVER_REASON)
+                .hasNoSignature()
         }
     }
 
@@ -128,6 +130,7 @@ class GetPostalApplicationsSteps(
             PostalVoteAssert.assertThat(postalVote)
                 .hasCorrectFieldsFromPostalApplication(postalVoteApplicationsMap!![postalVote.id]!!)
                 .hasSignature(SIGNATURE_BASE64_STRING)
+                .hasNoSignatureWaiver()
         }
     }
 }
