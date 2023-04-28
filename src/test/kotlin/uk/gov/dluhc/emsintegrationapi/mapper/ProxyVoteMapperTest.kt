@@ -72,7 +72,8 @@ internal class ProxyVoteMapperTest {
             )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)
-            .hasSignatureWaiver(SIGNATURE_WAIVER_REASON)
+            .signatureWaived()
+            .hasSignatureWaiverReason(SIGNATURE_WAIVER_REASON)
             .hasNoSignature()
     }
 }

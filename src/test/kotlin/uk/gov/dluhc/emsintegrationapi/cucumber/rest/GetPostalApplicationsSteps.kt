@@ -120,7 +120,8 @@ class GetPostalApplicationsSteps(
         postalVoteApplications!!.proxyVotes!!.forEach { postalVote ->
             PostalVoteAssert.assertThat(postalVote)
                 .hasCorrectFieldsFromPostalApplication(postalVoteApplicationsMap!![postalVote.id]!!)
-                .hasSignatureWaiver(SIGNATURE_WAIVER_REASON)
+                .signatureWaived()
+                .hasSignatureWaiverReason(SIGNATURE_WAIVER_REASON)
                 .hasNoSignature()
         }
     }
@@ -130,7 +131,7 @@ class GetPostalApplicationsSteps(
             PostalVoteAssert.assertThat(postalVote)
                 .hasCorrectFieldsFromPostalApplication(postalVoteApplicationsMap!![postalVote.id]!!)
                 .hasSignature(SIGNATURE_BASE64_STRING)
-                .hasNoSignatureWaiver()
+                .hasSignatureWaiverReason("false")
         }
     }
 }

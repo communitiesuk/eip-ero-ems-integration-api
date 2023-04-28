@@ -105,9 +105,6 @@ class GetProxyApplicationsSteps(
     }
 
     private fun validateResponse(hasSignature: Boolean, expectedPageSize: Int) {
-        apiResponse.responseSpec!!.expectHeader().value("Content-Length") { value ->
-            logger.info { "Content Length = $value" }
-        }
         proxyVoteApplications =
             validateStatusAndGetResponse(
                 apiResponse.responseSpec!!,
@@ -124,7 +121,8 @@ class GetProxyApplicationsSteps(
         proxyVoteApplications!!.proxyVotes!!.forEach { proxyVote ->
             ProxyVoteAssert.assertThat(proxyVote)
                 .hasCorrectFieldsFromProxyApplication(proxyVoteApplicationsMap!![proxyVote.id]!!)
-                .hasSignatureWaiver(SIGNATURE_WAIVER_REASON)
+                .signatureWaived()
+                .hasSignatureWaiverReason(SIGNATURE_WAIVER_REASON)
                 .hasNoSignature()
         }
     }
@@ -134,7 +132,7 @@ class GetProxyApplicationsSteps(
             ProxyVoteAssert.assertThat(proxyVote)
                 .hasCorrectFieldsFromProxyApplication(proxyVoteApplicationsMap!![proxyVote.id]!!)
                 .hasSignature(SIGNATURE_BASE64_STRING)
-                .hasNoSignatureWaiver()
+                .hasSignatureWaiverReason("false")
         }
     }
 }

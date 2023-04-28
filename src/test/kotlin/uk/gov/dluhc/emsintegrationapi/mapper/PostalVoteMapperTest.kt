@@ -59,7 +59,8 @@ internal class PostalVoteMapperTest {
         PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasPostalVoteDetails(postalVoteApplication.postalVoteDetails)
             .hasBallotAddress(postalVoteApplication.postalVoteDetails?.ballotAddress!!)
-            .hasSignatureWaiver(SIGNATURE_WAIVER_REASON)
+            .signatureWaived()
+            .hasSignatureWaiverReason(SIGNATURE_WAIVER_REASON)
             .hasNoSignature()
     }
 }
