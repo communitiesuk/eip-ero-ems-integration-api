@@ -19,7 +19,7 @@ fun buildApplicantDetailsEntity(
     referenceNumber: String? = RandomStringUtils.randomNumeric(10),
     ipAddress: String = getRandomIpAddress(),
     language: ApplicantDetails.Language = ApplicantDetails.Language.EN,
-    emsElectorId: String = RandomStringUtils.randomNumeric(20)
+    emsElectorId: String? = RandomStringUtils.randomNumeric(20)
 ) = ApplicantDetails(
     firstName = firstName,
     middleNames = middleNames,
@@ -42,10 +42,10 @@ fun buildApplicantDetailsMessageDto(
     dob: LocalDate? = getRandomDOB(),
     phone: String? = faker.phoneNumber().phoneNumber(),
     registeredAddress: AddressMessageDto? = buildAddressMessageDto(),
-    referenceNumber: String? = RandomStringUtils.randomNumeric(10),
+    referenceNumber: String = RandomStringUtils.randomNumeric(10),
     ipAddress: String = getRandomIpAddress(),
     language: ApplicantDetailsMessageDto.Language = ApplicantDetailsMessageDto.Language.EN,
-    emsElectorId: String = RandomStringUtils.randomNumeric(20)
+    emsElectorId: String? = RandomStringUtils.randomNumeric(20)
 ) = ApplicantDetailsMessageDto(
     firstName = firstName,
     middleNames = middleNames,
@@ -54,8 +54,16 @@ fun buildApplicantDetailsMessageDto(
     dob = dob,
     phone = phone,
     registeredAddress = registeredAddress!!,
-    referenceNumber = referenceNumber!!,
+    referenceNumber = referenceNumber,
     ipAddress = ipAddress,
     language = language,
     emsElectorId = emsElectorId
+)
+
+fun buildMinimalApplicantDetailsMessageDto() = buildApplicantDetailsMessageDto(
+    middleNames = null,
+    email = null,
+    dob = null,
+    phone = null,
+    emsElectorId = null
 )

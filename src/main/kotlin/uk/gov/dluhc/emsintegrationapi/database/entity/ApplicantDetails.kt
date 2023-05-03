@@ -52,7 +52,7 @@ class ApplicantDetails(
     val language: Language,
 
     @field:Size(max = 255)
-    val emsElectorId: String
+    val emsElectorId: String?
 ) {
     override fun hashCode() = javaClass.hashCode()
 

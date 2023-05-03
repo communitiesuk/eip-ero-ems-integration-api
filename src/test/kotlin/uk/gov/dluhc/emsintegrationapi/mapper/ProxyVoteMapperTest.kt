@@ -6,6 +6,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ProxyVoteAs
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveNullValues
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_BASE64_STRING
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteDetailsEntity
@@ -75,5 +76,15 @@ internal class ProxyVoteMapperTest {
             .signatureWaived()
             .hasSignatureWaiverReason(SIGNATURE_WAIVER_REASON)
             .hasNoSignature()
+    }
+
+    @Test
+    fun `should map from a proxy vote application entity without ems elector id`() {
+        val proxyVoteApplication = buildProxyVoteApplication(
+            applicantDetails = buildApplicantDetailsEntity(emsElectorId = null)
+        )
+        val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
+        ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)
+            .hasNoEmsElectorId()
     }
 }
