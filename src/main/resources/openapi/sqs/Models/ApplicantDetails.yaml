@@ -80,4 +80,3 @@ required:
   - referenceNumber
   - ipAddress
   - language
-  - emsElectorId

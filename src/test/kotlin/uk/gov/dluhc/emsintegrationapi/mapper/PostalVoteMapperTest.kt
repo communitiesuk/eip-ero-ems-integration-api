@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.PostalVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_BASE64_STRING
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsEntity
@@ -62,5 +63,15 @@ internal class PostalVoteMapperTest {
             .signatureWaived()
             .hasSignatureWaiverReason(SIGNATURE_WAIVER_REASON)
             .hasNoSignature()
+    }
+
+    @Test
+    fun `should map from an application without ems elector id`() {
+        val postalVoteApplication = buildPostalVoteApplication(
+            applicantDetails = buildApplicantDetailsEntity(emsElectorId = null)
+        )
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
+        PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
+            .hasNoEmsElectorId()
     }
 }

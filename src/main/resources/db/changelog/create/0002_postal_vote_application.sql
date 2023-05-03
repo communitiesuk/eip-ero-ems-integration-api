@@ -19,7 +19,7 @@ CREATE TABLE `postal_vote_application`
     `registered_address_id`     char(36)     NOT NULL,
     `reference_number`          varchar(10)  NOT NULL,
     `ip_address`                varchar(45)  NOT NULL,
-    `ems_elector_id`            varchar(255) NOT NULL,
+    `ems_elector_id`            varchar(255),
     `language`                  char(2),
     `ballot_address_id`         char(36),
     `ballot_address_reason`     varchar(500),

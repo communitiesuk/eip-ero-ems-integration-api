@@ -138,6 +138,8 @@ class PostalVoteAssert(actual: PostalVote) :
         Assertions.assertThat(actual.detail.signatureWaivedReason).isNull()
     }
 
+    fun hasNoEmsElectorId() = validate { Assertions.assertThat(actual.detail.emsElectorId).isNull() }
+
     private fun hasCorrectAddressFields(address: Address?, addressFields: Array<String>) =
         validate { haveSameValues(actual.detail, addressFields, address, ADDRESS_ENTITY_FIELDS) }
 

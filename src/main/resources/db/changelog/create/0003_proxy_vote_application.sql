@@ -19,7 +19,7 @@ CREATE TABLE `proxy_vote_application`
     `registered_address_id`     char(36)     NOT NULL,
     `reference_number`          varchar(10)  NOT NULL,
     `ip_address`                varchar(45)  NOT NULL,
-    `ems_elector_id`            varchar(255) NOT NULL,
+    `ems_elector_id`            varchar(255),
     `language`                  char(2),
     `proxy_first_name`          varchar(35)  NOT NULL,
     `proxy_middle_names`        varchar(100),
