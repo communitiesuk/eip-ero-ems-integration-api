@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
-  version: 1.1.0
+  version: 1.1.1
   description: |
     This specification is for an API hosted by EROP for EMS clients to fetch
     details of Postal Vote and Proxy Vote applications made by the public.
@@ -208,7 +208,7 @@ components:
           description: GSS code of the ERO/VJB of the applicant/application
         source:
           type: string
-          minLength: 10
+          minLength: 1
           maxLength: 10
           example: erop
           description: |
@@ -413,7 +413,7 @@ components:
           description: GSS code of the ERO/VJB of the applicant/application
         source:
           type: string
-          minLength: 10
+          minLength: 1
           maxLength: 10
           example: web
           description: |

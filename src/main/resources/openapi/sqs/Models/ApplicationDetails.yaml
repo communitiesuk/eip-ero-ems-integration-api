@@ -30,7 +30,7 @@ properties:
     description: GSS code of the ERO/VJB of the applicant/application
   source:
     type: string
-    minLength: 10
+    minLength: 1
     maxLength: 10
     description: |
       either “web” for digital applications or “erop” for applications received by post and entered into the EROP
