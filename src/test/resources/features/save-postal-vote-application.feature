@@ -28,10 +28,10 @@ Feature: System process an approved/rejected postal vote application message
       | 502cf250036469154b4f86fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 | e87cbaea-0deb-4058-95c6-8240d426f5e2 |
 
 
-  Scenario Outline: The system does not allow two different postal applications having a different application id and a same ems electoral id
+  Scenario Outline: The system does allow two different postal applications having a different application id and a same ems electoral id
     Given a postal vote application with the application id "<PostalApplicationId>" and electoral id "<EmsElectoralId>" exists
     When I send an sqs message to the postal application queue with an application id "<PostalApplicationId2>" and electoral id "<EmsElectoralId>"
-    Then the postal vote application with id "<PostalApplicationId2>" did not save
+    Then the postal vote application with id "<PostalApplicationId2>" was saved
     Examples:
       | PostalApplicationId      | EmsElectoralId                       | PostalApplicationId2     |
       | 502cf250036469154b4f87fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 | 502cf250036469154b4f85fb |

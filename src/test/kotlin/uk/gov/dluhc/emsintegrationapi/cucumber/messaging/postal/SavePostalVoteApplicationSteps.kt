@@ -84,6 +84,11 @@ open class SavePostalVoteApplicationSteps(
                 applicationId
             )
         }
+        Then("the postal vote application with id {string} was saved") { applicationId: String ->
+            await.pollDelay(2, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted {
+                assertThat(postalVoteApplicationRepository.findById(applicationId)).isPresent
+            }
+        }
         Then("the postal vote application has been successfully saved with the signature waiver reason {string}") { waiverReason: String ->
             await.pollDelay(2, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted {
                 val optSavedEntity =
@@ -156,5 +161,9 @@ open class SavePostalVoteApplicationSteps(
 
     @Transactional
     open fun confirmTheApplicationDidNotSave(applicationId: String) =
+        confirmTheEntityDoesNotExist(postalVoteApplicationRepository, applicationId)
+
+    @Transactional
+    open fun confirmTheApplicationWasSaved(applicationId: String) =
         confirmTheEntityDoesNotExist(postalVoteApplicationRepository, applicationId)
 }

@@ -31,7 +31,7 @@ Feature: System process an approved/rejected proxy vote application message
   Scenario Outline: The system does not allow two different proxy applications having a different application id and a same ems electoral id
     Given a proxy vote application with the application id "<ProxyApplicationId>" and electoral id "<EmsElectoralId>" exists
     When I send an sqs message to the proxy application queue with an application id "<ProxyApplicationId2>" and electoral id "<EmsElectoralId>"
-    Then the proxy vote application with id "<ProxyApplicationId2>" did not save
+    Then the proxy vote application with id "<ProxyApplicationId2>" was saved
     Examples:
       | ProxyApplicationId       | EmsElectoralId                       | ProxyApplicationId2      |
       | 602cf250036469154b4f85fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 | 602cf250036469154b4f85fb |

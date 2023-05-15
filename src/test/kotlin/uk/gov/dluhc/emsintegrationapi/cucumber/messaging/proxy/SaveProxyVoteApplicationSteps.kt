@@ -84,6 +84,11 @@ open class SaveProxyVoteApplicationSteps(
                 applicationId
             )
         }
+        Then("the proxy vote application with id {string} was saved") { applicationId: String ->
+            await.atMost(5, TimeUnit.SECONDS).untilAsserted {
+                assertThat(proxyVoteApplicationRepository.findById(applicationId)).isPresent
+            }
+        }
         Then("the proxy vote application has been successfully saved with the signature waiver reason {string}") { waiverReason: String ->
             await.pollDelay(2, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted {
                 val optSavedEntity =

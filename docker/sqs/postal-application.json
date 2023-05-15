@@ -1,11 +1,12 @@
 {
-  "approvalDetails": {
+  "applicationDetails": {
     "id": "%%APPLICATION_ID%%",
     "createdAt": "2023-04-13T11:40:49Z",
     "gssCode": "E68604812",
     "source": "hWdLXHjcTA",
     "authorisedAt": "2023-04-13T05:52:30Z",
-    "authorisingStaffId": "contact@port-marti-city-council.gov.uk"
+    "authorisingStaffId": "contact@port-marti-city-council.gov.uk",
+    "applicationStatus": "approved"
   },
   "applicantDetails": {
     "firstName": "Barry",
