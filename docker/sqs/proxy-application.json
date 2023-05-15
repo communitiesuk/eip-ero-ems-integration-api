@@ -1,11 +1,12 @@
 {
-  "approvalDetails": {
+  "applicationDetails": {
     "id": "%%APPLICATION_ID%%",
     "createdAt": "2023-04-09T17:39:15Z",
     "gssCode": "E68604812",
     "source": "fXrumiivIV",
     "authorisedAt": "2023-04-10T20:00:09Z",
-    "authorisingStaffId": "contact@bahringerside-city-council.gov.uk"
+    "authorisingStaffId": "contact@bahringerside-city-council.gov.uk",
+    "applicationStatus": "approved"
   },
   "applicantDetails": {
     "firstName": "Ignacio",
