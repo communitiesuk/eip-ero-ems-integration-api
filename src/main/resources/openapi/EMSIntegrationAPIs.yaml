@@ -660,6 +660,13 @@ components:
             $ref: '#/components/schemas/ProxyVoteApplications'
   securitySchemes:
     emsCertificateLambdaAuthorizer:
-      name: Authorization
-      type: apiKey
-      in: header
+      type: 'apiKey'
+      name: 'Authorization'
+      in: 'header'
+      x-amazon-apigateway-authtype: 'custom'
+      x-amazon-apigateway-authorizer:
+        type: 'request'
+        authorizerUri: '${ems_certificate_authorizer_id}'
+        authorizerCredentials: '${ems_certificate_authorizer_role}'
+        authorizerPayloadFormatVersion: '1.0'
+        authorizerResultTtlInSeconds: 0
