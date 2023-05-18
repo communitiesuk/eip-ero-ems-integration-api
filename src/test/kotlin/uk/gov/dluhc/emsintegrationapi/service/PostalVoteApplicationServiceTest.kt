@@ -139,7 +139,7 @@ internal class PostalVoteApplicationServiceTest {
 
         assertThat(postalVoteApplications.pageSize).isEqualTo(numberOfRecordsToBeReturned)
         // the attribute name 'proxyVotes' to postalVotes, awaiting final spec from EMS
-        assertThat(postalVoteApplications.proxyVotes).isEqualTo(mockPostalVotes)
+        assertThat(postalVoteApplications.postalVotes).isEqualTo(mockPostalVotes)
     }
 
     @Nested

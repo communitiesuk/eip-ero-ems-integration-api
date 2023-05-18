@@ -111,13 +111,13 @@ class GetPostalApplicationsSteps(
             )
 
         assertThat(postalVoteApplications).isNotNull
-        assertThat(postalVoteApplications!!.proxyVotes).hasSize(expectedPageSize)
+        assertThat(postalVoteApplications!!.postalVotes).hasSize(expectedPageSize)
 
         if (hasSignature) validateApplicationsWithSignature() else validateApplicationsWithoutSignature()
     }
 
     private fun validateApplicationsWithoutSignature() {
-        postalVoteApplications!!.proxyVotes!!.forEach { postalVote ->
+        postalVoteApplications!!.postalVotes!!.forEach { postalVote ->
             PostalVoteAssert.assertThat(postalVote)
                 .hasCorrectFieldsFromPostalApplication(postalVoteApplicationsMap!![postalVote.id]!!)
                 .signatureWaived()
@@ -127,7 +127,7 @@ class GetPostalApplicationsSteps(
     }
 
     private fun validateApplicationsWithSignature() {
-        postalVoteApplications!!.proxyVotes!!.forEach { postalVote ->
+        postalVoteApplications!!.postalVotes!!.forEach { postalVote ->
             PostalVoteAssert.assertThat(postalVote)
                 .hasCorrectFieldsFromPostalApplication(postalVoteApplicationsMap!![postalVote.id]!!)
                 .hasSignature(SIGNATURE_BASE64_STRING)
