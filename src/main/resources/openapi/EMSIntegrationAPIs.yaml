@@ -641,7 +641,7 @@ components:
       properties:
         pageSize:
           type: integer
-        proxyVotes:
+        postalVotes:
           type: array
           items:
             $ref: '#/components/schemas/PostalVote'
