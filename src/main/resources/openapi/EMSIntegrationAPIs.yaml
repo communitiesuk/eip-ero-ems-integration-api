@@ -29,13 +29,14 @@ info:
     email: krister.bone@valtech.com
 servers:
   - url: 'http://localhost:3000'
-  - url: 'https://api.ems-oava.dev.erop.ierds.uk'
-  - url: 'https://api.ems-oava.int.erop.ierds.uk'
-  - url: 'https://api.ems-oava.test.erop.ierds.uk'
-  - url: 'https://api.ems-oava.dev.eip.erop.ierds.uk'
-  - url: 'https://api.ems-oava.int.eip.erop.ierds.uk'
-  - url: 'https://api.ems-oava.test.eip.erop.ierds.uk'
-  - url: 'https://api.ems-oava.erop.ierds.uk'
+  - url: 'https://api.ems-integration.dev.erop.ierds.uk'
+  - url: 'https://api.ems-integration.int.erop.ierds.uk'
+  - url: 'https://api.ems-integration.test.erop.ierds.uk'
+  - url: 'https://api.ems-integration.erop.ierds.uk'
+  - url: 'https://api.ems-integration.dev.eip.erop.ierds.uk'
+  - url: 'https://api.ems-integration.int.eip.erop.ierds.uk'
+  - url: 'https://api.ems-integration.test.eip.erop.ierds.uk'
+  - url: 'https://api.ems-integration.eip.erop.ierds.uk'
 paths:
   /postalvotes:
     get:
