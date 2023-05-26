@@ -105,9 +105,12 @@ paths:
         required: true
     delete:
       summary: -|
-        Confirmation from EMS systems that a Postal Vote application has been received and processed.
-        Successful responses will indicate the application will be removed from the LA/VJB/EMS's queue.
+        Confirmation from EMSs that the Postal Vote application has been received and should be 
+        removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
+        details. Error responses will alert the determining ERO officer of the failure.
       operationId: delete-postal-votes-id
+      requestBody:
+        $ref: '#/components/requestBodies/EMSApplicationResponse'
       responses:
         '204':
           description: No Content
@@ -116,9 +119,10 @@ paths:
       tags:
         - Postal Votes
       description: |-
-        Postal vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully recieved and committed the application within their corresponding EMS.
+        Postal vote applications acknowledged will be removed from the queue immediately, 
 
-        If the specified ID does not exist, or belongs to a Postal Vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
+        If the specified ID does not exist, or belongs to a Postal Vote application that is not for the currently connected ERO, 
+        then the response will be an “HTTP 404 Not Found” response.
       security:
         - emsCertificateLambdaAuthorizer: []
       x-amazon-apigateway-integration:
@@ -164,8 +168,13 @@ paths:
         in: path
         required: true
     delete:
-      summary: For marking a single Proxy Vote application as received
+      summary: -|
+        Confirmation from EMSs that the Proxy Vote application has been received and should be 
+        removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
+        details. Error responses will alert the determining ERO officer of the failure.
       operationId: delete-proxy-votes-id
+      requestBody:
+        $ref: '#/components/requestBodies/EMSApplicationResponse'
       responses:
         '204':
           description: No Content
@@ -646,6 +655,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PostalVote'
+    EMSApplicationResponse:
+      title: EMS Application Processing Response
+      description: The EMSs response indicating success or failure processing the application.
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/EMSApplicationStatus'
+        message:
+          type: string
+          description: ERO friendly summary of processing status. Primarily intended for error conditions.
+        details:
+          type: string
+          description: Detailed description of processing status. 
+    EMSApplicationStatus:
+      title: EMSApplicationStatus
+      description: Indicates if the EMS succeeded or failed updating the application's Elector details.
+      type: string
+      default: success
+      enum:
+        - success
+        - failure
   responses:
     PostalVoteApplications:
       description: Determined Postal Vote applications
@@ -659,6 +689,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProxyVoteApplications'
+  requestBodies:
+    EMSApplicationResponse:
+      description: The EMSs response indicating success or failure processing the application.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EMSApplicationResponse'
   securitySchemes:
     emsCertificateLambdaAuthorizer:
       type: 'apiKey'
