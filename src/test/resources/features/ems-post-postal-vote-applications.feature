@@ -14,11 +14,11 @@ Feature: The EMS send a post request on confirming a given Postal Vote Applicati
     Then I received the http status 400
     And it has an error message of "The application id must match the pattern ^[a-fA-F\d]{24}$"
 
-  @ClearCache
+  @ClearCache @DeletePostalEntity
   Scenario: System returns http status 404 if a given application does not exist
-    When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and certificate serial number "1234567891" and SUCCESS status
+    When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85aa" and certificate serial number "1234567891" and SUCCESS status
     Then I received the http status 404
-    And it has an error message of "The Postal application could not be found with id `502cf250036469154b4f85fb`"
+    And it has an error message of "The Postal application could not be found with id `502cf250036469154b4f85aa`"
 
   @ClearCache @DeletePostalEntity
   Scenario: System returns http status 404 if the gss codes retrieved from ERO and the application gss code are different.
@@ -44,12 +44,8 @@ Feature: The EMS send a post request on confirming a given Postal Vote Applicati
     And I received the http status 204
 
   @DeletePostalEntity @DeletePostalConfirmationMessage @ClearCache
-  Scenario: System ignores the request if current status of the postal vote application is DELETED
-    Given a postal vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
-    When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and certificate serial number "1234567891" and SUCCESS status
-    Then the system updated the postal application with the id "502cf250036469154b4f85fb" status as "DELETED"
-    And the "deleted-postal-application" queue has a SUCCESS confirmation message for the application id "502cf250036469154b4f85fb"
-    And I received the http status 204
+  Scenario: System ignores the request if postal vote application is already DELETED and no message will be place on queue
+    Given a postal vote application with the application id "502cf250036469154b4f85fb", status "DELETED" and GSS Code "E12345678" exists
     When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and certificate serial number "1234567891" and SUCCESS status
     Then the system ignores request and did not update the postal application with the id "502cf250036469154b4f85fb"
     And there will be no confirmation message on the queue "deleted-postal-application"

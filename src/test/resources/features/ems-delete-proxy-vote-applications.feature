@@ -14,7 +14,7 @@ Feature: The EMS send a delete request on confirming a given Proxy Vote Applicat
     Then I received the http status 400
     And it has an error message of "The application id must match the pattern ^[a-fA-F\d]{24}$"
 
-  @ClearCache
+  @ClearCache @DeletePostalEntity
   Scenario: System returns http status 404 if a given application does not exist
     When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
     Then I received the http status 404
@@ -36,13 +36,9 @@ Feature: The EMS send a delete request on confirming a given Proxy Vote Applicat
     And I received the http status 204
 
   @DeleteProxyEntity @DeleteProxyConfirmationMessage @ClearCache
-  Scenario: System ignores the request if current status of the proxy vote application is DELETED
-    Given a proxy vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
-    When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
-    Then the system updated the proxy application with the id "502cf250036469154b4f85fb" status as "DELETED"
-    And the "deleted-proxy-application" queue has a SUCCESS confirmation message for the application id "502cf250036469154b4f85fb"
-    And I received the http status 204
-    When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
-    Then the system ignores request and did not update the proxy application with the id "502cf250036469154b4f85fb"
-    And there will be no confirmation message on the queue "deleted-proxy-application"
+  Scenario: System ignores the request if postal vote application is already DELETED and no message will be place on queue
+    Given a postal vote application with the application id "502cf250036469154b4f85fb", status "DELETED" and GSS Code "E12345678" exists
+    When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and certificate serial number "1234567891" and SUCCESS status
+    Then the system ignores request and did not update the postal application with the id "502cf250036469154b4f85fb"
+    And there will be no confirmation message on the queue "deleted-postal-application"
     And I received the http status 204
