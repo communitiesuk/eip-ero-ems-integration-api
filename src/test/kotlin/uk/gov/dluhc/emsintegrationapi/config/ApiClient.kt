@@ -1,8 +1,11 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
+import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.PAGE_SIZE_PARAM
+import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
+import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationStatus
 
 class ApiClient(private val webClient: WebTestClient, private val apiProperties: ApiProperties) {
     companion object {
@@ -50,6 +53,18 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
         else webClient.delete().uri(uri)
         return requestHeadersSpec
             .exchange()
+    }
+
+    fun postEmsApplication(
+        uri: String,
+        attachSerialNumber: Boolean = true,
+        serialNumber: String = DEFAULT_SERIAL_NUMBER,
+        request: EMSApplicationResponse = EMSApplicationResponse(status = EMSApplicationStatus.SUCCESS)
+    ): WebTestClient.ResponseSpec {
+        val emsURI = webClient.post().uri(uri).contentType(MediaType.APPLICATION_JSON).bodyValue(request)
+        val requestHeadersSpec = if (attachSerialNumber) withSerialNumber(emsURI, serialNumber)
+        else emsURI
+        return requestHeadersSpec.exchange()
     }
 
     private fun withSerialNumber(

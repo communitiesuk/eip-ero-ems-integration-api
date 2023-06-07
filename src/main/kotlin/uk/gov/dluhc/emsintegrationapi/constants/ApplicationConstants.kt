@@ -8,5 +8,7 @@ class ApplicationConstants {
         const val IS_AUTHENTICATED = "isAuthenticated()"
         const val APPLICATION_ID_ERROR_MESSAGE =
             "The application id must match the pattern $APPLICATION_ID_REGEX"
+        const val EMS_MESSAGE_TEXT = "Some thing went wrong"
+        const val EMS_DETAILS_TEXT = "Pls look into issue"
     }
 }

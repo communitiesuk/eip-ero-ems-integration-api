@@ -7,3 +7,7 @@ databaseChangeLog:
       file: /db/changelog/create/0003_proxy_vote_application.sql
   - include:
       file: /db/changelog/create/0004_EIP1-6111_remove_elector_id_constraint.xml
+  - include:
+      file: /db/changelog/create/0005_EIP1-6056_add_postal_ems_response.xml
+  - include:
+      file: /db/changelog/create/0006_EIP1-6062_add_proxy_ems_response.xml

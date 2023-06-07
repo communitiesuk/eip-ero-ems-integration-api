@@ -19,6 +19,9 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
+import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.EMS_DETAILS_TEXT
+import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.EMS_MESSAGE_TEXT
+import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
@@ -26,6 +29,8 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationR
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
+import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
+import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.service.ApplicationType.POSTAL
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
@@ -58,6 +63,7 @@ internal class PostalVoteApplicationServiceTest {
         private const val DEFAULT_PAGE_SIZE = 100
         private const val CERTIFICATE_SERIAL_NUMBER = "test"
         private val GSS_CODES = listOf(GSS_CODE, GSS_CODE2)
+        private val requestSuccess = EMSApplicationResponse()
     }
 
     @BeforeEach
@@ -145,7 +151,7 @@ internal class PostalVoteApplicationServiceTest {
     @Nested
     inner class ConfirmReceipt {
         @Test
-        fun `should update the record status to be DELETED and send a confirmation message`() {
+        fun `should update the record status to be DELETED and send SUCCESS confirmation message`() {
             // Given
             val postalVoteApplicationCaptor = argumentCaptor<PostalVoteApplication>()
             val postalVoteApplication = buildPostalVoteApplication()
@@ -156,15 +162,54 @@ internal class PostalVoteApplicationServiceTest {
                 )
             ).willReturn(postalVoteApplication)
             // When
-            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId)
+            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestSuccess)
 
             // Then
             verify(postalVoteApplicationRepository).saveAndFlush(postalVoteApplicationCaptor.capture())
             val applicationSaved = postalVoteApplicationCaptor.firstValue
             assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
+            assertThat(applicationSaved.applicationDetails.emsStatus).isEqualTo(ApplicationDetails.EmsStatus.SUCCESS)
+            assertThat(applicationSaved.applicationDetails.emsMessage).isNull()
+            assertThat(applicationSaved.applicationDetails.emsDetails).isNull()
             assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
+
             verify(messageSender).send(
-                EmsConfirmedReceiptMessage(postalVoteApplication.applicationId),
+                EmsConfirmedReceiptMessage(postalVoteApplication.applicationId, EMSApplicationStatus.SUCCESS),
+                DELETED_POSTAL_APPLICATION_QUEUE
+            )
+        }
+
+        @Test
+        fun `should update the record status to be DELETED and send FAILURE confirmation message`() {
+            // Given
+            val postalVoteApplicationCaptor = argumentCaptor<PostalVoteApplication>()
+            val postalVoteApplication = buildPostalVoteApplication()
+            given(
+                postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
+                    postalVoteApplication.applicationId,
+                    GSS_CODES
+                )
+            ).willReturn(postalVoteApplication)
+            // When
+            val requestFailure = EMSApplicationResponse(status = EMSApplicationStatus.FAILURE, message = EMS_MESSAGE_TEXT, details = EMS_DETAILS_TEXT)
+            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestFailure)
+
+            // Then
+            verify(postalVoteApplicationRepository).saveAndFlush(postalVoteApplicationCaptor.capture())
+            val applicationSaved = postalVoteApplicationCaptor.firstValue
+            assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
+            assertThat(applicationSaved.applicationDetails.emsStatus).isEqualTo(ApplicationDetails.EmsStatus.FAILURE)
+            assertThat(applicationSaved.applicationDetails.emsMessage).isEqualTo(EMS_MESSAGE_TEXT)
+            assertThat(applicationSaved.applicationDetails.emsDetails).isEqualTo(EMS_DETAILS_TEXT)
+            assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
+
+            verify(messageSender).send(
+                EmsConfirmedReceiptMessage(
+                    id = postalVoteApplication.applicationId,
+                    status = EMSApplicationStatus.FAILURE,
+                    message = EMS_MESSAGE_TEXT,
+                    details = EMS_DETAILS_TEXT
+                ),
                 DELETED_POSTAL_APPLICATION_QUEUE
             )
         }
@@ -176,7 +221,8 @@ internal class PostalVoteApplicationServiceTest {
                 assertThrows<ApplicationNotFoundException> {
                     postalVoteApplicationService.confirmReceipt(
                         CERTIFICATE_SERIAL_NUMBER,
-                        applicationId
+                        applicationId,
+                        requestSuccess
                     )
                 }
             assertThat(applicationNotFoundException.message).isEqualTo("The ${POSTAL.displayName} application could not be found with id `$applicationId`")
@@ -197,7 +243,7 @@ internal class PostalVoteApplicationServiceTest {
             ).willReturn(postalVoteApplication)
 
             // When
-            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId)
+            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestSuccess)
 
             // Then
             verify(postalVoteApplicationRepository).findByApplicationIdAndApplicationDetailsGssCodeIn(

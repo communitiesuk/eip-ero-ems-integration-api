@@ -162,8 +162,4 @@ open class SavePostalVoteApplicationSteps(
     @Transactional
     open fun confirmTheApplicationDidNotSave(applicationId: String) =
         confirmTheEntityDoesNotExist(postalVoteApplicationRepository, applicationId)
-
-    @Transactional
-    open fun confirmTheApplicationWasSaved(applicationId: String) =
-        confirmTheEntityDoesNotExist(postalVoteApplicationRepository, applicationId)
 }
