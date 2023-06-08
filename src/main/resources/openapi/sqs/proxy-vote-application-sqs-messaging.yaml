@@ -167,16 +167,6 @@ components:
         - applicationDetails
         - applicantDetails
         - proxyVoteDetails
-    EmsConfirmedReceiptMessage:
-      type: object
-      properties:
-        id:
-          type: string
-          description: the IER ID of the application
-          pattern: '^[a-fA-F\d]{24}$'
-          example: 502cf250036469154b4f85fc
-      required:
-        - id
 
   #
   # Request Body Definitions
@@ -187,8 +177,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProxyVoteApplicationMessage'
-    EmsConfirmedReceiptMessage:
+    ProxyEmsConfirmedReceiptMessage:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/EmsConfirmedReceiptMessage'
+            $ref: '../sqs/Models/EmsConfirmedReceiptMessage.yaml'

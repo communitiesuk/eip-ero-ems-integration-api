@@ -17,7 +17,10 @@ class ApplicationDetailsMapper(private val instantMapper: InstantMapper) {
             signatureBase64 = applicationDetails.signatureBase64,
             signatureWaived = it.signatureWaived,
             signatureWaivedReason = it.signatureWaivedReason,
-            applicationStatus = ApprovalDetailsEntity.ApplicationStatus.valueOf(it.applicationStatus.name)
+            applicationStatus = ApprovalDetailsEntity.ApplicationStatus.valueOf(it.applicationStatus.name),
+            emsStatus = null,
+            emsDetails = null,
+            emsMessage = null
         )
     }
 }

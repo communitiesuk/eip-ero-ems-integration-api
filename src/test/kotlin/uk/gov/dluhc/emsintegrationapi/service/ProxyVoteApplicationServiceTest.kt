@@ -159,7 +159,7 @@ internal class ProxyVoteApplicationServiceTest {
             assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
             assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
             verify(messageSender).send(
-                EmsConfirmedReceiptMessage(proxyVoteApplication.applicationId),
+                EmsConfirmedReceiptMessage(proxyVoteApplication.applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
                 QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
             )
         }

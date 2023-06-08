@@ -30,11 +30,22 @@ class ApplicationDetails(
 
     @field:Size(max = 250)
     val signatureWaivedReason: String?,
+
+    var emsStatus: EmsStatus?,
+
+    var emsMessage: String?,
+
+    var emsDetails: String?
 ) {
     override fun hashCode() = javaClass.hashCode()
 
     enum class ApplicationStatus {
         APPROVED,
         REJECTED
+    }
+
+    enum class EmsStatus {
+        SUCCESS,
+        FAILURE
     }
 }

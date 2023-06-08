@@ -58,7 +58,7 @@ class ProxyVoteApplicationService(
                     proxyVoteApplication.updatedBy = SourceSystem.EMS
                     proxyVoteApplicationRepository.saveAndFlush(proxyVoteApplication)
                     messageSender.send(
-                        EmsConfirmedReceiptMessage(proxyVoteApplicationId),
+                        EmsConfirmedReceiptMessage(proxyVoteApplicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
                         QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
                     )
                     logger.info { "Confirmation message sent to the proxy vote application for $proxyVoteApplicationId" }

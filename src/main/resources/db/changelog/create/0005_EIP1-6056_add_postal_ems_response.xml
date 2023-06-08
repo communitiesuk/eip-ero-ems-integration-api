@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="vanit.mistry@valtech.com" id="0005_EIP1-6056_add_postal_ems_response" context="ddl">
+        <addColumn tableName="postal_vote_application">
+            <column name="ems_status" type="varchar(20)" afterColumn="status"/>
+            <column name="ems_message" type="varchar(250)" afterColumn="ems_status"/>
+            <column name="ems_details" type="varchar(250)" afterColumn="ems_message"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="postal_vote_application" columnName="ems_status"/>
+            <dropColumn tableName="postal_vote_application" columnName="ems_message"/>
+            <dropColumn tableName="postal_vote_application" columnName="ems_details"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -30,7 +30,10 @@ fun buildApplicationDetailsEntity(
     signatureBase64 = signatureBase64,
     signatureWaivedReason = signatureWaivedReason,
     signatureWaived = signatureWaived,
-    applicationStatus = applicationStatus
+    applicationStatus = applicationStatus,
+    emsStatus = null,
+    emsMessage = null,
+    emsDetails = null
 )
 
 fun buildApplicationDetailsMessageDto(
