@@ -125,10 +125,11 @@ paths:
         type: HTTP_PROXY
         uri: '${base_uri}/postalvotes/{id}'
         requestParameters:
+          integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
-        httpMethod: GET
+        httpMethod: DELETE
   /proxyvotes:
     get:
       summary: For retrieving approved and rejected Proxy Vote applications after determination within the EROP
@@ -183,10 +184,11 @@ paths:
         type: HTTP_PROXY
         uri: '${base_uri}/proxyvotes/{id}'
         requestParameters:
+          integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
-        httpMethod: GET
+        httpMethod: DELETE
 components:
   schemas:
     PostalVote:
