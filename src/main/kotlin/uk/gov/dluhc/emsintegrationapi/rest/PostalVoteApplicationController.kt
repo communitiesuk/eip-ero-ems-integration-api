@@ -51,24 +51,9 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         return postalVoteApplicationService.getPostalVoteApplications(serialNumber, pageSize)
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize(IS_AUTHENTICATED)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Deprecated("Replaced by postalvotes/id method post")
-    fun emsAccepted(
-        authentication: Authentication,
-        @PathVariable(name = APPLICATION_ID)
-        @Pattern(regexp = APPLICATION_ID_REGEX, message = APPLICATION_ID_ERROR_MESSAGE)
-        applicationId: String
-    ) {
-        logger.info { "DELETE: Processing EMS confirmation of a postal vote application" }
-        val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing EMS confirmation of a postal vote application with id $applicationId and certificate serial no=$serialNumber" }
-        val request = EMSApplicationResponse(status = EMSApplicationStatus.SUCCESS)
-        postalVoteApplicationService.confirmReceipt(serialNumber, applicationId, request)
-    }
-
     @PostMapping("/{id}")
+    @PutMapping("/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize(IS_AUTHENTICATED)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun emsApplicationAccepted(
@@ -80,6 +65,6 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
     ) {
         val serialNumber = authentication.credentials.toString()
         logger.info { "Processing EMS confirmation of a postal vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}" }
-        postalVoteApplicationService.confirmReceipt(serialNumber, applicationId, request)
+        postalVoteApplicationService.confirmReceipt(serialNumber, applicationId, request ?? EMSApplicationResponse(status = EMSApplicationStatus.SUCCESS))
     }
 }

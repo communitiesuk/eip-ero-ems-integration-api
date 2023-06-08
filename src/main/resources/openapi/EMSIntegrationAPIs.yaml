@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
-  version: 1.1.2
+  version: 1.1.3
   description: |
     This specification is for an API hosted by EROP for EMS clients to fetch
     details of Postal Vote and Proxy Vote applications made by the public.
@@ -103,12 +103,12 @@ paths:
         name: id
         in: path
         required: true
-    post:
+    put:
       summary:
         Confirmation from EMSs that the Postal Vote application has been received and should be
         removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
         details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
-      operationId: post-postal-votes-id
+      operationId: put-postal-votes-id
       requestBody:
         $ref: '#/components/requestBodies/EMSApplicationResponse'
       responses:
@@ -129,6 +129,40 @@ paths:
         type: HTTP_PROXY
         uri: '${base_uri}/postalvotes/{id}'
         requestParameters:
+          integration.request.path.id: "method.request.path.id"
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: PUT        
+    post:
+      summary:
+        Deprecated - use PUT as operatiing on an existing resource.
+        Confirmation from EMSs that the Postal Vote application has been received and should be
+        removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
+        details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
+      operationId: post-postal-votes-id
+      deprecated: true
+      requestBody:
+        $ref: '#/components/requestBodies/EMSApplicationResponse'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      tags:
+        - Postal Votes
+      description:
+        Postal vote applications acknowledged will be removed from the queue immediately,
+        
+        If the specified ID does not exist, or belongs to a Postal Vote application that is not for the currently connected ERO,
+        then the response will be an “HTTP 404 Not Found” response.
+      security:
+        - emsCertificateLambdaAuthorizer: [ ]
+      x-amazon-apigateway-integration:
+        type: HTTP_PROXY
+        uri: '${base_uri}/postalvotes/{id}'
+        requestParameters:
+          integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
@@ -188,7 +222,7 @@ paths:
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
-        httpMethod: DELETE
+        httpMethod: GET
   '/proxyvotes/{id}':
     parameters:
       - schema:
@@ -196,9 +230,15 @@ paths:
         name: id
         in: path
         required: true
-    delete:
-      summary: For marking a single Proxy Vote application as received
-      operationId: delete-proxy-votes-id
+    put:
+      summary:
+        Confirmation from EMSs that the Proxy Vote application has been received and should be 
+        removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
+        details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
+      operationId: post-proxy-votes-id
+      deprecated: true      
+      requestBody:
+        $ref: '#/components/requestBodies/EMSApplicationResponse'
       responses:
         '204':
           description: No Content
@@ -206,7 +246,7 @@ paths:
           description: Not Found
       tags:
         - Proxy Vote related endpoints
-      description: |-
+      description:
         Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully recieved and committed the application within their corresponding EMS.
 
         If the specified ID does not exist, or belongs to a Proxy Vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
@@ -220,7 +260,68 @@ paths:
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
-        httpMethod: DELETE
+        httpMethod: PUT        
+    post:
+      summary:
+        Deprecated - use PUT as operatiing on an existing resource.
+        Confirmation from EMSs that the Proxy Vote application has been received and should be 
+        removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
+        details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
+      operationId: post-proxy-votes-id
+      deprecated: true      
+      requestBody:
+        $ref: '#/components/requestBodies/EMSApplicationResponse'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      tags:
+        - Proxy Vote related endpoints
+      description:
+        Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully recieved and committed the application within their corresponding EMS.
+
+        If the specified ID does not exist, or belongs to a Proxy Vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
+      security:
+        - emsCertificateLambdaAuthorizer: [ ]
+      x-amazon-apigateway-integration:
+        type: HTTP_PROXY
+        uri: '${base_uri}/proxyvotes/{id}'
+        requestParameters:
+          integration.request.path.id: "method.request.path.id"
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: POST
+    delete:
+      summary:
+        Deprecated, please use POST endpoint to return success and failure responses. 
+        Confirmation from EMSs that the Postal Vote application has been received and should be 
+        removed from the queue.
+      operationId: delete-proxy-votes-id
+      deprecated: true
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      tags:
+        - Proxy Vote related endpoints
+      description:
+        Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully recieved and committed the application within their corresponding EMS.
+
+        If the specified ID does not exist, or belongs to a Proxy Vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
+      security:
+        - emsCertificateLambdaAuthorizer: [ ]
+      x-amazon-apigateway-integration:
+        type: HTTP_PROXY
+        uri: '${base_uri}/proxyvotes/{id}'
+        requestParameters:
+          integration.request.path.id: "method.request.path.id"
+          integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+        connectionType: VPC_LINK
+        connectionId: '${vpc_connection_id}'
+        httpMethod: DELETE  
 components:
   schemas:
     PostalVote:
