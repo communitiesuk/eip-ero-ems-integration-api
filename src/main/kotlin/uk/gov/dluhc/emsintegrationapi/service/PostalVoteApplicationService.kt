@@ -85,7 +85,6 @@ class PostalVoteApplicationService(
             }
         }
 
-        postalVoteApplicationRepository.save(postalVoteApplication)
         sendMessage(request, postalVoteApplication.applicationId)
 
         logger.info { "Confirmation ${request.status} message sent to the postal vote application for ${postalVoteApplication.applicationId}" }

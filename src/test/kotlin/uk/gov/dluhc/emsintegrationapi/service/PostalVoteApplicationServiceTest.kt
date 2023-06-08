@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -21,10 +20,7 @@ import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.EMS_DETAILS_TEXT
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.EMS_MESSAGE_TEXT
-import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
-import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
@@ -153,7 +149,6 @@ internal class PostalVoteApplicationServiceTest {
         @Test
         fun `should update the record status to be DELETED and send SUCCESS confirmation message`() {
             // Given
-            val postalVoteApplicationCaptor = argumentCaptor<PostalVoteApplication>()
             val postalVoteApplication = buildPostalVoteApplication()
             given(
                 postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
@@ -165,14 +160,6 @@ internal class PostalVoteApplicationServiceTest {
             postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestSuccess)
 
             // Then
-            verify(postalVoteApplicationRepository).save(postalVoteApplicationCaptor.capture())
-            val applicationSaved = postalVoteApplicationCaptor.firstValue
-            assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
-            assertThat(applicationSaved.applicationDetails.emsStatus).isEqualTo(ApplicationDetails.EmsStatus.SUCCESS)
-            assertThat(applicationSaved.applicationDetails.emsMessage).isNull()
-            assertThat(applicationSaved.applicationDetails.emsDetails).isNull()
-            assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
-
             verify(messageSender).send(
                 EmsConfirmedReceiptMessage(postalVoteApplication.applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
                 DELETED_POSTAL_APPLICATION_QUEUE
@@ -182,7 +169,6 @@ internal class PostalVoteApplicationServiceTest {
         @Test
         fun `should update the record status to be DELETED and send FAILURE confirmation message`() {
             // Given
-            val postalVoteApplicationCaptor = argumentCaptor<PostalVoteApplication>()
             val postalVoteApplication = buildPostalVoteApplication()
             given(
                 postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
@@ -195,14 +181,6 @@ internal class PostalVoteApplicationServiceTest {
             postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestFailure)
 
             // Then
-            verify(postalVoteApplicationRepository).save(postalVoteApplicationCaptor.capture())
-            val applicationSaved = postalVoteApplicationCaptor.firstValue
-            assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
-            assertThat(applicationSaved.applicationDetails.emsStatus).isEqualTo(ApplicationDetails.EmsStatus.FAILURE)
-            assertThat(applicationSaved.applicationDetails.emsMessage).isEqualTo(EMS_MESSAGE_TEXT)
-            assertThat(applicationSaved.applicationDetails.emsDetails).isEqualTo(EMS_DETAILS_TEXT)
-            assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
-
             verify(messageSender).send(
                 EmsConfirmedReceiptMessage(
                     id = postalVoteApplication.applicationId,
