@@ -55,7 +55,6 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         @Pattern(regexp = APPLICATION_ID_REGEX, message = APPLICATION_ID_ERROR_MESSAGE)
         applicationId: String
     ) {
-        logger.info { "DELETE: Processing EMS confirmation of a postal vote application" }
         val serialNumber = authentication.credentials.toString()
         logger.info { "Processing EMS confirmation of a postal vote application with id $applicationId and certificate serial no=$serialNumber" }
         postalVoteApplicationService.confirmReceipt(serialNumber, applicationId)
