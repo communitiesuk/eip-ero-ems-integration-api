@@ -12,13 +12,12 @@ properties:
     pattern: '^[a-fA-F\d]{24}$'
     example: 502cf250036469154b4f85fc
   status:
-    status:
-      description: Indicates if the EMS succeeded or failed updating the application's Elector details.
-      type: string
-      default: success
-      enum:
-        - success
-        - failure
+    description: Indicates if the EMS succeeded or failed updating the application's Elector details.
+    type: string
+    default: success
+    enum:
+      - success
+      - failure
   message:
     type: string
     description: ERO friendly summary of processing status. Primarily intended for error conditions.

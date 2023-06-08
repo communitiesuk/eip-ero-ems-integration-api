@@ -26,7 +26,6 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
-import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
@@ -160,7 +159,7 @@ internal class ProxyVoteApplicationServiceTest {
             assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
             assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
             verify(messageSender).send(
-                EmsConfirmedReceiptMessage(proxyVoteApplication.applicationId, EMSApplicationStatus.SUCCESS),
+                EmsConfirmedReceiptMessage(proxyVoteApplication.applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
                 QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
             )
         }

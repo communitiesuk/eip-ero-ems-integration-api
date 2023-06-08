@@ -95,7 +95,10 @@ class PostalVoteApplicationService(
         messageSender.send(
             EmsConfirmedReceiptMessage(
                 id = postalVoteApplicationId,
-                status = request.status,
+                status = when (request.status) {
+                    EMSApplicationStatus.SUCCESS -> EmsConfirmedReceiptMessage.Status.SUCCESS
+                    EMSApplicationStatus.FAILURE -> EmsConfirmedReceiptMessage.Status.FAILURE
+                },
                 message = request.message,
                 details = request.details
             ),

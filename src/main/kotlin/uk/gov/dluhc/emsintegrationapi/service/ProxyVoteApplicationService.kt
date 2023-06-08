@@ -12,7 +12,6 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
-import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
 
 private val logger = KotlinLogging.logger { }
@@ -59,7 +58,7 @@ class ProxyVoteApplicationService(
                     proxyVoteApplication.updatedBy = SourceSystem.EMS
                     proxyVoteApplicationRepository.saveAndFlush(proxyVoteApplication)
                     messageSender.send(
-                        EmsConfirmedReceiptMessage(proxyVoteApplicationId, EMSApplicationStatus.SUCCESS),
+                        EmsConfirmedReceiptMessage(proxyVoteApplicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
                         QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
                     )
                     logger.info { "Confirmation message sent to the proxy vote application for $proxyVoteApplicationId" }

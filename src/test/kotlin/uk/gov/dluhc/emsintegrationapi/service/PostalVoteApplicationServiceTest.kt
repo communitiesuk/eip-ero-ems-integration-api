@@ -174,7 +174,7 @@ internal class PostalVoteApplicationServiceTest {
             assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
 
             verify(messageSender).send(
-                EmsConfirmedReceiptMessage(postalVoteApplication.applicationId, EMSApplicationStatus.SUCCESS),
+                EmsConfirmedReceiptMessage(postalVoteApplication.applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
                 DELETED_POSTAL_APPLICATION_QUEUE
             )
         }
@@ -206,7 +206,7 @@ internal class PostalVoteApplicationServiceTest {
             verify(messageSender).send(
                 EmsConfirmedReceiptMessage(
                     id = postalVoteApplication.applicationId,
-                    status = EMSApplicationStatus.FAILURE,
+                    status = EmsConfirmedReceiptMessage.Status.FAILURE,
                     message = EMS_MESSAGE_TEXT,
                     details = EMS_DETAILS_TEXT
                 ),

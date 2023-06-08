@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
-import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationStatus
 import java.util.concurrent.TimeUnit
 
 class MessageConfirmationSteps(
@@ -18,7 +17,7 @@ class MessageConfirmationSteps(
         Then("the {string} queue has a SUCCESS confirmation message for the application id {string}") { queueName: String, applicationId: String ->
             await.pollDelay(2, TimeUnit.SECONDS)
                 .untilAsserted { assertThat(readMessage(queueName)).isNotNull }
-            assertThat(emsConfirmedReceiptMessage).isNotNull.isEqualTo(EmsConfirmedReceiptMessage(applicationId, EMSApplicationStatus.SUCCESS.value))
+            assertThat(emsConfirmedReceiptMessage).isNotNull.isEqualTo(EmsConfirmedReceiptMessage(applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS))
         }
         Then("the {string} queue has a FAILURE confirmation message for the application id {string}") { queueName: String, applicationId: String ->
             await.pollDelay(2, TimeUnit.SECONDS)
@@ -26,7 +25,7 @@ class MessageConfirmationSteps(
             assertThat(emsConfirmedReceiptMessage).isNotNull.isEqualTo(
                 EmsConfirmedReceiptMessage(
                     id = applicationId,
-                    status = EMSApplicationStatus.FAILURE.value,
+                    status = EmsConfirmedReceiptMessage.Status.FAILURE,
                     message = ApplicationConstants.EMS_MESSAGE_TEXT,
                     details = ApplicationConstants.EMS_DETAILS_TEXT
                 )
