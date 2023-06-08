@@ -3,7 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.cucumber.rest
 import io.cucumber.java8.En
 import org.assertj.core.api.Assertions.assertThat
 
-class ApiResponseValidationSteps(val apiResponse: ApiResponse) : En {
+class ApiResponseValidationSteps(private val apiResponse: ApiResponse) : En {
     init {
         Then("I received the http status {int}") { httpStatus: Int ->
             assertThat(apiResponse.responseSpec).isNotNull

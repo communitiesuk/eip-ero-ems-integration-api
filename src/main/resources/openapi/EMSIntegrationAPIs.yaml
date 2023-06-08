@@ -235,7 +235,7 @@ paths:
         Confirmation from EMSs that the Proxy Vote application has been received and should be 
         removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
         details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
-      operationId: post-proxy-votes-id
+      operationId: put-proxy-votes-id
       deprecated: true      
       requestBody:
         $ref: '#/components/requestBodies/EMSApplicationResponse'
@@ -247,7 +247,7 @@ paths:
       tags:
         - Proxy Vote related endpoints
       description:
-        Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully recieved and committed the application within their corresponding EMS.
+        Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully received and committed the application within their corresponding EMS.
 
         If the specified ID does not exist, or belongs to a Proxy Vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
       security:
@@ -263,7 +263,7 @@ paths:
         httpMethod: PUT        
     post:
       summary:
-        Deprecated - use PUT as operatiing on an existing resource.
+        Deprecated - use PUT as operating on an existing resource.
         Confirmation from EMSs that the Proxy Vote application has been received and should be 
         removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
         details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
@@ -279,7 +279,7 @@ paths:
       tags:
         - Proxy Vote related endpoints
       description:
-        Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully recieved and committed the application within their corresponding EMS.
+        Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully received and committed the application within their corresponding EMS.
 
         If the specified ID does not exist, or belongs to a Proxy Vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
       security:
@@ -308,7 +308,7 @@ paths:
       tags:
         - Proxy Vote related endpoints
       description:
-        Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully recieved and committed the application within their corresponding EMS.
+        Proxy vote applications that are acknowledged in this way will be removed from the queue immediately, and marked that the EMS has successfully received and committed the application within their corresponding EMS.
 
         If the specified ID does not exist, or belongs to a Proxy Vote application that is not for the currently connected ERO, then the response will be an “HTTP 404 Not Found” response.
       security:
@@ -499,7 +499,7 @@ components:
               maxLength: 500
               default: false
               description: |
-                Where an Elector has been granted a signature waiver, this field will contain a descriptin of the reason for the waiver.
+                Where an Elector has been granted a signature waiver, this field will contain a description of the reason for the waiver.
             postalVoteUntilFurtherNotice:
               type: boolean
               description: Mutually exclusive postal voting limits. True if the elector wishes to vote by post until further notice.

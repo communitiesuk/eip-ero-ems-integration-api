@@ -165,7 +165,7 @@ internal class PostalVoteApplicationServiceTest {
             postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestSuccess)
 
             // Then
-            verify(postalVoteApplicationRepository).saveAndFlush(postalVoteApplicationCaptor.capture())
+            verify(postalVoteApplicationRepository).save(postalVoteApplicationCaptor.capture())
             val applicationSaved = postalVoteApplicationCaptor.firstValue
             assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
             assertThat(applicationSaved.applicationDetails.emsStatus).isEqualTo(ApplicationDetails.EmsStatus.SUCCESS)
@@ -195,7 +195,7 @@ internal class PostalVoteApplicationServiceTest {
             postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestFailure)
 
             // Then
-            verify(postalVoteApplicationRepository).saveAndFlush(postalVoteApplicationCaptor.capture())
+            verify(postalVoteApplicationRepository).save(postalVoteApplicationCaptor.capture())
             val applicationSaved = postalVoteApplicationCaptor.firstValue
             assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
             assertThat(applicationSaved.applicationDetails.emsStatus).isEqualTo(ApplicationDetails.EmsStatus.FAILURE)
