@@ -79,6 +79,6 @@ class ProxyVoteApplicationService(
 
         sendMessage(request, proxyVoteApplication.applicationId)
 
-        logger.info { "Confirmation ${request.status} message sent to the postal vote application for ${proxyVoteApplication.applicationId}" }
+        logger.info { "Confirmation ${request.status} message sent to the proxy vote application for ${proxyVoteApplication.applicationId}" }
     }
 }
