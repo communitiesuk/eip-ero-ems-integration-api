@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -19,13 +18,14 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
-import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
+import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
+import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
+import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
@@ -57,6 +57,7 @@ internal class ProxyVoteApplicationServiceTest {
         private const val DEFAULT_PAGE_SIZE = 100
         private const val CERTIFICATE_SERIAL_NUMBER = "test"
         private val GSS_CODES = listOf(GSS_CODE, GSS_CODE2)
+        private val requestSuccess = EMSApplicationResponse()
     }
 
     @BeforeEach
@@ -138,11 +139,10 @@ internal class ProxyVoteApplicationServiceTest {
     }
 
     @Nested
-    inner class ConfirmReceipt {
+    inner class ConfirmedReceipt {
         @Test
-        fun `should update the record status to be DELETED and send a confirmation message`() {
+        fun `should update the record status to be DELETED and send SUCCESS confirmation message`() {
             // Given
-            val proxyVoteApplicationCaptor = argumentCaptor<ProxyVoteApplication>()
             val proxyVoteApplication = buildProxyVoteApplication()
             given(
                 proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
@@ -151,15 +151,40 @@ internal class ProxyVoteApplicationServiceTest {
                 )
             ).willReturn(proxyVoteApplication)
             // When
-            proxyVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId)
+            proxyVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId,
+                requestSuccess
+            )
 
             // Then
-            verify(proxyVoteApplicationRepository).saveAndFlush(proxyVoteApplicationCaptor.capture())
-            val applicationSaved = proxyVoteApplicationCaptor.firstValue
-            assertThat(applicationSaved.status).isEqualTo(RecordStatus.DELETED)
-            assertThat(applicationSaved.updatedBy).isEqualTo(SourceSystem.EMS)
             verify(messageSender).send(
                 EmsConfirmedReceiptMessage(proxyVoteApplication.applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
+                QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
+            )
+        }
+
+        @Test
+        fun `should update the record status to be DELETED and send FAILURE confirmation message`() {
+            // Given
+            val proxyVoteApplication = buildProxyVoteApplication()
+            given(
+                proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
+                    proxyVoteApplication.applicationId,
+                    GSS_CODES
+                )
+            ).willReturn(proxyVoteApplication)
+            // When
+            val requestFailure = EMSApplicationResponse(status = EMSApplicationStatus.FAILURE, message = ApplicationConstants.EMS_MESSAGE_TEXT, details = ApplicationConstants.EMS_DETAILS_TEXT)
+            proxyVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId, requestFailure)
+
+            // Then
+            verify(messageSender).send(
+                EmsConfirmedReceiptMessage(
+                    id = proxyVoteApplication.applicationId,
+                    status = EmsConfirmedReceiptMessage.Status.FAILURE,
+                    message = ApplicationConstants.EMS_MESSAGE_TEXT,
+                    details = ApplicationConstants.EMS_DETAILS_TEXT
+                ),
                 QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
             )
         }
@@ -171,7 +196,8 @@ internal class ProxyVoteApplicationServiceTest {
                 assertThrows<ApplicationNotFoundException> {
                     proxyVoteApplicationService.confirmReceipt(
                         CERTIFICATE_SERIAL_NUMBER,
-                        applicationId
+                        applicationId,
+                        requestSuccess
                     )
                 }
             assertThat(applicationNotFoundException.message).isEqualTo("The ${ApplicationType.PROXY.displayName} application could not be found with id `$applicationId`")
@@ -192,7 +218,10 @@ internal class ProxyVoteApplicationServiceTest {
             ).willReturn(proxyVoteApplication)
 
             // When
-            proxyVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId)
+            proxyVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId,
+                requestSuccess
+            )
 
             // Then
             verify(proxyVoteApplicationRepository).findByApplicationIdAndApplicationDetailsGssCodeIn(

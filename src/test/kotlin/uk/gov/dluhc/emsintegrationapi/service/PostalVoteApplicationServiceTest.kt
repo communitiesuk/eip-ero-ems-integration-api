@@ -145,7 +145,7 @@ internal class PostalVoteApplicationServiceTest {
     }
 
     @Nested
-    inner class ConfirmReceipt {
+    inner class ConfirmedReceipt {
         @Test
         fun `should update the record status to be DELETED and send SUCCESS confirmation message`() {
             // Given

@@ -38,7 +38,7 @@ Feature: The EMS send a delete request on confirming a given Postal Vote Applica
   @DeletePostalEntity @DeletePostalConfirmationMessage @ClearCache
   Scenario: System ignores the request if postal vote application is already DELETED and no message will be place on queue
     Given a postal vote application with the application id "502cf250036469154b4f85fb", status "DELETED" and GSS Code "E12345678" exists
-    When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and certificate serial number "1234567891" and SUCCESS status
+    When the EMS send a delete request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
     Then the system ignores request and did not update the postal application with the id "502cf250036469154b4f85fb"
     And there will be no confirmation message on the queue "deleted-postal-application"
     And I received the http status 204

@@ -46,8 +46,7 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
     fun delete(
         uri: String,
         attachSerialNumber: Boolean = true,
-        serialNumber: String = DEFAULT_SERIAL_NUMBER,
-        request: EMSApplicationResponse = EMSApplicationResponse()
+        serialNumber: String = DEFAULT_SERIAL_NUMBER
     ): WebTestClient.ResponseSpec {
         val emsURI = webClient.delete().uri(uri)
         val requestHeadersSpec = if (attachSerialNumber) withSerialNumber(emsURI, serialNumber)
