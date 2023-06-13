@@ -468,37 +468,37 @@ components:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by ballotAddress, ballootOverseasAddress or BfpoAddress
+              description: Replaced by ballotAddress, ballotOverseasAddress or BfpoAddress
             ballotstreet:
               type: string
               minLength: 1
               maxLength: 255
               deprecated: true
-              description: Replaced by ballotAddress, ballootOverseasAddress or BfpoAddress
+              description: Replaced by ballotAddress, ballotOverseasAddress or BfpoAddress
             ballotlocality:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by ballotAddress, ballootOverseasAddress or BfpoAddress
+              description: Replaced by ballotAddress, ballotOverseasAddress or BfpoAddress
             ballottown:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by ballotAddress, ballootOverseasAddress or BfpoAddress
+              description: Replaced by ballotAddress, ballotOverseasAddress or BfpoAddress
             ballotarea:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by ballotAddress, ballootOverseasAddress or BfpoAddress
+              description: Replaced by ballotAddress, ballotOverseasAddress or BfpoAddress
             ballotpostcode:
               type: string
               maxLength: 10
               deprecated: true
-              description: Replaced by ballotAddress, ballootOverseasAddress or BfpoAddress
+              description: Replaced by ballotAddress, ballotOverseasAddress or BfpoAddress
             ballotuprn:
               type: string
               deprecated: true
-              description: Replaced by ballotAddress, ballootOverseasAddress or BfpoAddress
+              description: Replaced by ballotAddress, ballotOverseasAddress or BfpoAddress
               pattern: '^\d{1,12}$'
             ballotAddressReason:
               type: string
