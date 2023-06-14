@@ -367,6 +367,7 @@ components:
             - ln
             - regstreet
             - regpostcode
+            - registeredAddress
           properties:
             refNum:
               type: string
@@ -594,10 +595,12 @@ components:
             - ln
             - regstreet
             - regpostcode
+            - registeredAddress
             - proxyfn
             - proxyln
             - proxystreet
             - proxypostcode
+            - proxyAddress
             - proxyreason
           properties:
             refNum:
