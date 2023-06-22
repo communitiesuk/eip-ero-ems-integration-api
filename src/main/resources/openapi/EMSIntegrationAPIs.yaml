@@ -574,11 +574,6 @@ components:
             - ln
             - regstreet
             - regpostcode
-            - proxyfn
-            - proxyln
-            - proxystreet
-            - proxypostcode
-            - proxyreason
           properties:
             refNum:
               type: string
