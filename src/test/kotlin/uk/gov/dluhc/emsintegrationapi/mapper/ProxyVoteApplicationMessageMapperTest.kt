@@ -31,7 +31,7 @@ internal class ProxyVoteApplicationMessageMapperTest {
                 *APPLICATION_FIELDS_TO_IGNORE
             ) {
                 assertThat(it.output.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.PROXY)
-                assertThat(it.output.proxyVoteDetails.proxyAddress.createdBy).isEqualTo(SourceSystem.PROXY)
+                assertThat(it.output.proxyVoteDetails.proxyAddress?.createdBy).isEqualTo(SourceSystem.PROXY)
             }
         }
     }
