@@ -6,9 +6,9 @@
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
   <changeSet author="jay.kirkham@valtech.com" id="0007_EIP1-6605_remove_not_null_constraints" context="ddl">
-    <dropNotNullConstraint tableName="proxy_vote_application" columnName="proxy_first_name"/>
-    <dropNotNullConstraint tableName="proxy_vote_application" columnName="proxy_surname"/>
-    <dropNotNullConstraint tableName="proxy_vote_application" columnName="proxy_address_id"/>
+    <dropNotNullConstraint tableName="proxy_vote_application" columnDataType="varchar(35)" columnName="proxy_first_name"/>
+    <dropNotNullConstraint tableName="proxy_vote_application" columnDataType="varchar(35)" columnName="proxy_surname"/>
+    <dropNotNullConstraint tableName="proxy_vote_application" columnDataType="char(36)" columnName="proxy_address_id"/>
     <rollback>
       <addNotNullConstraint columnName="proxy_first_name" columnDataType="varchar(35)" tableName="proxy_vote_application"/>
       <addNotNullConstraint columnName="proxy_surname" columnDataType="varchar(35)" tableName="proxy_vote_application"/>
