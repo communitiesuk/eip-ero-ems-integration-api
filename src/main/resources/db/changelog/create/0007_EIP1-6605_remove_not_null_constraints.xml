@@ -10,9 +10,9 @@
     <dropNotNullConstraint tableName="proxy_vote_application" columnName="proxy_surname"/>
     <dropNotNullConstraint tableName="proxy_vote_application" columnName="proxy_address_id"/>
     <rollback>
-      <addNotNullConstraint columnName="proxy_first_name" columnDataType="varchar" tableName="proxy_vote_application"/>
-      <addNotNullConstraint columnName="proxy_surname" columnDataType="varchar" tableName="proxy_vote_application"/>
-      <addNotNullConstraint columnName="proxy_address_id" columnDataType="char" tableName="proxy_vote_application"/>
+      <addNotNullConstraint columnName="proxy_first_name" columnDataType="varchar(35)" tableName="proxy_vote_application"/>
+      <addNotNullConstraint columnName="proxy_surname" columnDataType="varchar(35)" tableName="proxy_vote_application"/>
+      <addNotNullConstraint columnName="proxy_address_id" columnDataType="char(36)" tableName="proxy_vote_application"/>
     </rollback>
   </changeSet>
 
