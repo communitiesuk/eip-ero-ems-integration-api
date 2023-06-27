@@ -15,7 +15,7 @@ class ProxyVoteDetailsMapper(private val addressMapper: AddressMapper) {
             proxyEmail = it.proxyEmail,
             proxyPhone = it.proxyPhone,
             proxyReason = it.proxyReason,
-            proxyAddress = addressMapper.mapToAddressEntity(it.proxyAddress, SourceSystem.PROXY)!!,
+            proxyAddress = addressMapper.mapToAddressEntity(it.proxyAddress, SourceSystem.PROXY),
             proxyFamilyRelationship = it.proxyFamilyRelationship,
             voteForSingleDate = it.voteForSingleDate,
             voteStartDate = it.voteStartDate,
