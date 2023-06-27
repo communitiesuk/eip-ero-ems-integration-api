@@ -771,7 +771,7 @@ components:
               maxLength: 250
               default: false
               description: |
-                Where an Elector has been granted a signature waiver, this field will contain a descriptin of the reason for the waiver.
+                Where an Elector has been granted a signature waiver, this field will contain a description of the reason for the waiver.
             proxyVoteUntilFurtherNotice:
               type: boolean
               description: Mutually exclusive proxy voting limits. True if the elector wishes to vote by proxy until further notice.
@@ -811,7 +811,7 @@ components:
     RejectedReasons:
       title: Rejected Reason
       description: |
-        Rejected notes and reasons as provoded by the determining ERO when rejecting applications.
+        Rejected notes and reasons as provided by the determining ERO when rejecting applications.
         Applications for Welsh language EROs and Welsh Electors may contain reasons in English and/or Welsh.
         Expected to be used by EMSs in elector communications.
       type: object

@@ -11,3 +11,7 @@ databaseChangeLog:
       file: /db/changelog/create/0005_EIP1-6056_add_postal_ems_response.xml
   - include:
       file: /db/changelog/create/0006_EIP1-6062_add_proxy_ems_response.xml
+  - include:
+      file: /db/changelog/create/0007_EIP1-6517_add_ballotBfpoAddress_table.xml
+  - include:
+      file: /db/changelog/create/0008_EIP1-6517_add_ballotOverseasAddress_table.xml

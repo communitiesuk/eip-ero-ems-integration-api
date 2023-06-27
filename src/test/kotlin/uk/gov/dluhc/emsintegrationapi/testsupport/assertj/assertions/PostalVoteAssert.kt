@@ -5,26 +5,37 @@ import org.assertj.core.api.AbstractAssert
 import org.assertj.core.api.Assertions
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicantDetails
+import uk.gov.dluhc.emsintegrationapi.database.entity.BfpoAddress
+import uk.gov.dluhc.emsintegrationapi.database.entity.OverseasAddress
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteDetails
 import uk.gov.dluhc.emsintegrationapi.mapper.InstantMapper
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveNullValues
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveSameValues
+import uk.gov.dluhc.emsintegrationapi.models.Address as AddressModel
 
 class PostalVoteAssert(actual: PostalVote) :
     AbstractAssert<PostalVoteAssert, PostalVote>(actual, PostalVoteAssert::class.java) {
     private val instantMapper = InstantMapper()
 
     companion object {
-        private val BALLOT_ADDRESS_FIELDS = arrayOf(
-            "ballotproperty",
-            "ballotstreet",
-            "ballotpostcode",
-            "ballotarea",
-            "ballottown",
-            "ballotlocality",
-            "ballotuprn"
+        private val BALLOT_BFPO_ADDRESS_FIELDS = arrayOf(
+            "bfpoNumber",
+            "addressLine1",
+            "addressLine2",
+            "addressLine3",
+            "addressLine4",
+            "addressLine5"
+        )
+
+        private val BALLOT_OVERSEAS_ADDRESS_FIELDS = arrayOf(
+            "addressLine1",
+            "addressLine2",
+            "addressLine3",
+            "addressLine4",
+            "addressLine5",
+            "country"
         )
 
         private val ADDRESS_ENTITY_FIELDS =
@@ -44,8 +55,6 @@ class PostalVoteAssert(actual: PostalVote) :
             "voteEndDate",
             "ballotAddressReason"
         )
-        private val REGISTERED_ADDRESS_FIELDS =
-            arrayOf("regproperty", "regstreet", "regpostcode", "regarea", "regtown", "reglocality", "reguprn")
 
         private val APPLICANT_FIELDS =
             arrayOf("refNum", "ip", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
@@ -73,8 +82,8 @@ class PostalVoteAssert(actual: PostalVote) :
             Assertions.assertThat(actual.id).isEqualTo(this.applicationId)
             hasApplicationDetails(this)
             hasCorrectAddressFields(
-                applicantDetails.registeredAddress,
-                REGISTERED_ADDRESS_FIELDS
+                actual.detail.registeredAddress,
+                applicantDetails.registeredAddress
             )
             hasApplicantDetails(applicantDetails)
         }
@@ -108,16 +117,46 @@ class PostalVoteAssert(actual: PostalVote) :
     fun hasBallotAddress(ballotAddress: Address) = validate {
         isNotNull
         haveSameValues(
-            actual.detail,
-            BALLOT_ADDRESS_FIELDS,
-            ballotAddress,
-            ADDRESS_ENTITY_FIELDS
+            actual.detail.ballotAddress,
+            ADDRESS_ENTITY_FIELDS,
+            ballotAddress
         )
     }
 
-    fun doesNotHaveBallotAddress() = validate { haveNullValues(actual.detail, *BALLOT_ADDRESS_FIELDS) }
+    fun hasBfpoAddress(bfpoAddress: BfpoAddress) = validate {
+        isNotNull
+        haveSameValues(
+            actual.detail.ballotBfpoPostalAddress,
+            BALLOT_BFPO_ADDRESS_FIELDS,
+            bfpoAddress
+        )
+    }
 
-    fun doesNotHavePostalVoteDetails() = validate { haveNullValues(actual.detail, *POSTAL_VOTE_FIELDS) }
+    fun hasOverseasAddress(overseasAddress: OverseasAddress) = validate {
+        isNotNull
+        haveSameValues(
+            actual.detail.ballotOverseasPostalAddress,
+            BALLOT_OVERSEAS_ADDRESS_FIELDS,
+            overseasAddress
+        )
+    }
+
+    private fun doesNotHaveBallotAddress() = Assertions.assertThat(actual.detail.ballotAddress).isNull()
+
+    private fun doesNotHaveBallotBfpoAddress() = Assertions.assertThat(actual.detail.ballotBfpoPostalAddress).isNull()
+
+    private fun doesNotHaveBallotOverseasAddress() = Assertions.assertThat(actual.detail.ballotOverseasPostalAddress).isNull()
+
+    fun doesNotHaveAddresses() {
+        doesNotHaveBallotAddress()
+        doesNotHaveBallotBfpoAddress()
+        doesNotHaveBallotOverseasAddress()
+    }
+
+    fun doesNotHavePostalVoteDetails() {
+        validate { haveNullValues(actual.detail, *POSTAL_VOTE_FIELDS) }
+        doesNotHaveAddresses()
+    }
 
     fun hasSignature(base64Signature: String) =
         validate { Assertions.assertThat(actual.detail.signature).isEqualTo(Base64.decodeBase64(base64Signature)) }
@@ -140,8 +179,8 @@ class PostalVoteAssert(actual: PostalVote) :
 
     fun hasNoEmsElectorId() = validate { Assertions.assertThat(actual.detail.emsElectorId).isNull() }
 
-    private fun hasCorrectAddressFields(address: Address?, addressFields: Array<String>) =
-        validate { haveSameValues(actual.detail, addressFields, address, ADDRESS_ENTITY_FIELDS) }
+    private fun hasCorrectAddressFields(addressModel: AddressModel, addressEntity: Address?) =
+        validate { haveSameValues(addressModel, ADDRESS_ENTITY_FIELDS, addressEntity) }
 
     private fun validate(validationFunction: () -> Unit): PostalVoteAssert {
         validationFunction()

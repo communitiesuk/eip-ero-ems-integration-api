@@ -10,22 +10,13 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteDetails
 import uk.gov.dluhc.emsintegrationapi.mapper.InstantMapper
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveSameValues
+import uk.gov.dluhc.emsintegrationapi.models.Address as AddressModel
 
 class ProxyVoteAssert(actual: ProxyVote) :
     AbstractAssert<ProxyVoteAssert, ProxyVote>(actual, ProxyVoteAssert::class.java) {
     private val instantMapper = InstantMapper()
 
     companion object {
-        private val PROXY_ADDRESS_FIELDS = arrayOf(
-            "proxyproperty",
-            "proxystreet",
-            "proxypostcode",
-            "proxyarea",
-            "proxytown",
-            "proxylocality",
-            "proxyuprn"
-        )
-
         private val ADDRESS_ENTITY_FIELDS =
             arrayOf("property", "street", "postcode", "area", "town", "locality", "uprn")
 
@@ -45,8 +36,6 @@ class ProxyVoteAssert(actual: ProxyVote) :
             "proxyReason",
             "proxyFamilyRelationship"
         )
-        private val REGISTERED_ADDRESS_FIELDS =
-            arrayOf("regproperty", "regstreet", "regpostcode", "regarea", "regtown", "reglocality", "reguprn")
 
         private val APPLICANT_FIELDS =
             arrayOf("refNum", "ip", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
@@ -75,8 +64,8 @@ class ProxyVoteAssert(actual: ProxyVote) :
             hasProxyDetails(this.proxyVoteDetails)
             hasApplicationDetails(this)
             hasCorrectRegisteredAddress(
-                applicantDetails.registeredAddress,
-                REGISTERED_ADDRESS_FIELDS
+                actual.detail.registeredAddress,
+                applicantDetails.registeredAddress
             )
             hasApplicantDetails(applicantDetails)
         }
@@ -104,12 +93,7 @@ class ProxyVoteAssert(actual: ProxyVote) :
 
     private fun hasProxyDetails(proxyDetails: ProxyVoteDetails) = validate {
         haveSameValues(actual.detail, PROXY_VOTE_FIELDS, proxyDetails, PROXY_VOTE_ENTITY_FIELDS)
-        haveSameValues(
-            actual.detail,
-            PROXY_ADDRESS_FIELDS,
-            proxyDetails.proxyAddress,
-            ADDRESS_ENTITY_FIELDS
-        )
+        haveSameValues(actual.detail.proxyAddress, ADDRESS_ENTITY_FIELDS, proxyDetails.proxyAddress)
     }
 
     fun hasSignature(base64Signature: String) =
@@ -133,8 +117,8 @@ class ProxyVoteAssert(actual: ProxyVote) :
 
     fun hasNoEmsElectorId() = validate { Assertions.assertThat(actual.detail.emsElectorId).isNull() }
 
-    private fun hasCorrectRegisteredAddress(address: Address?, addressFields: Array<String>) =
-        validate { haveSameValues(actual.detail, addressFields, address, ADDRESS_ENTITY_FIELDS) }
+    private fun hasCorrectRegisteredAddress(addressModel: AddressModel, addressEntity: Address?) =
+        validate { haveSameValues(addressModel, ADDRESS_ENTITY_FIELDS, addressEntity) }
 
     private fun validate(validationFunction: () -> Unit): ProxyVoteAssert {
         validationFunction()

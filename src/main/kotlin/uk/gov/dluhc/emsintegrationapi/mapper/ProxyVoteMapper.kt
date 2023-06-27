@@ -3,10 +3,12 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 import org.apache.commons.codec.binary.Base64
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
+import uk.gov.dluhc.emsintegrationapi.models.Address
 import uk.gov.dluhc.emsintegrationapi.models.ApplicationLanguage
 import uk.gov.dluhc.emsintegrationapi.models.ApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteDetail
+import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
 
 @Component
 class ProxyVoteMapper(private val instantMapper: InstantMapper) {
@@ -30,26 +32,18 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
                     phone = applicantDetails.phone,
                     email = applicantDetails.email,
                     signature = Base64.decodeBase64(applicationDetails.signatureBase64),
-                    regproperty = registeredAddress.property,
                     regstreet = registeredAddress.street,
                     regpostcode = registeredAddress.postcode,
-                    regarea = registeredAddress.area,
-                    regtown = registeredAddress.town,
-                    reglocality = registeredAddress.locality,
-                    reguprn = registeredAddress.uprn,
+                    registeredAddress = mapFromAddressEntity(applicantDetails.registeredAddress),
                     proxyfn = proxyVoteDetails.proxyFirstName,
                     proxyln = proxyVoteDetails.proxySurname,
                     proxymn = proxyVoteDetails.proxyMiddleNames,
                     proxyemail = proxyVoteDetails.proxyEmail,
                     proxyphone = proxyVoteDetails.proxyPhone,
                     proxyreason = proxyVoteDetails.proxyReason,
-                    proxyproperty = proxyAddress.property,
                     proxystreet = proxyAddress.street,
                     proxypostcode = proxyAddress.postcode,
-                    proxyarea = proxyAddress.area,
-                    proxytown = proxyAddress.town,
-                    proxylocality = proxyAddress.locality,
-                    proxyuprn = proxyAddress.uprn,
+                    proxyAddress = mapFromAddressEntity(proxyVoteDetails.proxyAddress),
                     proxyfamilyrelationship = proxyVoteDetails.proxyFamilyRelationship,
                     proxyVoteUntilFurtherNotice = proxyVoteDetails.voteUntilFurtherNotice,
                     proxyVoteForSingleDate = proxyVoteDetails.voteForSingleDate,
@@ -65,6 +59,20 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
                 source = applicationDetails.source,
                 authorisedAt = instantMapper.toOffsetDateTime(applicationDetails.authorisedAt),
                 authorisingStaffId = applicationDetails.authorisingStaffId,
+            )
+        }
+    }
+
+    fun mapFromAddressEntity(addressEntity: AddressEntity): Address {
+        return with(addressEntity) {
+            Address(
+                property = property,
+                street = street,
+                postcode = postcode,
+                area = area,
+                town = town,
+                locality = locality,
+                uprn = uprn
             )
         }
     }
