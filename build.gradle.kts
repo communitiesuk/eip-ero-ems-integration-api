@@ -80,6 +80,7 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.liquibase:liquibase-core")
+    implementation("org.hibernate:hibernate-envers")
 
     // AWS dependencies (that are defined in the BOM io.awspring.cloud:spring-cloud-aws-dependencies)
     implementation("com.amazonaws:aws-java-sdk-sts")
