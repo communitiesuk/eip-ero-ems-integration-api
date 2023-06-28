@@ -3,9 +3,12 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
+import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMappedObject
 
 internal class PostalVoteApplicationMessageMapperTest {
@@ -35,6 +38,24 @@ internal class PostalVoteApplicationMessageMapperTest {
                 assertThat(it.output.postalVoteDetails!!.ballotOverseasAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.postalVoteDetails!!.ballotBfpoAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
             }
+        }
+
+        @Test
+        fun `should convert postal vote application message to entity without ballot addresses`() {
+
+            val applicationMessage: PostalVoteApplicationMessage =
+                buildPostalVoteApplicationMessage(
+                    postalVoteDetails = buildPostalVoteDetailsMessageDto(
+                        ballotAddress = null,
+                        ballotOverseasAddress = null,
+                        ballotBfpoAddress = null
+                    )
+                )
+            val postalVoteApplication: PostalVoteApplication = postalVoteApplicationMessageMapper.mapToEntity(applicationMessage)
+            assertThat(postalVoteApplication.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
+            assertThat(postalVoteApplication.postalVoteDetails?.ballotAddress).isNull()
+            assertThat(postalVoteApplication.postalVoteDetails?.ballotOverseasAddress).isNull()
+            assertThat(postalVoteApplication.postalVoteDetails?.ballotBfpoAddress).isNull()
         }
     }
 }
