@@ -7,6 +7,8 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.OverseasAddress
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteDetails
 import java.time.LocalDate
 import uk.gov.dluhc.emsintegrationapi.messaging.models.Address as AddressMessageDto
+import uk.gov.dluhc.emsintegrationapi.messaging.models.BfpoAddress as BfpoAddressMessageDto
+import uk.gov.dluhc.emsintegrationapi.messaging.models.OverseasAddress as OverseasAddressMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteDetails as PostalVoteDetailsMessageDto
 
 fun buildPostalVoteDetailsEntity(
@@ -32,12 +34,16 @@ fun buildPostalVoteDetailsEntity(
 fun buildPostalVoteDetailsMessageDto(
     ballotAddress: AddressMessageDto? = buildAddressMessageDto(),
     ballotAddressReason: String? = randomString(10),
+    ballotOverseasAddress: OverseasAddressMessageDto? = buildOverseasAddressMessageDto(),
+    ballotBfpoAddress: BfpoAddressMessageDto? = buildBfpoAddressMessageDto(),
     voteForSingleDate: LocalDate? = getRandomPastDate(),
     voteStartDate: LocalDate? = getRandomPastDate(10),
     voteEndDate: LocalDate? = getRandomPastDate(1),
     voteUntilFurtherNotice: Boolean? = false
 ) = PostalVoteDetailsMessageDto(
     ballotAddress = ballotAddress,
+    ballotOverseasPostalAddress = ballotOverseasAddress,
+    ballotBfpoPostalAddress = ballotBfpoAddress,
     ballotAddressReason = ballotAddressReason,
     voteForSingleDate = voteForSingleDate,
     voteStartDate = voteStartDate,
