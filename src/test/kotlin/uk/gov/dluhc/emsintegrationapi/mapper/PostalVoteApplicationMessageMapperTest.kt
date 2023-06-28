@@ -32,6 +32,8 @@ internal class PostalVoteApplicationMessageMapperTest {
             ) {
                 assertThat(it.output.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.postalVoteDetails!!.ballotAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
+                assertThat(it.output.postalVoteDetails!!.ballotOverseasAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
+                assertThat(it.output.postalVoteDetails!!.ballotBfpoAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
             }
         }
     }

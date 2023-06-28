@@ -18,6 +18,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_BASE64_STRI
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateObjects
 import java.util.concurrent.TimeUnit
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails as ApplicationDetailsEntity
@@ -46,6 +47,12 @@ open class SavePostalVoteApplicationSteps(
                 )
             )
         }
+        Given("a postal vote application with the application id {string} and no ballot addresses") { applicationId: String ->
+            postalVoteApplicationMessage = buildPostalVoteApplicationMessage(
+                applicationDetails = buildApplicationDetailsMessageDto(applicationId = applicationId),
+                postalVoteDetails = buildPostalVoteDetailsMessageDto(ballotAddress = null, ballotBfpoAddress = null, ballotOverseasAddress = null)
+            )
+        }
         When("I send an sqs message to the postal application queue") { sendMessage(postalVoteApplicationMessage!!) }
 
         When("I send an sqs message to the postal application queue with an application id {string} and electoral id {string}") { applicationId: String, emsElectorId: String ->
@@ -57,7 +64,7 @@ open class SavePostalVoteApplicationSteps(
             )
         }
 
-        Then("the {string} postal vote application has been successfully saved with the application id {string} and signature") { applicationStatus: String, applicationId: String ->
+        Then("the {string} postal vote application has been successfully saved with the application id {string}, signature and ballot addresses") { applicationStatus: String, applicationId: String ->
 
             await.pollDelay(2, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted {
                 val optSavedEntity = postalVoteApplicationRepository.findById(applicationId)
@@ -98,6 +105,18 @@ open class SavePostalVoteApplicationSteps(
                     assertThat(savedEntity.applicationDetails.signatureWaived).isEqualTo(true)
                     assertThat(savedEntity.applicationDetails.signatureWaivedReason).isEqualTo(waiverReason)
                     assertThat(savedEntity.applicationDetails.signatureBase64).isNull()
+                }
+            }
+        }
+        Then("the postal vote application has been successfully saved without ballot addresses") {
+            await.pollDelay(2, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted {
+                val optSavedEntity =
+                    postalVoteApplicationRepository.findById(postalVoteApplicationMessage!!.applicationDetails.id)
+                if (optSavedEntity.isPresent) {
+                    val savedEntity = optSavedEntity.get()
+                    assertThat(savedEntity.postalVoteDetails?.ballotAddress).isNull()
+                    assertThat(savedEntity.postalVoteDetails?.ballotBfpoAddress).isNull()
+                    assertThat(savedEntity.postalVoteDetails?.ballotOverseasAddress).isNull()
                 }
             }
         }
@@ -148,6 +167,8 @@ open class SavePostalVoteApplicationSteps(
             )
         )
         assertThat(postalVoteApplication.applicationDetails.signatureBase64).isEqualTo(SIGNATURE_BASE64_STRING)
+        assertThat(postalVoteApplication.postalVoteDetails?.ballotOverseasAddress).isNotNull
+        assertThat(postalVoteApplication.postalVoteDetails?.ballotBfpoAddress).isNotNull
     }
 
     @Transactional
