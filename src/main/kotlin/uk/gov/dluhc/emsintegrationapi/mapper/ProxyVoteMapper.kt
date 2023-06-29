@@ -41,9 +41,9 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
                     proxyemail = proxyVoteDetails.proxyEmail,
                     proxyphone = proxyVoteDetails.proxyPhone,
                     proxyreason = proxyVoteDetails.proxyReason,
-                    proxystreet = proxyAddress.street,
-                    proxypostcode = proxyAddress.postcode,
-                    proxyAddress = mapFromAddressEntity(proxyVoteDetails.proxyAddress),
+                    proxyproperty = proxyAddress?.property,
+                    proxystreet = proxyAddress?.street,
+                    proxyAddress = proxyVoteDetails.proxyAddress?.let { mapFromAddressEntity(it) },
                     proxyfamilyrelationship = proxyVoteDetails.proxyFamilyRelationship,
                     proxyVoteUntilFurtherNotice = proxyVoteDetails.voteUntilFurtherNotice,
                     proxyVoteForSingleDate = proxyVoteDetails.voteForSingleDate,
@@ -63,17 +63,15 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
         }
     }
 
-    fun mapFromAddressEntity(addressEntity: AddressEntity): Address {
-        return with(addressEntity) {
-            Address(
-                property = property,
-                street = street,
-                postcode = postcode,
-                area = area,
-                town = town,
-                locality = locality,
-                uprn = uprn
-            )
-        }
+    fun mapFromAddressEntity(addressEntity: AddressEntity) = addressEntity.let {
+        Address(
+            property = it.property,
+            street = it.street,
+            postcode = it.postcode,
+            area = it.area,
+            town = it.town,
+            locality = it.locality,
+            uprn = it.uprn
+        )
     }
 }

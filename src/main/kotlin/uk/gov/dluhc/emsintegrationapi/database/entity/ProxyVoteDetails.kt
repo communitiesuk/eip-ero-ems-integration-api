@@ -15,13 +15,13 @@ import javax.validation.constraints.Size
 @Embeddable
 class ProxyVoteDetails(
     @field:Size(max = 35)
-    val proxyFirstName: String,
+    val proxyFirstName: String?,
 
     @field:Size(max = 100)
     var proxyMiddleNames: String? = null,
 
     @field:Size(max = 35)
-    val proxySurname: String,
+    val proxySurname: String?,
 
     @field:Size(max = 500)
     var proxyFamilyRelationship: String? = null,
@@ -34,7 +34,7 @@ class ProxyVoteDetails(
     @JoinColumn(name = "proxy_address_id")
     @NotFound(action = NotFoundAction.IGNORE)
     @field:Valid
-    val proxyAddress: Address,
+    val proxyAddress: Address?,
 
     @field:Size(max = 500)
     val proxyReason: String,

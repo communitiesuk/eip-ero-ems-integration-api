@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Approved/Rejected Proxy Application SQS Message
-  version: 1.0.3
+  version: 1.1.0
   description: |-
     Approved/Rejected Proxy application API SQS Message Types for EROP
 
@@ -100,10 +100,7 @@ components:
             If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteStartDate must also be present
             In ISO8601 date format '2022-08-02'
       required:
-        - proxyFirstName
-        - proxySurname
         - proxyReason
-        - proxyAddress
     ProxyVoteApplicationMessage:
       title: ProxyVoteApplicationMessage
       type: object

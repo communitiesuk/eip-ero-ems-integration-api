@@ -596,12 +596,6 @@ components:
             - regstreet
             - regpostcode
             - registeredAddress
-            - proxyfn
-            - proxyln
-            - proxystreet
-            - proxypostcode
-            - proxyAddress
-            - proxyreason
           properties:
             refNum:
               type: string
