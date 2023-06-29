@@ -4,7 +4,7 @@ Feature: System process an approved/rejected postal vote application message
   Scenario Outline: The system process and saves a postal vote application message with signature into the database
     Given a postal vote application with the application id "<PostalApplicationId>", electoral id "<EmsElectoralId>" and status "<ApplicationStatus>"
     When I send an sqs message to the postal application queue
-    Then the "<ApplicationStatus>" postal vote application has been successfully saved with the application id "<PostalApplicationId>" and signature
+    Then the "<ApplicationStatus>" postal vote application has been successfully saved with the application id "<PostalApplicationId>", signature and ballot addresses
     Examples:
       | PostalApplicationId      | EmsElectoralId                       | ApplicationStatus |
       | 502cf250036469154b4f85fa | e87cbaea-0deb-4058-95c6-8240d426f5e1 | APPROVED          |
@@ -44,3 +44,8 @@ Feature: System process an approved/rejected postal vote application message
       | InvalidPostalApplicationId | EmsElectoralId                       | ApplicationStatus |
       | 123456                     | e87cbaea-0deb-4058-95c6-8240d426f5e4 | APPROVED          |
       | 123457                     | e87cbaea-0deb-4058-95c6-8240d426f5e6 | REJECTED          |
+
+  Scenario: The system process and saves a postal vote application message without ballot addresses
+    Given a postal vote application with the application id "502cf250036469154b4f85fa" and no ballot addresses
+    When I send an sqs message to the postal application queue
+    Then the postal vote application has been successfully saved without ballot addresses

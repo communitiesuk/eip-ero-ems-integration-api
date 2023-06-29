@@ -27,6 +27,24 @@ class PostalVoteDetails(
     @field:Size(max = 500)
     var ballotAddressReason: String? = null,
 
+    @OneToOne(
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "ballot_overseas_address_id")
+    @NotFound(action = NotFoundAction.IGNORE)
+    var ballotOverseasAddress: OverseasAddress? = null,
+
+    @OneToOne(
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "ballot_bfpo_address_id")
+    @NotFound(action = NotFoundAction.IGNORE)
+    var ballotBfpoAddress: BfpoAddress? = null,
+
     var voteForSingleDate: LocalDate? = null,
 
     var voteStartDate: LocalDate? = null,
