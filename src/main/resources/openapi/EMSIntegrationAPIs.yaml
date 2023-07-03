@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
-  version: 1.2.1
+  version: 1.2.2
   description: |
     This specification is for an API hosted by EROP for EMS clients to fetch
     details of Postal Vote and Proxy Vote applications made by the public.
@@ -133,7 +133,7 @@ paths:
         httpMethod: PUT        
     post:
       summary:
-        Deprecated - use PUT as operatiing on an existing resource.
+        Deprecated - use PUT as operating on an existing resource.
         Confirmation from EMSs that the Postal Vote application has been received and should be
         removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
         details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
@@ -233,7 +233,6 @@ paths:
         removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
         details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
       operationId: put-proxy-votes-id
-      deprecated: true      
       requestBody:
         $ref: '#/components/requestBodies/EMSApplicationResponse'
       responses:
