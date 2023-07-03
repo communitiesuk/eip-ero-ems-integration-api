@@ -10,6 +10,8 @@ import uk.gov.dluhc.emsintegrationapi.models.BfpoAddress
 import uk.gov.dluhc.emsintegrationapi.models.OverseasAddress
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteDetail
+import uk.gov.dluhc.emsintegrationapi.models.RejectedReason
+import uk.gov.dluhc.emsintegrationapi.models.RejectedReasons
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
 import uk.gov.dluhc.emsintegrationapi.database.entity.BfpoAddress as BfpoPostalAddressEntity
 import uk.gov.dluhc.emsintegrationapi.database.entity.OverseasAddress as OverseasPostalAddressEntity
@@ -17,9 +19,9 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.OverseasAddress as Oversea
 @Component
 class PostalVoteMapper(private val instantMapper: InstantMapper) {
     fun mapFromEntities(postalApplications: List<PostalVoteApplication>) =
-        postalApplications.map { entity -> mapFromAddressEntity(entity) }
+        postalApplications.map { entity -> mapFromEntity(entity) }
 
-    fun mapFromAddressEntity(postalVoteApplication: PostalVoteApplication): PostalVote {
+    fun mapFromEntity(postalVoteApplication: PostalVoteApplication): PostalVote {
         return with(postalVoteApplication) {
             val registeredAddress = applicantDetails.registeredAddress
             PostalVote(
@@ -49,6 +51,7 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                     applicationStatus = ApplicationStatus.valueOf(applicationDetails.applicationStatus.name),
                     signatureWaived = applicationDetails.signatureWaived,
                     signatureWaivedReason = applicationDetails.signatureWaivedReason,
+                    rejectedReasons = mapFromRejectedReasonEntity(this)
                 ),
                 id = applicationId,
                 createdAt = instantMapper.toOffsetDateTime(applicationDetails.createdAt),
@@ -96,6 +99,21 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                 addressLine4 = addressLine4,
                 addressLine5 = addressLine5,
                 country = country
+            )
+        }
+    }
+
+    fun mapFromRejectedReasonEntity(postalVoteApplication: PostalVoteApplication): RejectedReasons {
+        return with(postalVoteApplication) {
+            RejectedReasons(
+                englishReason = RejectedReason(
+                    notes = englishRejectionNotes,
+                    reasons = englishRejectionReasons?.toList()
+                ),
+                welshReason = RejectedReason(
+                    notes = welshRejectionNotes,
+                    reasons = welshRejectionReasons?.toList()
+                )
             )
         }
     }

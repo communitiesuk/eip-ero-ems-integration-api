@@ -16,13 +16,21 @@ internal class ProxyVoteMapperTest {
     private val proxyVoteMapper = ProxyVoteMapper(instantMapper = InstantMapper())
 
     @Test
-    fun `should map from a proxy vote application entity with signature`() {
+    fun `should map from a proxy vote application entity`() {
         val proxyVoteApplication =
-            buildProxyVoteApplication(applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING))
+            buildProxyVoteApplication(
+                applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING),
+                englishRejectionNotes = "enNotes",
+                englishRejectionReasons = setOf("enReason1", "enReason2"),
+                welshRejectionNotes = "cyNotes",
+                welshRejectionReasons = setOf("cyReason1", "cyReason2"),
+            )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
-        ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)
+        ProxyVoteAssert.assertThat(proxyVote)
+            .hasCorrectFieldsFromProxyApplication(proxyVoteApplication)
             .hasSignature(SIGNATURE_BASE64_STRING)
             .hasNoSignatureWaiver()
+            .hasRejectedReasons(proxyVoteApplication)
     }
 
     @Test
@@ -34,7 +42,11 @@ internal class ProxyVoteMapperTest {
                 voteForSingleDate = null,
                 proxyFamilyRelationship = null,
                 proxyMiddleNames = null,
-            )
+            ),
+            englishRejectionNotes = null,
+            englishRejectionReasons = null,
+            welshRejectionNotes = null,
+            welshRejectionReasons = null
         )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)
@@ -61,7 +73,12 @@ internal class ProxyVoteMapperTest {
                 .hasCorrectFieldsFromProxyApplication(proxyVoteApplications[index])
         }
     }
-
+    @Test
+    fun `should map from an application contains proxy vote dates but no rejection reason`() {
+        val proxyVoteApplication = buildProxyVoteApplication()
+        val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
+        ProxyVoteAssert.assertThat(proxyVote).hasNoRejectedReasons()
+    }
     @Test
     fun `should map from a proxy vote application entity with signature waiver`() {
         val proxyVoteApplication =

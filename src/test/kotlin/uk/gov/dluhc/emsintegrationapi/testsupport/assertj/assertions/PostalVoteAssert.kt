@@ -86,6 +86,25 @@ class PostalVoteAssert(actual: PostalVote) :
                 applicantDetails.registeredAddress
             )
             hasApplicantDetails(applicantDetails)
+            hasRejectedReasons(this)
+        }
+    }
+
+    fun hasRejectedReasons(postalVoteApplication: PostalVoteApplication) {
+        with(actual.detail.rejectedReasons) {
+            Assertions.assertThat(this?.englishReason?.notes).isEqualTo(postalVoteApplication.englishRejectionNotes)
+            Assertions.assertThat(this?.englishReason?.reasons).isEqualTo(postalVoteApplication.englishRejectionReasons?.toList())
+            Assertions.assertThat(this?.welshReason?.notes).isEqualTo(postalVoteApplication.welshRejectionNotes)
+            Assertions.assertThat(this?.welshReason?.reasons).isEqualTo(postalVoteApplication.welshRejectionReasons?.toList())
+        }
+    }
+
+    fun hasNoRejectedReasons() {
+        with(actual.detail.rejectedReasons) {
+            Assertions.assertThat(this?.englishReason?.notes).isNull()
+            Assertions.assertThat(this?.englishReason?.reasons).isEmpty()
+            Assertions.assertThat(this?.welshReason?.notes).isNull()
+            Assertions.assertThat(this?.welshReason?.reasons).isEmpty()
         }
     }
 

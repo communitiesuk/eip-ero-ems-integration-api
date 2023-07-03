@@ -23,7 +23,11 @@ fun buildProxyVoteApplication(
     createdBy: SourceSystem = SourceSystem.POSTAL,
     dateUpdated: Instant? = null,
     updatedBy: SourceSystem? = null,
-    recordStatus: RecordStatus = RecordStatus.RECEIVED
+    recordStatus: RecordStatus = RecordStatus.RECEIVED,
+    englishRejectionNotes: String? = null,
+    englishRejectionReasons: Set<String>? = emptySet(),
+    welshRejectionNotes: String? = null,
+    welshRejectionReasons: Set<String>? = emptySet(),
 ) = ProxyVoteApplication(
     applicationId = applicationId,
     applicationDetails = applicationDetails,
@@ -34,7 +38,11 @@ fun buildProxyVoteApplication(
     createdBy = createdBy,
     dateUpdated = dateUpdated,
     updatedBy = updatedBy,
-    status = recordStatus
+    status = recordStatus,
+    englishRejectionNotes = englishRejectionNotes,
+    englishRejectionReasons = englishRejectionReasons,
+    welshRejectionNotes = welshRejectionNotes,
+    welshRejectionReasons = welshRejectionReasons,
 )
 
 fun buildProxyVoteApplicationMessageDto(

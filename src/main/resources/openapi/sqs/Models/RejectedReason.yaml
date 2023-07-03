@@ -1,0 +1,13 @@
+  title: Rejected Reason
+  description: |
+    ERO supplied rejection notes and list of specific reasons for rejected applications.
+  type: object
+  properties:
+    notes:
+      type: string
+      maxLength: 1024
+    reasons:
+      type: array
+      items:
+        type: string
+        maxLength: 50

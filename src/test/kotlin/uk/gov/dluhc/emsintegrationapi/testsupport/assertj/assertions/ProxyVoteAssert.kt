@@ -71,6 +71,24 @@ class ProxyVoteAssert(actual: ProxyVote) :
         }
     }
 
+    fun hasRejectedReasons(proxyVoteApplication: ProxyVoteApplication) {
+        with(actual.detail.rejectedReasons) {
+            Assertions.assertThat(this?.englishReason?.notes).isEqualTo(proxyVoteApplication.englishRejectionNotes)
+            Assertions.assertThat(this?.englishReason?.reasons).isEqualTo(proxyVoteApplication.englishRejectionReasons?.toList())
+            Assertions.assertThat(this?.welshReason?.notes).isEqualTo(proxyVoteApplication.welshRejectionNotes)
+            Assertions.assertThat(this?.welshReason?.reasons).isEqualTo(proxyVoteApplication.welshRejectionReasons?.toList())
+        }
+    }
+
+    fun hasNoRejectedReasons() {
+        with(actual.detail.rejectedReasons) {
+            Assertions.assertThat(this?.englishReason?.notes).isNull()
+            Assertions.assertThat(this?.englishReason?.reasons).isEmpty()
+            Assertions.assertThat(this?.welshReason?.notes).isNull()
+            Assertions.assertThat(this?.welshReason?.reasons).isEmpty()
+        }
+    }
+
     private fun hasApplicationDetails(proxyVoteApplication: ProxyVoteApplication) =
         validate {
             with(proxyVoteApplication.applicationDetails) {

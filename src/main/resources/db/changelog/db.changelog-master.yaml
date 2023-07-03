@@ -17,3 +17,5 @@ databaseChangeLog:
       file: /db/changelog/create/0008_EIP1-6519_add_ballotBfpoAddress_table.xml
   - include:
       file: /db/changelog/create/0009_EIP1-6519_add_ballotOverseasAddress_table.xml
+  - include:
+      file: /db/changelog/create/0010_EIP1-6671_add_rejection_reasons.xml
