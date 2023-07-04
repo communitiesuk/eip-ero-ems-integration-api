@@ -3,7 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.config
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod.OPTIONS
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 class SecurityConfiguration(
     private val apiProperties: ApiProperties
 ) {
@@ -31,9 +31,9 @@ class SecurityConfiguration(
                 .csrf().disable()
                 .formLogin { it.disable() }
                 .httpBasic { it.disable() }
-                .authorizeRequests {
-                    it.antMatchers(OPTIONS).permitAll()
-                    it.antMatchers("/actuator/**").permitAll()
+                .authorizeHttpRequests {
+                    it.requestMatchers(OPTIONS).permitAll()
+                    it.requestMatchers("/actuator/**").permitAll()
                     it.anyRequest().authenticated()
                 }
                 .addFilter(
