@@ -5,7 +5,7 @@ import org.owasp.dependencycheck.reporting.ReportGenerator.Format.HTML
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-    id("org.springframework.boot") version "2.7.10"
+    id("org.springframework.boot") version "2.7.12"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.8.22"
     kotlin("kapt") version "1.8.22"
