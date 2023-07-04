@@ -7,11 +7,11 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 plugins {
     id("org.springframework.boot") version "2.7.10"
     id("io.spring.dependency-management") version "1.1.0"
-    kotlin("jvm") version "1.7.21"
-    kotlin("kapt") version "1.7.21"
-    kotlin("plugin.spring") version "1.7.21"
-    kotlin("plugin.jpa") version "1.7.21"
-    kotlin("plugin.allopen") version "1.7.21"
+    kotlin("jvm") version "1.8.22"
+    kotlin("kapt") version "1.8.22"
+    kotlin("plugin.spring") version "1.8.22"
+    kotlin("plugin.jpa") version "1.8.22"
+    kotlin("plugin.allopen") version "1.8.22"
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
     id("org.openapi.generator") version "6.2.1"
@@ -25,8 +25,7 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 ext["snakeyaml.version"] = "1.33"
 extra["springCloudVersion"] = "2.4.2"
-ext["spring-security.version"] =
-    "5.7.5" // Fixed CVE-2022-31690 and CVE-2022-31692 - https://spring.io/blog/2022/10/31/cve-2022-31690-privilege-escalation-in-spring-security-oauth2-client
+ext["spring-security.version"] = "5.8.4"
 extra["awsSdkVersion"] = "2.18.9"
 extra["cucumberVersion"] = "7.11.1"
 extra["junitJupiterVersion"] = "5.8.2"
@@ -69,16 +68,14 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
-    // webclient
-    implementation("org.springframework:spring-webflux")
-    implementation("io.projectreactor.netty:reactor-netty-http")
-
     // spring security
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.31")
 
     implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.liquibase:liquibase-core")
     implementation("org.hibernate:hibernate-envers")
 
@@ -100,7 +97,6 @@ dependencies {
     // Test implementations
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
 
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
