@@ -6,6 +6,8 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteDetails
 import java.time.LocalDate
 import uk.gov.dluhc.emsintegrationapi.messaging.models.Address as AddressMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteDetails as ProxyVoteDetailsMessageDto
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RejectedReason as RejectedReasonDto
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RejectedReasons as RejectedReasonsDto
 
 fun buildProxyVoteDetailsEntity(
     proxyFirstName: String? = DataFaker.faker.name().firstName(),
@@ -47,7 +49,8 @@ fun buildProxyVoteDetailsMessageDto(
     voteStartDate: LocalDate? = getRandomPastDate(10),
     voteEndDate: LocalDate? = getRandomPastDate(1),
     proxyFamilyRelationship: String? = randomString(20),
-    voteUntilFurtherNotice: Boolean? = false
+    voteUntilFurtherNotice: Boolean? = false,
+    rejectedReasons: RejectedReasonsDto? = buildProxyRejectedReasonsDto()
 ) = ProxyVoteDetailsMessageDto(
     proxyFirstName = proxyFirstName,
     proxyMiddleNames = proxyMiddleNames,
@@ -60,5 +63,16 @@ fun buildProxyVoteDetailsMessageDto(
     voteForSingleDate = voteForSingleDate,
     voteStartDate = voteStartDate,
     voteEndDate = voteEndDate,
-    voteUntilFurtherNotice = voteUntilFurtherNotice
+    voteUntilFurtherNotice = voteUntilFurtherNotice,
+    rejectedReasons = rejectedReasons
+)
+
+fun buildProxyRejectedReasonsDto(
+    englishNotes: String? = DataFaker.faker.house().room(),
+    englishReason: Set<String>? = setOf(DataFaker.faker.book().title()),
+    welshNotes: String? = DataFaker.faker.house().furniture(),
+    welshReason: Set<String>? = setOf(DataFaker.faker.book().author()),
+) = RejectedReasonsDto(
+    englishReason = RejectedReasonDto(notes = englishNotes, reasons = englishReason?.toList()),
+    welshReason = RejectedReasonDto(notes = welshNotes, reasons = welshReason?.toList()),
 )

@@ -14,10 +14,10 @@ internal class PostalVoteMapperTest {
     private val postalVoteMapper = PostalVoteMapper(instantMapper = InstantMapper())
 
     @Test
-    fun `should map from a postal vote application entity with signature`() {
+    fun `should map from a postal vote application entity with all field populated`() {
         val postalVoteApplication =
             buildPostalVoteApplication(applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING))
-        val postalVote = postalVoteMapper.mapFromAddressEntity(postalVoteApplication)
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
         PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasPostalVoteDetails(postalVoteApplication.postalVoteDetails)
             .hasBallotAddress(postalVoteApplication.postalVoteDetails?.ballotAddress!!)
@@ -25,6 +25,7 @@ internal class PostalVoteMapperTest {
             .hasOverseasAddress(postalVoteApplication.postalVoteDetails?.ballotOverseasAddress!!)
             .hasSignature(SIGNATURE_BASE64_STRING)
             .hasNoSignatureWaiver()
+            .hasRejectedReasons(postalVoteApplication)
     }
 
     @Test
@@ -32,8 +33,9 @@ internal class PostalVoteMapperTest {
         val postalVoteApplication = buildPostalVoteApplication(
             postalVoteDetails = null
         )
-        val postalVote = postalVoteMapper.mapFromAddressEntity(postalVoteApplication)
-        PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
+        PostalVoteAssert.assertThat(postalVote)
+            .hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .doesNotHavePostalVoteDetails()
     }
 
@@ -46,10 +48,18 @@ internal class PostalVoteMapperTest {
                 ballotOverseasAddress = null
             )
         )
-        val postalVote = postalVoteMapper.mapFromAddressEntity(postalVoteApplication)
-        PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
+        PostalVoteAssert.assertThat(postalVote)
+            .hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasPostalVoteDetails(postalVoteApplication.postalVoteDetails)
             .doesNotHaveAddresses()
+    }
+
+    @Test
+    fun `should map from an application contains postal vote dates but no rejection reason`() {
+        val postalVoteApplication = buildPostalVoteApplication()
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
+        PostalVoteAssert.assertThat(postalVote).hasNoRejectedReasons()
     }
 
     @Test
@@ -61,7 +71,7 @@ internal class PostalVoteMapperTest {
                     signatureWaived = true
                 )
             )
-        val postalVote = postalVoteMapper.mapFromAddressEntity(postalVoteApplication)
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
         PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasPostalVoteDetails(postalVoteApplication.postalVoteDetails)
             .hasBallotAddress(postalVoteApplication.postalVoteDetails?.ballotAddress!!)
@@ -75,7 +85,7 @@ internal class PostalVoteMapperTest {
         val postalVoteApplication = buildPostalVoteApplication(
             applicantDetails = buildApplicantDetailsEntity(emsElectorId = null)
         )
-        val postalVote = postalVoteMapper.mapFromAddressEntity(postalVoteApplication)
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
         PostalVoteAssert.assertThat(postalVote)
             .hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasNoEmsElectorId()

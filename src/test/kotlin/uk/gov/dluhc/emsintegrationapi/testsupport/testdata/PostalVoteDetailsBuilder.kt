@@ -10,7 +10,8 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.Address as AddressMessage
 import uk.gov.dluhc.emsintegrationapi.messaging.models.BfpoAddress as BfpoAddressMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.OverseasAddress as OverseasAddressMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteDetails as PostalVoteDetailsMessageDto
-
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RejectedReason as RejectedReasonDto
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RejectedReasons as RejectedReasonsDto
 fun buildPostalVoteDetailsEntity(
     ballotAddress: Address? = buildAddressEntity(),
     ballotAddressReason: String? = randomString(10),
@@ -39,7 +40,8 @@ fun buildPostalVoteDetailsMessageDto(
     voteForSingleDate: LocalDate? = getRandomPastDate(),
     voteStartDate: LocalDate? = getRandomPastDate(10),
     voteEndDate: LocalDate? = getRandomPastDate(1),
-    voteUntilFurtherNotice: Boolean? = false
+    voteUntilFurtherNotice: Boolean? = false,
+    rejectedReasons: RejectedReasonsDto? = buildPostalRejectedReasonsDto()
 ) = PostalVoteDetailsMessageDto(
     ballotAddress = ballotAddress,
     ballotOverseasPostalAddress = ballotOverseasAddress,
@@ -48,5 +50,16 @@ fun buildPostalVoteDetailsMessageDto(
     voteForSingleDate = voteForSingleDate,
     voteStartDate = voteStartDate,
     voteEndDate = voteEndDate,
-    voteUntilFurtherNotice = voteUntilFurtherNotice
+    voteUntilFurtherNotice = voteUntilFurtherNotice,
+    rejectedReasons = rejectedReasons
+)
+
+fun buildPostalRejectedReasonsDto(
+    englishNotes: String? = DataFaker.faker.house().room(),
+    englishReason: Set<String>? = setOf(DataFaker.faker.book().title()),
+    welshNotes: String? = DataFaker.faker.house().furniture(),
+    welshReason: Set<String>? = setOf(DataFaker.faker.book().author()),
+) = RejectedReasonsDto(
+    englishReason = RejectedReasonDto(notes = englishNotes, reasons = englishReason?.toList()),
+    welshReason = RejectedReasonDto(notes = welshNotes, reasons = welshReason?.toList()),
 )

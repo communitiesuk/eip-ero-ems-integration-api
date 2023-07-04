@@ -8,6 +8,8 @@ import uk.gov.dluhc.emsintegrationapi.models.ApplicationLanguage
 import uk.gov.dluhc.emsintegrationapi.models.ApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteDetail
+import uk.gov.dluhc.emsintegrationapi.models.RejectedReason
+import uk.gov.dluhc.emsintegrationapi.models.RejectedReasons
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
 
 @Component
@@ -52,6 +54,7 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
                     applicationStatus = ApplicationStatus.valueOf(applicationDetails.applicationStatus.name),
                     signatureWaived = applicationDetails.signatureWaived,
                     signatureWaivedReason = applicationDetails.signatureWaivedReason,
+                    rejectedReasons = mapFromRejectedReasonEntity(this),
                 ),
                 id = applicationId,
                 createdAt = instantMapper.toOffsetDateTime(applicationDetails.createdAt),
@@ -73,5 +76,20 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
             locality = it.locality,
             uprn = it.uprn
         )
+    }
+
+    fun mapFromRejectedReasonEntity(proxyVoteApplication: ProxyVoteApplication): RejectedReasons {
+        return with(proxyVoteApplication) {
+            RejectedReasons(
+                englishReason = RejectedReason(
+                    notes = englishRejectionNotes,
+                    reasons = englishRejectionReasons?.toList()
+                ),
+                welshReason = RejectedReason(
+                    notes = welshRejectionNotes,
+                    reasons = welshRejectionReasons?.toList()
+                )
+            )
+        }
     }
 }

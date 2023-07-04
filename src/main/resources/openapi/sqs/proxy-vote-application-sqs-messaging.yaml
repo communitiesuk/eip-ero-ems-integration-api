@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Approved/Rejected Proxy Application SQS Message
-  version: 1.1.0
+  version: 1.2.0
   description: |-
     Approved/Rejected Proxy application API SQS Message Types for EROP
 
@@ -99,6 +99,17 @@ components:
           description: |
             If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteStartDate must also be present
             In ISO8601 date format '2022-08-02'
+        rejectedReasons:
+          title: Rejected Reasons
+          description: |
+            Rejected notes and reasons as provided by the determining ERO when rejecting applications.
+            Applications for Welsh language EROs and Welsh Electors may contain reasons in English and/or Welsh.
+            Expected to be used by EMSs in elector communications.
+          properties:
+            englishReason:
+              $ref: '../sqs/Models/RejectedReason.yaml'
+            welshReason:
+              $ref: '../sqs/Models/RejectedReason.yaml'
       required:
         - proxyReason
     ProxyVoteApplicationMessage:
