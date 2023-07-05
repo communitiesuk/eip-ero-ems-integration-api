@@ -7,6 +7,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalRejectedReasonsDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMappedObject
@@ -37,6 +38,10 @@ internal class PostalVoteApplicationMessageMapperTest {
                 assertThat(it.output.postalVoteDetails!!.ballotAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.postalVoteDetails!!.ballotOverseasAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.postalVoteDetails!!.ballotBfpoAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
+                assertThat(it.output.englishRejectionNotes).isNotNull()
+                assertThat(it.output.englishRejectionReasons).isNotEmpty()
+                assertThat(it.output.welshRejectionNotes).isNotNull()
+                assertThat(it.output.welshRejectionReasons).isNotEmpty()
             }
         }
 
@@ -57,5 +62,26 @@ internal class PostalVoteApplicationMessageMapperTest {
             assertThat(postalVoteApplication.postalVoteDetails?.ballotOverseasAddress).isNull()
             assertThat(postalVoteApplication.postalVoteDetails?.ballotBfpoAddress).isNull()
         }
+    }
+
+    @Test
+    fun `should convert postal vote application message to entity without rejected english notes and welsh rejected reasons`() {
+
+        val applicationMessage: PostalVoteApplicationMessage =
+            buildPostalVoteApplicationMessage(
+                postalVoteDetails = buildPostalVoteDetailsMessageDto(
+                    rejectedReasons = buildPostalRejectedReasonsDto(
+                        englishNotes = null,
+                        welshNotes = null,
+                        welshReason = null
+                    )
+                )
+            )
+        val postalVoteApplication: PostalVoteApplication = postalVoteApplicationMessageMapper.mapToEntity(applicationMessage)
+        assertThat(postalVoteApplication.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
+        assertThat(postalVoteApplication.englishRejectionNotes).isNull()
+        assertThat(postalVoteApplication.englishRejectionReasons).isNotEmpty()
+        assertThat(postalVoteApplication.welshRejectionNotes).isNull()
+        assertThat(postalVoteApplication.welshRejectionReasons).isNull()
     }
 }
