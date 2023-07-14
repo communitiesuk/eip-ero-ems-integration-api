@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Approved/Rejected Postal Application SQS Message
-  version: 1.1.0
+  version: 1.1.1
   description: |-
     Approved/Rejected Postal application API SQS Message Types for EROP
 
@@ -97,7 +97,7 @@ components:
       type: object
       properties:
         ballotAddress:
-          $ref: '../sqs/Models/Address.yaml'
+          $ref: './Models/Address.yaml'
         ballotOverseasPostalAddress:
           $ref: '#/components/schemas/OverseasAddress'
         ballotBfpoPostalAddress:
@@ -135,9 +135,9 @@ components:
             Expected to be used by EMSs in elector communications.
           properties:
             englishReason:
-              $ref: '../sqs/Models/RejectedReason.yaml'
+              $ref: './Models/RejectedReason.yaml'
             welshReason:
-              $ref: '../sqs/Models/RejectedReason.yaml'
+              $ref: './Models/RejectedReason.yaml'
 
     PostalVoteApplicationMessage:
       title: PostalVoteApplicationMessage
@@ -187,9 +187,9 @@ components:
             voteUntilFurtherNotice: true
       properties:
         applicationDetails:
-          $ref: '../sqs/Models/ApplicationDetails.yaml'
+          $ref: './Models/ApplicationDetails.yaml'
         applicantDetails:
-          $ref: '../sqs/Models/ApplicantDetails.yaml'
+          $ref: './Models/ApplicantDetails.yaml'
         postalVoteDetails:
           $ref: '#/components/schemas/PostalVoteDetails'
 
@@ -209,4 +209,4 @@ components:
       content:
         application/json:
           schema:
-            $ref: '../sqs/Models/EmsConfirmedReceiptMessage.yaml'
+            $ref: './Models/EmsConfirmedReceiptMessage.yaml'
