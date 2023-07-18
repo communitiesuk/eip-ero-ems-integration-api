@@ -5,9 +5,9 @@
   properties:
     notes:
       type: string
-      maxLength: 1024
+      maxLength: 4000
     reasons:
       type: array
       items:
         type: string
-        maxLength: 50
+        maxLength: 100

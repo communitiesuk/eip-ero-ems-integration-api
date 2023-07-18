@@ -62,7 +62,7 @@ class PostalVoteApplication(
         name = "postal_vote_application_english_rejection_reasons",
         joinColumns = [JoinColumn(name = "application_id")]
     )
-    @Column(name = "rejection_reasons", length = 50, nullable = false)
+    @Column(name = "rejection_reasons", length = 100, nullable = false)
     var englishRejectionReasons: Set<String>? = mutableSetOf(),
 
     var welshRejectionNotes: String? = null,
@@ -72,7 +72,7 @@ class PostalVoteApplication(
         name = "postal_vote_application_welsh_rejection_reasons",
         joinColumns = [JoinColumn(name = "application_id")]
     )
-    @Column(name = "rejection_reasons", length = 50, nullable = false)
+    @Column(name = "rejection_reasons", length = 100, nullable = false)
     var welshRejectionReasons: Set<String>? = mutableSetOf(),
 
     @Version

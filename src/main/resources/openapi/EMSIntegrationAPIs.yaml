@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
-  version: 1.2.2
+  version: 1.2.3
   description: |
     This specification is for an API hosted by EROP for EMS clients to fetch
     details of Postal Vote and Proxy Vote applications made by the public.
@@ -821,12 +821,12 @@ components:
       properties:
         notes:
           type: string
-          maxLength: 1024
+          maxLength: 4000
         reasons:
           type: array
           items:
             type: string
-            maxLength: 50
+            maxLength: 100
     ApplicationLanguage:
       title: Application Language
       description: Enum indicating “en” or “cy” according to which language the applicant used
