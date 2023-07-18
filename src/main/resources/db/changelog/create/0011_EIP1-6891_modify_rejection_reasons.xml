@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="vanit.mistry@valtech.com" id="0010_EIP1-6671_add_postal_rejection_reasons" context="ddl">
+        <addColumn tableName="postal_vote_application">
+            <column name="english_rejection_notes" type="varchar(1024)" afterColumn="ems_details"/>
+            <column name="welsh_rejection_notes" type="varchar(1024)" afterColumn="english_rejection_notes"/>
+        </addColumn>
+
+        <createTable tableName="postal_vote_application_english_rejection_reasons">
+            <column name="application_id" type="varchar(24)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="rejection_reasons" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="postal_vote_application_english_rejection_reasons"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_postal_english_rejection_reasons_id"
+                                 referencedTableName="postal_vote_application"
+                                 referencedColumnNames="application_id"/>
+
+        <createTable tableName="postal_vote_application_welsh_rejection_reasons">
+            <column name="application_id" type="varchar(24)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="rejection_reasons" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="postal_vote_application_welsh_rejection_reasons"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_postal_welsh_rejection_reasons_id"
+                                 referencedTableName="postal_vote_application"
+                                 referencedColumnNames="application_id"/>
+
+        <rollback>
+            <dropColumn tableName="postal_vote_application" columnName="english_rejection_notes"/>
+            <dropColumn tableName="postal_vote_application" columnName="welsh_rejection_notes"/>
+            <dropTable tableName="postal_vote_application_english_rejection_reasons" />
+            <dropTable tableName="postal_vote_application_welsh_rejection_reasons" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="vanit.mistry@valtech.com" id="0010_EIP1-6671_add_proxy_rejection_reasons" context="ddl">
+        <addColumn tableName="proxy_vote_application">
+            <column name="english_rejection_notes" type="varchar(1024)" afterColumn="ems_details"/>
+            <column name="welsh_rejection_notes" type="varchar(1024)" afterColumn="english_rejection_notes"/>
+        </addColumn>
+
+        <createTable tableName="proxy_vote_application_english_rejection_reasons">
+            <column name="application_id" type="varchar(24)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="rejection_reasons" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="proxy_vote_application_english_rejection_reasons"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_proxy_english_rejection_reasons_id"
+                                 referencedTableName="proxy_vote_application"
+                                 referencedColumnNames="application_id"/>
+
+        <createTable tableName="proxy_vote_application_welsh_rejection_reasons">
+            <column name="application_id" type="varchar(24)" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="rejection_reasons" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="proxy_vote_application_welsh_rejection_reasons"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_proxy_welsh_rejection_reasons_id"
+                                 referencedTableName="proxy_vote_application"
+                                 referencedColumnNames="application_id"/>
+
+        <rollback>
+            <dropColumn tableName="proxy_vote_application" columnName="english_rejection_notes"/>
+            <dropColumn tableName="proxy_vote_application" columnName="welsh_rejection_notes"/>
+            <dropTable tableName="proxy_vote_application_english_rejection_reasons" />
+            <dropTable tableName="proxy_vote_application_welsh_rejection_reasons" />
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
