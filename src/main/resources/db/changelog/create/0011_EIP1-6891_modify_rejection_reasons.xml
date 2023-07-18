@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="shumail.arshad@valtech.com" id="0011_EIP1-6891_modify_rejection_reasons" context="ddl">
+
+        <modifyDataType tableName="postal_vote_application" columnName="english_rejection_notes" newDataType="varchar(4000)"/>
+        <modifyDataType tableName="postal_vote_application_english_rejection_reasons" columnName="rejection_reasons" newDataType="varchar(100)"/>
+        <modifyDataType tableName="postal_vote_application_welsh_rejection_reasons" columnName="rejection_reasons" newDataType="varchar(100)"/>
+
+        <modifyDataType tableName="proxy_vote_application" columnName="welsh_rejection_notes" newDataType="varchar(4000)"/>
+        <modifyDataType tableName="proxy_vote_application_english_rejection_reasons" columnName="rejection_reasons" newDataType="varchar(100)"/>
+        <modifyDataType tableName="proxy_vote_application_welsh_rejection_reasons" columnName="rejection_reasons" newDataType="varchar(100)"/>
+
+        <rollback>
+            <modifyDataType tableName="postal_vote_application" columnName="english_rejection_notes" newDataType="varchar(1024)"/>
+            <modifyDataType tableName="postal_vote_application_english_rejection_reasons" columnName="rejection_reasons" newDataType="varchar(50)"/>
+            <modifyDataType tableName="postal_vote_application_welsh_rejection_reasons" columnName="rejection_reasons" newDataType="varchar(50)"/>
+
+            <modifyDataType tableName="proxy_vote_application" columnName="welsh_rejection_notes" newDataType="varchar(1024)"/>
+            <modifyDataType tableName="proxy_vote_application_english_rejection_reasons" columnName="rejection_reasons" newDataType="varchar(50)"/>
+            <modifyDataType tableName="proxy_vote_application_welsh_rejection_reasons" columnName="rejection_reasons" newDataType="varchar(50)"/>
+        </rollback>
+
+    </changeSet>
+</databaseChangeLog>
