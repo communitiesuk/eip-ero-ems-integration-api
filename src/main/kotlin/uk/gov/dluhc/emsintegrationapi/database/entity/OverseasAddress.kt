@@ -30,7 +30,7 @@ class OverseasAddress(
     var id: UUID? = null,
 
     @Size(max = 255)
-    var addressLine1: String?,
+    var addressLine1: String,
 
     @Size(max = 255)
     var addressLine2: String?,
