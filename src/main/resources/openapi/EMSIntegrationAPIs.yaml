@@ -474,6 +474,8 @@ components:
                 * ballotBfpoPostalAddress
 
                 When populated, the following fields are now associated with the Proxy, and not the Elector.
+                * email
+                * phone
                 * signature
                 * signatureWaived
                 * signatureWaivedReason
