@@ -802,7 +802,7 @@ components:
                 Where an Elector has been granted a signature waiver. If 'true', then no signature will be provided and a signatureWaivedReason will be supplied.
             signatureWaivedReason:
               type: string
-              maxLength: 250
+              maxLength: 500
               default: false
               description: |
                 Where an Elector has been granted a signature waiver, this field will contain a description of the reason for the waiver.
@@ -871,11 +871,10 @@ components:
             type: string
             maxLength: 100
         reasonList:
-          $ref: '#/components/schemas/RejectedReasonItem'
+          type: array
           description: The list of reasons the ERO rejected the application.
           items:
-            type: string
-            maxLength: 100 
+            $ref: '#/components/schemas/RejectedReasonItem'
     RejectedReasonItem:
       title: Rejected Reason Item
       description: |
@@ -894,15 +893,15 @@ components:
             Should EROP add a new 'type', we would not want EMSs to require a deployment.
             * identity-not-confirmed
             * signature-is-not-acceptable
-            * fraudulent-application
+            * fraudulent-application (will be passed with includeInElectorComms:false)
             * not-registered-to-vote
             * not-eligible-for-reserved-polls
             * dob-not-provided
             * incomplete-application
             * proxy-not-registered-to-vote
             * proxy-limits
-            * other (will notw be passed with a default of includeInElectorComms:false)
-          maxLength: 20
+            * other (will be passed with includeInElectorComms:false)
+          maxLength: 50
         includeInComms:
           type: boolean
           description: EROP will have the abiity for EROs to select which reasons they would like be sent to the elector.
