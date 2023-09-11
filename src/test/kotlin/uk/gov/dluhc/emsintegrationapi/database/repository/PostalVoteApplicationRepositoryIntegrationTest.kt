@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
@@ -33,9 +34,8 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
     }
 
     @Test
-    fun `should return records by gss codes and record status order by created date`() {
+    fun `should return records by gss codes and record status order by created date using two step process`() {
         // Given
-
         val listOfApplications =
             IntStream.rangeClosed(1, 30).mapToObj {
                 buildPostalVoteApplication(
@@ -47,26 +47,30 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         postalVoteApplicationRepository.saveAllAndFlush(listOfApplications)
 
         // When
-        val applicationsReceived =
-            postalVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+        val applicationIdsReceived =
+            postalVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 listOf(GSS_CODE, "9010"),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
             )
+        val applicationsReceived = postalVoteApplicationRepository.findByApplicationIdIn(applicationIdsReceived)
 
         // That
         val numberOfApplicationsReceived = applicationsReceived.size
+        var previousApplication: PostalVoteApplication? = null
         assertThat(numberOfApplicationsReceived).isEqualTo(10)
-        applicationsReceived.forEachIndexed { index, postalVoteApplication ->
+        applicationIdsReceived.forEachIndexed { index, postalVoteApplicationId ->
+            val postalVoteApplication = applicationsReceived.find { it.applicationId == postalVoteApplicationId }!!
             assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
             if (index > 0) {
                 assertThat(postalVoteApplication.dateCreated!!.truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
-                    applicationsReceived[index - 1].dateCreated!!.truncatedTo(
+                    previousApplication!!.dateCreated!!.truncatedTo(
                         ChronoUnit.SECONDS
                     )
                 )
                 assertThat(postalVoteApplication.applicationDetails.gssCode).isEqualTo(GSS_CODE)
             }
+            previousApplication = postalVoteApplication
         }
     }
 

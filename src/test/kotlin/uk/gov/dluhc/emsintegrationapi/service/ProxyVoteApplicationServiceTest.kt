@@ -10,11 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.given
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
-import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.*
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
@@ -116,16 +112,18 @@ internal class ProxyVoteApplicationServiceTest {
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
                 buildProxyVoteApplication(applicationId = it.toString())
             }.toList()
+        val savedApplicationIds = savedApplications.map { it.applicationId }.toList()
         val mockProxyVotes =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj { mock<ProxyVote>() }.toList()
 
         given(
-            proxyVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+            proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 GSS_CODES,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
             )
-        ).willReturn(savedApplications)
+        ).willReturn(savedApplicationIds)
+        given { proxyVoteApplicationRepository.findByApplicationIdIn(savedApplicationIds) }.willReturn(savedApplications)
         given { proxyVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockProxyVotes)
 
         val proxyVoteApplications =
