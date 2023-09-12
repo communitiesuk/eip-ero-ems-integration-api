@@ -32,12 +32,13 @@ class ProxyVoteApplicationService(
         val gssCodes = retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
         val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize proxy vote applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
-        val proxyApplicationsList =
-            proxyVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
-                gssCodes,
-                RecordStatus.RECEIVED,
-                Pageable.ofSize(numberOfRecordsToFetch)
-            )
+        val proxyApplicationIds = proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+            gssCodes,
+            RecordStatus.RECEIVED,
+            Pageable.ofSize(numberOfRecordsToFetch)
+        )
+        val proxyApplications = proxyVoteApplicationRepository.findByApplicationIdIn(proxyApplicationIds)
+        val proxyApplicationsList = proxyApplicationIds.map { id -> proxyApplications.find { it.applicationId == id }!! }
         val actualPageSize = proxyApplicationsList.size
         logger.info("The actual number of records fetched is $actualPageSize")
         return ProxyVoteApplications(actualPageSize, proxyVoteMapper.mapFromEntities(proxyApplicationsList))

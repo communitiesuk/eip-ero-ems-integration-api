@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
@@ -34,7 +35,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
     }
 
     @Test
-    fun `should return records by gss codes and record status order by created date`() {
+    fun `should return records by gss codes and record status order by created date using two step process`() {
         // Given
 
         val listOfApplications =
@@ -48,26 +49,30 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         proxyVoteApplicationRepository.saveAllAndFlush(listOfApplications)
 
         // When
-        val applicationsReceived =
-            proxyVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+        val applicationIdsReceived =
+            proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 listOf(GSS_CODE, getRandomGssCode()),
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(10)
             )
+        val applicationsReceived = proxyVoteApplicationRepository.findByApplicationIdIn(applicationIdsReceived)
 
         // That
         val numberOfApplicationsReceived = applicationsReceived.size
+        var previousApplication: ProxyVoteApplication? = null
         assertThat(numberOfApplicationsReceived).isEqualTo(10)
-        applicationsReceived.forEachIndexed { index, proxyVoteApplication ->
+        applicationIdsReceived.forEachIndexed { index, proxyVoteApplicationId ->
+            val proxyVoteApplication = applicationsReceived.find { it.applicationId == proxyVoteApplicationId }!!
             assertThat(proxyVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
             if (index > 0) {
                 assertThat(proxyVoteApplication.dateCreated!!.truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
-                    applicationsReceived[index - 1].dateCreated!!.truncatedTo(
+                    previousApplication!!.dateCreated!!.truncatedTo(
                         ChronoUnit.SECONDS
                     )
                 )
                 assertThat(proxyVoteApplication.applicationDetails.gssCode).isEqualTo(GSS_CODE)
             }
+            previousApplication = proxyVoteApplication
         }
     }
 

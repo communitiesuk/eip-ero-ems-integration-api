@@ -31,12 +31,14 @@ class PostalVoteApplicationService(
         val gssCodes = getGssCodes(certificateSerialNumber)
         val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
-        val postalApplicationsList =
-            postalVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
-                gssCodes,
-                RecordStatus.RECEIVED,
-                Pageable.ofSize(numberOfRecordsToFetch)
-            )
+        val postalApplicationIds = postalVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+            gssCodes,
+            RecordStatus.RECEIVED,
+            Pageable.ofSize(numberOfRecordsToFetch)
+        )
+        val postalApplications = postalVoteApplicationRepository.findByApplicationIdIn(postalApplicationIds)
+        val postalApplicationsList = postalApplicationIds.map { id -> postalApplications.find { it.applicationId == id }!! }
+
         val actualPageSize = postalApplicationsList.size
         logger.info("The actual number of records fetched is $actualPageSize")
         return PostalVoteApplications(actualPageSize, postalVoteMapper.mapFromEntities(postalApplicationsList))

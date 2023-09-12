@@ -116,16 +116,18 @@ internal class ProxyVoteApplicationServiceTest {
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
                 buildProxyVoteApplication(applicationId = it.toString())
             }.toList()
+        val savedApplicationIds = savedApplications.map { it.applicationId }.toList()
         val mockProxyVotes =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj { mock<ProxyVote>() }.toList()
 
         given(
-            proxyVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+            proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 GSS_CODES,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
             )
-        ).willReturn(savedApplications)
+        ).willReturn(savedApplicationIds)
+        given { proxyVoteApplicationRepository.findByApplicationIdIn(savedApplicationIds) }.willReturn(savedApplications)
         given { proxyVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockProxyVotes)
 
         val proxyVoteApplications =
