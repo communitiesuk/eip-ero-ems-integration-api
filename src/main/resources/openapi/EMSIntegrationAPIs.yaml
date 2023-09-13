@@ -130,7 +130,7 @@ paths:
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
-        httpMethod: PUT        
+        httpMethod: PUT
     post:
       summary:
         Deprecated - use PUT as operating on an existing resource.
@@ -256,7 +256,7 @@ paths:
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
-        httpMethod: PUT        
+        httpMethod: PUT
     post:
       summary:
         Deprecated - use PUT as operating on an existing resource.
@@ -264,7 +264,7 @@ paths:
         removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
         details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
       operationId: post-proxy-votes-id
-      deprecated: true      
+      deprecated: true
       requestBody:
         $ref: '#/components/requestBodies/EMSApplicationResponse'
       responses:
@@ -317,7 +317,7 @@ paths:
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
-        httpMethod: DELETE  
+        httpMethod: DELETE
 components:
   schemas:
     PostalVote:
@@ -448,7 +448,7 @@ components:
               deprecated: true
               description: Replaced by registeredAddress
             registeredAddress:
-              $ref: '#/components/schemas/Address'            
+              $ref: '#/components/schemas/Address'
             phone:
               type: string
               maxLength: 50
@@ -458,12 +458,57 @@ components:
               format: email
               maxLength: 255
               description: email address for contact
+            postalProxy:
+              type: object
+              description: |
+                # Postal - Proxy Applications
+                
+                Where this entity is not null it indicates that the application is for 
+                a "postal-proxy" application. 
+                
+                This contains the nominated proxy's details that will have been legally verified within EROP.
+
+                The registeredAddress remains the registered address of the Elector, with the ballot address fields used for the Proxy.
+                For approved Postal Proxy applications the elector's ballot should be sent to the nominated Proxy's address which will be 1 of the following addresses:
+                * ballotAddress
+                * ballotOverseasPostalAddress
+                * ballotBfpoPostalAddress
+
+                When populated, the following fields are now associated with the Proxy, and not the Elector.
+                * email
+                * phone
+                * signature
+                * signatureWaived
+                * signatureWaivedReason
+              required:
+                - fn
+                - ln
+              properties:
+                fn:
+                  type: string
+                  minLength: 1
+                  maxLength: 35
+                  description: First name of the postal proxy
+                mn:
+                  type: string
+                  maxLength: 100
+                  description: |
+                    Middle names (optional) of the postal proxy
+                ln:
+                  type: string
+                  minLength: 1
+                  maxLength: 35
+                  description: Last name of the postal proxy
+                dob:
+                  type: string
+                  format: date
+                  description: Date of birth in ISO8601 format of the postal proxy. Will be present on all approved applications but may not be provided on rejected ones.
             ballotAddress:
               $ref: '#/components/schemas/Address'
             ballotOverseasPostalAddress:
               $ref: '#/components/schemas/OverseasAddress'
             ballotBfpoPostalAddress:
-              $ref: '#/components/schemas/BfpoAddress'                
+              $ref: '#/components/schemas/BfpoAddress'
             ballotproperty:
               type: string
               maxLength: 255
@@ -612,7 +657,7 @@ components:
             applicationStatus:
               $ref: '#/components/schemas/ApplicationStatus'
             rejectedReasons:
-              $ref: '#/components/schemas/RejectedReasons'              
+              $ref: '#/components/schemas/RejectedReasons'
             emsElectorId:
               type: string
               maxLength: 255
@@ -637,39 +682,39 @@ components:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by registeredAddress              
+              description: Replaced by registeredAddress
             regstreet:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by registeredAddress              
+              description: Replaced by registeredAddress
             reglocality:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by registeredAddress              
+              description: Replaced by registeredAddress
             regtown:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by registeredAddress              
+              description: Replaced by registeredAddress
             regarea:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by registeredAddress              
+              description: Replaced by registeredAddress
             regpostcode:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by registeredAddress              
+              description: Replaced by registeredAddress
             reguprn:
               type: string
               deprecated: true
-              description: Replaced by registeredAddress         
+              description: Replaced by registeredAddress
             registeredAddress:
               $ref: '#/components/schemas/Address'
-         
+
             phone:
               type: string
               maxLength: 50
@@ -699,7 +744,7 @@ components:
               description: |
                 (optional) the family relationship (if any) of the chosen proxy. The question to users is “What is your proxy’s relationship to you?”
             proxyAddress:
-              $ref: '#/components/schemas/Address'                
+              $ref: '#/components/schemas/Address'
             proxyproperty:
               type: string
               maxLength: 255
@@ -710,28 +755,28 @@ components:
               minLength: 1
               maxLength: 255
               deprecated: true
-              description: Replaced by proxyAddress              
+              description: Replaced by proxyAddress
             proxylocality:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by proxyAddress              
+              description: Replaced by proxyAddress
             proxytown:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by proxyAddress              
+              description: Replaced by proxyAddress
             proxyarea:
               type: string
               maxLength: 255
               deprecated: true
-              description: Replaced by proxyAddress              
+              description: Replaced by proxyAddress
             proxypostcode:
               type: string
               minLength: 1
               maxLength: 10
               deprecated: true
-              description: Replaced by proxyAddress              
+              description: Replaced by proxyAddress
             proxyuprn:
               type: string
               deprecated: true
@@ -761,7 +806,7 @@ components:
                 Where an Elector has been granted a signature waiver. If 'true', then no signature will be provided and a signatureWaivedReason will be supplied.
             signatureWaivedReason:
               type: string
-              maxLength: 250
+              maxLength: 500
               default: false
               description: |
                 Where an Elector has been granted a signature waiver, this field will contain a description of the reason for the waiver.
@@ -821,12 +866,55 @@ components:
       properties:
         notes:
           type: string
+          description: Field for EROs to provide additional notes and should be included in comms to the Elector if present.
           maxLength: 4000
         reasons:
           type: array
+          description: Original structure to send reasons to electors but doesn't satisfy
+          deprecated: true
           items:
             type: string
             maxLength: 100
+        reasonList:
+          type: array
+          description: The list of reasons the ERO rejected the application.
+          items:
+            $ref: '#/components/schemas/RejectedReasonItem'
+    RejectedReasonItem:
+      title: Rejected Reason Item
+      description: |
+        Contains electors friendly text and ERO's prefefence if the reason should be included in comms.
+      type: object
+      properties:
+        electorReason:
+          description: Elector friendly reason text. This text is curated and managed within EROP.
+          type: string
+          maxLength: 100
+        type:
+          type: string
+          description: | 
+            A static value that can be used by EMSs to add additional business logic if needed.
+            The current values are below but may change overtime, hence this is not an enforced restricted list / enum.
+            Should EROP add a new 'type' or revise one, we would not want EMSs to require a deployment.
+            As such these values should not be used for business logic in processing applications, but could be used for aggregations of rejection reasons across applications.
+            * identity-not-confirmed
+            * signature-is-not-acceptable
+            * fraudulent-application (will be passed with includeInElectorComms:false)
+            * not-registered-to-vote
+            * not-eligible-for-reserved-polls
+            * dob-not-provided
+            * incomplete-application
+            * proxy-not-registered-to-vote
+            * proxy-limits
+            * other (will be passed with includeInElectorComms:false)
+          maxLength: 50
+        includeInComms:
+          type: boolean
+          description: |
+            Indicates whether this reason should be included in comms to the Elector and this field is sufficient alone - EMS implementations do not need to consider the type as well.
+            EROP will automatically ensure this is false for any reason that should never be included in comms.
+            EROP may provide EROs flexibility to select which reasons they would like be sent to the elector.
+          default: true
     ApplicationLanguage:
       title: Application Language
       description: Enum indicating “en” or “cy” according to which language the applicant used
@@ -875,7 +963,7 @@ components:
           pattern: '^\d{1,12}$'
       required:
         - street
-        - postcode        
+        - postcode
     OverseasAddress:
       title: OverseasAddress
       type: object
@@ -901,7 +989,7 @@ components:
           maxLength: 255
       required:
         - addressLine1
-        - country        
+        - country
     BfpoAddress:
       title: BfpoAddress
       type: object
