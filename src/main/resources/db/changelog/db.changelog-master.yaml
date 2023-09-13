@@ -21,3 +21,7 @@ databaseChangeLog:
       file: /db/changelog/create/0010_EIP1-6671_add_rejection_reasons.xml
   - include:
       file: /db/changelog/create/0011_EIP1-6891_modify_rejection_reasons.xml
+  - include:
+      file: /db/changelog/create/0012_EIP1-6836_modify_remaining_rejection_reasons.xml
+  - include:
+      file: /db/changelog/create/0013_EIP1-7400_add_index_on_date_created.xml

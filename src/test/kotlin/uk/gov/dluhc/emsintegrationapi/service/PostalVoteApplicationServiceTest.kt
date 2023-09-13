@@ -121,16 +121,18 @@ internal class PostalVoteApplicationServiceTest {
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
                 buildPostalVoteApplication(applicationId = it.toString())
             }.toList()
+        val savedApplicationIds = savedApplications.map { it.applicationId }.toList()
         val mockPostalVotes =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj { mock<PostalVote>() }.toList()
 
         given(
-            postalVoteApplicationRepository.findByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+            postalVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 GSS_CODES,
                 RecordStatus.RECEIVED,
                 Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
             )
-        ).willReturn(savedApplications)
+        ).willReturn(savedApplicationIds)
+        given { postalVoteApplicationRepository.findByApplicationIdIn(savedApplicationIds) }.willReturn(savedApplications)
         given { postalVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockPostalVotes)
 
         val postalVoteApplications =

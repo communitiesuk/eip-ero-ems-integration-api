@@ -5,7 +5,7 @@ import org.owasp.dependencycheck.reporting.ReportGenerator.Format.HTML
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
-    id("org.springframework.boot") version "2.7.12"
+    id("org.springframework.boot") version "2.7.14"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version "1.8.22"
     kotlin("kapt") version "1.8.22"
@@ -25,7 +25,7 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 ext["snakeyaml.version"] = "1.33"
 extra["springCloudVersion"] = "2.4.2"
-ext["spring-security.version"] = "5.8.4"
+ext["spring-security.version"] = "5.8.5"
 extra["awsSdkVersion"] = "2.18.9"
 extra["cucumberVersion"] = "7.11.1"
 extra["junitJupiterVersion"] = "5.8.2"
@@ -136,7 +136,7 @@ dependencies {
     liquibaseRuntime("org.springframework.boot:spring-boot")
     liquibaseRuntime("info.picocli:picocli:4.6.1")
     liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-    liquibaseRuntime("org.yaml:snakeyaml:1.8")
+    liquibaseRuntime("org.yaml:snakeyaml:1.33")
 }
 
 dependencyManagement {
