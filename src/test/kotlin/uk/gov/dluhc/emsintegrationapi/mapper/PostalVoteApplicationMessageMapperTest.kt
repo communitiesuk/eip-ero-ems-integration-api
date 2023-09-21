@@ -10,6 +10,7 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMess
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalRejectedReasonsDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsMessageDto
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPrimaryElectorDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateMappedObject
 
 internal class PostalVoteApplicationMessageMapperTest {
@@ -18,10 +19,12 @@ internal class PostalVoteApplicationMessageMapperTest {
     private val applicantDetailsMapper = ApplicantDetailsMapper(addressMapper)
     private val postalVoteDetailsMapper = PostalVoteDetailsMapper(addressMapper)
     private val applicationDetailsMapper = ApplicationDetailsMapper(instantMapper)
+    private val primaryElectorDetailsMapper = PrimaryElectorDetailsMapper(addressMapper)
     private val postalVoteApplicationMessageMapper = PostalVoteApplicationMessageMapper(
         applicantDetailsMapper = applicantDetailsMapper,
         postalVoteDetailsMapper = postalVoteDetailsMapper,
-        applicationDetailsMapper = applicationDetailsMapper
+        applicationDetailsMapper = applicationDetailsMapper,
+        primaryElectorDetailsMapper = primaryElectorDetailsMapper,
     )
 
     @Nested
@@ -30,7 +33,7 @@ internal class PostalVoteApplicationMessageMapperTest {
         fun `should convert postal vote application message to entity`() {
 
             validateMappedObject(
-                ::buildPostalVoteApplicationMessage,
+                { buildPostalVoteApplicationMessage(primaryElectorDetails = buildPrimaryElectorDetailsMessageDto()) },
                 postalVoteApplicationMessageMapper::mapToEntity,
                 *APPLICATION_FIELDS_TO_IGNORE
             ) {
@@ -38,6 +41,7 @@ internal class PostalVoteApplicationMessageMapperTest {
                 assertThat(it.output.postalVoteDetails!!.ballotAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.postalVoteDetails!!.ballotOverseasAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.postalVoteDetails!!.ballotBfpoAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
+                assertThat(it.output.primaryElectorDetails!!.address.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.englishRejectionNotes).isNotNull()
                 assertThat(it.output.englishRejectionReasons).isNotEmpty()
                 assertThat(it.output.welshRejectionNotes).isNotNull()

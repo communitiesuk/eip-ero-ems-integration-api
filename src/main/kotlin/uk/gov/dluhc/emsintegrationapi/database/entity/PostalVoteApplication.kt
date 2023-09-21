@@ -1,9 +1,12 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
+import org.hibernate.annotations.NotFound
+import org.hibernate.annotations.NotFoundAction
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
+import javax.persistence.CascadeType
 import javax.persistence.CollectionTable
 import javax.persistence.Column
 import javax.persistence.ElementCollection
@@ -12,8 +15,10 @@ import javax.persistence.Entity
 import javax.persistence.EntityListeners
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.OneToOne
 import javax.persistence.Version
 import javax.validation.Valid
 
@@ -74,6 +79,15 @@ class PostalVoteApplication(
     )
     @Column(name = "rejection_reasons", length = 100, nullable = false)
     var welshRejectionReasons: Set<String>? = mutableSetOf(),
+
+    @OneToOne(
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "application_id")
+    @NotFound(action = NotFoundAction.IGNORE)
+    var primaryElectorDetails: PostalVoteApplicationPrimaryElectorDetails? = null,
 
     @Version
     var version: Long? = null,

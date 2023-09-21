@@ -11,7 +11,8 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMess
 class PostalVoteApplicationMessageMapper(
     private val applicantDetailsMapper: ApplicantDetailsMapper,
     private val applicationDetailsMapper: ApplicationDetailsMapper,
-    private val postalVoteDetailsMapper: PostalVoteDetailsMapper
+    private val postalVoteDetailsMapper: PostalVoteDetailsMapper,
+    private val primaryElectorDetailsMapper: PrimaryElectorDetailsMapper,
 ) {
 
     fun mapToEntity(postalVoteApplicationMessage: PostalVoteApplicationMessage) =
@@ -24,6 +25,10 @@ class PostalVoteApplicationMessageMapper(
                     SourceSystem.POSTAL
                 ),
                 postalVoteDetails = postalVoteDetailsMapper.mapToPostVoteDetailsEntity(it.postalVoteDetails),
+                primaryElectorDetails = primaryElectorDetailsMapper.mapToEntity(
+                    it.applicationDetails.id,
+                    it.primaryElectorDetails,
+                ),
                 createdBy = SourceSystem.POSTAL,
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED,
