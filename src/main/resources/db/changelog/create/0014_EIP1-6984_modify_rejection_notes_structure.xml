@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="tomos.slater@softwire.com" id="0014_EIP1-6984_modify_postal_rejection_notes_structure" context="ddl">
+        <addColumn tableName="postal_vote_application_english_rejection_reasons">
+            <column name="elector_reason" type="varchar(100)" afterColumn="rejection_reasons"/>
+            <column name="include_in_comms" type="boolean" afterColumn="elector_reason"/>
+        </addColumn>
+
+        <addColumn tableName="postal_vote_application_welsh_rejection_reasons">
+            <column name="elector_reason" type="varchar(100)" afterColumn="rejection_reasons"/>
+            <column name="include_in_comms" type="boolean" afterColumn="elector_reason"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="postal_vote_application_english_rejection_reasons" columnName="elector_reason"/>
+            <dropColumn tableName="postal_vote_application_english_rejection_reasons" columnName="include_in_comms"/>
+            <dropColumn tableName="postal_vote_application_welsh_rejection_reasons" columnName="elector_reason"/>
+            <dropColumn tableName="postal_vote_application_welsh_rejection_reasons" columnName="include_in_comms"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="tomos.slater@softwire.com" id="0014_EIP1-6984_modify_proxy_rejection_notes_structure" context="ddl">
+        <addColumn tableName="proxy_vote_application_english_rejection_reasons">
+            <column name="elector_reason" type="varchar(100)" afterColumn="rejection_reasons"/>
+            <column name="include_in_comms" type="boolean" afterColumn="elector_reason"/>
+        </addColumn>
+
+        <addColumn tableName="proxy_vote_application_welsh_rejection_reasons">
+            <column name="elector_reason" type="varchar(100)" afterColumn="rejection_reasons"/>
+            <column name="include_in_comms" type="boolean" afterColumn="elector_reason"/>
+        </addColumn>
+
+        <rollback>
+            <dropColumn tableName="proxy_vote_application_english_rejection_reasons" columnName="elector_reason"/>
+            <dropColumn tableName="proxy_vote_application_english_rejection_reasons" columnName="include_in_comms"/>
+            <dropColumn tableName="proxy_vote_application_welsh_rejection_reasons" columnName="elector_reason"/>
+            <dropColumn tableName="proxy_vote_application_welsh_rejection_reasons" columnName="include_in_comms"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

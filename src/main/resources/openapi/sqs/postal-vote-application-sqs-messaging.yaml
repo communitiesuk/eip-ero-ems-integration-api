@@ -140,6 +140,10 @@ components:
               $ref: './Models/RejectedReason.yaml'
             welshReason:
               $ref: './Models/RejectedReason.yaml'
+        rejectedReason:
+          title: Rejected Reason
+          description: |
+            
 
     PostalVoteApplicationMessage:
       title: PostalVoteApplicationMessage

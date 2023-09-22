@@ -11,6 +11,7 @@ import uk.gov.dluhc.emsintegrationapi.models.OverseasAddress
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteDetail
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReason
+import uk.gov.dluhc.emsintegrationapi.models.RejectedReasonItem
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReasons
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
 import uk.gov.dluhc.emsintegrationapi.database.entity.BfpoAddress as BfpoPostalAddressEntity
@@ -108,11 +109,13 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
             RejectedReasons(
                 englishReason = RejectedReason(
                     notes = englishRejectionNotes,
-                    reasons = englishRejectionReasons?.toList()
+                    reasons = englishRejectionReasons?.toList(),
+                    reasonList = englishRejectedReasonItems?.toList()?.map { item -> RejectedReasonItem(item.electorReason, item.type, item.includeInComms) }
                 ),
                 welshReason = RejectedReason(
                     notes = welshRejectionNotes,
-                    reasons = welshRejectionReasons?.toList()
+                    reasons = welshRejectionReasons?.toList(),
+                    reasonList = welshRejectedReasonItems?.toList()?.map { item -> RejectedReasonItem(item.electorReason, item.type, item.includeInComms) }
                 )
             )
         }
