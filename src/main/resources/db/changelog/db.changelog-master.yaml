@@ -26,4 +26,4 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0013_EIP1-7400_add_index_on_date_created.xml
   - include:
-      file: /db/changelog/create/0014_EIP1-7315_create_postal_vote_application_primary_elector_details_tables.xml
+      file: /db/changelog/create/0014_EIP1-6984_modify_rejection_notes_structure.xml

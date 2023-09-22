@@ -70,6 +70,13 @@ class PostalVoteApplication(
     @Column(name = "rejection_reasons", length = 100, nullable = false)
     var englishRejectionReasons: Set<String>? = mutableSetOf(),
 
+    @ElementCollection
+    @CollectionTable(
+        name = "postal_vote_application_english_rejection_reasons",
+        joinColumns = [JoinColumn(name = "application_id")]
+    )
+    var englishRejectedReasonItems: Set<RejectedReasonItem>? = mutableSetOf(),
+
     var welshRejectionNotes: String? = null,
 
     @ElementCollection
@@ -88,6 +95,13 @@ class PostalVoteApplication(
     @JoinColumn(name = "application_id")
     @NotFound(action = NotFoundAction.IGNORE)
     var primaryElectorDetails: PostalVoteApplicationPrimaryElectorDetails? = null,
+
+    @ElementCollection
+    @CollectionTable(
+        name = "postal_vote_application_welsh_rejection_reasons",
+        joinColumns = [JoinColumn(name = "application_id")]
+    )
+    var welshRejectedReasonItems: Set<RejectedReasonItem>? = mutableSetOf(),
 
     @Version
     var version: Long? = null,

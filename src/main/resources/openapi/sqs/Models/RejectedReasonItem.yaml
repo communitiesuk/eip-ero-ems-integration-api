@@ -1,0 +1,35 @@
+title: RejectedReasonItem
+description: Contains elector friendly text and ERO's preference if the reason should be included in comms.
+type: object
+version: 1.0.0
+properties:
+  electorReason:
+    description: Elector friendly reason text. This text is curate and maged within EROP
+    type: string
+    maxLength: 100
+  type:
+    type: string
+    description: |
+      A static value that can be used by EMSs to add additional business logic if needed.
+      The current values are below but may change overtime, hence this is not an enforced restricted list / enum.
+      Should EROP add a new 'type' or revise one, we would not want EMSs to require a deployment.
+      As such these values should not be used for business logic in processing applications, but could be used for aggregations of rejection reasons across applications.
+      * identity-not-confirmed
+      * signature-is-not-acceptable
+      * fraudulent-application (will be passed with includeInComms:false)
+      * not-registered-to-vote
+      * not-eligible-for-reserved-polls
+      * dob-not-provided
+      * incomplete-application
+      * proxy-limits
+      * other (will be passed with includeInComms: false)
+    maxLength: 100
+  includeInComms:
+    type: boolean
+    description: |
+      Indicates whether this reason should be incuded in comms to the Elector and this field is sufficient alone - EMS implementations do not need to consider the type as well.
+      EROP will automatically ensure this is false for any reason that should never be included in comms.
+      EROP may provide ERO's flexibility to select which reasons they would like to be sent to the elector.
+    default: true
+
+
