@@ -10,6 +10,7 @@ import uk.gov.dluhc.emsintegrationapi.models.BfpoAddress
 import uk.gov.dluhc.emsintegrationapi.models.OverseasAddress
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteDetail
+import uk.gov.dluhc.emsintegrationapi.models.PostalVoteDetailPostalProxy
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReason
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReasons
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
@@ -24,23 +25,48 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
     fun mapFromEntity(postalVoteApplication: PostalVoteApplication): PostalVote {
         return with(postalVoteApplication) {
             val registeredAddress = applicantDetails.registeredAddress
+            val isPostalProxyApplication = primaryElectorDetails != null
+
+            val ballotAddress =
+                if (isPostalProxyApplication &&
+                    postalVoteDetails?.ballotAddress == null &&
+                    postalVoteDetails?.ballotBfpoAddress == null &&
+                    postalVoteDetails?.ballotOverseasAddress == null
+                )
+                    applicantDetails.registeredAddress
+                else
+                    postalVoteDetails?.ballotAddress
+
+            val postalProxy =
+                if (isPostalProxyApplication)
+                    PostalVoteDetailPostalProxy(
+                        fn = applicantDetails.firstName,
+                        mn = applicantDetails.middleNames,
+                        ln = applicantDetails.surname,
+                        dob = applicantDetails.dob,
+                    )
+                else
+                    null
             PostalVote(
                 detail = PostalVoteDetail(
                     refNum = applicantDetails.referenceNumber,
                     ip = applicantDetails.ipAddress,
                     lang = ApplicationLanguage.valueOf(applicantDetails.language.name),
                     emsElectorId = applicantDetails.emsElectorId,
-                    fn = applicantDetails.firstName,
-                    ln = applicantDetails.surname,
-                    mn = applicantDetails.middleNames,
-                    dob = applicantDetails.dob,
+                    fn = if (isPostalProxyApplication) primaryElectorDetails!!.firstName else applicantDetails.firstName,
+                    ln = if (isPostalProxyApplication) primaryElectorDetails!!.surname else applicantDetails.surname,
+                    mn = if (isPostalProxyApplication) primaryElectorDetails!!.middleNames else applicantDetails.middleNames,
+                    // We don't have the primary electors DoB for postal proxy applications
+                    dob = if (isPostalProxyApplication) null else applicantDetails.dob,
                     phone = applicantDetails.phone,
                     email = applicantDetails.email,
                     signature = Base64.decodeBase64(applicationDetails.signatureBase64),
                     regstreet = registeredAddress.street,
                     regpostcode = registeredAddress.postcode,
-                    registeredAddress = mapFromAddressEntity(applicantDetails.registeredAddress),
-                    ballotAddress = postalVoteDetails?.ballotAddress?.let { mapFromAddressEntity(it) },
+                    registeredAddress = mapFromAddressEntity(
+                        if (isPostalProxyApplication) primaryElectorDetails!!.address else applicantDetails.registeredAddress
+                    ),
+                    ballotAddress = ballotAddress?.let { mapFromAddressEntity(it) },
                     ballotBfpoPostalAddress = postalVoteDetails?.ballotBfpoAddress?.let { mapFromBfpoAddressEntity(it) },
                     ballotOverseasPostalAddress = postalVoteDetails?.ballotOverseasAddress?.let { mapFromOverseasAddressEntity(it) },
                     postalVoteUntilFurtherNotice = postalVoteDetails?.voteUntilFurtherNotice,
@@ -51,7 +77,8 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                     applicationStatus = ApplicationStatus.valueOf(applicationDetails.applicationStatus.name),
                     signatureWaived = applicationDetails.signatureWaived,
                     signatureWaivedReason = applicationDetails.signatureWaivedReason,
-                    rejectedReasons = mapFromRejectedReasonEntity(this)
+                    rejectedReasons = mapFromRejectedReasonEntity(this),
+                    postalProxy = postalProxy,
                 ),
                 id = applicationId,
                 createdAt = instantMapper.toOffsetDateTime(applicationDetails.createdAt),

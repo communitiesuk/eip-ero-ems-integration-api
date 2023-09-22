@@ -8,6 +8,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicantDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.BfpoAddress
 import uk.gov.dluhc.emsintegrationapi.database.entity.OverseasAddress
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
+import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplicationPrimaryElectorDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteDetails
 import uk.gov.dluhc.emsintegrationapi.mapper.InstantMapper
 import uk.gov.dluhc.emsintegrationapi.models.PostalVote
@@ -56,8 +57,10 @@ class PostalVoteAssert(actual: PostalVote) :
             "ballotAddressReason"
         )
 
-        private val APPLICANT_FIELDS =
+        private val APPLICANT_FIELDS_STANDARD =
             arrayOf("refNum", "ip", "emsElectorId", "fn", "ln", "mn", "dob", "phone", "email")
+        private val APPLICANT_FIELDS_POSTAL_PROXY =
+            arrayOf("refNum", "ip", "emsElectorId", "postalProxy.fn", "postalProxy.ln", "postalProxy.mn", "postalProxy.dob", "phone", "email")
         private val APPLICANT_ENTITY_FIELDS = arrayOf(
             "referenceNumber",
             "ipAddress",
@@ -69,6 +72,9 @@ class PostalVoteAssert(actual: PostalVote) :
             "phone",
             "email"
         )
+
+        private val PRIMARY_ELECTOR_FIELDS = arrayOf("fn", "ln", "mn")
+        private val PRIMARY_ELECTOR_FIELDS_ENTITY = arrayOf("firstName", "surname", "middleNames")
 
         private val APPLICATION_DETAILS_FIELDS_WITHOUT_DATE_FIELDS =
             arrayOf("gssCode", "source", "authorisingStaffId")
@@ -83,9 +89,10 @@ class PostalVoteAssert(actual: PostalVote) :
             hasApplicationDetails(this)
             hasCorrectAddressFields(
                 actual.detail.registeredAddress,
-                applicantDetails.registeredAddress
+                if (primaryElectorDetails == null) applicantDetails.registeredAddress else primaryElectorDetails!!.address,
             )
-            hasApplicantDetails(applicantDetails)
+            hasApplicantDetails(applicantDetails, isPostalProxy = primaryElectorDetails != null)
+            hasPrimaryElectorDetails(primaryElectorDetails)
             hasRejectedReasons(this)
         }
     }
@@ -123,9 +130,25 @@ class PostalVoteAssert(actual: PostalVote) :
             }
         }
 
-    private fun hasApplicantDetails(applicantDetails: ApplicantDetails) = validate {
-        haveSameValues(actual.detail, APPLICANT_FIELDS, applicantDetails, APPLICANT_ENTITY_FIELDS)
+    private fun hasApplicantDetails(applicantDetails: ApplicantDetails, isPostalProxy: Boolean) = validate {
+        haveSameValues(
+            actual.detail,
+            if (isPostalProxy) APPLICANT_FIELDS_POSTAL_PROXY else APPLICANT_FIELDS_STANDARD,
+            applicantDetails,
+            APPLICANT_ENTITY_FIELDS,
+        )
         Assertions.assertThat(actual.detail.lang.name).isEqualTo(applicantDetails.language.name)
+    }
+
+    private fun hasPrimaryElectorDetails(primaryElectorDetails: PostalVoteApplicationPrimaryElectorDetails?) = validate {
+        if (primaryElectorDetails != null) {
+            haveSameValues(
+                actual.detail,
+                PRIMARY_ELECTOR_FIELDS,
+                primaryElectorDetails,
+                PRIMARY_ELECTOR_FIELDS_ENTITY,
+            )
+        }
     }
 
     fun hasPostalVoteDetails(postalVoteDetails: PostalVoteDetails?) = validate {
@@ -197,6 +220,8 @@ class PostalVoteAssert(actual: PostalVote) :
     }
 
     fun hasNoEmsElectorId() = validate { Assertions.assertThat(actual.detail.emsElectorId).isNull() }
+
+    fun hasNoPostalProxy() = validate { Assertions.assertThat(actual.detail.postalProxy).isNull() }
 
     private fun hasCorrectAddressFields(addressModel: AddressModel, addressEntity: Address?) =
         validate { haveSameValues(addressModel, ADDRESS_ENTITY_FIELDS, addressEntity) }

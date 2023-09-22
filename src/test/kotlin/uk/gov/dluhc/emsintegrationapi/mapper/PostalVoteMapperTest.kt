@@ -8,6 +8,8 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPrimaryElectorDetailsEntity
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.getRandomAlphaNumeric
 
 internal class PostalVoteMapperTest {
 
@@ -15,8 +17,12 @@ internal class PostalVoteMapperTest {
 
     @Test
     fun `should map from a postal vote application entity with all field populated`() {
-        val postalVoteApplication =
-            buildPostalVoteApplication(applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING))
+        val postalVoteApplicationId = getRandomAlphaNumeric(24)
+        val postalVoteApplication = buildPostalVoteApplication(
+            applicationId = postalVoteApplicationId,
+            applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING),
+            primaryElectorDetails = buildPrimaryElectorDetailsEntity(postalVoteApplicationId),
+        )
         val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
         PostalVoteAssert.assertThat(postalVote).hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasPostalVoteDetails(postalVoteApplication.postalVoteDetails)
@@ -89,5 +95,12 @@ internal class PostalVoteMapperTest {
         PostalVoteAssert.assertThat(postalVote)
             .hasCorrectFieldsFromPostalApplication(postalVoteApplication)
             .hasNoEmsElectorId()
+    }
+
+    @Test
+    fun `should map to null postalProxy if primaryElectorDetails is null`() {
+        val postalVoteApplication = buildPostalVoteApplication(primaryElectorDetails = null)
+        val postalVote = postalVoteMapper.mapFromEntity(postalVoteApplication)
+        PostalVoteAssert.assertThat(postalVote).hasNoPostalProxy()
     }
 }

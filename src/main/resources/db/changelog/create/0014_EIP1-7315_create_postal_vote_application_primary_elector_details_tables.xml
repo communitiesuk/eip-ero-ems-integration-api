@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="olly.larkin@softwire.com" id="0014_EIP1-7315_create_postal_vote_application_primary_elector_details_tables" context="ddl">
+        <createTable tableName="postal_vote_application_primary_elector_details">
+            <column name="application_id" type="char(24)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="address_id" type="char(36)">
+                <constraints
+                    nullable="false"
+                    foreignKeyName="fk_postal_vote_application_primary_elector_details_address"
+                    references="address(id)"
+                />
+            </column>
+            <column name="first_name" type="varchar(35)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_names" type="varchar(100)"/>
+            <column name="surname" type="varchar(35)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="postal_vote_application_primary_elector_details"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
