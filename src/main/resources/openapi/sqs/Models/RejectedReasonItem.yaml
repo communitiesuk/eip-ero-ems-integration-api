@@ -8,12 +8,8 @@ properties:
     type: string
     maxLength: 100
   type:
-    type: string
     description: |
-      A static value that can be used by EMSs to add additional business logic if needed.
-      The current values are below but may change overtime, hence this is not an enforced restricted list / enum.
-      Should EROP add a new 'type' or revise one, we would not want EMSs to require a deployment.
-      As such these values should not be used for business logic in processing applications, but could be used for aggregations of rejection reasons across applications.
+      An enum value that can be used by EMSs to add additional business logic if needed.
       * identity-not-confirmed
       * signature-is-not-acceptable
       * fraudulent-application (will be passed with includeInComms:false)
@@ -22,8 +18,21 @@ properties:
       * dob-not-provided
       * incomplete-application
       * proxy-limits
-      * other (will be passed with includeInComms: false)
-    maxLength: 100
+      * proxy-not-registered-to-vote
+      * other-reject-reason (will be passed with includeInComms: false)
+    type: string
+    enum:
+      - identity-not-confirmed
+      - signature-is-not-acceptable
+      - fraudulent-application
+      - not-registered-to-vote
+      - not-eligible-for-reserved-polls
+      - dob-not-provided
+      - incomplete-application
+      - proxy-not-registered-to-vote
+      - proxy-limits
+      - other-reject-reason
+    maxLength: 50
   includeInComms:
     type: boolean
     description: |

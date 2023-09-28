@@ -8,7 +8,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 import javax.persistence.CascadeType
 import javax.persistence.CollectionTable
-import javax.persistence.Column
 import javax.persistence.ElementCollection
 import javax.persistence.Embedded
 import javax.persistence.Entity
@@ -61,14 +60,6 @@ class PostalVoteApplication(
     var status: RecordStatus,
 
     var englishRejectionNotes: String? = null,
-
-    @ElementCollection
-    @CollectionTable(
-        name = "postal_vote_application_english_rejection_reasons",
-        joinColumns = [JoinColumn(name = "application_id")]
-    )
-    @Column(name = "rejection_reasons", length = 100, nullable = false)
-    var englishRejectionReasons: Set<String>? = mutableSetOf(),
 
     @ElementCollection
     @CollectionTable(
