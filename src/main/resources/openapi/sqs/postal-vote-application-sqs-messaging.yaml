@@ -136,10 +136,11 @@ components:
             Applications for Welsh language EROs and Welsh Electors may contain reasons in English and/or Welsh.
             Expected to be used by EMSs in elector communications.
           properties:
-            englishReason:
+            turkishReason:
               $ref: './Models/RejectedReason.yaml'
             welshReason:
               $ref: './Models/RejectedReason.yaml'
+
     PostalVoteApplicationMessage:
       title: PostalVoteApplicationMessage
       x-api-owner: EMS

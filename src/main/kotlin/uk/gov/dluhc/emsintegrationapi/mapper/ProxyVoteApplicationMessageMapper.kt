@@ -28,9 +28,7 @@ class ProxyVoteApplicationMessageMapper(
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED,
                 englishRejectionNotes = it.proxyVoteDetails.rejectedReasons?.englishReason?.notes,
-                englishRejectionReasons = it.proxyVoteDetails.rejectedReasons?.englishReason?.reasons?.toSet(),
                 welshRejectionNotes = it.proxyVoteDetails.rejectedReasons?.welshReason?.notes,
-                welshRejectionReasons = it.proxyVoteDetails.rejectedReasons?.welshReason?.reasons?.toSet()
             )
         }
 }

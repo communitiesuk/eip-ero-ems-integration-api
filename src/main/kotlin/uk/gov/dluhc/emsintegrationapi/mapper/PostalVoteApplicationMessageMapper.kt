@@ -28,9 +28,7 @@ class PostalVoteApplicationMessageMapper(
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED,
                 englishRejectionNotes = it.postalVoteDetails?.rejectedReasons?.englishReason?.notes,
-                englishRejectionReasons = it.postalVoteDetails?.rejectedReasons?.englishReason?.reasons?.toSet(),
                 welshRejectionNotes = it.postalVoteDetails?.rejectedReasons?.welshReason?.notes,
-                welshRejectionReasons = it.postalVoteDetails?.rejectedReasons?.welshReason?.reasons?.toSet()
             )
         }
 }
