@@ -39,9 +39,9 @@ internal class PostalVoteApplicationMessageMapperTest {
                 assertThat(it.output.postalVoteDetails!!.ballotOverseasAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.postalVoteDetails!!.ballotBfpoAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.englishRejectionNotes).isNotNull()
-                assertThat(it.output.englishRejectedReasonItems?.map { it.type }).isNotEmpty()
+                assertThat(it.output.englishRejectedReasonItems?.isNotEmpty())
                 assertThat(it.output.welshRejectionNotes).isNotNull()
-                assertThat(it.output.welshRejectedReasonItems?.map { it.type }).isNotEmpty()
+                assertThat(it.output.welshRejectedReasonItems?.isNotEmpty())
             }
         }
 
@@ -80,8 +80,8 @@ internal class PostalVoteApplicationMessageMapperTest {
         val postalVoteApplication: PostalVoteApplication = postalVoteApplicationMessageMapper.mapToEntity(applicationMessage)
         assertThat(postalVoteApplication.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
         assertThat(postalVoteApplication.englishRejectionNotes).isNull()
-        assertThat(postalVoteApplication.englishRejectedReasonItems?.map { it.type }).isNotEmpty()
+        assertThat(postalVoteApplication.englishRejectedReasonItems?.isNotEmpty())
         assertThat(postalVoteApplication.welshRejectionNotes).isNull()
-        assertThat(postalVoteApplication.welshRejectedReasonItems?.map { it.type }).isNull()
+        assertThat(postalVoteApplication.welshRejectedReasonItems).isNull()
     }
 }
