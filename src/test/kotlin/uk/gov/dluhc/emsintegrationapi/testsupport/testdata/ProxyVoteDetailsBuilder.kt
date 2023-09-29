@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.testsupport.testdata
 import org.testcontainers.utility.Base58.randomString
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteDetails
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RejectedReasonItem
 import java.time.LocalDate
 import uk.gov.dluhc.emsintegrationapi.messaging.models.Address as AddressMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteDetails as ProxyVoteDetailsMessageDto
@@ -73,6 +74,6 @@ fun buildProxyRejectedReasonsDto(
     welshNotes: String? = DataFaker.faker.house().furniture(),
     welshReason: Set<String>? = setOf(DataFaker.faker.book().author()),
 ) = RejectedReasonsDto(
-    englishReason = RejectedReasonDto(notes = englishNotes, reasons = englishReason?.toList()),
-    welshReason = RejectedReasonDto(notes = welshNotes, reasons = welshReason?.toList()),
+    englishReason = RejectedReasonDto(notes = englishNotes, reasons = englishReason?.toList(), reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON, false) }),
+    welshReason = RejectedReasonDto(notes = welshNotes, reasons = welshReason?.toList(), reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON, false) }),
 )

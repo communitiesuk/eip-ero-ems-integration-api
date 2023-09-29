@@ -23,9 +23,9 @@ internal class ProxyVoteMapperTest {
             buildProxyVoteApplication(
                 applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING),
                 englishRejectionNotes = "enNotes",
-                englishRejectedReasonItems = setOf(RejectedReasonItem("enReason1", Type.OTHER_REJECT_REASON, true), RejectedReasonItem("enReason2", Type.OTHER_REJECT_REASON, true)),
+                englishRejectedReasonItems = setOf(RejectedReasonItem("enReason1", Type.OTHER_REJECT_REASON, false), RejectedReasonItem("enReason2", Type.OTHER_REJECT_REASON, false)),
                 welshRejectionNotes = "cyNotes",
-                welshRejectedReasonItems = setOf(RejectedReasonItem("cyReason1", Type.OTHER_REJECT_REASON, true), RejectedReasonItem("cyReason2", Type.OTHER_REJECT_REASON, true)),
+                welshRejectedReasonItems = setOf(RejectedReasonItem("cyReason1", Type.OTHER_REJECT_REASON, false), RejectedReasonItem("cyReason2", Type.OTHER_REJECT_REASON, false)),
             )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote)
