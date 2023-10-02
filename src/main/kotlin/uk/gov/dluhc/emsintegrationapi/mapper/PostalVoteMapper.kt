@@ -149,9 +149,9 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
         }
     }
 
-    fun mapRejectedReasonItemFromEntity(rejectedReasonItem: uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem) : RejectedReasonItem {
+    fun mapRejectedReasonItemFromEntity(rejectedReasonItem: uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem): RejectedReasonItem {
         return with(rejectedReasonItem) {
-            RejectedReasonItem (
+            RejectedReasonItem(
                 electorReason = electorReason,
                 type = when (type) {
                     Type.IDENTITY_NOT_CONFIRMED -> RejectedReasonItem.Type.IDENTITY_MINUS_NOT_MINUS_CONFIRMED
@@ -164,7 +164,6 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                     Type.PROXY_LIMITS -> RejectedReasonItem.Type.PROXY_MINUS_LIMITS
                     Type.PROXY_NOT_REGISTERED_TO_VOTE -> RejectedReasonItem.Type.PROXY_MINUS_NOT_MINUS_REGISTERED_MINUS_TO_MINUS_VOTE
                     Type.OTHER_REJECT_REASON -> RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON
-
                 },
                 includeInComms = includeInComms
             )
