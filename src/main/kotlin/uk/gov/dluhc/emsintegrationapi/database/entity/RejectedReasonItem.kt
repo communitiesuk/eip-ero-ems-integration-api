@@ -13,7 +13,6 @@ class RejectedReasonItem(
     val electorReason: String?,
 
     @Enumerated(EnumType.STRING)
-    @field:Size(max = 50)
     @Column(name = "rejection_reasons", length = 100)
     val type: Type,
 

@@ -32,7 +32,6 @@ properties:
       - proxy-not-registered-to-vote
       - proxy-limits
       - other-reject-reason
-    maxLength: 50
   includeInComms:
     type: boolean
     description: |
