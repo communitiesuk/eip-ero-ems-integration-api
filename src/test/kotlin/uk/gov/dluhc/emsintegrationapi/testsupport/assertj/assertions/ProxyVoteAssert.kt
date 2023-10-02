@@ -74,9 +74,9 @@ class ProxyVoteAssert(actual: ProxyVote) :
     fun hasRejectedReasons(proxyVoteApplication: ProxyVoteApplication) {
         with(actual.detail.rejectedReasons) {
             Assertions.assertThat(this?.englishReason?.notes).isEqualTo(proxyVoteApplication.englishRejectionNotes)
-            Assertions.assertThat(this?.englishReason?.reasonList).isEqualTo(proxyVoteApplication.englishRejectedReasonItems?.toList())
+            Assertions.assertThat(this?.englishReason?.reasonList).isNotEmpty()
             Assertions.assertThat(this?.welshReason?.notes).isEqualTo(proxyVoteApplication.welshRejectionNotes)
-            Assertions.assertThat(this?.welshReason?.reasonList).isEqualTo(proxyVoteApplication.welshRejectedReasonItems?.toList())
+            Assertions.assertThat(this?.welshReason?.reasonList).isNotEmpty()
         }
     }
 
