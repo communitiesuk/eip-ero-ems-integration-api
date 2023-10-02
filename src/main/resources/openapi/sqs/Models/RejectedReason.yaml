@@ -6,11 +6,6 @@
     notes:
       type: string
       maxLength: 4000
-    reasons:
-      type: array
-      items:
-        type: string
-        maxLength: 100
     reasonList:
       type: array
       description: The list of reasons the ERO rejected the application
