@@ -74,6 +74,6 @@ fun buildProxyRejectedReasonsDto(
     welshNotes: String? = DataFaker.faker.house().furniture(),
     welshReason: Set<String>? = setOf(DataFaker.faker.book().author()),
 ) = RejectedReasonsDto(
-    englishReason = RejectedReasonDto(notes = englishNotes, reasons = englishReason?.toList(), reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON, false) }),
-    welshReason = RejectedReasonDto(notes = welshNotes, reasons = welshReason?.toList(), reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON, false) }),
+    englishReason = RejectedReasonDto(notes = englishNotes, reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON, false) }),
+    welshReason = RejectedReasonDto(notes = welshNotes, reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON, false) }),
 )
