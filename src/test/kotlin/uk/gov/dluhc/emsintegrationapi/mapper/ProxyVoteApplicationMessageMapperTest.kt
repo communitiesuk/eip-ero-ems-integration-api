@@ -62,6 +62,6 @@ internal class ProxyVoteApplicationMessageMapperTest {
         assertThat(proxyVoteApplication.englishRejectionNotes).isNull()
         assertThat(proxyVoteApplication.englishRejectedReasonItems?.isNotEmpty())
         assertThat(proxyVoteApplication.welshRejectionNotes).isNull()
-        assertThat(proxyVoteApplication.welshRejectedReasonItems).isNull()
+        assertThat(proxyVoteApplication.welshRejectedReasonItems).isEmpty()
     }
 }
