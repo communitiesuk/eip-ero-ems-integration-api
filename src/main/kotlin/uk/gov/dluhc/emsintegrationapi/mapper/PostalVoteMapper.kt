@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 import org.apache.commons.codec.binary.Base64
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
+import uk.gov.dluhc.emsintegrationapi.database.entity.Type
 import uk.gov.dluhc.emsintegrationapi.models.Address
 import uk.gov.dluhc.emsintegrationapi.models.ApplicationLanguage
 import uk.gov.dluhc.emsintegrationapi.models.ApplicationStatus
@@ -137,13 +138,35 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                 englishReason = RejectedReason(
                     notes = englishRejectionNotes,
                     reasons = englishRejectedReasonItems?.toList()?.map { it.type.value },
-                    reasonList = englishRejectedReasonItems?.toList()?.map { item -> RejectedReasonItem(item.electorReason, RejectedReasonItem.Type.valueOf(item.type.name), item.includeInComms) }
+                    reasonList = englishRejectedReasonItems?.toList()?.map { item -> mapRejectedReasonItemFromEntity(item) }
                 ),
                 welshReason = RejectedReason(
                     notes = welshRejectionNotes,
                     reasons = welshRejectedReasonItems?.toList()?.map { it.type.value },
-                    reasonList = welshRejectedReasonItems?.toList()?.map { item -> RejectedReasonItem(item.electorReason, RejectedReasonItem.Type.valueOf(item.type.name), item.includeInComms) }
+                    reasonList = welshRejectedReasonItems?.toList()?.map { item -> mapRejectedReasonItemFromEntity(item) }
                 )
+            )
+        }
+    }
+
+    fun mapRejectedReasonItemFromEntity(rejectedReasonItem: uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem) : RejectedReasonItem {
+        return with(rejectedReasonItem) {
+            RejectedReasonItem (
+                electorReason = electorReason,
+                type = when (type) {
+                    Type.IDENTITY_NOT_CONFIRMED -> RejectedReasonItem.Type.IDENTITY_MINUS_NOT_MINUS_CONFIRMED
+                    Type.SIGNATURE_IS_NOT_ACCEPTABLE -> RejectedReasonItem.Type.SIGNATURE_MINUS_IS_MINUS_NOT_MINUS_ACCEPTABLE
+                    Type.DOB_NOT_PROVIDED -> RejectedReasonItem.Type.DOB_MINUS_NOT_MINUS_PROVIDED
+                    Type.FRAUDULENT_APPLICATION -> RejectedReasonItem.Type.FRAUDULENT_MINUS_APPLICATION
+                    Type.NOT_REGISTERED_TO_VOTE -> RejectedReasonItem.Type.NOT_MINUS_REGISTERED_MINUS_TO_MINUS_VOTE
+                    Type.NOT_ELIGIBLE_FOR_RESERVED_POLLS -> RejectedReasonItem.Type.NOT_MINUS_ELIGIBLE_MINUS_FOR_MINUS_RESERVED_MINUS_POLLS
+                    Type.INCOMPLETE_APPLICATION -> RejectedReasonItem.Type.INCOMPLETE_MINUS_APPLICATION
+                    Type.PROXY_LIMITS -> RejectedReasonItem.Type.PROXY_MINUS_LIMITS
+                    Type.PROXY_NOT_REGISTERED_TO_VOTE -> RejectedReasonItem.Type.PROXY_MINUS_NOT_MINUS_REGISTERED_MINUS_TO_MINUS_VOTE
+                    Type.OTHER_REJECT_REASON -> RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON
+
+                },
+                includeInComms = includeInComms
             )
         }
     }
