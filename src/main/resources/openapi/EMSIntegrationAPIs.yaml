@@ -891,6 +891,7 @@ components:
           type: string
           maxLength: 100
         type:
+          type: string
           description: |
             A static value that can be used by EMSs to add additional business logic if needed.
             The current values are below but may change overtime, hence this is not an enforced restricted list / enum.
@@ -905,9 +906,8 @@ components:
             * incomplete-application
             * proxy-not-registered-to-vote
             * proxy-limits
-            * other (will be passed with includeInComms: false)
+            * other (will be passed with includeInElectorComms: false)
           maxLength: 50
-          type: string
         includeInComms:
           type: boolean
           description: |
