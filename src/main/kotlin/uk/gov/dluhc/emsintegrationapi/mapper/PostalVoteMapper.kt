@@ -142,7 +142,7 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                 ),
                 welshReason = RejectedReason(
                     notes = welshRejectionNotes,
-                    reasons = englishRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
+                    reasons = welshRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
                     reasonList = welshRejectedReasonItems?.toList()?.map { item -> mapRejectedReasonItemFromEntity(item) }
                 )
             )
