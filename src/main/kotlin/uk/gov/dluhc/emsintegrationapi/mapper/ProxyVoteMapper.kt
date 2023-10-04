@@ -13,7 +13,6 @@ import uk.gov.dluhc.emsintegrationapi.models.RejectedReasonItem
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReasons
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
 import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem as RejectedReasonItemEntity
-import uk.gov.dluhc.emsintegrationapi.database.entity.Type as TypeEntity
 
 @Component
 class ProxyVoteMapper(private val instantMapper: InstantMapper) {
@@ -102,18 +101,7 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
         return with(rejectedReasonItem) {
             RejectedReasonItem(
                 electorReason = electorReason,
-                type = when (type) {
-                    TypeEntity.IDENTITY_NOT_CONFIRMED -> RejectedReasonItem.Type.IDENTITY_MINUS_NOT_MINUS_CONFIRMED
-                    TypeEntity.SIGNATURE_IS_NOT_ACCEPTABLE -> RejectedReasonItem.Type.SIGNATURE_MINUS_IS_MINUS_NOT_MINUS_ACCEPTABLE
-                    TypeEntity.DOB_NOT_PROVIDED -> RejectedReasonItem.Type.DOB_MINUS_NOT_MINUS_PROVIDED
-                    TypeEntity.FRAUDULENT_APPLICATION -> RejectedReasonItem.Type.FRAUDULENT_MINUS_APPLICATION
-                    TypeEntity.NOT_REGISTERED_TO_VOTE -> RejectedReasonItem.Type.NOT_MINUS_REGISTERED_MINUS_TO_MINUS_VOTE
-                    TypeEntity.NOT_ELIGIBLE_FOR_RESERVED_POLLS -> RejectedReasonItem.Type.NOT_MINUS_ELIGIBLE_MINUS_FOR_MINUS_RESERVED_MINUS_POLLS
-                    TypeEntity.INCOMPLETE_APPLICATION -> RejectedReasonItem.Type.INCOMPLETE_MINUS_APPLICATION
-                    TypeEntity.PROXY_LIMITS -> RejectedReasonItem.Type.PROXY_MINUS_LIMITS
-                    TypeEntity.PROXY_NOT_REGISTERED_TO_VOTE -> RejectedReasonItem.Type.PROXY_MINUS_NOT_MINUS_REGISTERED_MINUS_TO_MINUS_VOTE
-                    TypeEntity.OTHER_REJECT_REASON -> RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON
-                },
+                type = type.name,
                 includeInComms = includeInComms
             )
         }

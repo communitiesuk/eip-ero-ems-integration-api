@@ -887,40 +887,33 @@ components:
       type: object
       properties:
         electorReason:
-          description: Elector friendly reason text. This text is curate and maged within EROP
+          description: Elector friendly reason text. This text is curated and managed within EROP.
           type: string
           maxLength: 100
         type:
           description: |
-            An enum value that can be used by EMSs to add additional business logic if needed.
+            A static value that can be used by EMSs to add additional business logic if needed.
+            The current values are below but may change overtime, hence this is not an enforced restricted list / enum.
+            Should EROP add a new 'type' or revise one, we would not want EMSs to require a deployment.
+            As such these values should not be used for business logic in processing applications, but could be used for aggregations of rejection reasons across applications.
             * identity-not-confirmed
             * signature-is-not-acceptable
-            * fraudulent-application (will be passed with includeInComms:false)
+            * fraudulent-application (will be passed with includeInElectorComms:false)
             * not-registered-to-vote
             * not-eligible-for-reserved-polls
             * dob-not-provided
             * incomplete-application
-            * proxy-limits
             * proxy-not-registered-to-vote
-            * other-reject-reason (will be passed with includeInComms: false)
+            * proxy-limits
+            * other (will be passed with includeInComms: false)
+          maxLength: 50
           type: string
-          enum:
-            - identity-not-confirmed
-            - signature-is-not-acceptable
-            - fraudulent-application
-            - not-registered-to-vote
-            - not-eligible-for-reserved-polls
-            - dob-not-provided
-            - incomplete-application
-            - proxy-not-registered-to-vote
-            - proxy-limits
-            - other-reject-reason
         includeInComms:
           type: boolean
           description: |
-            Indicates whether this reason should be incuded in comms to the Elector and this field is sufficient alone - EMS implementations do not need to consider the type as well.
+            Indicates whether this reason should be included in comms to the Elector and this field is sufficient alone - EMS implementations do not need to consider the type as well.
             EROP will automatically ensure this is false for any reason that should never be included in comms.
-            EROP may provide ERO's flexibility to select which reasons they would like to be sent to the elector.
+            EROP may provide EROs flexibility to select which reasons they would like to be sent to the elector.
           default: true
     ApplicationLanguage:
       title: Application Language

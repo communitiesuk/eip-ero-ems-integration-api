@@ -4,7 +4,7 @@ type: object
 version: 1.0.0
 properties:
   electorReason:
-    description: Elector friendly reason text. This text is curate and maged within EROP
+    description: Elector friendly reason text. This text is curated and managed within EROP
     type: string
     maxLength: 100
   type:
@@ -35,7 +35,7 @@ properties:
   includeInComms:
     type: boolean
     description: |
-      Indicates whether this reason should be incuded in comms to the Elector and this field is sufficient alone - EMS implementations do not need to consider the type as well.
+      Indicates whether this reason should be included in comms to the Elector and this field is sufficient alone - EMS implementations do not need to consider the type as well.
       EROP will automatically ensure this is false for any reason that should never be included in comms.
       EROP may provide ERO's flexibility to select which reasons they would like to be sent to the elector.
     default: true
