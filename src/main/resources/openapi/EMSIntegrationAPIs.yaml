@@ -892,7 +892,7 @@ components:
           maxLength: 100
         type:
           type: string
-          description: |
+          description: | 
             A static value that can be used by EMSs to add additional business logic if needed.
             The current values are below but may change overtime, hence this is not an enforced restricted list / enum.
             Should EROP add a new 'type' or revise one, we would not want EMSs to require a deployment.
@@ -906,14 +906,14 @@ components:
             * incomplete-application
             * proxy-not-registered-to-vote
             * proxy-limits
-            * other (will be passed with includeInElectorComms: false)
+            * other (will be passed with includeInElectorComms:false)
           maxLength: 50
         includeInComms:
           type: boolean
           description: |
             Indicates whether this reason should be included in comms to the Elector and this field is sufficient alone - EMS implementations do not need to consider the type as well.
             EROP will automatically ensure this is false for any reason that should never be included in comms.
-            EROP may provide EROs flexibility to select which reasons they would like to be sent to the elector.
+            EROP may provide EROs flexibility to select which reasons they would like be sent to the elector.
           default: true
     ApplicationLanguage:
       title: Application Language
