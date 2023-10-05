@@ -12,7 +12,6 @@ import uk.gov.dluhc.emsintegrationapi.models.RejectedReason
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReasonItem
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReasons
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
-import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem as RejectedReasonItemEntity
 
 @Component
 class ProxyVoteMapper(private val instantMapper: InstantMapper) {
@@ -86,23 +85,13 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
                 englishReason = RejectedReason(
                     notes = englishRejectionNotes,
                     reasons = englishRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
-                    reasonList = englishRejectedReasonItems?.toList()?.map { item -> mapRejectedReasonItemFromEntity(item) }
+                    reasonList = englishRejectedReasonItems?.toList()?.map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
                 ),
                 welshReason = RejectedReason(
                     notes = welshRejectionNotes,
                     reasons = welshRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
-                    reasonList = welshRejectedReasonItems?.toList()?.map { item -> mapRejectedReasonItemFromEntity(item) }
+                    reasonList = welshRejectedReasonItems?.toList()?.map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
                 )
-            )
-        }
-    }
-
-    fun mapRejectedReasonItemFromEntity(rejectedReasonItem: RejectedReasonItemEntity): RejectedReasonItem {
-        return with(rejectedReasonItem) {
-            RejectedReasonItem(
-                electorReason = electorReason,
-                type = type.name,
-                includeInComms = includeInComms
             )
         }
     }
