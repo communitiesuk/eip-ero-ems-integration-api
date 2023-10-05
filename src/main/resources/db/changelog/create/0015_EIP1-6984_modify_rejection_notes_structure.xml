@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="tomos.slater@softwire.com" id="0015_EIP1-6984_modify_postal_rejection_notes_structure" context="ddl">
+        <addColumn tableName="postal_vote_application_english_rejection_reasons">
+            <column name="elector_reason" type="varchar(100)" afterColumn="rejection_reasons"/>
+            <column name="include_in_comms" type="boolean" afterColumn="elector_reason"/>
+        </addColumn>
+
+        <sql>
+            UPDATE postal_vote_application_english_rejection_reasons
+            SET postal_vote_application_english_rejection_reasons.elector_reason = postal_vote_application_english_rejection_reasons.rejection_reasons,
+                postal_vote_application_english_rejection_reasons.include_in_comms =
+                    CASE WHEN postal_vote_application_english_rejection_reasons.elector_reason IN ('FRAUDULENT_APPLICATION', 'OTHER_REJECT_REASON') THEN FALSE ELSE TRUE END,
+                postal_vote_application_english_rejection_reasons.rejection_reasons =
+                    CASE postal_vote_application_english_rejection_reasons.rejection_reasons
+                        WHEN 'The applicant is not registered to vote' THEN 'NOT_REGISTERED_TO_VOTE'
+                        WHEN "The applicant's identity has not been confirmed" THEN 'IDENTITY_NOT_CONFIRMED'
+                        WHEN 'The applicant is not eligible for reserved polls' THEN 'NOT_ELIGIBLE_FOR_RESERVED_POLLS'
+                        WHEN 'A date of birth was not provided' THEN 'DOB_NOT_PROVIDED'
+                        WHEN 'The application is incomplete' THEN 'INCOMPLETE_APPLICATION'
+                        WHEN 'The signature was not acceptable' THEN 'SIGNATURE_IS_NOT_ACCEPTABLE'
+                        WHEN 'Suspected or possible fraudulent applicant' THEN 'FRAUDULENT_APPLICATION'
+                        ELSE 'OTHER_REJECT_REASON' END
+        </sql>
+
+        <addColumn tableName="postal_vote_application_welsh_rejection_reasons">
+            <column name="elector_reason" type="varchar(100)" afterColumn="rejection_reasons"/>
+            <column name="include_in_comms" type="boolean" afterColumn="elector_reason"/>
+        </addColumn>
+
+        <sql>
+            UPDATE postal_vote_application_welsh_rejection_reasons
+            SET postal_vote_application_welsh_rejection_reasons.elector_reason = postal_vote_application_welsh_rejection_reasons.rejection_reasons,
+                postal_vote_application_welsh_rejection_reasons.include_in_comms =
+                    CASE WHEN postal_vote_application_welsh_rejection_reasons.elector_reason IN ('FRAUDULENT_APPLICATION', 'OTHER_REJECT_REASON') THEN FALSE ELSE TRUE END,
+                postal_vote_application_welsh_rejection_reasons.rejection_reasons =
+                    CASE postal_vote_application_welsh_rejection_reasons.rejection_reasons
+                        WHEN 'The applicant is not registered to vote' THEN 'NOT_REGISTERED_TO_VOTE'
+                        WHEN "The applicant's identity has not been confirmed" THEN 'IDENTITY_NOT_CONFIRMED'
+                        WHEN 'The applicant is not eligible for reserved polls' THEN 'NOT_ELIGIBLE_FOR_RESERVED_POLLS'
+                        WHEN 'A date of birth was not provided' THEN 'DOB_NOT_PROVIDED'
+                        WHEN 'The application is incomplete' THEN 'INCOMPLETE_APPLICATION'
+                        WHEN 'The signature was not acceptable' THEN 'SIGNATURE_IS_NOT_ACCEPTABLE'
+                        WHEN 'Suspected or possible fraudulent applicant' THEN 'FRAUDULENT_APPLICATION'
+                        ELSE 'OTHER_REJECT_REASON' END
+        </sql>
+
+        <rollback>
+            <sql>
+                UPDATE postal_vote_application_english_rejection_reasons
+                SET postal_vote_application_english_rejection_reasons.rejection_reasons = postal_vote_application_english_rejection_reasons.elector_reason
+            </sql>
+            <sql>
+                UPDATE postal_vote_application_welsh_rejection_reasons
+                SET postal_vote_application_welsh_rejection_reasons.rejection_reasons = postal_vote_application_welsh_rejection_reasons.elector_reason
+            </sql>
+            <dropColumn tableName="postal_vote_application_english_rejection_reasons" columnName="elector_reason"/>
+            <dropColumn tableName="postal_vote_application_english_rejection_reasons" columnName="include_in_comms"/>
+            <dropColumn tableName="postal_vote_application_welsh_rejection_reasons" columnName="elector_reason"/>
+            <dropColumn tableName="postal_vote_application_welsh_rejection_reasons" columnName="include_in_comms"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="tomos.slater@softwire.com" id="0015_EIP1-6984_modify_proxy_rejection_notes_structure" context="ddl">
+        <addColumn tableName="proxy_vote_application_english_rejection_reasons">
+            <column name="elector_reason" type="varchar(100)" afterColumn="rejection_reasons"/>
+            <column name="include_in_comms" type="boolean" afterColumn="elector_reason"/>
+        </addColumn>
+
+        <sql>
+            UPDATE proxy_vote_application_english_rejection_reasons
+            SET proxy_vote_application_english_rejection_reasons.elector_reason = proxy_vote_application_english_rejection_reasons.rejection_reasons,
+                proxy_vote_application_english_rejection_reasons.include_in_comms =
+                    CASE WHEN proxy_vote_application_english_rejection_reasons.elector_reason IN ('FRAUDULENT_APPLICATION', 'OTHER_REJECT_REASON') THEN FALSE ELSE TRUE END,
+                proxy_vote_application_english_rejection_reasons.rejection_reasons =
+                    CASE proxy_vote_application_english_rejection_reasons.rejection_reasons
+                        WHEN 'The nominated proxy is not registered to vote' THEN 'NOT_REGISTERED_TO_VOTE'
+                        WHEN "The applicant's identity has not been confirmed" THEN 'IDENTITY_NOT_CONFIRMED'
+                        WHEN 'The nominated proxy is not eligible for reserved polls' THEN 'NOT_ELIGIBLE_FOR_RESERVED_POLLS'
+                        WHEN 'A date of birth was not provided' THEN 'DOB_NOT_PROVIDED'
+                        WHEN 'The nominated proxy has reach proxy limits' THEN 'PROXY_LIMITS'
+                        WHEN 'The application is incomplete' THEN 'INCOMPLETE_APPLICATION'
+                        WHEN 'The signature was not acceptable' THEN 'SIGNATURE_IS_NOT_ACCEPTABLE'
+                        WHEN 'Suspected or possible fraudulent applicant' THEN 'FRAUDULENT_APPLICATION'
+                        ELSE 'OTHER_REJECT_REASON' END
+        </sql>
+
+        <addColumn tableName="proxy_vote_application_welsh_rejection_reasons">
+            <column name="elector_reason" type="varchar(100)" afterColumn="rejection_reasons"/>
+            <column name="include_in_comms" type="boolean" afterColumn="elector_reason"/>
+        </addColumn>
+
+        <sql>
+            UPDATE proxy_vote_application_welsh_rejection_reasons
+            SET proxy_vote_application_welsh_rejection_reasons.elector_reason = proxy_vote_application_welsh_rejection_reasons.rejection_reasons,
+                proxy_vote_application_welsh_rejection_reasons.include_in_comms =
+                    CASE WHEN proxy_vote_application_welsh_rejection_reasons.elector_reason IN ('FRAUDULENT_APPLICATION', 'OTHER_REJECT_REASON') THEN FALSE ELSE TRUE END,
+                proxy_vote_application_welsh_rejection_reasons.rejection_reasons =
+                    CASE proxy_vote_application_welsh_rejection_reasons.rejection_reasons
+                        WHEN 'The nominated proxy is not registered to vote' THEN 'NOT_REGISTERED_TO_VOTE'
+                        WHEN "The applicant's identity has not been confirmed" THEN 'IDENTITY_NOT_CONFIRMED'
+                        WHEN 'The nominated proxy is not eligible for reserved polls' THEN 'NOT_ELIGIBLE_FOR_RESERVED_POLLS'
+                        WHEN 'A date of birth was not provided' THEN 'DOB_NOT_PROVIDED'
+                        WHEN 'The nominated proxy has reach proxy limits' THEN 'PROXY_LIMITS'
+                        WHEN 'The application is incomplete' THEN 'INCOMPLETE_APPLICATION'
+                        WHEN 'The signature was not acceptable' THEN 'SIGNATURE_IS_NOT_ACCEPTABLE'
+                        WHEN 'Suspected or possible fraudulent applicant' THEN 'FRAUDULENT_APPLICATION'
+                        ELSE 'OTHER_REJECT_REASON' END
+        </sql>
+
+        <rollback>
+            <sql>
+                UPDATE proxy_vote_application_english_rejection_reasons
+                SET proxy_vote_application_english_rejection_reasons.rejection_reasons = proxy_vote_application_english_rejection_reasons.elector_reason
+            </sql>
+            <sql>
+                UPDATE proxy_vote_application_welsh_rejection_reasons
+                SET proxy_vote_application_welsh_rejection_reasons.rejection_reasons = proxy_vote_application_welsh_rejection_reasons.elector_reason
+            </sql>
+            <dropColumn tableName="proxy_vote_application_english_rejection_reasons" columnName="elector_reason"/>
+            <dropColumn tableName="proxy_vote_application_english_rejection_reasons" columnName="include_in_comms"/>
+            <dropColumn tableName="proxy_vote_application_welsh_rejection_reasons" columnName="elector_reason"/>
+            <dropColumn tableName="proxy_vote_application_welsh_rejection_reasons" columnName="include_in_comms"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

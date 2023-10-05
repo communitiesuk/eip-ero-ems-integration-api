@@ -6,6 +6,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplicationPrimaryElectorDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem
 import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
@@ -28,9 +29,9 @@ fun buildPostalVoteApplication(
     updatedBy: SourceSystem? = null,
     recordStatus: RecordStatus = RecordStatus.RECEIVED,
     englishRejectionNotes: String? = null,
-    englishRejectionReasons: Set<String>? = emptySet(),
+    englishRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
     welshRejectionNotes: String? = null,
-    welshRejectionReasons: Set<String>? = emptySet(),
+    welshRejectedReasonItems: Set<RejectedReasonItem>? = emptySet()
 ) = PostalVoteApplication(
     applicationId = applicationId,
     applicationDetails = applicationDetails,
@@ -44,9 +45,9 @@ fun buildPostalVoteApplication(
     updatedBy = updatedBy,
     status = recordStatus,
     englishRejectionNotes = englishRejectionNotes,
-    englishRejectionReasons = englishRejectionReasons,
+    englishRejectedReasonItems = englishRejectedReasonItems,
     welshRejectionNotes = welshRejectionNotes,
-    welshRejectionReasons = welshRejectionReasons,
+    welshRejectedReasonItems = welshRejectedReasonItems
 )
 
 fun buildPostalVoteApplicationMessage(

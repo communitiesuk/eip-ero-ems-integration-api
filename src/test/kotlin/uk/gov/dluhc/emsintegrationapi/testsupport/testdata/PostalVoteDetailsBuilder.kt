@@ -5,6 +5,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.BfpoAddress
 import uk.gov.dluhc.emsintegrationapi.database.entity.OverseasAddress
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteDetails
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RejectedReasonItem
 import java.time.LocalDate
 import uk.gov.dluhc.emsintegrationapi.messaging.models.Address as AddressMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.BfpoAddress as BfpoAddressMessageDto
@@ -12,6 +13,7 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.OverseasAddress as Overse
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteDetails as PostalVoteDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RejectedReason as RejectedReasonDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RejectedReasons as RejectedReasonsDto
+
 fun buildPostalVoteDetailsEntity(
     ballotAddress: Address? = buildAddressEntity(),
     ballotAddressReason: String? = randomString(10),
@@ -56,10 +58,10 @@ fun buildPostalVoteDetailsMessageDto(
 
 fun buildPostalRejectedReasonsDto(
     englishNotes: String? = DataFaker.faker.house().room(),
-    englishReason: Set<String>? = setOf(DataFaker.faker.book().title()),
+    englishReason: Set<String>? = setOf(),
     welshNotes: String? = DataFaker.faker.house().furniture(),
-    welshReason: Set<String>? = setOf(DataFaker.faker.book().author()),
+    welshReason: Set<String>? = setOf(),
 ) = RejectedReasonsDto(
-    englishReason = RejectedReasonDto(notes = englishNotes, reasons = englishReason?.toList()),
-    welshReason = RejectedReasonDto(notes = welshNotes, reasons = welshReason?.toList()),
+    englishReason = RejectedReasonDto(notes = englishNotes, reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON") }),
+    welshReason = RejectedReasonDto(notes = welshNotes, reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON") }),
 )

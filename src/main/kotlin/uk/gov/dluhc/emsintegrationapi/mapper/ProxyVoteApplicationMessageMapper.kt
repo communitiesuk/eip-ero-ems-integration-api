@@ -6,6 +6,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteApplicationMessage
+import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem as RejectedReasonItemEntity
 
 @Component
 class ProxyVoteApplicationMessageMapper(
@@ -28,9 +29,9 @@ class ProxyVoteApplicationMessageMapper(
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED,
                 englishRejectionNotes = it.proxyVoteDetails.rejectedReasons?.englishReason?.notes,
-                englishRejectionReasons = it.proxyVoteDetails.rejectedReasons?.englishReason?.reasons?.toSet(),
+                englishRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.englishReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
                 welshRejectionNotes = it.proxyVoteDetails.rejectedReasons?.welshReason?.notes,
-                welshRejectionReasons = it.proxyVoteDetails.rejectedReasons?.welshReason?.reasons?.toSet()
+                welshRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.welshReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
             )
         }
 }

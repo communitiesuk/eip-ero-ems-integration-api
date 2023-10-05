@@ -9,6 +9,7 @@ import uk.gov.dluhc.emsintegrationapi.models.ApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteDetail
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReason
+import uk.gov.dluhc.emsintegrationapi.models.RejectedReasonItem
 import uk.gov.dluhc.emsintegrationapi.models.RejectedReasons
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address as AddressEntity
 
@@ -83,11 +84,13 @@ class ProxyVoteMapper(private val instantMapper: InstantMapper) {
             RejectedReasons(
                 englishReason = RejectedReason(
                     notes = englishRejectionNotes,
-                    reasons = englishRejectionReasons?.toList()
+                    reasons = englishRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
+                    reasonList = englishRejectedReasonItems?.toList()?.map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
                 ),
                 welshReason = RejectedReason(
                     notes = welshRejectionNotes,
-                    reasons = welshRejectionReasons?.toList()
+                    reasons = welshRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
+                    reasonList = welshRejectedReasonItems?.toList()?.map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
                 )
             )
         }

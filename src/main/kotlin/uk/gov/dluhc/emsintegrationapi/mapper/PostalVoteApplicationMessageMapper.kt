@@ -6,6 +6,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
+import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem as RejectedReasonItemEntity
 
 @Component
 class PostalVoteApplicationMessageMapper(
@@ -33,9 +34,9 @@ class PostalVoteApplicationMessageMapper(
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED,
                 englishRejectionNotes = it.postalVoteDetails?.rejectedReasons?.englishReason?.notes,
-                englishRejectionReasons = it.postalVoteDetails?.rejectedReasons?.englishReason?.reasons?.toSet(),
+                englishRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.englishReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
                 welshRejectionNotes = it.postalVoteDetails?.rejectedReasons?.welshReason?.notes,
-                welshRejectionReasons = it.postalVoteDetails?.rejectedReasons?.welshReason?.reasons?.toSet()
+                welshRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.welshReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
             )
         }
 }

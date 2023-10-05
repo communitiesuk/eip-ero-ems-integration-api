@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ProxyVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.haveNullValues
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_BASE64_STRING
@@ -21,9 +22,9 @@ internal class ProxyVoteMapperTest {
             buildProxyVoteApplication(
                 applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING),
                 englishRejectionNotes = "enNotes",
-                englishRejectionReasons = setOf("enReason1", "enReason2"),
+                englishRejectedReasonItems = setOf(RejectedReasonItem("enReason1", "OTHER_REJECT_REASON", false), RejectedReasonItem("enReason2", "OTHER_REJECT_REASON", false)),
                 welshRejectionNotes = "cyNotes",
-                welshRejectionReasons = setOf("cyReason1", "cyReason2"),
+                welshRejectedReasonItems = setOf(RejectedReasonItem("cyReason1", "OTHER_REJECT_REASON", false), RejectedReasonItem("cyReason2", "OTHER_REJECT_REASON", false)),
             )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote)
@@ -44,9 +45,9 @@ internal class ProxyVoteMapperTest {
                 proxyMiddleNames = null,
             ),
             englishRejectionNotes = null,
-            englishRejectionReasons = null,
+            englishRejectedReasonItems = null,
             welshRejectionNotes = null,
-            welshRejectionReasons = null
+            welshRejectedReasonItems = null
         )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)

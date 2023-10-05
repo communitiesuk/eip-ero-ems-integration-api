@@ -6,8 +6,8 @@
     notes:
       type: string
       maxLength: 4000
-    reasons:
+    reasonList:
       type: array
+      description: The list of reasons the ERO rejected the application
       items:
-        type: string
-        maxLength: 100
+        $ref: './RejectedReasonItem.yaml'
