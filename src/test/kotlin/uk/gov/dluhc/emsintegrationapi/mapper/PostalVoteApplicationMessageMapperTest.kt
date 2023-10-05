@@ -86,6 +86,6 @@ internal class PostalVoteApplicationMessageMapperTest {
         assertThat(postalVoteApplication.englishRejectionNotes).isNull()
         assertThat(postalVoteApplication.englishRejectedReasonItems?.isNotEmpty())
         assertThat(postalVoteApplication.welshRejectionNotes).isNull()
-        assertThat(postalVoteApplication.welshRejectedReasonItems).isEmpty()
+        assertThat(postalVoteApplication.welshRejectedReasonItems).isNull()
     }
 }

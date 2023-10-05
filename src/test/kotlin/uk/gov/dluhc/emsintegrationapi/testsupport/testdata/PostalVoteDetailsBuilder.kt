@@ -62,6 +62,6 @@ fun buildPostalRejectedReasonsDto(
     welshNotes: String? = DataFaker.faker.house().furniture(),
     welshReason: Set<String>? = setOf(),
 ) = RejectedReasonsDto(
-    englishReason = RejectedReasonDto(notes = englishNotes, reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON) }),
-    welshReason = RejectedReasonDto(notes = welshNotes, reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, RejectedReasonItem.Type.OTHER_MINUS_REJECT_MINUS_REASON) }),
+    englishReason = RejectedReasonDto(notes = englishNotes, reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON") }),
+    welshReason = RejectedReasonDto(notes = welshNotes, reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON") }),
 )

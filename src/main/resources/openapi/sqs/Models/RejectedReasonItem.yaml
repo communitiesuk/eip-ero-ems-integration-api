@@ -9,7 +9,7 @@ properties:
     maxLength: 100
   type:
     description: |
-      An enum value that can be used by EMSs to add additional business logic if needed.
+      An string value that can be used by EMSs to add additional business logic if needed.
       * identity-not-confirmed
       * signature-is-not-acceptable
       * fraudulent-application (will be passed with includeInComms:false)
@@ -21,17 +21,6 @@ properties:
       * proxy-not-registered-to-vote
       * other-reject-reason (will be passed with includeInComms: false)
     type: string
-    enum:
-      - identity-not-confirmed
-      - signature-is-not-acceptable
-      - fraudulent-application
-      - not-registered-to-vote
-      - not-eligible-for-reserved-polls
-      - dob-not-provided
-      - incomplete-application
-      - proxy-not-registered-to-vote
-      - proxy-limits
-      - other-reject-reason
   includeInComms:
     type: boolean
     description: |
