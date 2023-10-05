@@ -70,14 +70,6 @@ class PostalVoteApplication(
 
     var welshRejectionNotes: String? = null,
 
-    @ElementCollection
-    @CollectionTable(
-        name = "postal_vote_application_welsh_rejection_reasons",
-        joinColumns = [JoinColumn(name = "application_id")]
-    )
-    @Column(name = "rejection_reasons", length = 100, nullable = false)
-    var welshRejectionReasons: Set<String>? = mutableSetOf(),
-
     @OneToOne(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
