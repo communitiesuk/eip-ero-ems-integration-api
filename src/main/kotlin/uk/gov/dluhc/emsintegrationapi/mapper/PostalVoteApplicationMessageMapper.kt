@@ -34,9 +34,9 @@ class PostalVoteApplicationMessageMapper(
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED,
                 englishRejectionNotes = it.postalVoteDetails?.rejectedReasons?.englishReason?.notes,
-                englishRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.englishReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
+                englishRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.englishReason?.reasonList?.filter { it.type != "other-reject-reason" }?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
                 welshRejectionNotes = it.postalVoteDetails?.rejectedReasons?.welshReason?.notes,
-                welshRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.welshReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
+                welshRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.welshReason?.reasonList?.filter { it.type != "other-reject-reason" }?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
             )
         }
 }
