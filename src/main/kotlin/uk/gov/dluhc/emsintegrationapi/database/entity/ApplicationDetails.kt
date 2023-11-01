@@ -28,7 +28,7 @@ class ApplicationDetails(
 
     val signatureWaived: Boolean?,
 
-    @field:Size(max = 250)
+    @field:Size(max = 500)
     val signatureWaivedReason: String?,
 
     var emsStatus: EmsStatus?,

@@ -18,6 +18,7 @@ Feature: System process an approved/rejected proxy vote application message
       | ProxyApplicationId       | WaiverReason |
       | 502cf250036469154b4f85fa | Disabled     |
       | 502cf250036469154b4f85fb | Other        |
+      | 502cf250036469154b4f85fc | I have a disability that prevents me from signing or uploading my signature: Visually impaired and wants to use the full 250 character allowance. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vehicula hendrerit eros consequat sagittis. Curabitur eget nisi ac felis tincidunt ultrices. Duis imperdiet tempus. |
 
   Scenario Outline: The system does not allow two different proxy applications having same id and a different ems electoral id
     Given a proxy vote application with the application id "<ProxyApplicationId>" and electoral id "<EmsElectoralId>" exists

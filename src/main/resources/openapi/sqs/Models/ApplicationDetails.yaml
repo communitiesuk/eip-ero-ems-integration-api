@@ -59,7 +59,7 @@ properties:
       Where an Elector has been granted a signature waiver. If 'true', then no signature will be provided and a signatureWaivedReason will be supplied.
   signatureWaivedReason:
     type: string
-    maxLength: 250
+    maxLength: 500
     default: false
     description: |
       Where an Elector has been granted a signature waiver, this field will contain a descriptin of the reason for the waiver.
