@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet id="0017_EROPSPT-186_increase_signature_waived_reason_max_length" author="kirsty.land@softwire.com" context="ddl">
+        <modifyDataType tableName="postal_vote_application" columnName="signature_waived_reason" newDataType="varchar(500)"/>
+        <modifyDataType tableName="proxy_vote_application" columnName="signature_waived_reason" newDataType="varchar(500)"/>
+
+        <rollback>
+            <modifyDataType tableName="postal_vote_application" columnName="signature_waived_reason" newDataType="varchar(250)"/>
+            <modifyDataType tableName="proxy_vote_application" columnName="signature_waived_reason" newDataType="varchar(250)"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

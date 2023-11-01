@@ -31,3 +31,5 @@ databaseChangeLog:
       file: /db/changelog/create/0015_EIP1-6984_modify_rejection_notes_structure.xml
   - include:
       file: /db/changelog/create/0016_EIP1-7659_update_signatures_to_be_mediumtext.xml
+  - include:
+      file: /db/changelog/create/0017_EROPSPT-186_increase_signature_waived_reason_max_length.xml
