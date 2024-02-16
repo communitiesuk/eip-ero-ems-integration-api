@@ -18,7 +18,7 @@ info:
 
     - "IER EMS API" for the EMS facing API in IER that relays Register to Vote applications
 
-    - EROP to EMS Register Checker API - https://github.com/cabinetoffice/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml
+    - EROP to EMS Register Checker API - https://github.com/communitiesuk/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml
 
     - "Internet-facing endpoint for EMS API - Guide for EMS Implementers", this document describes the TLS client certificate auth in detail
   contact:
@@ -52,7 +52,7 @@ paths:
 
         Postal Vote applications from both sources will be processed in EROP by ERO staff until the application is either accepted or rejected.
 
-        Accepted applications will have verified the identity of the person making the application; verified that the applicant is a registered elector in the current LA/VJB (see "Register Checker API” https://github.com/cabinetoffice/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml); and verified that the signature is acceptable.
+        Accepted applications will have verified the identity of the person making the application; verified that the applicant is a registered elector in the current LA/VJB (see "Register Checker API” https://github.com/communitiesuk/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml); and verified that the signature is acceptable.
 
         If any of the above conditions can't be satisfied, applications will be rejected.
 
