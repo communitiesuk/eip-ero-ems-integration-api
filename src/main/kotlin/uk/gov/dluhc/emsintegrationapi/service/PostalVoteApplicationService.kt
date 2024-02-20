@@ -29,8 +29,12 @@ class PostalVoteApplicationService(
     @Transactional(readOnly = true)
     fun getPostalVoteApplications(certificateSerialNumber: String, pageSize: Int?): PostalVoteApplications {
         val gssCodes = getGssCodes(certificateSerialNumber)
-        val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
+        var numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
+        if (numberOfRecordsToFetch > apiProperties.forceMaxPageSize) {
+            logger.warn("Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch")
+            numberOfRecordsToFetch = apiProperties.forceMaxPageSize
+        }
         val postalApplicationIds = postalVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
             gssCodes,
             RecordStatus.RECEIVED,

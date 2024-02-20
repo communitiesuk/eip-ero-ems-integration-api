@@ -17,6 +17,7 @@ dluhc:
   request.header.name: ${REQUEST_HEADER_CLIENT_CERT_SERIAL}
   default-page-size: ${DEFAULT_PAGE_SIZE:100}
   max-page-size: ${MAX_PAGE_SIZE:500}
+  force-max-page-size: ${FORCE_MAX_PAGE_SIZE:200}
 
 cloud:
   aws:

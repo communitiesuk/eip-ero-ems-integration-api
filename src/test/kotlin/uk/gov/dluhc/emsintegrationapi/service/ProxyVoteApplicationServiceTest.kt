@@ -55,6 +55,9 @@ internal class ProxyVoteApplicationServiceTest {
 
     companion object {
         private const val DEFAULT_PAGE_SIZE = 100
+        private const val BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE = 150
+        private const val FORCE_MAX_PAGE_SIZE = 200
+        private const val MORE_THAN_FORCE_MAX_PAGE_SIZE = 250
         private const val CERTIFICATE_SERIAL_NUMBER = "test"
         private val GSS_CODES = listOf(GSS_CODE, GSS_CODE2)
         private val requestSuccess = EMSApplicationResponse()
@@ -80,16 +83,28 @@ internal class ProxyVoteApplicationServiceTest {
         }
 
         @Test
-        fun `should return maximum of 100 proxy vote applications`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
+        fun `should return maximum of DEFAULT_PAGE_SIZE proxy vote applications`() =
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = DEFAULT_PAGE_SIZE,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
 
         @Test
         fun `system does not have requested number of records in the DB`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = null)
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = 10,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
 
         @Test
         fun `system does not have any records`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = null)
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = 0,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
     }
 
     @Nested
@@ -98,19 +113,39 @@ internal class ProxyVoteApplicationServiceTest {
         fun afterEach() = verifyNoInteractions(apiProperties)
 
         @Test
-        fun `should return maximum of 100 proxy vote applications`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = 200)
+        fun `should request and return maximum of FORCE_MAX_PAGE_SIZE proxy vote applications`() =
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = FORCE_MAX_PAGE_SIZE,
+                numberOfRecordsToBeRequested = FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = MORE_THAN_FORCE_MAX_PAGE_SIZE
+            )
+
+        @Test
+        fun `should request and return the page size requested proxy vote applications`() =
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
 
         @Test
         fun `system does not have requested number of records in the DB`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = 100)
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = 10,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
 
         @Test
         fun `system does not have any records`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = 100)
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = 0,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
     }
 
-    private fun validateFetchProxyVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
+    private fun validateFetchProxyVoteApplications(numberOfRecordsToBeReturned: Int, numberOfRecordsToBeRequested: Int, pageSizeRequested: Int?) {
         // Given
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
@@ -124,7 +159,7 @@ internal class ProxyVoteApplicationServiceTest {
             proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 GSS_CODES,
                 RecordStatus.RECEIVED,
-                Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
+                Pageable.ofSize(numberOfRecordsToBeRequested)
             )
         ).willReturn(savedApplicationIds)
         given { proxyVoteApplicationRepository.findByApplicationIdIn(savedApplicationIds) }.willReturn(savedApplications)
