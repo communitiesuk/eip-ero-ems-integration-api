@@ -10,7 +10,12 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.*
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.given
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
@@ -117,6 +122,7 @@ internal class ProxyVoteApplicationServiceTest {
             verify(apiProperties, atLeastOnce()).forceMaxPageSize
             verifyNoMoreInteractions(apiProperties)
         }
+
         @Test
         fun `should request and return maximum of FORCE_MAX_PAGE_SIZE proxy vote applications`() =
             validateFetchProxyVoteApplications(
@@ -150,7 +156,11 @@ internal class ProxyVoteApplicationServiceTest {
             )
     }
 
-    private fun validateFetchProxyVoteApplications(numberOfRecordsToBeReturned: Int, numberOfRecordsToBeRequested: Int, pageSizeRequested: Int?) {
+    private fun validateFetchProxyVoteApplications(
+        numberOfRecordsToBeReturned: Int,
+        numberOfRecordsToBeRequested: Int,
+        pageSizeRequested: Int?
+    ) {
         // Given
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
@@ -200,7 +210,10 @@ internal class ProxyVoteApplicationServiceTest {
 
             // Then
             verify(messageSender).send(
-                EmsConfirmedReceiptMessage(proxyVoteApplication.applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
+                EmsConfirmedReceiptMessage(
+                    proxyVoteApplication.applicationId,
+                    EmsConfirmedReceiptMessage.Status.SUCCESS
+                ),
                 QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
             )
         }
@@ -216,8 +229,16 @@ internal class ProxyVoteApplicationServiceTest {
                 )
             ).willReturn(proxyVoteApplication)
             // When
-            val requestFailure = EMSApplicationResponse(status = EMSApplicationStatus.FAILURE, message = ApplicationConstants.EMS_MESSAGE_TEXT, details = ApplicationConstants.EMS_DETAILS_TEXT)
-            proxyVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId, requestFailure)
+            val requestFailure = EMSApplicationResponse(
+                status = EMSApplicationStatus.FAILURE,
+                message = ApplicationConstants.EMS_MESSAGE_TEXT,
+                details = ApplicationConstants.EMS_DETAILS_TEXT
+            )
+            proxyVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER,
+                proxyVoteApplication.applicationId,
+                requestFailure
+            )
 
             // Then
             verify(messageSender).send(
