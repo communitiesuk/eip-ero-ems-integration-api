@@ -10,11 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.given
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
-import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.*
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
@@ -84,6 +80,7 @@ internal class PostalVoteApplicationServiceTest {
         @AfterEach
         fun afterEach() {
             verify(apiProperties).defaultPageSize
+            verify(apiProperties, atLeastOnce()).forceMaxPageSize
         }
 
         @Test
@@ -113,9 +110,15 @@ internal class PostalVoteApplicationServiceTest {
 
     @Nested
     inner class PageSizeIsProvided {
+        @BeforeEach
+        fun beforeEach() {
+            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+        }
+
         @AfterEach
         fun afterEach() {
-            verifyNoInteractions(apiProperties)
+            verify(apiProperties, atLeastOnce()).forceMaxPageSize
+            verifyNoMoreInteractions(apiProperties)
         }
 
         @Test
