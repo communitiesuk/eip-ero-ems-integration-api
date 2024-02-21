@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -55,6 +56,9 @@ internal class ProxyVoteApplicationServiceTest {
 
     companion object {
         private const val DEFAULT_PAGE_SIZE = 100
+        private const val BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE = 150
+        private const val FORCE_MAX_PAGE_SIZE = 200
+        private const val MORE_THAN_FORCE_MAX_PAGE_SIZE = 250
         private const val CERTIFICATE_SERIAL_NUMBER = "test"
         private val GSS_CODES = listOf(GSS_CODE, GSS_CODE2)
         private val requestSuccess = EMSApplicationResponse()
@@ -72,45 +76,91 @@ internal class ProxyVoteApplicationServiceTest {
         @BeforeEach
         fun beforeEach() {
             given(apiProperties.defaultPageSize).willReturn(DEFAULT_PAGE_SIZE)
+            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
         }
 
         @AfterEach
         fun afterEach() {
             verify(apiProperties).defaultPageSize
+            verify(apiProperties, atLeastOnce()).forceMaxPageSize
         }
 
         @Test
-        fun `should return maximum of 100 proxy vote applications`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
+        fun `should return maximum of DEFAULT_PAGE_SIZE proxy vote applications`() =
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = DEFAULT_PAGE_SIZE,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
 
         @Test
         fun `system does not have requested number of records in the DB`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = null)
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = 10,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
 
         @Test
         fun `system does not have any records`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = null)
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = 0,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
     }
 
     @Nested
     inner class PageSizeIsProvided {
+        @BeforeEach
+        fun beforeEach() {
+            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+        }
+
         @AfterEach
-        fun afterEach() = verifyNoInteractions(apiProperties)
+        fun afterEach() {
+            verify(apiProperties, atLeastOnce()).forceMaxPageSize
+            verifyNoMoreInteractions(apiProperties)
+        }
 
         @Test
-        fun `should return maximum of 100 proxy vote applications`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = 200)
+        fun `should request and return maximum of FORCE_MAX_PAGE_SIZE proxy vote applications`() =
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = FORCE_MAX_PAGE_SIZE,
+                numberOfRecordsToBeRequested = FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = MORE_THAN_FORCE_MAX_PAGE_SIZE
+            )
+
+        @Test
+        fun `should request and return the page size requested proxy vote applications`() =
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
 
         @Test
         fun `system does not have requested number of records in the DB`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = 100)
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = 10,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
 
         @Test
         fun `system does not have any records`() =
-            validateFetchProxyVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = 100)
+            validateFetchProxyVoteApplications(
+                numberOfRecordsToBeReturned = 0,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
     }
 
-    private fun validateFetchProxyVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
+    private fun validateFetchProxyVoteApplications(
+        numberOfRecordsToBeReturned: Int,
+        numberOfRecordsToBeRequested: Int,
+        pageSizeRequested: Int?
+    ) {
         // Given
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
@@ -124,7 +174,7 @@ internal class ProxyVoteApplicationServiceTest {
             proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 GSS_CODES,
                 RecordStatus.RECEIVED,
-                Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
+                Pageable.ofSize(numberOfRecordsToBeRequested)
             )
         ).willReturn(savedApplicationIds)
         given { proxyVoteApplicationRepository.findByApplicationIdIn(savedApplicationIds) }.willReturn(savedApplications)
@@ -160,7 +210,10 @@ internal class ProxyVoteApplicationServiceTest {
 
             // Then
             verify(messageSender).send(
-                EmsConfirmedReceiptMessage(proxyVoteApplication.applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
+                EmsConfirmedReceiptMessage(
+                    proxyVoteApplication.applicationId,
+                    EmsConfirmedReceiptMessage.Status.SUCCESS
+                ),
                 QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
             )
         }
@@ -176,8 +229,16 @@ internal class ProxyVoteApplicationServiceTest {
                 )
             ).willReturn(proxyVoteApplication)
             // When
-            val requestFailure = EMSApplicationResponse(status = EMSApplicationStatus.FAILURE, message = ApplicationConstants.EMS_MESSAGE_TEXT, details = ApplicationConstants.EMS_DETAILS_TEXT)
-            proxyVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId, requestFailure)
+            val requestFailure = EMSApplicationResponse(
+                status = EMSApplicationStatus.FAILURE,
+                message = ApplicationConstants.EMS_MESSAGE_TEXT,
+                details = ApplicationConstants.EMS_DETAILS_TEXT
+            )
+            proxyVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER,
+                proxyVoteApplication.applicationId,
+                requestFailure
+            )
 
             // Then
             verify(messageSender).send(

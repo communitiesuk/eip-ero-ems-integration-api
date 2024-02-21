@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -57,6 +58,9 @@ internal class PostalVoteApplicationServiceTest {
 
     companion object {
         private const val DEFAULT_PAGE_SIZE = 100
+        private const val BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE = 150
+        private const val FORCE_MAX_PAGE_SIZE = 200
+        private const val MORE_THAN_FORCE_MAX_PAGE_SIZE = 250
         private const val CERTIFICATE_SERIAL_NUMBER = "test"
         private val GSS_CODES = listOf(GSS_CODE, GSS_CODE2)
         private val requestSuccess = EMSApplicationResponse()
@@ -75,47 +79,91 @@ internal class PostalVoteApplicationServiceTest {
         @BeforeEach
         fun beforeEach() {
             given(apiProperties.defaultPageSize).willReturn(DEFAULT_PAGE_SIZE)
+            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
         }
 
         @AfterEach
         fun afterEach() {
             verify(apiProperties).defaultPageSize
+            verify(apiProperties, atLeastOnce()).forceMaxPageSize
         }
 
         @Test
-        fun `should return maximum of 100 postal vote applications`() =
-            validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = null)
+        fun `should return maximum of DEFAULT_PAGE_SIZE postal vote applications`() =
+            validateFetchPostalVoteApplications(
+                numberOfRecordsToBeReturned = DEFAULT_PAGE_SIZE,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
 
         @Test
         fun `system does not have requested number of records in the DB`() =
-            validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = null)
+            validateFetchPostalVoteApplications(
+                numberOfRecordsToBeReturned = 10,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
 
         @Test
         fun `system does not have any records`() =
-            validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = null)
+            validateFetchPostalVoteApplications(
+                numberOfRecordsToBeReturned = 0,
+                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                pageSizeRequested = null
+            )
     }
 
     @Nested
     inner class PageSizeIsProvided {
+        @BeforeEach
+        fun beforeEach() {
+            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+        }
+
         @AfterEach
         fun afterEach() {
-            verifyNoInteractions(apiProperties)
+            verify(apiProperties, atLeastOnce()).forceMaxPageSize
+            verifyNoMoreInteractions(apiProperties)
         }
 
         @Test
-        fun `should return maximum of 100 postal vote applications`() =
-            validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 100, pageSizeRequested = 200)
+        fun `should request and return maximum of FORCE_MAX_PAGE_SIZE postal vote applications`() =
+            validateFetchPostalVoteApplications(
+                numberOfRecordsToBeReturned = FORCE_MAX_PAGE_SIZE,
+                numberOfRecordsToBeRequested = FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = MORE_THAN_FORCE_MAX_PAGE_SIZE
+            )
+
+        @Test
+        fun `should request and return the page size requested postal vote applications`() =
+            validateFetchPostalVoteApplications(
+                numberOfRecordsToBeReturned = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
 
         @Test
         fun `system does not have requested number of records in the DB`() =
-            validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 10, pageSizeRequested = 100)
+            validateFetchPostalVoteApplications(
+                numberOfRecordsToBeReturned = 10,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
 
         @Test
         fun `system does not have any records`() =
-            validateFetchPostalVoteApplications(numberOfRecordsToBeReturned = 0, pageSizeRequested = 100)
+            validateFetchPostalVoteApplications(
+                numberOfRecordsToBeReturned = 0,
+                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+            )
     }
 
-    private fun validateFetchPostalVoteApplications(numberOfRecordsToBeReturned: Int, pageSizeRequested: Int?) {
+    private fun validateFetchPostalVoteApplications(
+        numberOfRecordsToBeReturned: Int,
+        numberOfRecordsToBeRequested: Int,
+        pageSizeRequested: Int?
+    ) {
         // Given
         val savedApplications =
             IntStream.rangeClosed(1, numberOfRecordsToBeReturned).mapToObj {
@@ -129,10 +177,12 @@ internal class PostalVoteApplicationServiceTest {
             postalVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
                 GSS_CODES,
                 RecordStatus.RECEIVED,
-                Pageable.ofSize(pageSizeRequested ?: DEFAULT_PAGE_SIZE)
+                Pageable.ofSize(numberOfRecordsToBeRequested)
             )
         ).willReturn(savedApplicationIds)
-        given { postalVoteApplicationRepository.findByApplicationIdIn(savedApplicationIds) }.willReturn(savedApplications)
+        given { postalVoteApplicationRepository.findByApplicationIdIn(savedApplicationIds) }.willReturn(
+            savedApplications
+        )
         given { postalVoteMapper.mapFromEntities(savedApplications) }.willReturn(mockPostalVotes)
 
         val postalVoteApplications =
@@ -159,11 +209,18 @@ internal class PostalVoteApplicationServiceTest {
                 )
             ).willReturn(postalVoteApplication)
             // When
-            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestSuccess)
+            postalVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER,
+                postalVoteApplication.applicationId,
+                requestSuccess
+            )
 
             // Then
             verify(messageSender).send(
-                EmsConfirmedReceiptMessage(postalVoteApplication.applicationId, EmsConfirmedReceiptMessage.Status.SUCCESS),
+                EmsConfirmedReceiptMessage(
+                    postalVoteApplication.applicationId,
+                    EmsConfirmedReceiptMessage.Status.SUCCESS
+                ),
                 DELETED_POSTAL_APPLICATION_QUEUE
             )
         }
@@ -179,8 +236,16 @@ internal class PostalVoteApplicationServiceTest {
                 )
             ).willReturn(postalVoteApplication)
             // When
-            val requestFailure = EMSApplicationResponse(status = EMSApplicationStatus.FAILURE, message = EMS_MESSAGE_TEXT, details = EMS_DETAILS_TEXT)
-            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestFailure)
+            val requestFailure = EMSApplicationResponse(
+                status = EMSApplicationStatus.FAILURE,
+                message = EMS_MESSAGE_TEXT,
+                details = EMS_DETAILS_TEXT
+            )
+            postalVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER,
+                postalVoteApplication.applicationId,
+                requestFailure
+            )
 
             // Then
             verify(messageSender).send(
@@ -223,7 +288,11 @@ internal class PostalVoteApplicationServiceTest {
             ).willReturn(postalVoteApplication)
 
             // When
-            postalVoteApplicationService.confirmReceipt(CERTIFICATE_SERIAL_NUMBER, postalVoteApplication.applicationId, requestSuccess)
+            postalVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER,
+                postalVoteApplication.applicationId,
+                requestSuccess
+            )
 
             // Then
             verify(postalVoteApplicationRepository).findByApplicationIdAndApplicationDetailsGssCodeIn(

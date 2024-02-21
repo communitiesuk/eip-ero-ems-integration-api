@@ -21,7 +21,8 @@ internal class PageSizeValidatorTest {
     private val apiProperties = ApiProperties(
         requestHeaderName = "test",
         defaultPageSize = 10,
-        maxPageSize = 20
+        maxPageSize = 20,
+        forceMaxPageSize = 20
     )
 
     private val validationErrorMessage =
@@ -31,7 +32,8 @@ internal class PageSizeValidatorTest {
         apiProperties = ApiProperties(
             requestHeaderName = "test",
             defaultPageSize = 10,
-            maxPageSize = 20
+            maxPageSize = 20,
+            forceMaxPageSize = 20
         )
     )
 

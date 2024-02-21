@@ -30,8 +30,12 @@ class ProxyVoteApplicationService(
     fun getProxyVoteApplications(certificateSerialNumber: String, pageSize: Int?): ProxyVoteApplications {
         logger.info { "Proxy Service fetching GSS Codes for $certificateSerialNumber" }
         val gssCodes = retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
-        val numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
+        var numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize proxy vote applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
+        if (numberOfRecordsToFetch > apiProperties.forceMaxPageSize) {
+            logger.warn("Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch")
+            numberOfRecordsToFetch = apiProperties.forceMaxPageSize
+        }
         val proxyApplicationIds = proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
             gssCodes,
             RecordStatus.RECEIVED,
