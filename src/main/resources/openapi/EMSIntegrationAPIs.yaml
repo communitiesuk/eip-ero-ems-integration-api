@@ -82,7 +82,7 @@ paths:
             type: integer
           in: query
           name: pageSize
-          description: 'The maximum number of records to return in the response. Default 100, min 1, max 500'
+          description: 'The maximum number of records to return in the response. Default 100, min 1, max 200'
       security:
         - emsCertificateLambdaAuthorizer: []
       x-amazon-apigateway-integration:
@@ -209,7 +209,7 @@ paths:
             type: number
           in: query
           name: pageSize
-          description: 'The maximum number of records to return in the response. Default 100, min 1, max 500'
+          description: 'The maximum number of records to return in the response. Default 100, min 1, max 200'
       security:
         - emsCertificateLambdaAuthorizer: [ ]
       x-amazon-apigateway-integration:
