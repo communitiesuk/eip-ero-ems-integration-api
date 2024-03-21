@@ -71,7 +71,7 @@ dependencies {
     // spring security
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("com.nimbusds:nimbus-jose-jwt:9.31")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
 
     implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
