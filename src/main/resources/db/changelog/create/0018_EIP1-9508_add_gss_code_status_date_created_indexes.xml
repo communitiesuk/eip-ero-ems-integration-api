@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="stephen.penney@softwire.com" id="0018_EIP1-9508_add_gss_code_status_date_created_index_to_postal"
+               context="ddl">
+
+        <createIndex tableName="postal_vote_application"
+                     indexName="postal_vote_application_gss_code_status_date_created_idx">
+            <column name="gss_code"/>
+            <column name="status"/>
+            <column name="date_created"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="postal_vote_application"
+                       indexName="postal_vote_application_gss_code_status_date_created_idx"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="stephen.penney@softwire.com" id="0018_EIP1-9508_add_gss_code_status_date_created_index_to_proxy"
+               context="ddl">
+
+        <createIndex tableName="proxy_vote_application"
+                     indexName="proxy_vote_application_gss_code_status_date_created_idx">
+            <column name="gss_code"/>
+            <column name="status"/>
+            <column name="date_created"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="proxy_vote_application"
+                       indexName="proxy_vote_application_gss_code_status_date_created_idx"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
