@@ -9,7 +9,6 @@ on:
         type: choice
         options:
           - sb
-          - dev
           - int
           - pvt
           - test
