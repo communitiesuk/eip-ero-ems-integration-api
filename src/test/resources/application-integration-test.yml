@@ -43,6 +43,6 @@ caching.time-to-live: PT2S
 
 jobs:
   enabled: false
-  pending-download-monitoring:
-    expected-maximum-pending-period: 24H
+  pending-downloads-monitoring:
+    expected-maximum-pending-period: 5D
     excluded-gss-codes: "E99999999"
