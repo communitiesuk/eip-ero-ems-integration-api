@@ -35,3 +35,5 @@ databaseChangeLog:
       file: /db/changelog/create/0017_EROPSPT-186_increase_signature_waived_reason_max_length.xml
   - include:
       file: /db/changelog/create/0018_EIP1-9508_add_gss_code_status_date_created_indexes.xml
+  - include:
+      file: /db/changelogs/create/0019_EROPSPT-298_add_shedlock_table.xml

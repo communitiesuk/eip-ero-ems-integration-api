@@ -40,3 +40,9 @@ api:
     sts.assume.role: arn:aws:iam::1234567890987:role/grant-me-access-to-ier
 
 caching.time-to-live: PT2S
+
+jobs:
+  enabled: false
+  pending-download-monitoring:
+    expected-maximum-pending-period: 24H
+    excluded-gss-codes: "E99999999"
