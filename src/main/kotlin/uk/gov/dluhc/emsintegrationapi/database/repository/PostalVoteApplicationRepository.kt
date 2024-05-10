@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import uk.gov.dluhc.emsintegrationapi.database.entity.PendingDownloadsSummaryByGssCode
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import java.time.Instant
 
 @Repository
 interface PostalVoteApplicationRepository :
@@ -32,4 +34,13 @@ interface PostalVoteApplicationRepository :
         applicationId: String,
         gssCode: List<String>
     ): PostalVoteApplication?
+
+    @Query(
+        """SELECT app.applicationDetails.gssCode AS gssCode, count(app.applicationId) as pendingDownloadCount
+        FROM PostalVoteApplication app
+        WHERE app.status = 'RECEIVED' AND app.dateCreated < :createdBefore
+        GROUP BY app.applicationDetails.gssCode
+        """
+    )
+    fun summarisePendingPostalVotesByGssCode(createdBefore: Instant): List<PendingDownloadsSummaryByGssCode>
 }

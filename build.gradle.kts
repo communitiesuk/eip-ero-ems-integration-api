@@ -87,7 +87,7 @@ dependencies {
     runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.4")
     runtimeOnly("software.amazon.awssdk:rds")
 
-    // Schedulling
+    // Scheduling
     implementation("net.javacrumbs.shedlock:shedlock-spring:4.43.0")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.43.0")
 

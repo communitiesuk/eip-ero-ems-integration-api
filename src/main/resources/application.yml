@@ -40,6 +40,16 @@ api:
     base.url: ${API_IER_BASE_URL}
     sts.assume.role: ${API_IER_STS_ASSUME_ROLE}
 
+jobs:
+  enabled: true
+  lock-at-most-for: "PT100M" # Time Period of 100 Minutes
+  pending-downloads-monitoring:
+    enabled: true
+    name: "PendingDownloadsMonitoring"
+    cron: "0 0 5 * * *" # Runs at 05:00 daily
+    expected-maximum-pending-period: 5D
+    excluded-gss-codes: "E99999999"
+
 caching.time-to-live: PT1H
 
 feature-toggles:
