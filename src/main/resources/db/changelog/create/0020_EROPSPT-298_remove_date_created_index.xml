@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="kirsty.land@softwire.com" id="0020_EROPSPT-298_remove_date_created_index" context="ddl">
+        <dropIndex tableName="postal_vote_application" indexName="postal_vote_application_date_created_idx"/>
+        <dropIndex tableName="proxy_vote_application" indexName="proxy_vote_application_date_created_idx"/>
+
+        <rollback>
+            <createIndex tableName="postal_vote_application" indexName="postal_vote_application_date_created_idx">
+                <column name="date_created"/>
+            </createIndex>
+            <createIndex tableName="proxy_vote_application" indexName="proxy_vote_application_date_created_idx">
+                <column name="date_created"/>
+            </createIndex>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
