@@ -36,7 +36,10 @@ interface PostalVoteApplicationRepository :
     ): PostalVoteApplication?
 
     @Query(
-        """SELECT app.applicationDetails.gssCode AS gssCode, count(app.applicationId) as pendingDownloadCount
+        """SELECT
+            app.applicationDetails.gssCode AS gssCode,
+            count(app.applicationId) as pendingDownloadCount,
+            count(app.applicantDetails.emsElectorId) as pendingDownloadsWithEmsElectorId
         FROM PostalVoteApplication app
         WHERE app.status = 'RECEIVED' AND app.dateCreated < :createdBefore
         GROUP BY app.applicationDetails.gssCode
