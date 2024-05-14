@@ -36,11 +36,17 @@ class PendingDownloadsMonitoringService(
     private fun logPendingDownloads(applicationType: String, summaries: List<PendingDownloadsSummaryByGssCode>) {
         val nonExcludedPendingDownloadSummaries = summaries.filter { !excludedGssCodes.contains(it.gssCode) }
         val totalPending = nonExcludedPendingDownloadSummaries.sumOf { it.pendingDownloadCount }
+        val totalPendingWithEmsElectorId =
+            nonExcludedPendingDownloadSummaries.sumOf { it.pendingDownloadsWithEmsElectorId }
 
-        logger.info { "A total of $totalPending $applicationType applications have been pending for more than $expectedMaximumPendingPeriod." }
+        logger.info {
+            "A total of $totalPending $applicationType applications ($totalPendingWithEmsElectorId with EMS " +
+                "Elector Ids) have been pending for more than $expectedMaximumPendingPeriod."
+        }
         nonExcludedPendingDownloadSummaries.forEach {
             logger.info {
                 "The gss code ${it.gssCode} has ${it.pendingDownloadCount} $applicationType applications " +
+                    "(${it.pendingDownloadsWithEmsElectorId} with EMS Elector Ids) " +
                     "that have been pending for more than $expectedMaximumPendingPeriod."
             }
         }
