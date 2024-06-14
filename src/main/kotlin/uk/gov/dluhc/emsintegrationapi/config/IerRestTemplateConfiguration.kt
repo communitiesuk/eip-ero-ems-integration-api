@@ -25,7 +25,8 @@ import java.net.URI
 @Configuration
 class IerRestTemplateConfiguration(
     @Value("\${api.ier.base.url}") private val ierApiBaseUrl: String,
-    @Value("\${api.ier.sts.assume.role}") private val ierStsAssumeRole: String
+    @Value("\${api.ier.sts.assume.role}") private val ierStsAssumeRole: String,
+    private val correlationIdRestTemplateClientHttpRequestInterceptor: CorrelationIdRestTemplateClientHttpRequestInterceptor,
 ) {
 
     companion object {
@@ -38,6 +39,7 @@ class IerRestTemplateConfiguration(
         return RestTemplateBuilder()
             .requestFactory { ierClientHttpRequestFactory }
             .rootUri(ierApiBaseUrl)
+            .interceptors(correlationIdRestTemplateClientHttpRequestInterceptor)
             .build()
     }
 

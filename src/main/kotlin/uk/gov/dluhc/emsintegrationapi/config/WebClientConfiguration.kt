@@ -6,11 +6,14 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
-class WebClientConfiguration {
+class WebClientConfiguration(
+    private val correlationIdExchangeFilter: CorrelationIdWebClientMdcExchangeFilter
+) {
 
     @Bean
     fun eroManagementWebClient(@Value("\${api.ero-management.url}") eroManagementApiUrl: String): WebClient =
         WebClient.builder()
             .baseUrl(eroManagementApiUrl)
+            .filter(correlationIdExchangeFilter)
             .build()
 }

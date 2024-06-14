@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder.responseDefinition
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.matching
@@ -14,6 +15,7 @@ import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import uk.gov.dluhc.emsintegrationapi.config.CORRELATION_ID_HEADER
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildElectoralRegistrationOfficeResponse
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildLocalAuthorityResponse
 
@@ -144,7 +146,7 @@ class WiremockService(private val wireMockServer: WireMockServer) {
         matching(
             "AWS4-HMAC-SHA256 " +
                 "Credential=.*, " +
-                "SignedHeaders=accept;accept-encoding;host;x-amz-date;x-amz-security-token, " +
+                "SignedHeaders=accept;accept-encoding;host;x-amz-date;x-amz-security-token;x-correlation-id, " +
                 "Signature=.*"
         )
 
@@ -153,6 +155,20 @@ class WiremockService(private val wireMockServer: WireMockServer) {
             getRequestedFor(urlPathMatching("/ier-ero/ero"))
                 .withQueryParam("certificateSerial", WireMock.equalTo(certificateSerial))
                 .withHeader("Authorization", matchingAwsSignedAuthHeader())
+        )
+    }
+
+    fun verifyIerApiRequestWithCorrelationId(correlationId: String) {
+        wireMockServer.verify(
+            getRequestedFor(urlPathMatching(IER_ERO_GET_URL))
+                .withHeader(CORRELATION_ID_HEADER, equalTo(correlationId))
+        )
+    }
+
+    fun verifyEroManagementApiRequestWithCorrelationId(correlationId: String) {
+        wireMockServer.verify(
+            getRequestedFor(urlPathMatching(ERO_MANAGEMENT_ERO_GET_URL))
+                .withHeader(CORRELATION_ID_HEADER, equalTo(correlationId))
         )
     }
 }
