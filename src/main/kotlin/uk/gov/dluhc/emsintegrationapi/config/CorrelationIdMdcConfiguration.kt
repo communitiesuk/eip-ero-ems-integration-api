@@ -23,7 +23,15 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 /**
- * MVC Interceptor and AOP beans that set the correlation ID MDC variable for inclusion in all log statements.
+ * MVC Interceptor and AOP beans that set MDC variables for inclusion in all log statements.
+ *
+ * correlationId: This id is passed through requests and messages, and is used to link different actions stemming from
+ * a common trigger, such as a run of a scheduled job, an API request or a message received from IER.
+ *
+ * requestId: Only set for requests received through API gateway, this id links application logs to API gateway logs
+ *
+ * messageId: Only set when processing messages with a message listener, this id is used to link SQS messages to
+ * application logs, and distinguish between logs for processing messages with the same correlation id.
  */
 
 const val CORRELATION_ID = "correlationId"
