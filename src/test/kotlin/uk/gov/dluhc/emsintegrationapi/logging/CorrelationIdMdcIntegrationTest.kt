@@ -233,7 +233,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
                     "^Postal Vote Application Message received with an application id = .{24}$",
                     Level.INFO
                 )
-                assertThat(firstReliableMessage).hasAnyMessageId();
+                assertThat(firstReliableMessage).hasAnyMessageId()
                 val messageId = firstReliableMessage!!.mdcPropertyMap[MESSAGE_ID]!!
 
                 val filteredLogs = logs.filter { it.mdcPropertyMap.isNotEmpty() }
