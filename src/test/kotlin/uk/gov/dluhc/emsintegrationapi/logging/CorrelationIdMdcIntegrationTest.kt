@@ -19,6 +19,8 @@ import uk.gov.dluhc.emsintegrationapi.config.CORRELATION_ID_HEADER
 import uk.gov.dluhc.emsintegrationapi.config.ERO_CERTIFICATE_MAPPING_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
+import uk.gov.dluhc.emsintegrationapi.config.MESSAGE_ID
+import uk.gov.dluhc.emsintegrationapi.config.REQUEST_ID_HEADER
 import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteRecords
 import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteSqsMessage
 import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.TestPhase
@@ -142,6 +144,59 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
                 wireMockService.verifyEroManagementApiRequestWithCorrelationId(expectedCorrelationId)
             }
         }
+
+        @Test
+        fun `should service REST API call given no request id header`() {
+            // When
+            webClient.get().uri(PATH)
+                .header(apiProperties.requestHeaderName, CERTIFICATE_SERIAL_NUMBER)
+                .exchange()
+
+            // Then
+            await.atMost(3, TimeUnit.SECONDS).untilAsserted {
+                val firstReliableMessage = TestLogAppender.getLogEventMatchingRegex(
+                    "Processing a get postal vote applications request with page size =null and certificate serial no =$CERTIFICATE_SERIAL_NUMBER",
+                    Level.INFO
+                )
+                assertThat(firstReliableMessage).hasNoRequestId()
+
+                val filteredLogs = logs.filter { it.mdcPropertyMap.isNotEmpty() }
+                // wait until sufficient messages are logged before verifying all share same correlation ID
+                assertThat(filteredLogs).hasSizeGreaterThanOrEqualTo(3)
+
+                filteredLogs.forEach {
+                    assertThat(it).`as`("Message: ${it.message}").hasNoRequestId()
+                }
+            }
+        }
+
+        @Test
+        fun `should service REST API call given request id header`() {
+            // When
+            val expectedRequestId = randomUUID().toString()
+            webClient.get().uri(PATH)
+                .header(apiProperties.requestHeaderName, CERTIFICATE_SERIAL_NUMBER)
+                .header(REQUEST_ID_HEADER, expectedRequestId)
+                .exchange()
+
+            // Then
+            await.atMost(3, TimeUnit.SECONDS).untilAsserted {
+                assertThat(
+                    TestLogAppender.getLogEventMatchingRegex(
+                        "Processing a get postal vote applications request with page size =null and certificate serial no =$CERTIFICATE_SERIAL_NUMBER",
+                        Level.INFO
+                    )
+                ).hasRequestId(expectedRequestId)
+
+                val filteredLogs = logs.filter { it.mdcPropertyMap.isNotEmpty() }
+                // wait until sufficient messages are logged before verifying all share same correlation ID
+                assertThat(filteredLogs).hasSizeGreaterThanOrEqualTo(3)
+
+                filteredLogs.forEach {
+                    assertThat(it).`as`("Message: ${it.message}").hasRequestId(expectedRequestId)
+                }
+            }
+        }
     }
 
     @Nested
@@ -160,7 +215,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         }
 
         @Test
-        fun `should log consistent correlation id upon application creation`() {
+        fun `should log consistent correlation id and message id upon application creation`() {
             val payload = buildPostalVoteApplicationMessage()
 
             val expectedCorrelationId = randomUUID().toString().replace("-", "")
@@ -174,20 +229,21 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
             await.atMost(10, TimeUnit.SECONDS).untilAsserted {
                 assertThat(postalVoteApplicationRepository.findById(payload.applicationDetails.id)).isNotNull
 
-                assertThat(
-                    // first message that is reliably logged
-                    TestLogAppender.getLogEventMatchingRegex(
-                        "^Postal Vote Application Message received with an application id = .{24}$",
-                        Level.INFO
-                    )
-                ).isNotNull
+                val firstReliableMessage = TestLogAppender.getLogEventMatchingRegex(
+                    "^Postal Vote Application Message received with an application id = .{24}$",
+                    Level.INFO
+                )
+                assertThat(firstReliableMessage).hasAnyMessageId();
+                val messageId = firstReliableMessage!!.mdcPropertyMap[MESSAGE_ID]!!
 
                 val filteredLogs = logs.filter { it.mdcPropertyMap.isNotEmpty() }
-                // wait until sufficient messages are logged before verifying all share same correlation ID
+                // wait until sufficient messages are logged before verifying all share same correlation ID and message ID
                 assertThat(filteredLogs).hasSizeGreaterThanOrEqualTo(3)
 
                 filteredLogs.forEach {
-                    assertThat(it).`as`("Message: ${it.message}").hasCorrelationId(expectedCorrelationId)
+                    assertThat(it).`as`("Message: ${it.message}")
+                        .hasCorrelationId(expectedCorrelationId)
+                        .hasMessageId(messageId)
                 }
             }
         }

@@ -28,12 +28,17 @@ import javax.servlet.http.HttpServletResponse
 
 const val CORRELATION_ID = "correlationId"
 const val CORRELATION_ID_HEADER = "x-correlation-id"
+const val REQUEST_ID = "requestId"
+const val REQUEST_ID_HEADER = "x-request-id"
+const val MESSAGE_ID = "messageId"
 
 @Component
 class CorrelationIdMdcInterceptor : HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val correlationId = request.getHeader(CORRELATION_ID_HEADER) ?: generateCorrelationId()
+        val requestId = request.getHeader(REQUEST_ID_HEADER)
         MDC.put(CORRELATION_ID, correlationId)
+        MDC.put(REQUEST_ID, requestId)
         response.setHeader(CORRELATION_ID_HEADER, correlationId)
         return true
     }
@@ -45,6 +50,7 @@ class CorrelationIdMdcInterceptor : HandlerInterceptor {
         ex: Exception?
     ) {
         MDC.remove(CORRELATION_ID)
+        MDC.remove(REQUEST_ID)
     }
 }
 
@@ -155,8 +161,10 @@ class CorrelationIdMdcMessageListenerAspect {
     fun aroundHandleMessage(proceedingJoinPoint: ProceedingJoinPoint): Any? {
         val message = proceedingJoinPoint.args[0] as Message<*>?
         MDC.put(CORRELATION_ID, message?.headers?.get(CORRELATION_ID_HEADER)?.toString() ?: generateCorrelationId())
+        MDC.put(MESSAGE_ID, message?.headers?.id?.toString())
         return proceedingJoinPoint.proceed(proceedingJoinPoint.args).also {
             MDC.remove(CORRELATION_ID)
+            MDC.remove(MESSAGE_ID)
         }
     }
 
