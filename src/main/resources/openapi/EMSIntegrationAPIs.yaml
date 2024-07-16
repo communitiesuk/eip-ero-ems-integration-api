@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
-  version: 1.2.4
+  version: 1.2.5
   description: |
     This specification is for an API hosted by EROP for EMS clients to fetch
     details of Postal Vote and Proxy Vote applications made by the public.
@@ -90,6 +90,7 @@ paths:
         uri: '${base_uri}/postalvotes'
         requestParameters:
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+          integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
         httpMethod: GET
@@ -128,6 +129,7 @@ paths:
         requestParameters:
           integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+          integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
         httpMethod: PUT
@@ -161,6 +163,7 @@ paths:
         requestParameters:
           integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+          integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
         httpMethod: POST
@@ -190,6 +193,7 @@ paths:
         requestParameters:
           integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+          integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
         httpMethod: DELETE
@@ -217,6 +221,7 @@ paths:
         uri: '${base_uri}/proxyvotes'
         requestParameters:
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+          integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
         httpMethod: GET
@@ -254,6 +259,7 @@ paths:
         requestParameters:
           integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+          integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
         httpMethod: PUT
@@ -286,6 +292,7 @@ paths:
         requestParameters:
           integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+          integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
         httpMethod: POST
@@ -315,6 +322,7 @@ paths:
         requestParameters:
           integration.request.path.id: "method.request.path.id"
           integration.request.header.client-cert-serial: context.authorizer.client-cert-serial
+          integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: '${vpc_connection_id}'
         httpMethod: DELETE
