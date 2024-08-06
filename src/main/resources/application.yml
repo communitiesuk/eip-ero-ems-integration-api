@@ -41,10 +41,10 @@ api:
     sts.assume.role: ${API_IER_STS_ASSUME_ROLE}
 
 jobs:
-  enabled: false
+  enabled: true
   lock-at-most-for: "PT100M" # Time Period of 100 Minutes
   pending-downloads-monitoring:
-    enabled: false
+    enabled: true
     name: "PendingDownloadsMonitoring"
     cron: "0 0 5 * * *" # Runs at 05:00 daily
     expected-maximum-pending-period: 5D
