@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="kirsty.land@softwire.com" id="0022_EROPSPT-350_add_index_on_status_to_postal"
+               context="ddl">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="postal_vote_application" indexName="postal_vote_application_status_idx" />
+            </not>
+        </preConditions>
+
+        <createIndex tableName="postal_vote_application"
+                     indexName="postal_vote_application_status_idx">
+            <column name="status"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="postal_vote_application"
+                       indexName="postal_vote_application_status_idx"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="kirsty.land@softwire.com" id="0022_EROPSPT-350_add_index_on_status_to_proxy"
+               context="ddl">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="proxy_vote_application" indexName="proxy_vote_application_status_idx" />
+            </not>
+        </preConditions>
+
+        <createIndex tableName="proxy_vote_application"
+                     indexName="proxy_vote_application_status_idx">
+            <column name="status"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="proxy_vote_application"
+                       indexName="proxy_vote_application_status_idx"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
