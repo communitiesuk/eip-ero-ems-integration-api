@@ -1,0 +1,3 @@
+email:
+  monitor-pending-downloads-content:
+    subject: "[int] Postal and Proxy Pending Downloads Monitoring"
