@@ -21,6 +21,24 @@ $ ./gradlew ktlintApplyToIdea
 
 This only needs doing once to set up your IDE with the code styles.
 
+#### AWS CodeArtifact Access Set Up
+
+To access libraries stored in the AWS CodeArtifact repository an access token is required that the build script fetches
+in the background using the credentials for the `code-artifact` profile. To create this profile on your developer
+machine follow these instructions:
+
+```shell
+aws configure --profile code-artifact
+```
+
+At the prompts configure the `code-artifact` profile as follows:
+* Your AWS Access Key ID (in Keeper)
+* Your AWS Secret Access Key (in Keeper)
+* Default region name, `eu-west-2`
+* Default output format, `json`
+
+Note: AWS CLI must be installed on the developer workstation as a pre-requisite.
+
 ### Integration Test Development
 
 Integration tests use TestContainers to manage Docker containers, to reduce development time of writing IT tests it is

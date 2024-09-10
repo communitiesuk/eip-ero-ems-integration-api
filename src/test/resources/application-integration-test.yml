@@ -45,5 +45,14 @@ jobs:
   enabled: false
   pending-downloads-monitoring:
     enabled: true
+    send-email: true
     expected-maximum-pending-period: 5D
     excluded-gss-codes: "E99999999"
+
+email:
+  client:
+    sender: sender@domain.com
+  monitor-pending-downloads-content:
+    subject: "Postal and Proxy Pending Downloads Monitoring"
+    email-body-template: email-templates/monitor-pending-downloads.html
+    recipients: recipient1@domain.com
