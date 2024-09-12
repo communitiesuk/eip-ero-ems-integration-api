@@ -34,8 +34,18 @@ allOpen {
     annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embedabble")
 }
 
+val awsProfile = System.getenv("AWS_PROFILE_ARG") ?: "--profile code-artifact"
+val codeArtifactToken = "aws codeartifact get-authorization-token --domain erop-artifacts --domain-owner 063998039290 --query authorizationToken --output text $awsProfile".runCommand()
+
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://erop-artifacts-063998039290.d.codeartifact.eu-west-2.amazonaws.com/maven/api-repo/")
+        credentials {
+            username = "aws"
+            password = codeArtifactToken
+        }
+    }
 }
 
 apply(plugin = "org.jlleitschuh.gradle.ktlint")
@@ -62,6 +72,10 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
+
+    // internal libs
+    implementation("uk.gov.dluhc:email-client:1.0.0")
+
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -81,6 +95,8 @@ dependencies {
 
     // AWS dependencies (that are defined in the BOM io.awspring.cloud:spring-cloud-aws-dependencies)
     implementation("com.amazonaws:aws-java-sdk-sts")
+    // email
+    implementation("software.amazon.awssdk:ses")
 
     // mysql
     runtimeOnly("com.mysql:mysql-connector-j")
@@ -245,6 +261,15 @@ ktlint {
     filter {
         exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/generated/") }
     }
+}
+
+fun String.runCommand(): String {
+    val parts = this.split("\\s".toRegex())
+    val process = ProcessBuilder(*parts.toTypedArray())
+        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+        .start()
+    process.waitFor()
+    return process.inputStream.bufferedReader().readText().trim()
 }
 
 /* Configuration for the OWASP dependency check */

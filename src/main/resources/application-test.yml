@@ -1,1 +1,3 @@
-feature-toggles:
+email:
+  monitor-pending-downloads-content:
+    subject: "[test] Postal and Proxy Pending Downloads Monitoring"
