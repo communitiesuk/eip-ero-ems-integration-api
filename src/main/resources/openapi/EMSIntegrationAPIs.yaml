@@ -22,8 +22,8 @@ info:
 
     - "Internet-facing endpoint for EMS API - Guide for EMS Implementers", this document describes the TLS client certificate auth in detail
   contact:
-    name: Krister Bone
-    email: krister.bone@valtech.com
+    name: Duncan Elder
+    email: Duncan.Elder@communities.gov.uk
 servers:
   - url: 'http://localhost:3000'
   - url: 'https://api.ems-integration.dev.erop.ierds.uk'
