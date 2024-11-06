@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: EMS Application Data Removal SQS Message
+  version: 1.2.1
+  description: |-
+    EMS Application Data Removal API SQS Message Types for EROP
+
+    Messages defined in this spec are produced by EROP and consumed by EMS.
+
+    Any changes to this spec should be based on joint collaboration and agreement between EROP and EM.
+
+    Whilst this is an openAPI spec, it does not imply being used to define REST APIs, nor is it intended to.
+
+    The `paths` elements are being used to document (at a high level) the SQS queues and the request bodies that are expected
+    to be published to them. **There is no intent to generate or implement SQS queues or listener classes from this document.**
+
+    The `paths` element is only being used in order to maintain the structure of the openApi spec, as `paths` are required
+    elements.
+#
+# --------------------------------------------------------------------------------
+#
+
+paths:
+  #
+  # --------------------------------------------------------------------------------
+  # SQS Queues start here
+  # --------------------------------------------------------------------------------
+  #
+  '/remove-application-request':
+    post:
+      tags:
+        - SQS queues
+      requestBody:
+        $ref: '#/components/requestBodies/RemoveVoterApplicationEmsDataMessage'
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Error response describing fields in the request payload that are in error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Error response describing request made as forbidden by API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+#
+# --------------------------------------------------------------------------------
+#
+components:
+  #
+  # Schema and Enum Definitions
+  # -
+  schemas:
+    RemoveVoterApplicationEmsDataMessage:
+      title: RemoveVoterApplicationEmsDataMessage
+      type: object
+      description: |
+        Message requesting removal of an IED postal/proxy application.
+      x-api-owner: EMS
+      x-api-consumer: EROP
+      properties:
+        applicationId:
+          type: string
+          description: the IER ID of the application to be removed
+          pattern: '^[a-fA-F\d]{24}$'
+          example: 502cf250036469154b4f85fc
+        source:
+          type: string
+          description: Enum indicating type of application for which removal is requested
+          enum:
+            - POSTAL
+            - PROXY
+      required:
+        - applicationId
+        - source
+
+    ErrorResponse:
+      title: ErrorResponse
+      description: Response describing errors in an SQS request message
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: '2022-09-28T18:01:42.105Z'
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: 'Bad Request'
+        message:
+          type: string
+          example: 'Validation failed for object=applicationRequest. Error count: 14'
+        validationErrors:
+          type: array
+          items:
+            type: string
+          example: 'Error on field applicant.nino: rejected value [aaaaaaaaaaa], must match ^.{1,10}$'
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+  #
+  # Request Body Definitions
+  # --------------------------------------------------------------------------------
+  requestBodies:
+    RemoveVoterApplicationEmsDataMessage:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RemoveVoterApplicationEmsDataMessage'
