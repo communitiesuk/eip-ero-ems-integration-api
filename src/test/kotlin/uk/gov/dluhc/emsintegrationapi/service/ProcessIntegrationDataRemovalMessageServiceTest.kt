@@ -9,7 +9,10 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.BDDMockito.given
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails.EmsStatus
@@ -33,7 +36,6 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
 
     @InjectMocks
     private lateinit var service: ProcessIntegrationDataRemovalMessageService
-
 
     // -----------------------------------------------------------
     // PROXY
@@ -104,8 +106,10 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
             assertThrows<IntegrationDataRemovalFailedException> {
                 service.process(message)
             }.message
-        ).isEqualTo("The ems status of $POSTAL application with id `$applicationId` " +
-                "was not found so it could not be processed")
+        ).isEqualTo(
+            "The ems status of $POSTAL application with id `$applicationId` " +
+                "was not found so it could not be processed"
+        )
 
         // Then
         verify(postalVoteApplicationRepository, never()).delete(postalVoteApplication)
@@ -180,8 +184,10 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
             assertThrows<IntegrationDataRemovalFailedException> {
                 service.process(message)
             }.message
-        ).isEqualTo("The ems status of $PROXY application with id `$applicationId` " +
-                "was not found so it could not be processed")
+        ).isEqualTo(
+            "The ems status of $PROXY application with id `$applicationId` " +
+                "was not found so it could not be processed"
+        )
 
         // Then
         verify(proxyVoteApplicationRepository, never()).delete(proxyVoteApplication)

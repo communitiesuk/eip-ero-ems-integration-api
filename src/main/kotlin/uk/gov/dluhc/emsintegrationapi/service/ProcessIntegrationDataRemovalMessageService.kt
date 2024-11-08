@@ -21,7 +21,7 @@ class ProcessIntegrationDataRemovalMessageService(
     fun process(removeEmsDataMessage: RemoveVoterApplicationEmsDataMessage) {
         with(removeEmsDataMessage) {
             logger.info { "Processing postal vote application with id = ${removeEmsDataMessage.applicationId}" }
-            when(removeEmsDataMessage.source) {
+            when (removeEmsDataMessage.source) {
                 POSTAL -> processPostalApplicationRemoval(removeEmsDataMessage.applicationId)
                 PROXY -> processProxyApplicationRemoval(removeEmsDataMessage.applicationId)
             }
@@ -32,9 +32,8 @@ class ProcessIntegrationDataRemovalMessageService(
         postalVoteApplicationRepository.findById(applicationId)
             .let { it ->
                 it.map {
-                    if(Optional.ofNullable(it.applicationDetails.emsStatus).isEmpty) {
+                    if (Optional.ofNullable(it.applicationDetails.emsStatus).isEmpty) {
                         throw IntegrationDataRemovalFailedException(applicationId, POSTAL)
-
                     } else {
                         logger.info { "Deleting $POSTAL application ems data with id = ${it.applicationId}" }
                         postalVoteApplicationRepository.delete(it)
@@ -47,9 +46,8 @@ class ProcessIntegrationDataRemovalMessageService(
         proxyVoteApplicationRepository.findById(applicationId)
             .let { it ->
                 it.map {
-                    if(Optional.ofNullable(it.applicationDetails.emsStatus).isEmpty) {
+                    if (Optional.ofNullable(it.applicationDetails.emsStatus).isEmpty) {
                         throw IntegrationDataRemovalFailedException(applicationId, PROXY)
-
                     } else {
                         logger.info { "Deleting $PROXY application ems data with id = ${it.applicationId}" }
                         proxyVoteApplicationRepository.delete(it)
