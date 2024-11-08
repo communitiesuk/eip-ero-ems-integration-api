@@ -239,11 +239,11 @@ tasks.create("api-generate EROManagementApi model", GenerateTask::class) {
 }
 
 tasks.create(
-    "generate-models-from-remove-voter-application-sqs-messaging.yaml",
+    "generate-models-from-remove-application-ems-integration-data-sqs-messaging.yaml",
     GenerateTask::class
 ) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/remove-voter-application-sqs-messaging.yaml")
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/remove-application-ems-integration-data-sqs-messaging.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
 }
 

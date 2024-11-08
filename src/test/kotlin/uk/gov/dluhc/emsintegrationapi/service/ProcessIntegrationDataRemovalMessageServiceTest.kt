@@ -20,9 +20,9 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.POSTAL
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.PROXY
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.POSTAL
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.PROXY
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
@@ -46,7 +46,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     fun `should process postal integration data removal message where emsStatus is SUCCESS or FAILURE`(emsStatusType: EmsStatus) {
         val postalVoteApplication = mock(PostalVoteApplication::class.java)
         val applicationDetails = mock(ApplicationDetails::class.java)
-        val message = RemoveVoterApplicationEmsDataMessage(
+        val message = RemoveApplicationEmsIntegrationDataMessage(
             "123",
             POSTAL,
         )
@@ -67,7 +67,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     fun `should reject postal integration data removal message where application not found`() {
         val applicationId = "123"
         val postalVoteApplication = mock(PostalVoteApplication::class.java)
-        val message = RemoveVoterApplicationEmsDataMessage(
+        val message = RemoveApplicationEmsIntegrationDataMessage(
             applicationId,
             POSTAL,
         )
@@ -91,7 +91,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
         val applicationId = "123"
         val postalVoteApplication = mock(PostalVoteApplication::class.java)
         val applicationDetails = mock(ApplicationDetails::class.java)
-        val message = RemoveVoterApplicationEmsDataMessage(
+        val message = RemoveApplicationEmsIntegrationDataMessage(
             applicationId,
             POSTAL,
         )
@@ -124,7 +124,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     fun `should process proxy integration data removal message where emsStatus is SUCCESS or FAILURE`(emsStatusType: EmsStatus) {
         val proxyVoteApplication = mock(ProxyVoteApplication::class.java)
         val applicationDetails = mock(ApplicationDetails::class.java)
-        val message = RemoveVoterApplicationEmsDataMessage(
+        val message = RemoveApplicationEmsIntegrationDataMessage(
             "123",
             PROXY,
         )
@@ -145,7 +145,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     fun `should reject proxy integration data removal message where application not found`() {
         val applicationId = "123"
         val proxyVoteApplication = mock(ProxyVoteApplication::class.java)
-        val message = RemoveVoterApplicationEmsDataMessage(
+        val message = RemoveApplicationEmsIntegrationDataMessage(
             applicationId,
             PROXY,
         )
@@ -169,7 +169,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
         val applicationId = "123"
         val proxyVoteApplication = mock(ProxyVoteApplication::class.java)
         val applicationDetails = mock(ApplicationDetails::class.java)
-        val message = RemoveVoterApplicationEmsDataMessage(
+        val message = RemoveApplicationEmsIntegrationDataMessage(
             applicationId,
             PROXY,
         )

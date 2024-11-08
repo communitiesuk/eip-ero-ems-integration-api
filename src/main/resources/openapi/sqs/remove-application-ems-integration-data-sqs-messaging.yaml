@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
-  title: EMS Application Data Removal SQS Message
+  title: Application EMS Integration Data Removal SQS Message
   version: 1.2.1
   description: |-
-    EMS Application Data Removal API SQS Message Types for EROP
+    Application EMS Integration Data Removal API SQS Message Types for EROP
 
     Messages defined in this spec are produced by EROP and consumed by EMS.
 
@@ -31,7 +31,7 @@ paths:
       tags:
         - SQS queues
       requestBody:
-        $ref: '#/components/requestBodies/RemoveVoterApplicationEmsDataMessage'
+        $ref: '#/components/requestBodies/RemoveApplicationEmsIntegrationDataMessage'
       responses:
         '204':
           description: No Content
@@ -44,22 +44,22 @@ components:
   # Schema and Enum Definitions
   # -
   schemas:
-    RemoveVoterApplicationEmsDataMessage:
-      title: RemoveVoterApplicationEmsDataMessage
+    RemoveApplicationEmsIntegrationDataMessage:
+      title: RemoveApplicationEmsIntegrationDataMessage
       type: object
       description: |
-        Message requesting removal of an IED postal/proxy application.
+        Message requesting removal of IED postal/proxy application integration data.
       x-api-owner: EMS
       x-api-consumer: EROP
       properties:
         applicationId:
           type: string
-          description: the IER ID of the application to be removed
+          description: the IER ID of the application integration data to be removed
           pattern: '^[a-fA-F\d]{24}$'
           example: 502cf250036469154b4f85fc
         source:
           type: string
-          description: Enum indicating type of application for which removal is requested
+          description: Enum indicating type of application integration data for which removal is requested
           enum:
             - POSTAL
             - PROXY
@@ -71,8 +71,8 @@ components:
   # Request Body Definitions
   # --------------------------------------------------------------------------------
   requestBodies:
-    RemoveVoterApplicationEmsDataMessage:
+    RemoveApplicationEmsIntegrationDataMessage:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/RemoveVoterApplicationEmsDataMessage'
+            $ref: '#/components/schemas/RemoveApplicationEmsIntegrationDataMessage'

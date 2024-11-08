@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
 import uk.gov.dluhc.emsintegrationapi.exception.EMSIntegrationException
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source
 
 class IntegrationDataRemovalFailedException(
     val applicationId: String,

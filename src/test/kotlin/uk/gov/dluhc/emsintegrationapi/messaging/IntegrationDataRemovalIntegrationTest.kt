@@ -19,9 +19,9 @@ import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.TestPhase
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.POSTAL
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.PROXY
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.POSTAL
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.PROXY
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ILoggingEventAssert.Companion.assertThat
@@ -77,7 +77,7 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
 
             postalVoteApplicationRepository.save(postalVoteApplication)
 
-            val payload = RemoveVoterApplicationEmsDataMessage(
+            val payload = RemoveApplicationEmsIntegrationDataMessage(
                 applicationId,
                 POSTAL,
             )
@@ -117,7 +117,7 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
 
         proxyVoteApplicationRepository.save(proxyVoteApplication)
 
-        val payload = RemoveVoterApplicationEmsDataMessage(
+        val payload = RemoveApplicationEmsIntegrationDataMessage(
             applicationId,
             PROXY,
         )

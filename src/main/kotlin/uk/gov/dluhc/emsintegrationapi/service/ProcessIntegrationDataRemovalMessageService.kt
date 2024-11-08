@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.POSTAL
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.PROXY
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.POSTAL
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.PROXY
 import java.util.Optional
 
 private val logger = KotlinLogging.logger { }
@@ -18,7 +18,7 @@ class ProcessIntegrationDataRemovalMessageService(
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository,
 ) {
     @Transactional
-    fun process(removeEmsDataMessage: RemoveVoterApplicationEmsDataMessage) {
+    fun process(removeEmsDataMessage: RemoveApplicationEmsIntegrationDataMessage) {
         with(removeEmsDataMessage) {
             logger.info { "Processing postal vote application with id = ${removeEmsDataMessage.applicationId}" }
             when (removeEmsDataMessage.source) {
