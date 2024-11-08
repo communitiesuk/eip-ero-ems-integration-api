@@ -3,18 +3,14 @@ package uk.gov.dluhc.emsintegrationapi.service
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
-import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails.EmsStatus.*
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.*
-import java.util.*
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.POSTAL
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.PROXY
+import java.util.Optional
 
 private val logger = KotlinLogging.logger { }
-
-private val successOrFailure = listOf(SUCCESS, FAILURE)
 
 @Service
 class ProcessIntegrationDataRemovalMessageService(
@@ -36,8 +32,7 @@ class ProcessIntegrationDataRemovalMessageService(
         postalVoteApplicationRepository.findById(applicationId)
             .let { it ->
                 it.map {
-                    val applicationDetails = it.applicationDetails
-                    if(Optional.ofNullable(applicationDetails.emsStatus).isEmpty) {
+                    if(Optional.ofNullable(it.applicationDetails.emsStatus).isEmpty) {
                         throw IntegrationDataRemovalFailedException(applicationId, POSTAL)
 
                     } else {
@@ -52,8 +47,7 @@ class ProcessIntegrationDataRemovalMessageService(
         proxyVoteApplicationRepository.findById(applicationId)
             .let { it ->
                 it.map {
-                    val applicationDetails = it.applicationDetails
-                    if(Optional.ofNullable(applicationDetails.emsStatus).isEmpty) {
+                    if(Optional.ofNullable(it.applicationDetails.emsStatus).isEmpty) {
                         throw IntegrationDataRemovalFailedException(applicationId, PROXY)
 
                     } else {

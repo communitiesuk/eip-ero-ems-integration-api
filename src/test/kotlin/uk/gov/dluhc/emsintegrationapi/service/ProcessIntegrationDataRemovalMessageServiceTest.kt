@@ -20,7 +20,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.POSTAL
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.PROXY
-import java.util.*
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class ProcessIntegrationDataRemovalMessageServiceTest {
