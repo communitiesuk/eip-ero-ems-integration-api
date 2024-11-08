@@ -11,16 +11,16 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.anyOrNull
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails.EmsStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemovePostalApplicationEmsDataMessage.Source
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage
-import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.*
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.POSTAL
+import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveVoterApplicationEmsDataMessage.Source.PROXY
+import java.util.*
 
 @ExtendWith(MockitoExtension::class)
 class ProcessIntegrationDataRemovalMessageServiceTest {
@@ -34,9 +34,14 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     @InjectMocks
     private lateinit var service: ProcessIntegrationDataRemovalMessageService
 
+
+    // -----------------------------------------------------------
+    // PROXY
+    // -----------------------------------------------------------
+
     @ParameterizedTest
     @EnumSource(names = ["SUCCESS", "FAILURE"])
-    fun `should process valid postal integration data removal message`(emsStatusType: EmsStatus) {
+    fun `should process postal integration data removal message where emsStatus is SUCCESS or FAILURE`(emsStatusType: EmsStatus) {
         val postalVoteApplication = mock(PostalVoteApplication::class.java)
         val applicationDetails = mock(ApplicationDetails::class.java)
         val message = RemoveVoterApplicationEmsDataMessage(
@@ -47,7 +52,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
         // Given
         given(postalVoteApplication.applicationDetails).willReturn(applicationDetails)
         given(applicationDetails.emsStatus).willReturn(emsStatusType)
-        given(postalVoteApplicationRepository.findByApplicationIdIn(anyOrNull())).willReturn(listOf(postalVoteApplication))
+        given(postalVoteApplicationRepository.findById(anyString())).willReturn(Optional.of(postalVoteApplication))
 
         // When
         service.process(message)
@@ -57,7 +62,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     }
 
     @Test
-    fun `should reject invalid postal integration data removal message`() {
+    fun `should reject postal integration data removal message where application not found`() {
         val applicationId = "123"
         val postalVoteApplication = mock(PostalVoteApplication::class.java)
         val message = RemoveVoterApplicationEmsDataMessage(
@@ -66,21 +71,49 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
         )
 
         // Given
-        given(postalVoteApplication.applicationDetails).willReturn(null)
-        given(postalVoteApplicationRepository.findByApplicationIdIn(anyOrNull())).willReturn(listOf(postalVoteApplication))
+        given(postalVoteApplicationRepository.findById(anyString())).willReturn(Optional.empty())
+
+        // When
+        assertThat(
+            assertThrows<ApplicationNotFoundException> {
+                service.process(message)
+            }.message
+        ).isEqualTo("The Postal application could not be found with id `$applicationId`")
+
+        // Then
+        verify(postalVoteApplicationRepository, never()).delete(postalVoteApplication)
+    }
+
+    @Test
+    fun `should reject postal integration data removal message where emsStatus is null`() {
+        val applicationId = "123"
+        val postalVoteApplication = mock(PostalVoteApplication::class.java)
+        val applicationDetails = mock(ApplicationDetails::class.java)
+        val message = RemoveVoterApplicationEmsDataMessage(
+            applicationId,
+            POSTAL,
+        )
+
+        // Given
+        given(postalVoteApplication.applicationDetails).willReturn(applicationDetails)
+        given(applicationDetails.emsStatus).willReturn(null)
+        given(postalVoteApplicationRepository.findById(anyString())).willReturn(Optional.of(postalVoteApplication))
 
         // When
         assertThat(
             assertThrows<IntegrationDataRemovalFailedException> {
                 service.process(message)
             }.message
-        ).isEqualTo("The ${Source.POSTAL} application with id `$applicationId` ems status " +
-                "was null so it could not be processed")
+        ).isEqualTo("The ems status of $POSTAL application with id `$applicationId` " +
+                "was not found so it could not be processed")
 
         // Then
         verify(postalVoteApplicationRepository, never()).delete(postalVoteApplication)
-
     }
+
+    // -----------------------------------------------------------
+    // PROXY
+    // -----------------------------------------------------------
 
     @ParameterizedTest
     @EnumSource(names = ["SUCCESS", "FAILURE"])
@@ -95,7 +128,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
         // Given
         given(proxyVoteApplication.applicationDetails).willReturn(applicationDetails)
         given(applicationDetails.emsStatus).willReturn(emsStatusType)
-        given(proxyVoteApplicationRepository.findByApplicationIdIn(anyOrNull())).willReturn(listOf(proxyVoteApplication))
+        given(proxyVoteApplicationRepository.findById(anyString())).willReturn(Optional.of(proxyVoteApplication))
 
         // When
         service.process(message)
@@ -105,7 +138,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     }
 
     @Test
-    fun `should reject proxy integration data removal message where emsStatus is null`() {
+    fun `should reject proxy integration data removal message where application not found`() {
         val applicationId = "123"
         val proxyVoteApplication = mock(ProxyVoteApplication::class.java)
         val message = RemoveVoterApplicationEmsDataMessage(
@@ -114,16 +147,41 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
         )
 
         // Given
-        given(proxyVoteApplication.applicationDetails).willReturn(null)
-        given(proxyVoteApplicationRepository.findByApplicationIdIn(anyOrNull())).willReturn(listOf(proxyVoteApplication))
+        given(proxyVoteApplicationRepository.findById(anyString())).willReturn(Optional.empty())
+
+        // When
+        assertThat(
+            assertThrows<ApplicationNotFoundException> {
+                service.process(message)
+            }.message
+        ).isEqualTo("The Proxy application could not be found with id `$applicationId`")
+
+        // Then
+        verify(proxyVoteApplicationRepository, never()).delete(proxyVoteApplication)
+    }
+
+    @Test
+    fun `should reject proxy integration data removal message where emsStatus is null`() {
+        val applicationId = "123"
+        val proxyVoteApplication = mock(ProxyVoteApplication::class.java)
+        val applicationDetails = mock(ApplicationDetails::class.java)
+        val message = RemoveVoterApplicationEmsDataMessage(
+            applicationId,
+            PROXY,
+        )
+
+        // Given
+        given(proxyVoteApplication.applicationDetails).willReturn(applicationDetails)
+        given(applicationDetails.emsStatus).willReturn(null)
+        given(proxyVoteApplicationRepository.findById(anyString())).willReturn(Optional.of(proxyVoteApplication))
 
         // When
         assertThat(
             assertThrows<IntegrationDataRemovalFailedException> {
                 service.process(message)
             }.message
-        ).isEqualTo("The ${Source.PROXY} application with id `$applicationId` ems status " +
-                "was null so it could not be processed")
+        ).isEqualTo("The ems status of $PROXY application with id `$applicationId` " +
+                "was not found so it could not be processed")
 
         // Then
         verify(proxyVoteApplicationRepository, never()).delete(proxyVoteApplication)

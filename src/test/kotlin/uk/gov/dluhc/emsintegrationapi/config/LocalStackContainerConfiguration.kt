@@ -93,11 +93,13 @@ class LocalStackContainerConfiguration {
         @Value("\${sqs.postal-application-queue-name}") postalApplicationQueueName: String,
         @Value("\${sqs.deleted-proxy-application-queue-name}") deletedProxyApplicationQueueName: String,
         @Value("\${sqs.deleted-postal-application-queue-name}") deletedPostalApplicationQueueName: String,
+        @Value("\${sqs.remove-application-ems-integration-data-queue-name}") removeApplicationEmsDataQueueName: String,
     ): LocalStackContainerSettings {
         val proxyApplicationQueueUrl = localStackContainer.createSqsQueue(proxyApplicationQueueName)
         val postalApplicationQueueUrl = localStackContainer.createSqsQueue(postalApplicationQueueName)
         val deletedProxyApplicationQueueUrl = localStackContainer.createSqsQueue(deletedProxyApplicationQueueName)
         val deletedPostalApplicationQueueUrl = localStackContainer.createSqsQueue(deletedPostalApplicationQueueName)
+        val removeApplicationEmsDataQueueUrl = localStackContainer.createSqsQueue(removeApplicationEmsDataQueueName)
 
         val apiUrl = "http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}"
 
@@ -111,6 +113,7 @@ class LocalStackContainerConfiguration {
             postalApplicationQueueUrl = postalApplicationQueueUrl,
             deletedProxyApplicationQueueUrl = deletedProxyApplicationQueueUrl,
             deletedPostalApplicationQueueUrl = deletedPostalApplicationQueueUrl,
+            removeApplicationEmsDataQueueUrl = removeApplicationEmsDataQueueUrl,
             sesMessagesUrl = "$apiUrl/_localstack/ses",
         )
     }
@@ -176,5 +179,6 @@ data class LocalStackContainerSettings(
     val postalApplicationQueueUrl: String,
     val deletedProxyApplicationQueueUrl: String,
     val deletedPostalApplicationQueueUrl: String,
+    val removeApplicationEmsDataQueueUrl: String,
     val sesMessagesUrl: String,
 )

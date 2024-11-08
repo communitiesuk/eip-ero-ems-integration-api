@@ -31,6 +31,8 @@ sqs:
   postal-application-queue-name: postal-application
   deleted-proxy-application-queue-name: deleted-proxy-application
   deleted-postal-application-queue-name: deleted-postal-application
+  remove-application-ems-integration-data-queue-name: remove-application-ems-integration-data
+
 
 api:
   ero-management:
