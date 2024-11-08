@@ -13,7 +13,7 @@ private val logger = KotlinLogging.logger { }
 @Component
 class ProcessIntegrationDataRemovalMessageListener(private val removeEmsIntegrationDataMessageService: ProcessIntegrationDataRemovalMessageService) {
 
-    @SqsListener("\${sqs.proxy-application-queue-name}")
+    @SqsListener("\${sqs.remove-application-ems-integration-data-queue-name}")
     fun handleMessage(@Valid @Payload removeEmsDataMessage: RemoveVoterApplicationEmsDataMessage) {
         with(removeEmsDataMessage) {
             logger.info("Integration Data Removal Message received with an application id = ${removeEmsDataMessage.applicationId} and source ${removeEmsDataMessage.source}")
