@@ -61,7 +61,7 @@ class ProcessIntegrationDataRemovalMessageService(
                 }.or {
 
                     logger.warn {
-                        "ApplicationId $applicationId of type ${ApplicationType.POSTAL} was not found to delete"
+                        "ApplicationId $applicationId of type ${ApplicationType.PROXY} was not found to delete"
                     }
                     Optional.empty()
                 }
