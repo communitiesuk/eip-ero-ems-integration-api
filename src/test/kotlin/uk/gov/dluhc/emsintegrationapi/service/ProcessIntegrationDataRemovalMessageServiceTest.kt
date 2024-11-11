@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -64,7 +65,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     }
 
     @Test
-    fun `should reject postal integration data removal message where application not found`() {
+    fun `should log warning when consuming postal integration data removal message where application not found`() {
         val applicationId = "123"
         val postalVoteApplication = mock(PostalVoteApplication::class.java)
         val message = RemoveApplicationEmsIntegrationDataMessage(
@@ -76,11 +77,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
         given(postalVoteApplicationRepository.findById(anyString())).willReturn(Optional.empty())
 
         // When
-        assertThat(
-            assertThrows<ApplicationNotFoundException> {
-                service.process(message)
-            }.message
-        ).isEqualTo("The Postal application could not be found with id `$applicationId`")
+        assertDoesNotThrow { service.process(message) }
 
         // Then
         verify(postalVoteApplicationRepository, never()).delete(postalVoteApplication)
@@ -142,7 +139,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
     }
 
     @Test
-    fun `should reject proxy integration data removal message where application not found`() {
+    fun `should log warning when consuming proxy integration data removal message where application not found`() {
         val applicationId = "123"
         val proxyVoteApplication = mock(ProxyVoteApplication::class.java)
         val message = RemoveApplicationEmsIntegrationDataMessage(
@@ -154,11 +151,7 @@ class ProcessIntegrationDataRemovalMessageServiceTest {
         given(proxyVoteApplicationRepository.findById(anyString())).willReturn(Optional.empty())
 
         // When
-        assertThat(
-            assertThrows<ApplicationNotFoundException> {
-                service.process(message)
-            }.message
-        ).isEqualTo("The Proxy application could not be found with id `$applicationId`")
+        assertDoesNotThrow { service.process(message) }
 
         // Then
         verify(proxyVoteApplicationRepository, never()).delete(proxyVoteApplication)

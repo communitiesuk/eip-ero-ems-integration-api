@@ -38,7 +38,13 @@ class ProcessIntegrationDataRemovalMessageService(
                         logger.info { "Deleting $POSTAL application ems data with id = ${it.applicationId}" }
                         postalVoteApplicationRepository.delete(it)
                     }
-                }.orElseThrow { ApplicationNotFoundException(applicationId, ApplicationType.POSTAL) }
+                }.or {
+
+                    logger.warn {
+                        "ApplicationId $applicationId of type ${ApplicationType.POSTAL} was not found to delete"
+                    }
+                    Optional.empty()
+                }
             }
     }
 
@@ -52,7 +58,13 @@ class ProcessIntegrationDataRemovalMessageService(
                         logger.info { "Deleting $PROXY application ems data with id = ${it.applicationId}" }
                         proxyVoteApplicationRepository.delete(it)
                     }
-                }.orElseThrow { ApplicationNotFoundException(applicationId, ApplicationType.PROXY) }
+                }.or {
+
+                    logger.warn {
+                        "ApplicationId $applicationId of type ${ApplicationType.POSTAL} was not found to delete"
+                    }
+                    Optional.empty()
+                }
             }
     }
 }
