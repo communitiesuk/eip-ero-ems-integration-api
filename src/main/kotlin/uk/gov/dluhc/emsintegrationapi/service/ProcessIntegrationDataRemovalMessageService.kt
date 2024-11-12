@@ -20,7 +20,7 @@ class ProcessIntegrationDataRemovalMessageService(
     @Transactional
     fun process(removeEmsDataMessage: RemoveApplicationEmsIntegrationDataMessage) {
         with(removeEmsDataMessage) {
-            logger.info { "Processing postal vote application with id = ${removeEmsDataMessage.applicationId}" }
+            logger.info { "Processing ${removeEmsDataMessage.source} vote application with id = ${removeEmsDataMessage.applicationId}" }
             when (removeEmsDataMessage.source) {
                 POSTAL -> processPostalApplicationRemoval(removeEmsDataMessage.applicationId)
                 PROXY -> processProxyApplicationRemoval(removeEmsDataMessage.applicationId)
