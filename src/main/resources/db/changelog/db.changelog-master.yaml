@@ -43,3 +43,13 @@ databaseChangeLog:
       file: /db/changelog/create/0021_EROPSPT-350_remove_unused_indexes.xml
   - include:
       file: /db/changelog/create/0022_EROPSPT-350_add_index_on_status.xml
+  - include:
+      file: /db/changelog/create/0023_EIP1-11111_register_check.xml
+  - include:
+      file: /db/changelog/create/0024_EIP1-11111_personal_detail.xml
+  - include:
+      file: /db/changelog/create/0025_EIP1-11111_voting_arrangement.xml
+  - include:
+      file: /db/changelog/create/0026_EIP1-11111_register_check_match.xml
+  - include:
+      file: /db/changelog/create/0027_EIP1-11111_register_check_result_data.xml
