@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="simon.payne@softwire.com" id="0024_EIP1-11111_personal_detail" context="ddl">
+        <createTable tableName="personal_detail">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="personal_detail_pkey" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="middle_names" type="varchar(255)">
+            </column>
+            <column name="surname" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_of_birth" type="date">
+            </column>
+            <column name="email" type="varchar(1024)">
+            </column>
+            <column name="phone_number" type="varchar(50)">
+            </column>
+            <column name="address_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="personal_detail"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
