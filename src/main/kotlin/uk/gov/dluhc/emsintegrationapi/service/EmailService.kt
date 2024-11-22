@@ -1,35 +1,29 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
-import liquibase.repackaged.org.apache.commons.text.StringSubstitutor.replace
+import org.apache.commons.text.StringSubstitutor.replace
 import org.springframework.stereotype.Service
 import uk.gov.dluhc.email.EmailClient
-import uk.gov.dluhc.emsintegrationapi.config.MonitorPendingDownloadsEmailContentConfiguration
-import uk.gov.dluhc.emsintegrationapi.database.entity.PendingDownloadsSummaryByGssCode
-import uk.gov.dluhc.emsintegrationapi.service.dto.PendingDownloadSummary
+import uk.gov.dluhc.emsintegrationapi.config.PendingRegisterChecksEmailContentConfiguration
+import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckSummaryByGssCode
 
 @Service
 class EmailService(
     private val emailClient: EmailClient,
-    private val monitorPendingDownloadsEmailContentConfiguration: MonitorPendingDownloadsEmailContentConfiguration
+    private val pendingRegisterChecksEmailContentConfiguration: PendingRegisterChecksEmailContentConfiguration
 ) {
-    fun sendPendingDownloadMonitoringEmail(
-        postalSummary: PendingDownloadSummary,
-        proxySummary: PendingDownloadSummary,
+    fun sendRegisterCheckMonitoringEmail(
+        stuckRegisterCheckSummaries: List<RegisterCheckSummaryByGssCode>,
+        totalStuck: String,
         expectedMaximumPendingPeriod: String,
     ) {
-        val pendingPostalDownloadsHtml = generatePendingDownloadsHtml(postalSummary.pendingByGssCode)
-        val pendingProxyDownloadsHtml = generatePendingDownloadsHtml(proxySummary.pendingByGssCode)
+        val pendingRegisterCheckResultsHtml = generatePendingRegisterCheckResultsHtml(stuckRegisterCheckSummaries)
         val substitutionVariables = mapOf(
-            "postalPending" to postalSummary.totalPending.toString(),
-            "proxyPending" to proxySummary.totalPending.toString(),
-            "postalPendingWithEmsElectorId" to postalSummary.totalPendingWithEmsElectorId.toString(),
-            "proxyPendingWithEmsElectorId" to proxySummary.totalPendingWithEmsElectorId.toString(),
+            "totalStuck" to totalStuck,
             "expectedMaximumPendingPeriod" to expectedMaximumPendingPeriod,
-            "pendingPostalDownloadsHtml" to pendingPostalDownloadsHtml,
-            "pendingProxyDownloadsHtml" to pendingProxyDownloadsHtml,
+            "pendingRegisterCheckResultsHtml" to pendingRegisterCheckResultsHtml,
         )
 
-        with(monitorPendingDownloadsEmailContentConfiguration) {
+        with(pendingRegisterChecksEmailContentConfiguration) {
             val emailToRecipients: Set<String> = recipients.split(",").map { it.trim() }.toSet()
             val emailHtmlBody = replace(emailBody, substitutionVariables)
 
@@ -40,16 +34,15 @@ class EmailService(
             )
         }
     }
+}
 
-    private fun generatePendingDownloadsHtml(pendingDownloadSummaries: List<PendingDownloadsSummaryByGssCode>): String {
-        return pendingDownloadSummaries.joinToString(separator = "\n") { summary ->
-            """
-                <tr>
-                    <td>${summary.gssCode}</td>
-                    <td>${summary.pendingDownloadCount}</td>
-                    <td>${summary.pendingDownloadsWithEmsElectorId}</td>
-                </tr>
-            """.trimMargin()
-        }
+fun generatePendingRegisterCheckResultsHtml(stuckRegisterCheckSummaries: List<RegisterCheckSummaryByGssCode>): String {
+    return stuckRegisterCheckSummaries.joinToString(separator = "\n") { summary ->
+        """
+            <tr>
+                <td>${summary.gssCode}</td>
+                <td>${summary.registerCheckCount}</td>
+            </tr>
+        """.trimMargin()
     }
 }

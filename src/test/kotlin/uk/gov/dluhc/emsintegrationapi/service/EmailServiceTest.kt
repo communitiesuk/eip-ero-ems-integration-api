@@ -11,12 +11,11 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.email.EmailClient
-import uk.gov.dluhc.emsintegrationapi.config.MonitorPendingDownloadsEmailContentConfiguration
-import uk.gov.dluhc.emsintegrationapi.service.dto.PendingDownloadSummary
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPendingDownloadsSummaryByGssCode
+import uk.gov.dluhc.emsintegrationapi.config.PendingRegisterChecksEmailContentConfiguration
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheckSummaryByGssCode
 
 @ExtendWith(MockitoExtension::class)
-class EmailServiceTest {
+internal class EmailServiceTest {
     private lateinit var emailService: EmailService
 
     @Mock
@@ -25,117 +24,66 @@ class EmailServiceTest {
     companion object {
         private const val GSS_CODE_1 = "E00000001"
         private const val GSS_CODE_2 = "E00000002"
-        private const val EXPECTED_MAXIMUM_PENDING_PERIOD = "5 days"
-        private const val EXPECTED_TOTAL_POSTAL_PENDING = 3
-        private const val EXPECTED_TOTAL_POSTAL_PENDING_WITH_EMS_ELECTOR_ID = 1
-        private val EXPECTED_PENDING_POSTAL = listOf(
-            buildPendingDownloadsSummaryByGssCode(
-                gssCode = GSS_CODE_1,
-                pendingDownloadCount = 2,
-                pendingDownloadsWithEmsElectorId = 1
-            ),
-            buildPendingDownloadsSummaryByGssCode(
-                gssCode = GSS_CODE_2,
-                pendingDownloadCount = 1,
-                pendingDownloadsWithEmsElectorId = 0
-            ),
-        )
-        private const val EXPECTED_TOTAL_PROXY_PENDING = 4
-        private const val EXPECTED_TOTAL_PROXY_PENDING_WITH_EMS_ELECTOR_ID = 2
-        private val EXPECTED_PENDING_PROXY = listOf(
-            buildPendingDownloadsSummaryByGssCode(
-                gssCode = GSS_CODE_1,
-                pendingDownloadCount = 4,
-                pendingDownloadsWithEmsElectorId = 2
-            ),
+        private const val EXPECTED_TOTAL_STUCK_APPLICATIONS = "3"
+        private const val EXPECTED_MAXIMUM_PENDING_PERIOD = "24 hours"
+        private val EXPECTED_STUCK_REGISTER_CHECK_SUMMARIES = listOf(
+            buildRegisterCheckSummaryByGssCode(gssCode = GSS_CODE_1, registerCheckCount = 2),
+            buildRegisterCheckSummaryByGssCode(gssCode = GSS_CODE_2, registerCheckCount = 1),
         )
     }
 
     @Nested
-    inner class SendPendingDownloadMonitoringEmail {
+    inner class SendRegisterCheckMonitoringEmail {
 
         @Test
-        fun `should successfully send a pending download monitoring email`() {
+        fun `should successfully send a register check monitoring email`() {
             // Given
             val expectedRecipients = setOf(
                 "test1@email.com",
                 "test2@email.com",
             )
-            val expectedSubject = "Postal and Proxy Pending Downloads Monitoring"
+            val expectedSubject = "Register Check Monitoring"
 
-            val expectedEmailBody = """
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Pending EMS Integration Downloads</title>
-                </head>
-                <body>
-                    <p>A total of $EXPECTED_TOTAL_POSTAL_PENDING postal applications have been pending download for more than $EXPECTED_MAXIMUM_PENDING_PERIOD.</p>
-                    <p>Of these, $EXPECTED_TOTAL_POSTAL_PENDING_WITH_EMS_ELECTOR_ID applications have an EMS Elector ID.</p>
-                    <br>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>GSS code</th>
-                            <th>Pending postal downloads</th>
-                            <th>Pending with EMS Elector ID</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>$GSS_CODE_1</td>
-                                <td>2</td>
-                                <td>1</td>
-                            </tr>
-                            <tr>
-                                <td>$GSS_CODE_2</td>
-                               <td>1</td>
-                                <td>0</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>A total of $EXPECTED_TOTAL_PROXY_PENDING proxy applications have been pending download for more than $EXPECTED_MAXIMUM_PENDING_PERIOD.</p>
-                    <p>Of these, $EXPECTED_TOTAL_PROXY_PENDING_WITH_EMS_ELECTOR_ID applications have an EMS Elector ID.</p>
-                    <br>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>GSS code</th>
-                            <th>Pending proxy downloads</th>
-                            <th>Pending with EMS Elector ID</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>$GSS_CODE_1</td>
-                                <td>4</td>
-                                <td>2</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </body>
-                </html>
-                """
+            val expectedEmailBody = "<!DOCTYPE html>\n" +
+                "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Pending register checks</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <p>A total of $EXPECTED_TOTAL_STUCK_APPLICATIONS register checks have been pending for more than $EXPECTED_MAXIMUM_PENDING_PERIOD.</p>\n" +
+                "    <br>\n" +
+                "    <table>\n" +
+                "        <thead>\n" +
+                "        <tr>\n" +
+                "            <th>GSS code</th>\n" +
+                "            <th>Register check count</th>\n" +
+                "        </tr>\n" +
+                "        </thead>\n" +
+                "        <tbody>\n" +
+                "            <tr>\n" +
+                "                <td>$GSS_CODE_1</td>\n" +
+                "                <td>2</td>\n" +
+                "            </tr>\n" +
+                "            <tr>\n" +
+                "                <td>$GSS_CODE_2</td>\n" +
+                "                <td>1</td>\n" +
+                "            </tr>\n" +
+                "        </tbody>\n" +
+                "    </table>\n" +
+                "</body>\n" +
+                "</html>"
 
             // When
-            val emailContentConfiguration = MonitorPendingDownloadsEmailContentConfiguration(
+            val emailContentConfiguration = buildPendingRegisterChecksEmailContentConfiguration(
                 expectedSubject,
-                "email-templates/monitor-pending-downloads.html",
+                "email-templates/pending-register-checks.html",
                 "test1@email.com,test2@email.com"
             )
             emailService = EmailService(emailClient, emailContentConfiguration)
-            emailService.sendPendingDownloadMonitoringEmail(
-                postalSummary = PendingDownloadSummary(
-                    totalPending = EXPECTED_TOTAL_POSTAL_PENDING,
-                    totalPendingWithEmsElectorId = EXPECTED_TOTAL_POSTAL_PENDING_WITH_EMS_ELECTOR_ID,
-                    pendingByGssCode = EXPECTED_PENDING_POSTAL
-                ),
-                proxySummary = PendingDownloadSummary(
-                    totalPending = EXPECTED_TOTAL_PROXY_PENDING,
-                    totalPendingWithEmsElectorId = EXPECTED_TOTAL_PROXY_PENDING_WITH_EMS_ELECTOR_ID,
-                    pendingByGssCode = EXPECTED_PENDING_PROXY
-                ),
+            emailService.sendRegisterCheckMonitoringEmail(
+                stuckRegisterCheckSummaries = EXPECTED_STUCK_REGISTER_CHECK_SUMMARIES,
+                totalStuck = EXPECTED_TOTAL_STUCK_APPLICATIONS,
                 expectedMaximumPendingPeriod = EXPECTED_MAXIMUM_PENDING_PERIOD
             )
 
@@ -155,5 +103,15 @@ class EmailServiceTest {
 
             verifyNoMoreInteractions(emailClient)
         }
+
+        private fun buildPendingRegisterChecksEmailContentConfiguration(
+            subject: String,
+            emailBodyTemplate: String,
+            recipients: String
+        ) = PendingRegisterChecksEmailContentConfiguration(
+            subject,
+            emailBodyTemplate,
+            recipients
+        )
     }
 }

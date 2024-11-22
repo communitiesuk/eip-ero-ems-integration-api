@@ -1,4 +1,3 @@
-liquibase.properties
 HELP.md
 .gradle
 build/
@@ -17,8 +16,7 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-#Local configuration to run the application
-/src/main/resources/application-local.yml
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -46,3 +44,4 @@ cypress/screenshots
 ### Others ###
 .DS_Store
 openapi/reference/test
+.envrc

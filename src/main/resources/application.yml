@@ -1,11 +1,16 @@
 spring:
-  codec:
-    max-in-memory-size: ${CODEC_MAX_MEMORY_SIZE_IN_MB:25MB}
   application:
-    name: 'eip-ero-ems-integration-api'
+    name: 'eip-ero-register-checker-api'
+  cloud:
+    aws:
+      region:
+        auto: true
+        use-default-aws-region-chain: true
+      credentials:
+        use-default-aws-credentials-chain: true
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/ems_integration_application
-    readOnlyUrl: ${SPRING_DATASOURCE_READONLYURL}
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/register_checker
+    readOnlyUrl: ${spring.datasource.url}
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
 
@@ -15,25 +20,6 @@ spring:
 
 dluhc:
   request.header.name: ${REQUEST_HEADER_CLIENT_CERT_SERIAL}
-  default-page-size: ${DEFAULT_PAGE_SIZE:100}
-  max-page-size: ${MAX_PAGE_SIZE:500}
-  force-max-page-size: ${FORCE_MAX_PAGE_SIZE:200}
-
-cloud:
-  aws:
-    region:
-      auto: true
-      use-default-aws-region-chain: true
-    credentials:
-      use-default-aws-credentials-chain: true
-
-sqs:
-  proxy-application-queue-name: ${SQS_PROXY_APPLICATION_QUEUE_NAME}
-  postal-application-queue-name: ${SQS_POSTAL_APPLICATION_QUEUE_NAME}
-  deleted-proxy-application-queue-name: ${SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME}
-  deleted-postal-application-queue-name: ${SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME}
-  remove-application-ems-integration-data-queue-name: ${SQS_REMOVE_APPLICATION_EMS_DATA_QUEUE_NAME}
-
 
 api:
   ero-management:
@@ -42,26 +28,37 @@ api:
     base.url: ${API_IER_BASE_URL}
     sts.assume.role: ${API_IER_STS_ASSUME_ROLE}
 
-jobs:
-  enabled: true
-  lock-at-most-for: "PT100M" # Time Period of 100 Minutes
-  pending-downloads-monitoring:
-    enabled: true
-    send-email: true
-    name: "PendingDownloadsMonitoring"
-    cron: "0 0 5 * * *" # Runs at 05:00 daily
-    expected-maximum-pending-period: 5D
-    excluded-gss-codes: "E99999999"
-
-email:
-  client:
-    sender: ${EMS_INTEGRATION_DOWNLOADS_MONITORING_SENDING_EMAIL_ADDRESS}
-  monitor-pending-downloads-content:
-    subject: "Postal and Proxy Pending Downloads Monitoring"
-    email-body-template: email-templates/monitor-pending-downloads.html
-    recipients: ${EMS_INTEGRATION_DOWNLOADS_MONITORING_RECIPIENTS}
+sqs:
+  ems-cidr-update-queue-name: ${SQS_EMS_CIDR_UPDATE_QUEUE_NAME}
+  initiate-applicant-register-check-queue-name: ${SQS_INITIATE_APPLICANT_REGISTER_CHECK_QUEUE_NAME}
+  confirm-applicant-register-check-result-queue-name: ${SQS_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME}
+  postal-vote-confirm-applicant-register-check-result-queue-name: ${SQS_POSTAL_VOTE_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME}
+  proxy-vote-confirm-applicant-register-check-result-queue-name: ${SQS_PROXY_VOTE_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME}
+  overseas-vote-confirm-applicant-register-check-result-queue-name: ${SQS_OVERSEAS_VOTE_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME}
+  register-check-result-response-queue-name: ${SQS_REGISTER_CHECK_RESULT_RESPONSE_QUEUE_NAME}
+  remove-applicant-register-check-data-queue-name: ${SQS_REMOVE_APPLICANT_REGISTER_CHECK_DATA_QUEUE_NAME}
 
 caching.time-to-live: PT1H
 
-feature-toggles:
+logging:
+  pattern:
+    level: "%X{correlationId} %5p"
 
+jobs:
+  enabled: true
+  lock-at-most-for: "PT100M" # Time Period of 100 Minutes
+  register-check-monitoring:
+    enabled: true
+    name: "PendingRegisterCheckMonitoring"
+    cron: "0 0 5 * * *" # Runs at 05:00 daily
+    expected-maximum-pending-period: 24H
+    excluded-gss-codes: "E99999999"
+    send-email: true
+
+email:
+  client:
+    sender: ${REGISTER_CHECK_MONITORING_SENDING_EMAIL_ADDRESS}
+  pending-register-checks-content:
+    subject: "Register Check Monitoring"
+    email-body-template: email-templates/pending-register-checks.html
+    recipients: ${REGISTER_CHECK_MONITORING_RECIPIENTS}
