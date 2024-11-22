@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
+    <springProperty source="spring.application.name" name="service_name"/>
 
     <!--
-    Logging configuration for when the application is run with a profile `jsonLogging`, resulting in log messages
-    being written as a structured json object graph.
-    Typically used in deployed environments where the spring profile is set to `jsonLogging` by `infra`
-    -->
+   Logging configuration for when the application is run with a profile `jsonLogging`, resulting in log messages
+   being written as a structured json object graph.
+   Typically used in deployed environments where the spring profile is set to `jsonLogging` by `infra`
+   -->
     <springProfile name="jsonLogging">
-        <springProperty source="spring.application.name" name="service_name"/>
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
                 <providers>
@@ -45,10 +45,16 @@
     and use local environment variables such as `CONSOLE_LOG_PATTERN` or `LOG_DATEFORMAT_PATTERN` etc.
     -->
     <springProfile name="!jsonLogging">
-        <include resource="org/springframework/boot/logging/logback/base.xml" />
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%-5level [%d{ISO8601, UTC}] CorrelationId=%X{correlationId:-NA} %logger: %msg%n</pattern>
+            </encoder>
+        </appender>
     </springProfile>
 
-    <root level="INFO">
+    <logger name="uk.gov" level="INFO"/>
+
+    <root level="WARN">
         <appender-ref ref="CONSOLE"/>
     </root>
 
