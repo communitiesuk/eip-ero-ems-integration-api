@@ -1,0 +1,73 @@
+title: Application Details
+description: Application Details
+type: object
+version: 1.0.0
+x-examples:
+  Minimum data:
+    id: 502cf250036469154b4f85fc
+    createdAt: 2022-08-01T14:14:55Z
+    gssCode: T12345678
+    source: web
+    authorisedAt: 2022-08-02T10:10:10Z
+    authorisingStaffId: jsmith99@somecouncil.gov.uk
+    applicationStatus: approved
+    signatureWaived: true
+    signatureWaivedReason: disabled
+properties:
+  id:
+    type: string
+    description: the IER ID of the absent vote application
+    pattern: '^[a-fA-F\d]{24}$'
+    example: 502cf250036469154b4f85fc
+  createdAt:
+    type: string
+    format: date-time
+    description: the date and time the application was received in ISO8601 format
+  gssCode:
+    type: string
+    minLength: 9
+    maxLength: 9
+    description: GSS code of the ERO/VJB of the applicant/application
+  source:
+    type: string
+    minLength: 1
+    maxLength: 10
+    description: |
+      either “web” for digital applications or “erop” for applications received by post and entered into the EROP
+  authorisedAt:
+    type: string
+    format: date-time
+    description: the date and time the application was approved in the EROP in ISO8601
+  authorisingStaffId:
+    type: string
+    maxLength: 255
+    format: email
+    description: the id of the ERO user who approved this application in the EROP
+  applicationStatus:
+    description: Enum indicating if an application is approved or rejected.
+    type: string
+    enum:
+      - approved
+      - rejected
+  signatureBase64:
+    type: string
+    description: Base64 encoded signature string
+  signatureWaived:
+    type: boolean
+    default: false
+    description: |
+      Where an Elector has been granted a signature waiver. If 'true', then no signature will be provided and a signatureWaivedReason will be supplied.
+  signatureWaivedReason:
+    type: string
+    maxLength: 500
+    default: false
+    description: |
+      Where an Elector has been granted a signature waiver, this field will contain a descriptin of the reason for the waiver.
+required:
+  - id
+  - createdAt
+  - gssCode
+  - source
+  - authorisedAt
+  - authorisingStaffId
+  - applicationStatus
