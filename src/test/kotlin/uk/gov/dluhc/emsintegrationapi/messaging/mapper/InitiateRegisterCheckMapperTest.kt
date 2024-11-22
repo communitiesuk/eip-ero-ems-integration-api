@@ -14,9 +14,8 @@ import uk.gov.dluhc.emsintegrationapi.dto.AddressDto
 import uk.gov.dluhc.emsintegrationapi.dto.PendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.dto.PersonalDetailDto
 import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildInitiateRegisterCheckMessage
-import uk.gov.dluhc.registercheckerapi.models.SourceSystem
+import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import java.util.UUID.randomUUID
 import uk.gov.dluhc.emsintegrationapi.dto.SourceType as DtoSourceType
 

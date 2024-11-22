@@ -15,7 +15,6 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.emsintegrationapi.dto.RegisterCheckMatchDto
 import uk.gov.dluhc.emsintegrationapi.dto.RegisterCheckResultDto
-import uk.gov.dluhc.registercheckerapi.models.RegisterCheckMatch
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildAddressDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildPersonalDetailDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildRegisterCheckMatchDto
@@ -25,6 +24,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterC
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildVotingArrangement
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildRegisterCheckMatchRequest
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildRegisterCheckResultRequest
+import uk.gov.dluhc.registercheckerapi.models.RegisterCheckMatch
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.UUID

@@ -6,10 +6,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Autowired
-import uk.gov.dluhc.messagingsupport.MessageQueue
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.messaging.stubs.MessagingSupportLibraryListenerStub
 import uk.gov.dluhc.emsintegrationapi.messaging.stubs.TestSqsMessage
+import uk.gov.dluhc.messagingsupport.MessageQueue
 import java.util.concurrent.TimeUnit
 
 /**

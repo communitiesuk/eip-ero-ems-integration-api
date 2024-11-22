@@ -2,11 +2,11 @@ package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging
 
 import net.datafaker.providers.base.Address
 import org.apache.commons.lang3.RandomStringUtils
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckAddress
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckPersonalDetail
 import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker
 import java.time.LocalDate
 import java.util.UUID
 

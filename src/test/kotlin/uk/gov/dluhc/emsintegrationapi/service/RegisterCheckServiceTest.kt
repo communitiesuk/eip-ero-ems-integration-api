@@ -19,10 +19,9 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
-import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
-import uk.gov.dluhc.messagingsupport.MessageQueue
 import uk.gov.dluhc.emsintegrationapi.client.IerEroNotFoundException
 import uk.gov.dluhc.emsintegrationapi.client.IerGeneralException
+import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus.EXACT_MATCH
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus.PENDING
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckMatch
@@ -38,9 +37,6 @@ import uk.gov.dluhc.emsintegrationapi.mapper.PendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.RegisterCheckResultMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageQueueResolver
 import uk.gov.dluhc.emsintegrationapi.messaging.mapper.RegisterCheckResultMessageMapper
-import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
-import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildPendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildRegisterCheckMatchDto
@@ -49,6 +45,10 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterC
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheckMatch
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildRegisterCheckResultMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildVcaRegisterCheckMatchFromMatchDto
+import uk.gov.dluhc.messagingsupport.MessageQueue
+import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
+import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
+import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.UUID

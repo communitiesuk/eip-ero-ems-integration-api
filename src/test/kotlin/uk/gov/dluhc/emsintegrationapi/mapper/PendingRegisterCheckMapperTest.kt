@@ -14,12 +14,12 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
 import uk.gov.dluhc.emsintegrationapi.dto.PendingRegisterCheckDto
-import uk.gov.dluhc.registercheckerapi.models.PendingRegisterCheck
-import uk.gov.dluhc.registercheckerapi.models.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildPendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildPersonalDetailDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildPersonalDetail
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
+import uk.gov.dluhc.registercheckerapi.models.PendingRegisterCheck
+import uk.gov.dluhc.registercheckerapi.models.SourceSystem
 import java.time.Instant
 import java.time.ZoneOffset
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType as EntitySourceType

@@ -10,13 +10,13 @@ import org.springframework.http.MediaType
 import reactor.core.publisher.Mono
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.config.database.TransactionRoutingDataSource
-import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
-import uk.gov.dluhc.registercheckerapi.models.PendingRegisterChecksResponse
-import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import uk.gov.dluhc.emsintegrationapi.rest.GetPendingRegisterChecksIntegrationTest.Companion.CERT_SERIAL_NUMBER_VALUE
 import uk.gov.dluhc.emsintegrationapi.rest.GetPendingRegisterChecksIntegrationTest.Companion.REQUEST_HEADER_NAME
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildRegisterCheckResultRequest
+import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
+import uk.gov.dluhc.registercheckerapi.models.PendingRegisterChecksResponse
+import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import java.util.UUID
 
 internal class TransactionRoutingDataSourceIntegrationTest : IntegrationTest() {

@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus.PENDING
-import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
-import uk.gov.dluhc.registercheckerapi.models.PendingRegisterChecksResponse
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.ErrorResponseAssert.Companion.assertThat
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.PendingRegisterCheckAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
+import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
+import uk.gov.dluhc.registercheckerapi.models.PendingRegisterChecksResponse
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
 import java.util.UUID
