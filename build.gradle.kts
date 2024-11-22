@@ -166,9 +166,11 @@ tasks.withType<GenerateTask> {
     )
 }
 
+// Register Checker API generations
+
 tasks.create("api-generate RegisterCheckApi model", GenerateTask::class) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/RegisterCheckerAPIs.yaml")
+    inputSpec.set("$projectDir/src/main/resources/openapi/registerchecker/RegisterCheckerAPIs.yaml")
     packageName.set("uk.gov.dluhc.registercheckerapi")
     configOptions.put("documentationProvider", "none")
 }
@@ -181,8 +183,56 @@ tasks.create("api-generate IERApi model", GenerateTask::class) {
 
 tasks.create("api-generate rca-sqs-messaging model", GenerateTask::class) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/rca-sqs-messaging.yaml")
+    inputSpec.set("$projectDir/src/main/resources/openapi/registerchecker/sqs/rca-sqs-messaging.yaml")
     packageName.set("uk.gov.dluhc.registercheckerapi.messaging")
+}
+
+// EMS integration API generations
+
+tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", GenerateTask::class) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/ems/EMSIntegrationAPIs.yaml")
+    packageName.set("uk.gov.dluhc.emsintegrationapi")
+}
+// Postal SQS Message
+tasks.create(
+    "generate-models-from-openapi-document-postal-vote-application-sqs-messaging.yaml",
+    GenerateTask::class
+) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/ems/sqs/postal-vote-application-sqs-messaging.yaml")
+    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
+}
+
+tasks.create(
+    "generate-models-from-openapi-document-proxy-vote-application-sqs-messaging.yaml",
+    GenerateTask::class
+) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/ems/sqs/proxy-vote-application-sqs-messaging.yaml")
+    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
+}
+
+// TODO remove this once differences have been reconciled with RC version of dependency
+tasks.create("api-generate IERApi model for EMS", GenerateTask::class) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/ems/external/ier/reference/IER-EROP-APIs.yaml")
+    packageName.set("uk.gov.dluhc.external.ier.ems")
+}
+
+tasks.create("api-generate EROManagementApi model", GenerateTask::class) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/external/EROManagementAPIs.yaml")
+    packageName.set("uk.gov.dluhc.eromanagementapi")
+}
+
+tasks.create(
+    "generate-models-from-remove-application-ems-integration-data-sqs-messaging.yaml",
+    GenerateTask::class
+) {
+    enabled = true
+    inputSpec.set("$projectDir/src/main/resources/openapi/ems/sqs/remove-application-ems-integration-data-sqs-messaging.yaml")
+    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
 }
 
 // Add the generated code to the source sets
