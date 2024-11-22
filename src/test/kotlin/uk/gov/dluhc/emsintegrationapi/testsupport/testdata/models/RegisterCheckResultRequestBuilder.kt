@@ -1,11 +1,11 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models
 
 import org.apache.commons.lang3.RandomStringUtils
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.registercheckerapi.models.PostalVote
 import uk.gov.dluhc.registercheckerapi.models.ProxyVote
 import uk.gov.dluhc.registercheckerapi.models.RegisterCheckMatch
 import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID

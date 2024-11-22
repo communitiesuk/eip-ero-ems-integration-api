@@ -119,7 +119,7 @@ class RegisterCheckAssert(private val actualJpaEntity: RegisterCheck?) :
 
     fun hasRegisterCheckMatches(expected: List<RegisterCheckMatch>): RegisterCheckAssert {
         isNotNull
-        for((index, value) in expected.withIndex()) {
+        for ((index, value) in expected.withIndex()) {
             Assertions.assertThat(value)
                 .usingRecursiveComparison()
                 .ignoringCollectionOrder()

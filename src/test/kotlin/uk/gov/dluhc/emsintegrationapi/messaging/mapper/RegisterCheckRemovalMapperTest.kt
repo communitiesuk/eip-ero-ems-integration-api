@@ -12,8 +12,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.emsintegrationapi.dto.SourceType.VOTER_CARD
 import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildRemoveRegisterCheckDataMessage
+import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 
 @ExtendWith(MockitoExtension::class)
 internal class RegisterCheckRemovalMapperTest {

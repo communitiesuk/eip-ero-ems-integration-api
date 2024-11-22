@@ -5,10 +5,10 @@ import jakarta.validation.Valid
 import mu.KotlinLogging
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
-import uk.gov.dluhc.messagingsupport.MessageListener
 import uk.gov.dluhc.emsintegrationapi.messaging.mapper.InitiateRegisterCheckMapper
-import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 import uk.gov.dluhc.emsintegrationapi.service.RegisterCheckService
+import uk.gov.dluhc.messagingsupport.MessageListener
+import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 
 private val logger = KotlinLogging.logger { }
 

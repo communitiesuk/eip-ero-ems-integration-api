@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
+import uk.gov.dluhc.emsintegrationapi.messaging.stubs.TestSqsMessage
 import uk.gov.dluhc.messagingsupport.MessageQueue
 import uk.gov.dluhc.messagingsupport.MessagingConfigurationHelper
-import uk.gov.dluhc.emsintegrationapi.messaging.stubs.TestSqsMessage
 
 @Configuration
 class SqsSenderConfiguration {

@@ -17,11 +17,6 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckResultData
-import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
-import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
-import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
-import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.entity.RegisterCheckAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.ErrorResponseAssert.Companion.assertThat
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
@@ -33,6 +28,11 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildRegist
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildVcaRegisterCheckMatchFromMatchApi
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildRegisterCheckMatchRequest
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildRegisterCheckResultRequest
+import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
+import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
+import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
+import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
+import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit

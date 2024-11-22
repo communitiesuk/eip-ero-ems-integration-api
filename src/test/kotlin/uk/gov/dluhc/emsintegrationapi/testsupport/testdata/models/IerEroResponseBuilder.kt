@@ -1,7 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models
 
-import uk.gov.dluhc.external.ier.models.ERODetails
-import uk.gov.dluhc.external.ier.models.LocalAuthorityDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomEmailAddress
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomEroId
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomEroName
@@ -10,6 +8,8 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomLocalAuthorityName
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomPhoneNumber
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomWebsiteAddress
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
+import uk.gov.dluhc.external.ier.models.ERODetails
+import uk.gov.dluhc.external.ier.models.LocalAuthorityDetails
 
 fun buildIerEroDetails(
     eroIdentifier: String = getRandomEroId(),

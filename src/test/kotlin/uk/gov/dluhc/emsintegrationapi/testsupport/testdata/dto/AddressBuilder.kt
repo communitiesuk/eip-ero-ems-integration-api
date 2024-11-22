@@ -3,7 +3,6 @@ package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto
 import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.dto.AddressDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
-import uk.gov.dluhc.registercheckerapi.models.SourceSystem
 
 fun buildAddressDto(
     street: String = faker.address().streetName(),

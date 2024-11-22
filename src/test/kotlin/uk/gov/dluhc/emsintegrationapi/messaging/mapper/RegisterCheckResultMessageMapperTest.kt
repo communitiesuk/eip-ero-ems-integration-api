@@ -18,7 +18,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType
 import uk.gov.dluhc.emsintegrationapi.mapper.CheckStatusMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.InstantMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
-import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildPersonalDetailWithOptionalFieldsAsNull
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheckMatch
@@ -27,6 +26,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildRegist
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildVcaRegisterCheckMatch
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildVcaRegisterCheckPersonalDetailSqsFromEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildVcaRegisterCheckVotingArrangementSqsFromEntity
+import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
 import java.time.Instant
 import java.time.ZoneOffset
 import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType as SourceTypeSqsEnum

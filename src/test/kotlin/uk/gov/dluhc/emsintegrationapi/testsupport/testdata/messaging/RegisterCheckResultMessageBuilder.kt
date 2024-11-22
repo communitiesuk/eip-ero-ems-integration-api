@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
 import uk.gov.dluhc.emsintegrationapi.dto.AddressDto
 import uk.gov.dluhc.emsintegrationapi.dto.RegisterCheckMatchDto
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckAddress
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckMatch
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckPersonalDetail
@@ -12,7 +13,6 @@ import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import uk.gov.dluhc.registercheckerapi.messaging.models.VotingArrangement
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID

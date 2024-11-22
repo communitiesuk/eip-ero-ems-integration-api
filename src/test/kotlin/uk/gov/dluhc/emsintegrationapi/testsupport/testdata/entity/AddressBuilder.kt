@@ -1,7 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity
 
 import org.apache.commons.lang3.RandomStringUtils
-import org.springframework.data.annotation.CreatedBy
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.registercheckerapi.models.SourceSystem

@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.dluhc.emsintegrationapi.exception.OptimisticLockingFailureException
 import uk.gov.dluhc.emsintegrationapi.mapper.PendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.RegisterCheckResultMapper
-import uk.gov.dluhc.registercheckerapi.models.PendingRegisterChecksResponse
-import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import uk.gov.dluhc.emsintegrationapi.service.RegisterCheckService
 import uk.gov.dluhc.emsintegrationapi.validator.RegisterCheckRequestValidator
+import uk.gov.dluhc.registercheckerapi.models.PendingRegisterChecksResponse
+import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}

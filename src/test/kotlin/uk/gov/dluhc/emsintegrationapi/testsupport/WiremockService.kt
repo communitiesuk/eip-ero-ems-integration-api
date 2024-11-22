@@ -12,10 +12,10 @@ import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import uk.gov.dluhc.external.ier.models.ERODetails
-import uk.gov.dluhc.external.ier.models.ErosGet200Response
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerLocalAuthorityDetails
+import uk.gov.dluhc.external.ier.models.ERODetails
+import uk.gov.dluhc.external.ier.models.ErosGet200Response
 
 private const val IER_EROS_GET_URL = "/ier-ero/eros"
 

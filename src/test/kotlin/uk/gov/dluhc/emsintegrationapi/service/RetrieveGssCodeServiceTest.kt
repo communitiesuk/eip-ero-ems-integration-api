@@ -10,7 +10,6 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
-import uk.gov.dluhc.external.ier.models.ERODetails
 import uk.gov.dluhc.emsintegrationapi.client.IerApiClient
 import uk.gov.dluhc.emsintegrationapi.client.IerEroNotFoundException
 import uk.gov.dluhc.emsintegrationapi.client.IerGeneralException
@@ -18,6 +17,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomEroId
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerLocalAuthorityDetails
+import uk.gov.dluhc.external.ier.models.ERODetails
 
 @ExtendWith(MockitoExtension::class)
 internal class RetrieveGssCodeServiceTest {
