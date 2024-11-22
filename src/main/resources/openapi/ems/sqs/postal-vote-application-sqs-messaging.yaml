@@ -1,0 +1,251 @@
+openapi: 3.0.0
+info:
+  title: Approved/Rejected Postal Application SQS Message
+  version: 1.2.1
+  description: |-
+    Approved/Rejected Postal application API SQS Message Types for EROP
+
+    Messages defined in this spec are produced by EROP and consumed by EMS.
+
+    Any changes to this spec should be based on joint collaboration and agreement between EROP and EM.
+
+    Whilst this is an openAPI spec, it does not imply being used to define REST APIs, nor is it intended to.
+
+    The `paths` elements are being used to document (at a high level) the SQS queues and the request bodies that are expected
+    to be published to them. **There is no intent to generate or implement SQS queues or listener classes from this document.**
+
+    The `paths` element is only being used in order to maintain the structure of the openApi spec, as `paths` are required
+    elements.
+#
+# --------------------------------------------------------------------------------
+#
+
+paths:
+  #
+  # --------------------------------------------------------------------------------
+  # SQS Queues start here
+  # --------------------------------------------------------------------------------
+  #
+  '/postal-vote-application':
+    post:
+      tags:
+        - SQS queues
+      requestBody:
+        $ref: '#/components/requestBodies/PostalVoteApplicationMessage'
+      responses:
+        '204':
+          description: No response content.
+
+components:
+  #
+  # Schema and Enum Definitions
+  # -
+  schemas:
+    OverseasAddress:
+      title: OverseasAddress
+      type: object
+      description: 'Overseas Address format. (TODO:EIP1-725 confirm required fields, change to match IER)'
+      properties:
+        country:
+          type: string
+          maxLength: 255
+        addressLine1:
+          type: string
+          maxLength: 255
+        addressLine2:
+          type: string
+          maxLength: 255
+        addressLine3:
+          type: string
+          maxLength: 255
+        addressLine4:
+          type: string
+          maxLength: 255
+        addressLine5:
+          type: string
+          maxLength: 255
+      required:
+        - addressLine1
+        - country
+
+    BfpoAddress:
+      title: BfpoAddress
+      type: object
+      description: 'BFPO Address format'
+      properties:
+        bfpoNumber:
+          type: string
+          maxLength: 7
+        addressLine1:
+          type: string
+          maxLength: 255
+        addressLine2:
+          type: string
+          maxLength: 255
+        addressLine3:
+          type: string
+          maxLength: 255
+        addressLine4:
+          type: string
+          maxLength: 255
+        addressLine5:
+          type: string
+          maxLength: 255
+      required:
+        - bfpoNumber
+        - addressLine1
+
+    PostalVoteDetails:
+      type: object
+      properties:
+        ballotAddress:
+          $ref: './Models/Address.yaml'
+        ballotOverseasPostalAddress:
+          $ref: '#/components/schemas/OverseasAddress'
+        ballotBfpoPostalAddress:
+          $ref: '#/components/schemas/BfpoAddress'
+        ballotAddressReason:
+          type: string
+          description: ' (required only if “ballot” address given) The reason the applicant gave for using a different address for the ballot paper (max 500 utf-8 chars)'
+          maxLength: 500
+        voteUntilFurtherNotice:
+          type: boolean
+          description: Mutually exclusive postal voting limits. True if the elector wishes to vote by post until further notice.
+        voteForSingleDate:
+          type: string
+          format: date
+          description: |
+            If postal application is for a single dates.
+            In ISO8601 date format '2022-08-02'
+        voteStartDate:
+          type: string
+          format: date
+          description: |
+            If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteEndDate must also be present
+            In ISO8601 date format '2022-08-02'
+        voteEndDate:
+          type: string
+          format: date
+          description: |
+            If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteStartDate must also be present
+            In ISO8601 date format '2022-08-02'
+        rejectedReasons:
+          title: Rejected Reasons
+          description: |
+            Rejected notes and reasons as provided by the determining ERO when rejecting applications.
+            Applications for Welsh language EROs and Welsh Electors may contain reasons in English and/or Welsh.
+            Expected to be used by EMSs in elector communications.
+          properties:
+            englishReason:
+              $ref: './Models/RejectedReason.yaml'
+            welshReason:
+              $ref: './Models/RejectedReason.yaml'
+        rejectedReason:
+          title: Rejected Reason
+          description: |
+            
+
+    PrimaryElectorDetails:
+      title: PrimaryElectorDetails
+      type: object
+      description: |
+        Presence indicates this is a postal-proxy application. Details of the elector the proxy is voting for.
+      properties:
+        firstName:
+          type: string
+          pattern: '.*[a-zA-Z]+.*'
+          minLength: 1
+          maxLength: 35
+          description: The primary elector's first name
+          example: Fred
+        middleNames:
+          type: string
+          maxLength: 100
+          description: The primary elector's middle name(s). Null if there are no middle names
+        surname:
+          type: string
+          pattern: '.*[a-zA-Z]+.*'
+          minLength: 1
+          maxLength: 35
+          description: The primary elector's surname
+          example: Blogs
+        address:
+          $ref: './Models/Address.yaml'
+      required:
+        - firstName
+        - surname
+        - address
+
+    PostalVoteApplicationMessage:
+      title: PostalVoteApplicationMessage
+      x-api-owner: EMS
+      x-api-consumer: EROP
+      type: object
+      x-examples:
+        Example 1:
+          applicationDetails:
+            id: 502cf250036469154b4f85fc
+            createdAt: 2022-08-01T14:14:55Z
+            gssCode: T12345678
+            source: web
+            authorisedAt: 2022-08-02T10:10:10Z
+            authorisingStaffId: jsmith99@somecouncil.gov.uk
+            signature: LzlqLzRBQ...
+            applicationStatus: approved
+          applicantDetails:
+            firstName: First
+            middleNames: Middle
+            surname: Last
+            dob: '1995-03-02'
+            registeredAddress:
+              property: Aviation House
+              street: 125 Kingsway
+              locality: Camden
+              town: London
+              area: Greater London
+              postcode: SW112DR
+              uprn: 098765
+            phone: 07799779977
+            email: john@example.com
+            referenceNumber: V3HQ9LKI0W
+            ipAddress: 1.2.3.4
+            language: en
+            emsElectorId: e87cbaea-0deb-4058-95c6-8240d426f5e1
+          postalVoteDetails:
+            ballotAddress:
+              property: Another House
+              street: 234 Kingsway
+              locality: Camden
+              town: London
+              area: Greater London
+              postcode: SW112DR
+              uprn: '098766'
+            ballotAddressReason: I am away from home for work
+            voteUntilFurtherNotice: true
+      properties:
+        applicationDetails:
+          $ref: './Models/ApplicationDetails.yaml'
+        applicantDetails:
+          $ref: './Models/ApplicantDetails.yaml'
+        postalVoteDetails:
+          $ref: '#/components/schemas/PostalVoteDetails'
+        primaryElectorDetails:
+          $ref: '#/components/schemas/PrimaryElectorDetails'
+
+      required:
+        - applicationDetails
+        - applicantDetails
+  #
+  # Request Body Definitions
+  # --------------------------------------------------------------------------------
+  requestBodies:
+    PostalVoteApplicationMessage:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PostalVoteApplicationMessage'
+    PostalEmsConfirmedReceiptMessage:
+      content:
+        application/json:
+          schema:
+            $ref: './Models/EmsConfirmedReceiptMessage.yaml'
