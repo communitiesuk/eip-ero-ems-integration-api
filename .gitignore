@@ -16,7 +16,8 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-
+#Local configuration to run the application
+/src/main/resources/application-local.yml
 ### IntelliJ IDEA ###
 .idea
 *.iws

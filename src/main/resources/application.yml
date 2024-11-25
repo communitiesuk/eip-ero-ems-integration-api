@@ -26,13 +26,13 @@ dluhc:
   max-page-size: ${MAX_PAGE_SIZE:500}
   force-max-page-size: ${FORCE_MAX_PAGE_SIZE:200}
 
-cloud:
-  aws:
-    region:
-      auto: true
-      use-default-aws-region-chain: true
-    credentials:
-      use-default-aws-credentials-chain: true
+  cloud:
+    aws:
+      region:
+        auto: true
+        use-default-aws-region-chain: true
+      credentials:
+        use-default-aws-credentials-chain: true
 
 sqs:
   proxy-application-queue-name: ${SQS_PROXY_APPLICATION_QUEUE_NAME}

@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size
 import org.hibernate.Hibernate
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
-import uk.gov.dluhc.registercheckerapi.models.SourceSystem
 import java.sql.Types
 import java.time.Instant
 import java.util.UUID
