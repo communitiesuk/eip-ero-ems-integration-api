@@ -11,15 +11,19 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.email.EmailClient
+import uk.gov.dluhc.emsintegrationapi.config.MonitorPendingDownloadsEmailContentConfiguration
 import uk.gov.dluhc.emsintegrationapi.config.PendingRegisterChecksEmailContentConfiguration
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheckSummaryByGssCode
 
 @ExtendWith(MockitoExtension::class)
-internal class EmailServiceTest {
+internal class EmailServiceRegisterCheckTest {
     private lateinit var emailService: EmailService
 
     @Mock
     private lateinit var emailClient: EmailClient
+
+    @Mock
+    private lateinit var dummyEmsContentConfiguration: MonitorPendingDownloadsEmailContentConfiguration
 
     companion object {
         private const val GSS_CODE_1 = "E00000001"
@@ -80,7 +84,7 @@ internal class EmailServiceTest {
                 "email-templates/pending-register-checks.html",
                 "test1@email.com,test2@email.com"
             )
-            emailService = EmailService(emailClient, emailContentConfiguration)
+            emailService = EmailService(emailClient, emailContentConfiguration, dummyEmsContentConfiguration)
             emailService.sendRegisterCheckMonitoringEmail(
                 stuckRegisterCheckSummaries = EXPECTED_STUCK_REGISTER_CHECK_SUMMARIES,
                 totalStuck = EXPECTED_TOTAL_STUCK_APPLICATIONS,

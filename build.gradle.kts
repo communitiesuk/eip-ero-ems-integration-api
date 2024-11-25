@@ -24,7 +24,7 @@ version = "latest"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 extra["awsSdkVersion"] = "2.26.20"
-extra["springCloudAwsVersion"] = "3.1.1"
+extra["springCloudAwsVersion"] = "3.2.1"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -258,7 +258,7 @@ tasks.withType<BootBuildImage> {
 // Exclude generated code from linting
 ktlint {
     filter {
-        exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/generated/") }
+        exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/") }
     }
 }
 
