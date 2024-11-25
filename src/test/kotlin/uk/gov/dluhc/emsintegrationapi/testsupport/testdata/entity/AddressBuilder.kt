@@ -14,7 +14,7 @@ fun buildAddress(
     area: String? = faker.address().state(),
     postcode: String = faker.address().postcode(),
     uprn: String? = RandomStringUtils.randomNumeric(12),
-    createdBy: SourceSystem?  = SourceSystem.EROP,
+    createdBy: SourceSystem? = null,
     version: Long? = null,
 ) = Address(
     street = street,
@@ -24,7 +24,7 @@ fun buildAddress(
     area = area,
     postcode = postcode,
     uprn = uprn,
-    createdBy = SourceSystemEntity.EMS,
+    createdBy = createdBy.let { if(it == null) null else SourceSystemEntity.EMS },
     version = version,
 )
 
