@@ -17,6 +17,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
     id("org.openapi.generator") version "7.0.1"
     id("org.owasp.dependencycheck") version "8.2.1"
+    id("org.liquibase.gradle") version "2.0.4"
 }
 
 group = "uk.gov.dluhc"
@@ -24,7 +25,10 @@ version = "latest"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 extra["awsSdkVersion"] = "2.26.20"
+extra["springCloudVersion"] = "3.2.1"
 extra["springCloudAwsVersion"] = "3.2.1"
+extra["cucumberVersion"] = "7.15.0"
+extra["junitJupiterVersion"] = "5.10.5"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -52,6 +56,12 @@ apply(plugin = "org.jetbrains.kotlin.jvm")
 apply(plugin = "org.jetbrains.kotlin.plugin.spring")
 apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
 apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
+apply(plugin = "org.liquibase.gradle")
+
+liquibase {
+    activities.register("main")
+    runList = "main"
+}
 
 dependencies {
     // framework
@@ -61,8 +71,8 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("org.mapstruct:mapstruct:1.5.5.Final")
-    kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    kapt("org.mapstruct:mapstruct-processor:1.6.3")
 
     // internal libs
     implementation("uk.gov.dluhc:logging-library:3.0.3")
@@ -72,6 +82,7 @@ dependencies {
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -81,11 +92,15 @@ dependencies {
 
     // spring security
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
 
     // jpa/liquibase
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.liquibase:liquibase-core")
+    implementation("org.apache.commons:commons-text:1.12.0")
+    implementation("org.hibernate.orm:hibernate-envers")
 
     // mysql
     runtimeOnly("com.mysql:mysql-connector-j")
@@ -103,6 +118,7 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-aws-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
 
     // AWS signer using SDK V2 library is available at https://mvnrepository.com/artifact/io.github.acm19/aws-request-signing-apache-interceptor/2.1.1
     implementation("io.github.acm19:aws-request-signing-apache-interceptor:2.3.1")
@@ -122,11 +138,57 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("org.wiremock:wiremock-standalone:3.9.1")
     testImplementation("net.datafaker:datafaker:1.7.0")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.assertj:assertj-core:3.25.3")
 
     testImplementation("org.testcontainers:junit-jupiter:1.19.8")
     testImplementation("org.testcontainers:testcontainers:1.19.8")
     testImplementation("org.testcontainers:mysql:1.19.8")
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+
+    testImplementation("org.testcontainers:junit-jupiter:1.17.6")
+    testImplementation("org.testcontainers:testcontainers:1.17.6")
+    testImplementation("org.testcontainers:mysql:1.17.6")
+
+    testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
+    testImplementation("net.datafaker:datafaker:1.6.0")
+
+    // caching
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("com.github.ben-manes.caffeine:caffeine")
+
+    // AWS library to support tests
+    testImplementation("software.amazon.awssdk:auth")
+    // Libraries to support creating JWTs in tests
+    testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+    testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+    // Cucumber support
+    testImplementation("io.cucumber:cucumber-java8")
+    testImplementation("io.cucumber:cucumber-junit-platform-engine")
+    testImplementation("org.junit.platform:junit-platform-suite")
+    testImplementation("io.cucumber:cucumber-spring")
+
+    // Logging
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
+    // Liquibase plugin for local development
+    val liquibaseRuntime by configurations
+    liquibaseRuntime("org.liquibase:liquibase-core")
+    liquibaseRuntime("mysql:mysql-connector-java")
+    liquibaseRuntime("org.springframework.boot:spring-boot")
+    liquibaseRuntime("info.picocli:picocli:4.6.1")
+    liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
+    liquibaseRuntime("org.yaml:snakeyaml:1.33")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudVersion")}")
+        mavenBom("software.amazon.awssdk:bom:${property("awsSdkVersion")}")
+        mavenBom("io.cucumber:cucumber-bom:${property("cucumberVersion")}")
+        mavenBom("org.junit:junit-bom:${property("junitJupiterVersion")}")
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -140,6 +202,7 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     dependsOn(tasks.withType<GenerateTask>())
     useJUnitPlatform()
+    jvmArgs("--add-opens", "java.base/java.time=ALL-UNNAMED")
 }
 
 tasks.withType<GenerateTask> {
@@ -159,6 +222,7 @@ tasks.withType<GenerateTask> {
     configOptions.set(
         mapOf(
             "dateLibrary" to "java8",
+            "serializationLibrary" to "jackson",
             "enumPropertyNaming" to "UPPERCASE",
             "useBeanValidation" to "true",
             "useSpringBoot3" to "true",

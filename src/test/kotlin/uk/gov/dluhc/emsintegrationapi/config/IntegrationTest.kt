@@ -56,6 +56,9 @@ internal abstract class IntegrationTest {
     protected lateinit var sqsAsyncClient: SqsAsyncClient
 
     @Autowired
+    protected lateinit var sqsMessagingTemplate: SqsTemplate
+
+    @Autowired
     protected lateinit var objectMapper: ObjectMapper
 
     @Autowired
@@ -78,9 +81,6 @@ internal abstract class IntegrationTest {
 
     @Value("\${sqs.remove-applicant-register-check-data-queue-name}")
     protected lateinit var removeApplicantRegisterCheckDataQueueName: String
-
-    @Autowired
-    protected lateinit var sqsMessagingTemplate: SqsTemplate
 
     @Value("\${caching.time-to-live}")
     protected lateinit var timeToLive: Duration
