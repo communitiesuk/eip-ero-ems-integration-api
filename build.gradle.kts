@@ -71,8 +71,8 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("org.mapstruct:mapstruct:1.6.3")
-    kapt("org.mapstruct:mapstruct-processor:1.6.3")
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     // internal libs
     implementation("uk.gov.dluhc:logging-library:3.0.3")
@@ -136,7 +136,6 @@ dependencies {
     testImplementation("software.amazon.awssdk:sqs") // required to send messages to a queue, which we only need to do in test at the moment
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
-    testImplementation("org.wiremock:wiremock-standalone:3.9.1")
     testImplementation("net.datafaker:datafaker:1.7.0")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.assertj:assertj-core:3.25.3")
@@ -151,7 +150,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:1.17.6")
     testImplementation("org.testcontainers:mysql:1.17.6")
 
-    testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
+    testImplementation("org.wiremock:wiremock-jetty12:3.9.2")
     testImplementation("net.datafaker:datafaker:1.6.0")
 
     // caching

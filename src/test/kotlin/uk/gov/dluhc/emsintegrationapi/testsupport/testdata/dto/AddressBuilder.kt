@@ -1,6 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto
 
 import org.apache.commons.lang3.RandomStringUtils
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.dto.AddressDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 
@@ -13,7 +14,6 @@ fun buildAddressDto(
     postcode: String = faker.address().postcode(),
     uprn: String? = RandomStringUtils.randomNumeric(12),
     createdBy: String? = null,
-    version: Long? = null,
 ) = AddressDto(
     street = street,
     property = property,
@@ -23,7 +23,6 @@ fun buildAddressDto(
     postcode = postcode,
     uprn = uprn,
     createdBy = createdBy,
-    version = version,
 )
 
 fun buildAddressDtoWithOptionalFieldsNull(
@@ -38,5 +37,4 @@ fun buildAddressDtoWithOptionalFieldsNull(
     area = null,
     uprn = null,
     createdBy = null,
-    version = null,
 )

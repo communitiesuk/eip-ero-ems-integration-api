@@ -7,7 +7,6 @@ spring:
     readOnlyUrl: ${spring.datasource.url}?readonly=true
   liquibase:
     contexts: ddl
-
   jpa:
     properties:
       hibernate:

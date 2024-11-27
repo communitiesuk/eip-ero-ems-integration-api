@@ -1,6 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -9,11 +8,10 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.persistence.Version
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.hibernate.Hibernate
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.JdbcTypeCode
+import org.springframework.data.annotation.CreatedDate
 import java.sql.Types
 import java.time.Instant
 import java.util.UUID
@@ -26,9 +24,8 @@ class Address(
     @JdbcTypeCode(Types.CHAR)
     var id: UUID? = null,
 
-    @field:NotNull
     @field:Size(max = 255)
-    var street: String,
+    val street: String,
 
     @field:Size(max = 255)
     var property: String? = null,
@@ -42,22 +39,20 @@ class Address(
     @field:Size(max = 255)
     var area: String? = null,
 
-    @field:NotNull
     @field:Size(max = 10)
-    var postcode: String,
+    val postcode: String,
 
     @field:Size(max = 12)
     var uprn: String? = null,
 
-    @Column(updatable = false)
-    @CreationTimestamp
+    @CreatedDate
     var dateCreated: Instant? = null,
 
     @Enumerated(EnumType.STRING)
     val createdBy: SourceSystem? = null,
 
     @Version
-    var version: Long? = null
+    var version: Long? = 0L
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

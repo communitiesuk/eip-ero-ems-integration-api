@@ -5,6 +5,8 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem as SourceSystemEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.registercheckerapi.models.SourceSystem
+import java.time.Instant
+import java.util.*
 
 fun buildAddress(
     street: String = faker.address().streetName(),
@@ -14,9 +16,10 @@ fun buildAddress(
     area: String? = faker.address().state(),
     postcode: String = faker.address().postcode(),
     uprn: String? = RandomStringUtils.randomNumeric(12),
-    createdBy: SourceSystem? = null,
-    version: Long? = null,
+    dateCreated: Instant? = Instant.now(),
+    createdBy: SourceSystem? = null
 ) = Address(
+    id = UUID.randomUUID(),
     street = street,
     property = property,
     locality = locality,
@@ -24,8 +27,8 @@ fun buildAddress(
     area = area,
     postcode = postcode,
     uprn = uprn,
-    createdBy = createdBy.let { if(it == null) null else SourceSystemEntity.EMS },
-    version = version,
+    dateCreated = dateCreated,
+    createdBy = createdBy?.let { SourceSystemEntity.valueOf(it.toString()) }
 )
 
 fun buildAddressWithOptionalFieldsAsNull(
@@ -39,6 +42,6 @@ fun buildAddressWithOptionalFieldsAsNull(
     town = null,
     area = null,
     uprn = null,
-    createdBy = null,
-    version = null,
+    dateCreated = Instant.now(),
+    createdBy = null
 )

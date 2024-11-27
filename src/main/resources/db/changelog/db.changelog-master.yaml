@@ -57,3 +57,5 @@ databaseChangeLog:
       file: /db/changelog/create/0028_EIP1-11113_address_created_by_version_nullable.xml
   - include:
       file: /db/changelog/create/0029_EIP1-11113_register_check_created_by_version_nullable.xml
+  - include:
+      file: /db/changelog/create/0030_EIP1-11113_date_created_nullable.xml

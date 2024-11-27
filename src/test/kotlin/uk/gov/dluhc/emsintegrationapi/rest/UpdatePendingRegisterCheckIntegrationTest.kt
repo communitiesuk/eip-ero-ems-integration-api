@@ -1,5 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.apache.commons.lang3.StringUtils.toRootUpperCase
 import org.apache.commons.lang3.StringUtils.trim
 import org.assertj.core.api.Assertions.assertThat
@@ -42,7 +44,7 @@ import java.util.concurrent.TimeUnit
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType as SourceTypeEntity
 
 private const val REQUEST_HEADER_NAME = "client-cert-serial"
-const val CERT_SERIAL_NUMBER_VALUE = "543212222"
+const val CERT_SERIAL_NUMBER_VALUE = "543219999"
 
 internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
@@ -131,7 +133,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasTimestampNotBefore(earliestExpectedTimeStamp)
             .hasStatus(404)
             .hasError("Not Found")
-            .hasMessage("EROCertificateMapping for certificateSerial=[543212222] not found")
+            .hasMessage("EROCertificateMapping for certificateSerial=[543219999] not found")
         wireMockService.verifyIerGetErosCalledOnce()
         assertRequestIsAudited(requestId)
     }
@@ -251,7 +253,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasTimestampNotBefore(earliestExpectedTimeStamp)
             .hasStatus(403)
             .hasError("Forbidden")
-            .hasMessage("Request gssCode:[E10101010] does not match with gssCode for certificateSerial:[543212222]")
+            .hasMessage("Request gssCode:[E10101010] does not match with gssCode for certificateSerial:[543219999]")
         wireMockService.verifyIerGetErosCalledOnce()
         assertRequestIsAudited(requestId)
     }
