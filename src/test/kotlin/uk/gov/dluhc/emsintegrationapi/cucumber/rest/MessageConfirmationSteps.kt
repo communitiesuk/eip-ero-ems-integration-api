@@ -8,9 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
-import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import java.util.concurrent.TimeUnit
-import kotlin.jvm.optionals.getOrElse
 import kotlin.jvm.optionals.getOrNull
 
 class MessageConfirmationSteps(

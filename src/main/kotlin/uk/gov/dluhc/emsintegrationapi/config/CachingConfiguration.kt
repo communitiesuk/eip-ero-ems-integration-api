@@ -24,7 +24,11 @@ class CachingConfiguration {
         return CaffeineCacheManager()
             .apply {
                 setCaffeine(Caffeine.newBuilder().expireAfterWrite(timeToLive))
-                setCacheNames(listOf(IER_ELECTORAL_REGISTRATION_OFFICES_CACHE))
+                setCacheNames(listOf(
+                    IER_ELECTORAL_REGISTRATION_OFFICES_CACHE,
+                    ERO_CERTIFICATE_MAPPING_CACHE,
+                    ERO_GSS_CODE_BY_ERO_ID_CACHE
+                ))
             }
     }
 }

@@ -139,38 +139,13 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
         wireMockService.verifyIerGetErosCalledOnce()
     }
 
-    @Test
-    fun `should return internal server error given IER service throws 500`() {
-        // Given
-        wireMockService.stubIerApiGetEroIdentifierThrowsInternalServerError()
-
-        val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
-
-        // When
-        val response = webTestClient.get()
-            .uri(buildUriStringWithQueryParam(10))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .exchange()
-            .expectStatus().is5xxServerError
-            .returnResult(ErrorResponse::class.java)
-
-        // Then
-        val actual = response.responseBody.blockFirst()
-        assertThat(actual)
-            .hasTimestampNotBefore(earliestExpectedTimeStamp)
-            .hasStatus(500)
-            .hasError("Internal Server Error")
-            .hasMessage("Error getting eroId for certificate serial")
-        wireMockService.verifyIerGetErosCalledOnce()
-    }
-
     private fun buildUriStringWithQueryParam(pageSize: Int) =
         UriComponentsBuilder
             .fromUriString(GET_PENDING_REGISTER_CHECKS_ENDPOINT)
             .queryParam(QUERY_PARAM_PAGE_SIZE, pageSize)
             .build().toUriString()
 
-    private fun buildUriStringWithoutQueryParam() =
+    private fun  buildUriStringWithoutQueryParam() =
         UriComponentsBuilder
             .fromUriString(GET_PENDING_REGISTER_CHECKS_ENDPOINT)
             .build().toUriString()

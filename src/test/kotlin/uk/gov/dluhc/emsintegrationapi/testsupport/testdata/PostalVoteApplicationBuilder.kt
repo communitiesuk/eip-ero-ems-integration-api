@@ -31,7 +31,8 @@ fun buildPostalVoteApplication(
     englishRejectionNotes: String? = null,
     englishRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
     welshRejectionNotes: String? = null,
-    welshRejectedReasonItems: Set<RejectedReasonItem>? = emptySet()
+    welshRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
+    dateCreated: Instant = Instant.now(),
 ) = PostalVoteApplication(
     applicationId = applicationId,
     applicationDetails = applicationDetails,
@@ -47,7 +48,8 @@ fun buildPostalVoteApplication(
     englishRejectionNotes = englishRejectionNotes,
     englishRejectedReasonItems = englishRejectedReasonItems,
     welshRejectionNotes = welshRejectionNotes,
-    welshRejectedReasonItems = welshRejectedReasonItems
+    welshRejectedReasonItems = welshRejectedReasonItems,
+    dateCreated = dateCreated,
 )
 
 fun buildPostalVoteApplicationMessage(

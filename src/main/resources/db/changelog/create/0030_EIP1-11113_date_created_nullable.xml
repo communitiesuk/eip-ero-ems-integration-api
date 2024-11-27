@@ -6,9 +6,9 @@
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
     <changeSet author="simon.payne@softwire.com" id="0026_register_check_result_data" context="ddl">
-        <modifyDataType tableName="address" columnName="created_by" newDataType="varchar(255)"/>
+        <modifyDataType tableName="address" columnName="date_created" newDataType="timestamp"/>
         <rollback>
-            <modifyDataType tableName="address" columnName="created_by" newDataType="varchar(255) NOT NULL"/>
+            <modifyDataType tableName="address" columnName="date_created" newDataType="timestamp NOT NULL"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

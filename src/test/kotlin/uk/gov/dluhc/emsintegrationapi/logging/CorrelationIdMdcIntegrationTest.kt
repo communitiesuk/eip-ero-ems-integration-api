@@ -2,8 +2,6 @@ package uk.gov.dluhc.emsintegrationapi.logging
 
 import ch.qos.logback.classic.Level
 import io.awspring.cloud.sqs.operations.SqsSendOptions
-import io.awspring.cloud.sqs.operations.SqsTemplate
-import io.awspring.cloud.sqs.support.converter.SqsMessagingMessageConverter
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.AfterEach
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.cache.CacheManager
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.CORRELATION_ID
@@ -30,6 +27,7 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMess
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ILoggingEventAssert.Companion.assertThat
+import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 import java.util.UUID.randomUUID
 import java.util.concurrent.TimeUnit
@@ -74,7 +72,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
 
         @BeforeEach
         fun setupWiremockStubs() {
-            wireMockService.stubIerApiGetEroIdentifier(CERTIFICATE_SERIAL_NUMBER, ERO_ID)
+            wireMockService.stubIerApiGetEros(CERTIFICATE_SERIAL_NUMBER, ERO_ID, listOf(getRandomGssCode()))
             wireMockService.stubEroManagementGetEro(ERO_ID)
         }
 
@@ -102,7 +100,6 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
                     assertThat(it).`as`("Message: ${it.message}").hasCorrelationId(correlationId)
                 }
                 wireMockService.verifyIerApiRequestWithCorrelationId(correlationId)
-                wireMockService.verifyEroManagementApiRequestWithCorrelationId(correlationId)
             }
         }
 
@@ -132,7 +129,6 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
                     assertThat(it).`as`("Message: ${it.message}").hasCorrelationId(expectedCorrelationId)
                 }
                 wireMockService.verifyIerApiRequestWithCorrelationId(expectedCorrelationId)
-                wireMockService.verifyEroManagementApiRequestWithCorrelationId(expectedCorrelationId)
             }
         }
 

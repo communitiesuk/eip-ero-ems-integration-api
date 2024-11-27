@@ -48,10 +48,10 @@ class BfpoAddress(
     var dateCreated: Instant? = null,
 
     @Enumerated(EnumType.STRING)
-    val createdBy: SourceSystem,
+    val createdBy: SourceSystem? = null,
 
     @Version
-    var version: Long? = null
+    var version: Long? = 0L
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

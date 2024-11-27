@@ -64,9 +64,4 @@ class MessagingConfiguration {
         sqsMessagingMessageConverter = sqsMessagingMessageConverter,
         maximumNumberOfConcurrentMessages = null,
     )
-
-    @Bean
-    fun sqsTemplate(sqsAsyncClient: SqsAsyncClient?): SqsTemplate {
-        return SqsTemplate.builder().sqsAsyncClient(sqsAsyncClient!!).build()
-    }
 }

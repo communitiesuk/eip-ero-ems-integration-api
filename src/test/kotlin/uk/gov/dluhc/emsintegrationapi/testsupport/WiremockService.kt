@@ -8,10 +8,12 @@ import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.matching
+import com.github.tomakehurst.wiremock.client.WireMock.moreThanOrExactly
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
+import org.mockito.kotlin.atLeastOnce
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -72,6 +74,18 @@ class WiremockService(private val wireMockServer: WireMockServer) {
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                         .withBody(objectMapper.writeValueAsString(erosResponse))
+                )
+        )
+    }
+
+    fun stubIerInternalServerError() {
+        wireMockServer.stubFor(
+            get(urlEqualTo(IER_EROS_GET_URL))
+                .withHeader("Authorization", matchingAwsSignedAuthHeader())
+                .willReturn(
+                    responseDefinition()
+                        .withStatus(500)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 )
         )
     }

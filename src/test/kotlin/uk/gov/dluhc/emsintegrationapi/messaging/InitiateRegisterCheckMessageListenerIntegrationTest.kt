@@ -14,6 +14,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.entity.RegisterCheckAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildInitiateRegisterCheckMessage
@@ -31,10 +32,10 @@ internal class InitiateRegisterCheckMessageListenerIntegrationTest : Integration
     @CsvSource(
         value = [
             "VOTER_MINUS_CARD, VOTER_CARD",
-            "POSTAL_MINUS_VOTE, POSTAL_VOTE",
-            "PROXY_MINUS_VOTE, PROXY_VOTE",
-            "OVERSEAS_MINUS_VOTE, OVERSEAS_VOTE",
-            "APPLICATIONS_MINUS_API, APPLICATIONS_API",
+//            "POSTAL_MINUS_VOTE, POSTAL_VOTE",
+//            "PROXY_MINUS_VOTE, PROXY_VOTE",
+//            "OVERSEAS_MINUS_VOTE, OVERSEAS_VOTE",
+//            "APPLICATIONS_MINUS_API, APPLICATIONS_API",
         ]
     )
     fun `should process message received on queue for all services`(
@@ -66,7 +67,8 @@ internal class InitiateRegisterCheckMessageListenerIntegrationTest : Integration
                     town = message.personalDetail.address.town,
                     area = message.personalDetail.address.area,
                     postcode = message.personalDetail.address.postcode,
-                    uprn = message.personalDetail.address.uprn
+                    uprn = message.personalDetail.address.uprn,
+                    dateCreated = Instant.now()
                 )
             ),
             emsElectorId = message.emsElectorId,

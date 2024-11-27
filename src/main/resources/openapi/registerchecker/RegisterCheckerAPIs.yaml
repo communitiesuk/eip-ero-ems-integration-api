@@ -119,7 +119,7 @@ paths:
                     maxLength: 500
                   message:
                     type: string
-                    example: 'EROCertificateMapping for certificateSerial=[543212222] not found'
+                    example: 'EROCertificateMapping for certificateSerial=[543219999] not found'
                     maxLength: 500
                 required:
                   - timestamp

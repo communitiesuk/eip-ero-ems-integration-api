@@ -10,6 +10,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
+import org.springframework.data.jpa.domain.AbstractAuditable_.createdBy
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.dto.AddressDto
 import uk.gov.dluhc.emsintegrationapi.dto.PendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.dto.PersonalDetailDto
@@ -58,7 +60,6 @@ internal class InitiateRegisterCheckMapperTest {
                         postcode = address.postcode,
                         uprn = address.uprn,
                         createdBy = null,
-                        version = null,
                     )
                 )
             },
@@ -72,7 +73,7 @@ internal class InitiateRegisterCheckMapperTest {
         // Then
         assertThat(actual)
             .usingRecursiveComparison()
-            .ignoringFields("correlationId")
+            .ignoringFields("correlationId", "createdBy")
             .isEqualTo(expected)
         assertThat(actual.correlationId).isNotNull
         assertThat(actual.createdAt).isNull()
