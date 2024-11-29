@@ -163,7 +163,7 @@ components:
             proxyEmail: jane@example.com
             proxyReason: work commitments
             voteUntilFurtherNotice: true
-
+          isFromApplicationsApi: false
       properties:
         applicationDetails:
           $ref: './Models/ApplicationDetails.yaml'
@@ -171,6 +171,9 @@ components:
           $ref: './Models/ApplicantDetails.yaml'
         proxyVoteDetails:
           $ref: '#/components/schemas/ProxyVoteDetails'
+        isFromApplicationsApi:
+          type: boolean
+          description: It indicates that the message comes from Applications Api or not
       required:
         - applicationDetails
         - applicantDetails

@@ -110,6 +110,8 @@ dependencies {
     // AWS signer using SDK V2 library is available at https://mvnrepository.com/artifact/io.github.acm19/aws-request-signing-apache-interceptor/2.1.1
     implementation("io.github.acm19:aws-request-signing-apache-interceptor:2.1.1")
 
+    implementation("uk.gov.dluhc:messaging-support-library:2.1.0")
+
     // Test implementations
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

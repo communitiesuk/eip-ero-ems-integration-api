@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
+import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.POSTAL_APPLICATION_QUEUE
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.PROXY_APPLICATION_QUEUE
 
@@ -15,7 +16,8 @@ internal class QueueConfigurationTest {
             PROXY_APPLICATION_QUEUE.name,
             POSTAL_APPLICATION_QUEUE.name,
             DELETED_PROXY_APPLICATION_QUEUE.name,
-            DELETED_POSTAL_APPLICATION_QUEUE.name
+            DELETED_POSTAL_APPLICATION_QUEUE.name,
+            EMS_APPLICATION_PROCESSED_QUEUE.name,
         )
 
     @Test

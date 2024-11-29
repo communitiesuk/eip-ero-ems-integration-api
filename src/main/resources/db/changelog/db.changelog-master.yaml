@@ -43,3 +43,5 @@ databaseChangeLog:
       file: /db/changelog/create/0021_EROPSPT-350_remove_unused_indexes.xml
   - include:
       file: /db/changelog/create/0022_EROPSPT-350_add_index_on_status.xml
+  - include:
+      file: db/changelog/create/0023_EIP1-11198_add-is-from-applications-api-flag.xml
