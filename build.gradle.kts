@@ -321,7 +321,7 @@ tasks.withType<BootBuildImage> {
 // Exclude generated code from linting
 ktlint {
     filter {
-        exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/") }
+        exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/generated/") }
     }
 }
 

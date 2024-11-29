@@ -1,5 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
@@ -21,8 +23,6 @@ import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.P
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
 import uk.gov.dluhc.emsintegrationapi.service.ProxyVoteApplicationService
-import jakarta.validation.Valid
-import jakarta.validation.constraints.Pattern
 
 private val logger = KotlinLogging.logger { }
 

@@ -39,7 +39,7 @@ class PendingDownloadsMonitoringService(
         logPendingDownloads("proxy", pendingProxyDownloads)
 
         if (sendEmail) {
-            emailService  .sendPendingDownloadMonitoringEmail(
+            emailService.sendPendingDownloadMonitoringEmail(
                 postalSummary = pendingPostalDownloads,
                 proxySummary = pendingProxyDownloads,
                 expectedMaximumPendingPeriod = "$expectedMaximumPendingDays days",

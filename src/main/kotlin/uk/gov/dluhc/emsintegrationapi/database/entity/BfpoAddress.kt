@@ -1,10 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import org.hibernate.Hibernate
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.Instant
-import java.util.UUID
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType
@@ -13,9 +8,14 @@ import jakarta.persistence.Id
 import jakarta.persistence.Version
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.hibernate.Hibernate
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.annotations.UuidGenerator
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.sql.Types
+import java.time.Instant
+import java.util.UUID
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)

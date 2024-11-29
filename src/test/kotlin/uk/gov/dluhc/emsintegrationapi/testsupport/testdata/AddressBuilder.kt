@@ -5,9 +5,8 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import java.time.Instant
-import java.util.UUID
-import java.util.concurrent.TimeUnit
 import uk.gov.dluhc.emsintegrationapi.messaging.models.Address as AddressMessageDto
+
 fun buildAddressEntity(
     street: String = faker.address().streetName(),
     postcode: String = faker.address().postcode(),

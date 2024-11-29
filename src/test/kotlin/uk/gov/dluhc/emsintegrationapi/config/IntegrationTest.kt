@@ -105,6 +105,7 @@ internal abstract class IntegrationTest {
         votingArrangementRepository.deleteAll()
         cacheManager.getCache(IER_ELECTORAL_REGISTRATION_OFFICES_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
+        cacheManager.getCache(IER_ELECTORAL_REGISTRATION_OFFICES_CACHE)?.clear()
     }
 
     @BeforeEach
