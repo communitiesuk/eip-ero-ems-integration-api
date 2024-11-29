@@ -1,8 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import org.hibernate.Hibernate
-import org.hibernate.annotations.NotFound
-import org.hibernate.annotations.NotFoundAction
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -11,6 +8,9 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.hibernate.Hibernate
+import org.hibernate.annotations.NotFound
+import org.hibernate.annotations.NotFoundAction
 
 @Entity
 class PostalVoteApplicationPrimaryElectorDetails(

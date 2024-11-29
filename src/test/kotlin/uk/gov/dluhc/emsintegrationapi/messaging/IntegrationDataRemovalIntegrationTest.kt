@@ -12,16 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.config.MESSAGE_ID
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteRecords
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteSqsMessage
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.TestPhase
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.POSTAL
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.PROXY
+import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ILoggingEventAssert.Companion.assertThat
@@ -51,16 +48,18 @@ private class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
 
         @BeforeEach
         fun deletePostalRecordsBefore() {
-            deleteRecords(postalVoteApplicationRepository, TestPhase.BEFORE)
-            deleteRecords(proxyVoteApplicationRepository, TestPhase.BEFORE)
-            deleteSqsMessage(sqsAsyncClient, removeApplicationEmsDataQueueName, TestPhase.BEFORE)
+            ClearDownUtils.clearDownRecords(
+                postalRepository = postalVoteApplicationRepository,
+                queueName = removeApplicationEmsDataQueueName
+            )
         }
 
         @AfterEach
         fun deletePostalRecordsAfter() {
-            deleteRecords(postalVoteApplicationRepository, TestPhase.AFTER)
-            deleteRecords(proxyVoteApplicationRepository, TestPhase.AFTER)
-            deleteSqsMessage(sqsAsyncClient, removeApplicationEmsDataQueueName, TestPhase.AFTER)
+            ClearDownUtils.clearDownRecords(
+                postalRepository = postalVoteApplicationRepository,
+                queueName = removeApplicationEmsDataQueueName
+            )
         }
 
         @Test

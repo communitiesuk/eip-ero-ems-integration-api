@@ -145,7 +145,7 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
             .queryParam(QUERY_PARAM_PAGE_SIZE, pageSize)
             .build().toUriString()
 
-    private fun  buildUriStringWithoutQueryParam() =
+    private fun buildUriStringWithoutQueryParam() =
         UriComponentsBuilder
             .fromUriString(GET_PENDING_REGISTER_CHECKS_ENDPOINT)
             .build().toUriString()

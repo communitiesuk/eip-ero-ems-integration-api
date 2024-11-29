@@ -1,10 +1,10 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import java.time.Instant
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.validation.constraints.Size
+import java.time.Instant
 
 @Embeddable
 class ApplicationDetails(

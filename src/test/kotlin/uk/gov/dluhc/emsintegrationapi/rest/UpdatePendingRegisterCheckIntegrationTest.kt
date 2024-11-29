@@ -1,7 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
-import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.apache.commons.lang3.StringUtils.toRootUpperCase
 import org.apache.commons.lang3.StringUtils.trim
 import org.assertj.core.api.Assertions.assertThat

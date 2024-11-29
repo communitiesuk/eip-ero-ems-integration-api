@@ -3,10 +3,10 @@ package uk.gov.dluhc.emsintegrationapi.database.repository
 import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.generator.BeforeExecutionGenerator
 import org.hibernate.generator.EventType
-import java.util.UUID
 import java.util.EnumSet
+import java.util.UUID
 
-class UseExistingOrGenerateUUID: BeforeExecutionGenerator {
+class UseExistingOrGenerateUUID : BeforeExecutionGenerator {
 
     override fun getEventTypes(): EnumSet<EventType> {
         return EnumSet.of(EventType.INSERT)
@@ -20,7 +20,7 @@ class UseExistingOrGenerateUUID: BeforeExecutionGenerator {
     ): Any {
         val entityPersister = entity.let { session.getEntityPersister(null, it!!) }
         val id = entityPersister.classMetadata?.getIdentifier(entity, session)
-        if(id != null) {
+        if (id != null) {
             return id
         }
         return UUID.randomUUID()

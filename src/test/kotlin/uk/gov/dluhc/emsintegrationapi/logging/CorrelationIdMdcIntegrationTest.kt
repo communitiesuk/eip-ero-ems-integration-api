@@ -19,11 +19,9 @@ import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.config.MESSAGE_ID
 import uk.gov.dluhc.emsintegrationapi.config.REQUEST_ID_HEADER
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteRecords
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteSqsMessage
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.TestPhase
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
+import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ILoggingEventAssert.Companion.assertThat
@@ -31,7 +29,6 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 import java.util.UUID.randomUUID
 import java.util.concurrent.TimeUnit
-
 
 /**
  * Integration tests that assert the correlation ID is correctly applied to log statements via the Interceptors and Aspects
@@ -191,14 +188,20 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
 
         @BeforeEach
         fun deletePostalRecordsBefore() {
-            deleteRecords(postalVoteApplicationRepository, TestPhase.BEFORE)
-            deleteSqsMessage(sqsAsyncClient, postalApplicationQueueName, TestPhase.BEFORE)
+            ClearDownUtils.clearDownRecords(
+                postalRepository = postalVoteApplicationRepository,
+                sqsAsyncClient = sqsAsyncClient,
+                queueName = postalApplicationQueueName
+            )
         }
 
         @AfterEach
         fun deletePostalRecordsAfter() {
-            deleteRecords(postalVoteApplicationRepository, TestPhase.AFTER)
-            deleteSqsMessage(sqsAsyncClient, postalApplicationQueueName, TestPhase.AFTER)
+            ClearDownUtils.clearDownRecords(
+                postalRepository = postalVoteApplicationRepository,
+                sqsAsyncClient = sqsAsyncClient,
+                queueName = postalApplicationQueueName
+            )
         }
 
         @Test
@@ -208,10 +211,12 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
             val expectedCorrelationId = randomUUID().toString().replace("-", "")
 
             sqsMessagingTemplate.send(
-                { to: SqsSendOptions<PostalVoteApplicationMessage> -> to
-                    .queue(postalApplicationQueueName)
-                    .payload(payload)
-                    .headers(mapOf("x-correlation-id" to expectedCorrelationId)) }
+                { to: SqsSendOptions<PostalVoteApplicationMessage> ->
+                    to
+                        .queue(postalApplicationQueueName)
+                        .payload(payload)
+                        .headers(mapOf("x-correlation-id" to expectedCorrelationId))
+                }
             )
 
             await.atMost(10, TimeUnit.SECONDS).untilAsserted {

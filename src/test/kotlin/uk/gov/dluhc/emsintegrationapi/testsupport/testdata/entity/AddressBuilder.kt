@@ -2,11 +2,11 @@ package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity
 
 import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem as SourceSystemEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.registercheckerapi.models.SourceSystem
 import java.time.Instant
-import java.util.*
+import java.util.UUID
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem as SourceSystemEntity
 
 fun buildAddress(
     street: String = faker.address().streetName(),

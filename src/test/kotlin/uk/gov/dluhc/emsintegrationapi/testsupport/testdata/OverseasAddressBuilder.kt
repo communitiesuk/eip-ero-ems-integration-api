@@ -4,7 +4,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.OverseasAddress
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import java.time.Instant
-import java.util.UUID
 import uk.gov.dluhc.emsintegrationapi.messaging.models.OverseasAddress as OverseasAddressMessageDto
 
 fun buildOverseasAddressEntity(
