@@ -81,7 +81,7 @@ class PostalVoteApplicationService(
             doConfirmedReceiptApplicationStatus(request, postalVoteApplication.applicationDetails)
         }
 
-        sendMessage(request, postalVoteApplication.applicationId)
+        sendMessage(request, postalVoteApplication.applicationId, postalVoteApplication.isFromApplicationsApi)
 
         logger.info { "Confirmation ${request.status} message sent to the postal vote application for ${postalVoteApplication.applicationId}" }
     }

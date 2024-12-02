@@ -31,7 +31,8 @@ fun buildPostalVoteApplication(
     englishRejectionNotes: String? = null,
     englishRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
     welshRejectionNotes: String? = null,
-    welshRejectedReasonItems: Set<RejectedReasonItem>? = emptySet()
+    welshRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
+    isFromApplicationsApi: Boolean? = null,
 ) = PostalVoteApplication(
     applicationId = applicationId,
     applicationDetails = applicationDetails,
@@ -47,7 +48,8 @@ fun buildPostalVoteApplication(
     englishRejectionNotes = englishRejectionNotes,
     englishRejectedReasonItems = englishRejectedReasonItems,
     welshRejectionNotes = welshRejectionNotes,
-    welshRejectedReasonItems = welshRejectedReasonItems
+    welshRejectedReasonItems = welshRejectedReasonItems,
+    isFromApplicationsApi = isFromApplicationsApi
 )
 
 fun buildPostalVoteApplicationMessage(
@@ -55,9 +57,11 @@ fun buildPostalVoteApplicationMessage(
     applicantDetails: ApplicantDetailsMessageDto = buildApplicantDetailsMessageDto(),
     postalVoteDetails: PostalVoteDetailsMessageDto = buildPostalVoteDetailsMessageDto(),
     primaryElectorDetails: PrimaryElectorDetailsMessageDto? = null,
+    isFromApplicationsApi: Boolean? = null,
 ) = PostalVoteApplicationMessage(
     applicationDetails = applicationDetails,
     applicantDetails = applicantDetails,
     postalVoteDetails = postalVoteDetails,
     primaryElectorDetails = primaryElectorDetails,
+    isFromApplicationsApi = isFromApplicationsApi
 )
