@@ -31,8 +31,8 @@ abstract class AbstractApplicationService(
         }
     }
 
-    protected fun sendMessage(request: EMSApplicationResponse, applicationId: String, queueNameOverride: QueueConfiguration.QueueName? = null) {
-        val targetQueueName = queueNameOverride ?: queueName
+    protected fun sendMessage(request: EMSApplicationResponse, applicationId: String, isFromApplicationsApi: Boolean? = null) {
+        val targetQueueName = isFromApplicationsApi?.takeIf { it }?.let { QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE } ?: queueName
         messageSender.send(
             EmsConfirmedReceiptMessage(
                 id = applicationId,

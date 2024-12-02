@@ -5,18 +5,24 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
-    <changeSet author="esengul.gungor@softwire.com" id="023_EIP1-11198_add-is-from-applications-api-flag" context="ddl">
+    <changeSet author="esengul.gungor@softwire.com" id="023_EIP1-11198_add-is-from-applications-api-flag-to-postal" context="ddl">
         <addColumn tableName="postal_vote_application">
-            <column name="is_from_applications_api" type="bit(1)" defaultValueNumeric="0"/>
-        </addColumn>
-
-        <addColumn tableName="proxy_vote_application">
-            <column name="is_from_applications_api" type="bit(1)" defaultValueNumeric="0"/>
+            <column name="is_from_applications_api" type="bit(1)"/>
         </addColumn>
 
         <rollback>
             <dropColumn tableName="postal_vote_application" columnName="is_from_applications_api" />
+        </rollback>
+    </changeSet>
+
+    <changeSet author="esengul.gungor@softwire.com" id="023_EIP1-11198_add-is-from-applications-api-flag-to-proxy" context="ddl">
+        <addColumn tableName="proxy_vote_application">
+            <column name="is_from_applications_api" type="bit(1)"/>
+        </addColumn>
+
+        <rollback>
             <dropColumn tableName="proxy_vote_application" columnName="is_from_applications_api" />
         </rollback>
     </changeSet>
+
 </databaseChangeLog>

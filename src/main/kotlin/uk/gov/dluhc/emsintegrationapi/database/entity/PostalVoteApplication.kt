@@ -86,7 +86,7 @@ class PostalVoteApplication(
     )
     var welshRejectedReasonItems: Set<RejectedReasonItem>? = mutableSetOf(),
 
-    val isFromApplicationsApi: Boolean?,
+    var isFromApplicationsApi: Boolean?,
 
     @Version
     var version: Long? = null,

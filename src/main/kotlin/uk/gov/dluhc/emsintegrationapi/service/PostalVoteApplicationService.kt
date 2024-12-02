@@ -80,11 +80,8 @@ class PostalVoteApplicationService(
             updatedBy = SourceSystem.EMS
             doConfirmedReceiptApplicationStatus(request, postalVoteApplication.applicationDetails)
         }
-        if (postalVoteApplication.isFromApplicationsApi == true) {
-            sendMessage(request, postalVoteApplication.applicationId, QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE)
-        } else {
-            sendMessage(request, postalVoteApplication.applicationId)
-        }
+
+        sendMessage(request, postalVoteApplication.applicationId, postalVoteApplication.isFromApplicationsApi)
 
         logger.info { "Confirmation ${request.status} message sent to the postal vote application for ${postalVoteApplication.applicationId}" }
     }
