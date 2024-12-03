@@ -23,7 +23,6 @@ import uk.gov.dluhc.external.ier.models.EROCertificateMapping
 
 @ExtendWith(MockitoExtension::class)
 internal class RetrieveGssCodeServiceTest {
-
     @Mock
     private lateinit var ierApiClient: IerApiClient
 
@@ -39,7 +38,6 @@ internal class RetrieveGssCodeServiceTest {
 
     @Nested
     inner class GetGssCodeFromCertificateSerial {
-
         @Test
         fun `should throw IER not found exception given IER API client throws IER not found exception`() {
             // Given
@@ -48,10 +46,11 @@ internal class RetrieveGssCodeServiceTest {
             given(ierApiClient.getEroIdentifier(any())).willThrow(expected)
 
             // When
-            val ex = catchThrowableOfType(
-                { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial) },
-                IerEroNotFoundException::class.java
-            )
+            val ex =
+                catchThrowableOfType(
+                    { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial) },
+                    IerEroNotFoundException::class.java,
+                )
 
             // Then
             assertThat(ex).isEqualTo(expected)
@@ -66,10 +65,11 @@ internal class RetrieveGssCodeServiceTest {
             given(ierApiClient.getEroIdentifier(any())).willThrow(expected)
 
             // When
-            val ex = catchThrowableOfType(
-                { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial) },
-                IerGeneralException::class.java
-            )
+            val ex =
+                catchThrowableOfType(
+                    { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial) },
+                    IerGeneralException::class.java,
+                )
 
             // Then
             assertThat(ex).isEqualTo(expected)
@@ -83,14 +83,17 @@ internal class RetrieveGssCodeServiceTest {
             val eroIdFromIerApi = getRandomEroId()
             val expected = ElectoralRegistrationOfficeNotFoundException(certificateSerial)
 
-            given(ierApiClient.getEroIdentifier(any())).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
+            given(
+                ierApiClient.getEroIdentifier(any()),
+            ).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
             given(eroService.lookupGssCodesForEro(any())).willThrow(expected)
 
             // When
-            val ex = catchThrowableOfType(
-                { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial) },
-                ElectoralRegistrationOfficeNotFoundException::class.java
-            )
+            val ex =
+                catchThrowableOfType(
+                    { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial) },
+                    ElectoralRegistrationOfficeNotFoundException::class.java,
+                )
 
             // Then
             assertThat(ex).isEqualTo(expected)
@@ -104,14 +107,17 @@ internal class RetrieveGssCodeServiceTest {
             val eroIdFromIerApi = getRandomEroId()
             val expected = ElectoralRegistrationOfficeGeneralException("Some error getting ERO $eroIdFromIerApi")
 
-            given(ierApiClient.getEroIdentifier(any())).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
+            given(
+                ierApiClient.getEroIdentifier(any()),
+            ).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
             given(eroService.lookupGssCodesForEro(any())).willThrow(expected)
 
             // When
-            val ex = catchThrowableOfType(
-                { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial) },
-                ElectoralRegistrationOfficeGeneralException::class.java
-            )
+            val ex =
+                catchThrowableOfType(
+                    { retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial) },
+                    ElectoralRegistrationOfficeGeneralException::class.java,
+                )
 
             // Then
             assertThat(ex).isEqualTo(expected)
@@ -123,7 +129,9 @@ internal class RetrieveGssCodeServiceTest {
             // Given
             val eroIdFromIerApi = getRandomEroId()
 
-            given(ierApiClient.getEroIdentifier(any())).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
+            given(
+                ierApiClient.getEroIdentifier(any()),
+            ).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
             given(eroService.lookupGssCodesForEro(any())).willReturn(emptyList())
 
             // When
@@ -142,7 +150,9 @@ internal class RetrieveGssCodeServiceTest {
             val eroIdFromIerApi = getRandomEroId()
             val expectedGssCodes = listOf(getRandomGssCode())
 
-            given(ierApiClient.getEroIdentifier(any())).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
+            given(
+                ierApiClient.getEroIdentifier(any()),
+            ).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
             given(eroService.lookupGssCodesForEro(any())).willReturn(expectedGssCodes)
 
             // When
@@ -162,7 +172,9 @@ internal class RetrieveGssCodeServiceTest {
             val anotherGssCodeFromEroApi = getRandomGssCode()
             val expectedGssCodes = listOf(gssCodeFromEroApi, anotherGssCodeFromEroApi)
 
-            given(ierApiClient.getEroIdentifier(any())).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
+            given(
+                ierApiClient.getEroIdentifier(any()),
+            ).willReturn(EROCertificateMapping(eroId = eroIdFromIerApi, certificateSerial = certificateSerial))
             given(eroService.lookupGssCodesForEro(any())).willReturn(expectedGssCodes)
 
             // When

@@ -21,10 +21,8 @@ import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.config.MESSAGE_ID
 import uk.gov.dluhc.emsintegrationapi.config.REQUEST_ID_HEADER
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteRecords
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteSqsMessage
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.TestPhase
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
+import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
@@ -204,14 +202,20 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
 
         @BeforeEach
         fun deletePostalRecordsBefore() {
-            deleteRecords(postalVoteApplicationRepository, TestPhase.BEFORE)
-            deleteSqsMessage(amazonSQSAsync, postalApplicationQueueName, TestPhase.BEFORE)
+            ClearDownUtils.clearDownRecords(
+                postalRepository = postalVoteApplicationRepository,
+                amazonSQSAsync = amazonSQSAsync,
+                queueName = postalApplicationQueueName
+            )
         }
 
         @AfterEach
         fun deletePostalRecordsAfter() {
-            deleteRecords(postalVoteApplicationRepository, TestPhase.AFTER)
-            deleteSqsMessage(amazonSQSAsync, postalApplicationQueueName, TestPhase.AFTER)
+            ClearDownUtils.clearDownRecords(
+                postalRepository = postalVoteApplicationRepository,
+                amazonSQSAsync = amazonSQSAsync,
+                queueName = postalApplicationQueueName
+            )
         }
 
         @Test
