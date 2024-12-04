@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.Companion.SQS_CONFIGURATION_PREFIX
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
+import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.POSTAL_APPLICATION_QUEUE
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.PROXY_APPLICATION_QUEUE
 
@@ -17,6 +18,7 @@ class QueueConfiguration(
     private val postalApplicationQueueName: String,
     private val deletedProxyApplicationQueueName: String,
     private val deletedPostalApplicationQueueName: String,
+    private val emsApplicationProcessedQueueName: String,
 ) {
     companion object {
         const val SQS_CONFIGURATION_PREFIX = "sqs"
@@ -28,6 +30,7 @@ class QueueConfiguration(
             PROXY_APPLICATION_QUEUE -> proxyApplicationQueueName
             DELETED_POSTAL_APPLICATION_QUEUE -> deletedPostalApplicationQueueName
             DELETED_PROXY_APPLICATION_QUEUE -> deletedProxyApplicationQueueName
+            EMS_APPLICATION_PROCESSED_QUEUE -> emsApplicationProcessedQueueName
         }
     }
 
@@ -36,5 +39,6 @@ class QueueConfiguration(
         PROXY_APPLICATION_QUEUE,
         DELETED_POSTAL_APPLICATION_QUEUE,
         DELETED_PROXY_APPLICATION_QUEUE,
+        EMS_APPLICATION_PROCESSED_QUEUE
     }
 }
