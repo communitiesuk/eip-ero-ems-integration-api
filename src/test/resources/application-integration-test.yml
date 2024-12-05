@@ -1,60 +1,70 @@
+logging:
+  wiremock: false
+# Uncomment the below for detailed SQL logs
+#  level:
+#    org:
+#      hibernate:
+#        SQL: TRACE
+#        orm:
+#          jdbc:
+#            bind: TRACE
+
 spring:
-  codec:
-    max-in-memory-size: 1MB
+  cloud:
+    aws:
+      region:
+        static: us-east-1
+      credentials:
+        access-key: test
+        secret-key: test
   datasource:
     username: root
     password: password
     readOnlyUrl: ${spring.datasource.url}?readonly=true
   liquibase:
     contexts: ddl
+
   jpa:
     properties:
       hibernate:
         enable_lazy_load_no_trans: true
-        format_sql: ${FORMAT_SQL:false}
-        show_sql: ${SHOW_SQL:false}
+        format_sql: false
+        show_sql: false
+
 dluhc:
   request.header.name: client-cert-serial
-  default-page-size: 20
-  max-page-size: 50
-  force-max-page-size: 50
-cloud:
-  aws:
-    region:
-      static: eu-west-2
-    credentials:
-      access-key: test
-      secret-key: test
-
-sqs:
-  proxy-application-queue-name: proxy-application
-  postal-application-queue-name: postal-application
-  deleted-proxy-application-queue-name: deleted-proxy-application
-  deleted-postal-application-queue-name: deleted-postal-application
-  remove-application-ems-integration-data-queue-name: remove-application-ems-integration-data
-
 
 api:
   ero-management:
     url: http://replaced-by-wireMockServer-bean
   ier:
     base.url: http://replaced-by-wireMockServer-bean
-    sts.assume.role: arn:aws:iam::1234567890987:role/grant-me-access-to-ier
+    sts.assume.role: arn:aws:iam::123456789098:role/grant-me-access-to-ier
+
+sqs:
+  ems-cidr-update-queue-name: unknown-queue-yet-to-be-configured
+  initiate-applicant-register-check-queue-name: initiate-applicant-register-check
+  confirm-applicant-register-check-result-queue-name: confirm-applicant-register-check-result
+  remove-applicant-register-check-data-queue-name: remove-applicant-register-check-data
+  postal-vote-confirm-applicant-register-check-result-queue-name: postal-vote-confirm-applicant-register-check-result
+  proxy-vote-confirm-applicant-register-check-result-queue-name: proxy-vote-confirm-applicant-register-check-result
+  overseas-vote-confirm-applicant-register-check-result-queue-name: overseas-vote-confirm-applicant-register-check-result
+  register-check-result-response-queue-name: register-check-result-response-queue-name
 
 caching.time-to-live: PT2S
 
 jobs:
   enabled: false
-  pending-downloads-monitoring:
-    enabled: true
-    send-email: true
-    expected-maximum-pending-period: 5D
+  register-check-monitoring:
+    expected-maximum-pending-period: 24H
     excluded-gss-codes: "E99999999"
+    send-email: true
 
 email:
   client:
     sender: sender@domain.com
-  monitor-pending-downloads-content:
-    subject: "Postal and Proxy Pending Downloads Monitoring"
-    email-body-template: email-templates/monitor-pending-downloads.html
-    recipients: recipient1@domain.com
+  pending-register-checks-content:
+    subject: "Register Check Monitoring"
+    email-body-template: email-templates/pending-register-checks.html
+    recipients: recipient1@domain.com,recipient2@domain.com
+

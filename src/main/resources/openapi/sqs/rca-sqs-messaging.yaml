@@ -1,0 +1,352 @@
+openapi: 3.0.0
+info:
+  title: Register Checker SQS Message Types
+  version: '1.3.0'
+  description: |-
+    Register Checker SQS Message Types
+    
+    This is an openAPI spec, that defines the structure of data passed over SQS messaging.
+    
+    The `paths` elements are being used to document (at a high level) the SQS queues and the request bodies that are expected
+    to be published to them. **There is no intent to generate or implement SQS queues or listener classes from this document.**
+    
+    The `paths` element is only being used in order to maintain the structure of the openApi spec, as `paths` are required 
+    elements.
+#
+# --------------------------------------------------------------------------------
+#
+
+paths:
+  #
+  # --------------------------------------------------------------------------------
+  # SQS Queues start here
+  # --------------------------------------------------------------------------------
+  #
+  '/initiate-applicant-register-check':
+    post:
+      tags:
+        - SQS Queues
+      requestBody:
+        $ref: '#/components/requestBodies/InitiateRegisterCheckMessage'
+      responses:
+        '204':
+          description: No response content.
+
+  '/remove-applicant-register-check-data':
+    post:
+      tags:
+        - SQS Queues
+      requestBody:
+        $ref: '#/components/requestBodies/RemoveRegisterCheckDataMessage'
+      responses:
+        '204':
+          description: No response content.
+  '/confirm-applicant-register-check-result':
+    post:
+      tags:
+        - SQS Queues
+      requestBody:
+        $ref: '#/components/requestBodies/RegisterCheckResultMessage'
+      responses:
+        '204':
+          description: No response content.
+components:
+  #
+  # Schema and Enum Definitions
+  # --------------------------------------------------------------------------------
+  schemas:
+    BaseRegisterCheckMessage:
+      title: BaseRegisterCheckMessage
+      type: object
+      description: Base SQS Message for an applicant's register check.
+      properties:
+        sourceType:
+          $ref: '#/components/schemas/SourceType'
+        sourceReference:
+          type: string
+          description: Reference of the application in the corresponding source system that the message relates to. e.g. `VoterCardApplication.applicationId`
+          example: 1f0f76a9a66f438b9bb33070
+      required:
+        - sourceType
+        - sourceReference
+
+    InitiateRegisterCheckMessage:
+      title: InitiateRegisterCheckMessage
+      type: object
+      description: SQS Message for initiating an applicant's register check.
+      allOf:
+        - $ref: '#/components/schemas/BaseRegisterCheckMessage'
+      properties:
+        gssCode:
+          type: string
+          description: The relevant GSS code for the local authority.
+          example: 'E09000007'
+        sourceCorrelationId:
+          type: string
+          format: uuid
+          description: The id to allow the response from rca to be associated with the correct register status e.g. `VoterCardApplicationRegisterStatus.id`
+          example: c73bcdcc-2669-4bf6-81d3-e4ae73fb11fd
+        requestedBy:
+          type: string
+          description: Identifier of the user that requested the check or `system` if the check was automatically requested.
+          example: system
+        personalDetail:
+          $ref: '#/components/schemas/RegisterCheckPersonalDetail'
+        emsElectorId:
+          type: string
+          description: |-
+            A stable unique id of an elector within the EMS to allow ID matching of an individual elector.
+            If supplied, the EMS system should only use this value to perform a lookup
+            within their system. All other search fields should be ignored.
+          maxLength: 50
+        historicalSearch:
+          type: boolean
+          default: false
+          description: |-
+            Indicated the search is in relation to an Overseas elector application.
+            For ERO's to determine Overseas applications, they need to know if the applicant is already on the current register as an Overseas elector, or 
+            if they existed on any historical registers, therefore current and historical registers must be searched.
+      required:
+        - gssCode
+        - sourceCorrelationId
+        - requestedBy
+        - personalDetail
+
+    RemoveRegisterCheckDataMessage:
+      title: RemoveRegisterCheckDataMessage
+      type: object
+      description: SQS Message for removing an applicant's register check data once the retention period has passed.
+      allOf:
+        - $ref: '#/components/schemas/BaseRegisterCheckMessage'
+
+    RegisterCheckResultMessage:
+      title: RegisterCheckResultMessage
+      type: object
+      description: SQS Message containing an applicant's register check result outcome.
+      properties:
+        sourceType:
+          $ref: '#/components/schemas/SourceType'
+        sourceReference:
+          type: string
+          description: Reference of the application in the corresponding source system that the message relates to. e.g. `VoterCardApplication.applicationId`
+          example: 1f0f76a9a66f438b9bb33070
+        sourceCorrelationId:
+          type: string
+          format: uuid
+          description: The id to allow the response from rca to be associated with the correct register status e.g. `VoterCardApplicationRegisterStatus.id`
+          example: c73bcdcc-2669-4bf6-81d3-e4ae73fb11fd
+        registerCheckResult:
+          $ref: '#/components/schemas/RegisterCheckResult'
+        matches:
+          description: Each record in “matches” represents one potential match within the EMS that could represent the Elector in the Register Check Request
+          type: array
+          items:
+            $ref: '#/components/schemas/RegisterCheckMatch'
+        historicalSearchEarliestDate:
+          type: string
+          description: -|
+            The oldest date the EMS was able search within all/historical registers.
+            This will aid ERO's ability to process Overseas applications.
+            As part of the Elector's Overseas application they can provide an estimated last registered date.
+            Where an EMS does not have records that go as far back as the Elector has
+            indicated, supplying this value to the ERO would allow them to make better informed decisions
+            about what next steps to perform to approve or reject applications.
+          format: date-time
+          example: 1996-09-07
+
+      required:
+        - sourceType
+        - sourceReference
+        - sourceCorrelationId
+        - registerCheckResult
+        - matches
+
+    RegisterCheckResult:
+      title: RegisterCheckResult
+      description: Enum containing the possible values for a register check match outcome.
+      type: string
+      enum:
+        - exact-match
+        - partial-match
+        - no-match
+        - multiple-match
+        - too-many-matches
+        - pending-determination
+        - expired
+        - not-started
+
+    RegisterCheckMatch:
+      title: RegisterCheckMatch
+      description: Object containing the register check match details.
+      type: object
+      properties:
+        personalDetail:
+          $ref: '#/components/schemas/RegisterCheckPersonalDetail'
+        emsElectorId:
+          type: string
+          description: The stable unique id of the elector provided by the EMS client
+        franchiseCode:
+          type: string
+          description: Franchise codes indicate the electors voting eligibility within different elections, i.e. national or local elections.
+        registeredStartDate:
+          type: string
+          description: ISO-8601 format. The date the match was registered.
+          format: date
+          example: 2022-09-01
+        registeredEndDate:
+          type: string
+          description: ISO-8601 format. The date the match was deregistered.
+          format: date
+          example: 2023-09-01
+        postalVotingArrangement:
+          $ref: '#/components/schemas/VotingArrangement'
+        proxyVotingArrangement:
+          $ref: '#/components/schemas/VotingArrangement'
+      required:
+        - personalDetail
+        - emsElectorId
+
+    VotingArrangement:
+      title: VotingArrangement
+      description: Details about duration of vote registration
+      type: object
+      properties:
+        untilFurtherNotice:
+          type: boolean
+        forSingleDate:
+          type: string
+          description: Date in ISO-8601 format. If set, the elector has a postal vote for the election(s) and referendum(s) to be held on the specified date.
+          format: date
+          example: 2022-09-01
+        startDate:
+          type: string
+          description:  Date in ISO-8601 format. If set, the elector has a postal vote for the period defined by the two dates.
+          format: date
+          example: 2023-09-01
+        endDate:
+          type: string
+          description:  Date in ISO-8601 format. If set, the elector has a postal vote for the period defined by the two dates.
+          format: date
+          example: 2023-09-01
+      required:
+        - untilFurtherNotice
+
+    RegisterCheckPersonalDetail:
+      title: RegisterCheckPersonalDetail
+      type: object
+      description: Personal details for an applicant
+      properties:
+        firstName:
+          type: string
+          description: The applicant's first name
+          example: Fred
+        middleNames:
+          type: string
+          description: The applicant's middle name(s)
+          example: John
+        surname:
+          type: string
+          description: The applicant's surname
+          example: Blogs
+        dateOfBirth:
+          type: string
+          format: date
+          description: The applicant's date of birth in ISO-8601. Null if not known
+          example: '1981-07-27'
+        phone:
+          description: The applicant's phone number
+          type: string
+          example: 01234 567890
+        email:
+          description: The applicant's email address
+          type: string
+          example: fred.blogs@some-domain.co.uk
+        address:
+          $ref: '#/components/schemas/RegisterCheckAddress'
+      required:
+        - firstName
+        - surname
+        - address
+
+    RegisterCheckAddress:
+      title: RegisterCheckAddress
+      description: Address to perform a register check on
+      type: object
+      x-examples:
+        Minimum data:
+          street: Street 1
+          postcode: PC1 2FB
+        Normal Address:
+          street: East Lodge
+          property: Balruddery
+          locality: Invergowrie
+          town: Dundee
+          area: Angus
+          postcode: DD25LF
+      properties:
+        street:
+          type: string
+          maxLength: 255
+          example: Charles Lane
+        property:
+          type: string
+          maxLength: 255
+        locality:
+          type: string
+          maxLength: 255
+        town:
+          type: string
+          maxLength: 255
+          example: London
+        area:
+          type: string
+          maxLength: 255
+        postcode:
+          type: string
+          minLength: 1
+          maxLength: 10
+          example: PE3 6SB
+        uprn:
+          type: string
+          pattern: '^\d{1,12}$'
+          maxLength: 12
+      required:
+        - street
+        - postcode
+
+    SourceType:
+      title: SourceType
+      type: string
+      enum:
+        - voter-card
+        - postal-vote
+        - proxy-vote
+        - overseas-vote
+        - applications-api
+
+  #
+  # Response Body Definitions
+  # --------------------------------------------------------------------------------
+  responses: { }
+
+  #
+  # Request Body Definitions
+  # --------------------------------------------------------------------------------
+  requestBodies:
+    InitiateRegisterCheckMessage:
+      description: InitiateRegisterCheckMessage
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InitiateRegisterCheckMessage'
+    RemoveRegisterCheckDataMessage:
+      description: RemoveRegisterCheckDataMessage
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RemoveRegisterCheckDataMessage'
+    RegisterCheckResultMessage:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RegisterCheckResultMessage'

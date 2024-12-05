@@ -1,6 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.awspring.cloud.core.region.StaticRegionProvider
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -14,7 +15,7 @@ import org.testcontainers.utility.DockerImageName
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
-import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.regions.providers.AwsRegionProvider
 import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.sts.StsClient
 import java.net.InetAddress
@@ -28,57 +29,56 @@ private val logger = KotlinLogging.logger {}
 @Configuration
 class LocalStackContainerConfiguration {
 
-    companion object {
+    private companion object {
         const val DEFAULT_PORT = 4566
-        const val DEFAULT_ACCESS_KEY_ID = "test"
-        const val DEFAULT_SECRET_KEY = "test"
-        val objectMapper = ObjectMapper()
     }
 
+    @Bean
+    fun awsRegionProvider(
+        @Value("\${spring.cloud.aws.region.static}") region: String,
+    ): AwsRegionProvider = StaticRegionProvider(region)
+
+    @Bean
+    fun awsBasicCredentialsProvider(
+        @Value("\${spring.cloud.aws.credentials.access-key}") accessKey: String,
+        @Value("\${spring.cloud.aws.credentials.secret-key}") secretKey: String,
+    ): AwsCredentialsProvider =
+        StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey))
+
     /**
-     * Creates and starts LocalStack configured with a basic (empty) STS+SQS+SES service.
+     * Creates and starts LocalStack configured with a basic (empty) STS+SQS service.
      * Returns the container that can subsequently be used for further setup and configuration.
      */
     @Bean
     fun localstackContainer(
-        @Value("\${cloud.aws.region.static}") region: String
-    ): GenericContainer<*>? {
-        return GenericContainer(
-            DockerImageName.parse("localstack/localstack:1.1.0")
-        ).withEnv(
-            mapOf(
-                "SERVICES" to "sqs, sts, ses",
-                "AWS_DEFAULT_REGION" to region,
-            )
+        awsRegionProvider: AwsRegionProvider,
+    ): GenericContainer<*> =
+        GenericContainer(
+            DockerImageName.parse("localstack/localstack:3.0.2")
         )
-            .withReuse(true)
+            .withEnv(
+                mapOf(
+                    "SERVICES" to "sqs,sts,ses",
+                    "AWS_DEFAULT_REGION" to awsRegionProvider.region.toString(),
+                )
+            )
             .withExposedPorts(DEFAULT_PORT)
-            .withCreateContainerCmdModifier { it.withName("ems-integration-api-integration-test-localstack") }
-            .apply {
-                start()
-            }
-    }
-
-    @Bean
-    fun awsBasicCredentialsProvider(): AwsCredentialsProvider =
-        StaticCredentialsProvider.create(AwsBasicCredentials.create(DEFAULT_ACCESS_KEY_ID, DEFAULT_SECRET_KEY))
+            .withReuse(true)
+            .withCreateContainerCmdModifier { it.withName("register-checker-api-integration-test-localstack") }
+            .apply { start() }
 
     @Bean
     @Primary
     fun localStackStsClient(
         @Qualifier("localstackContainer") localStackContainer: GenericContainer<*>,
+        awsRegionProvider: AwsRegionProvider,
         awsCredentialsProvider: AwsCredentialsProvider,
-        @Value("\${cloud.aws.region.static}") region: String,
-    ): StsClient {
-
-        val uri =
-            URI.create("http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}")
-        return StsClient.builder()
+    ): StsClient =
+        StsClient.builder()
             .credentialsProvider(awsCredentialsProvider)
-            .region(Region.of(region))
-            .endpointOverride(uri)
+            .region(awsRegionProvider.region)
+            .endpointOverride(URI("http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}"))
             .build()
-    }
 
     /**
      * Uses the localstack container to configure the various services.
@@ -89,44 +89,42 @@ class LocalStackContainerConfiguration {
     fun localStackContainerSqsSettings(
         @Qualifier("localstackContainer") localStackContainer: GenericContainer<*>,
         applicationContext: ConfigurableApplicationContext,
-        @Value("\${sqs.proxy-application-queue-name}") proxyApplicationQueueName: String,
-        @Value("\${sqs.postal-application-queue-name}") postalApplicationQueueName: String,
-        @Value("\${sqs.deleted-proxy-application-queue-name}") deletedProxyApplicationQueueName: String,
-        @Value("\${sqs.deleted-postal-application-queue-name}") deletedPostalApplicationQueueName: String,
-        @Value("\${sqs.remove-application-ems-integration-data-queue-name}") removeApplicationEmsDataQueueName: String,
+        @Value("\${sqs.initiate-applicant-register-check-queue-name}") initiateApplicantRegisterCheckQueueName: String,
+        @Value("\${sqs.confirm-applicant-register-check-result-queue-name}") confirmRegisterCheckResultMessageQueueName: String,
+        @Value("\${sqs.postal-vote-confirm-applicant-register-check-result-queue-name}") postalVoteConfirmRegisterCheckResultMessageQueueName: String,
+        @Value("\${sqs.proxy-vote-confirm-applicant-register-check-result-queue-name}") proxyVoteConfirmRegisterCheckResultMessageQueueName: String,
+        @Value("\${sqs.overseas-vote-confirm-applicant-register-check-result-queue-name}") overseasVoteConfirmRegisterCheckResultMessageQueueName: String,
+        @Value("\${sqs.register-check-result-response-queue-name}") registerCheckResultResponseQueueName: String,
+        @Value("\${sqs.remove-applicant-register-check-data-queue-name}") removeRegisterCheckDataMessageQueueName: String,
+        objectMapper: ObjectMapper,
     ): LocalStackContainerSettings {
-        val proxyApplicationQueueUrl = localStackContainer.createSqsQueue(proxyApplicationQueueName)
-        val postalApplicationQueueUrl = localStackContainer.createSqsQueue(postalApplicationQueueName)
-        val deletedProxyApplicationQueueUrl = localStackContainer.createSqsQueue(deletedProxyApplicationQueueName)
-        val deletedPostalApplicationQueueUrl = localStackContainer.createSqsQueue(deletedPostalApplicationQueueName)
-        val removeApplicationEmsDataQueueUrl = localStackContainer.createSqsQueue(removeApplicationEmsDataQueueName)
+        val queueUrlInitiateApplicantRegisterCheck = localStackContainer.createSqsQueue(initiateApplicantRegisterCheckQueueName, objectMapper)
+        val queueUrlConfirmRegisterCheckResult = localStackContainer.createSqsQueue(confirmRegisterCheckResultMessageQueueName, objectMapper)
+        val queueUrlPostalVoteConfirmRegisterCheckResult = localStackContainer.createSqsQueue(postalVoteConfirmRegisterCheckResultMessageQueueName, objectMapper)
+        val queueUrlProxyVoteConfirmRegisterCheckResult = localStackContainer.createSqsQueue(proxyVoteConfirmRegisterCheckResultMessageQueueName, objectMapper)
+        val queueUrlOverseasVoteConfirmRegisterCheckResult = localStackContainer.createSqsQueue(overseasVoteConfirmRegisterCheckResultMessageQueueName, objectMapper)
+        val queueUrlRegisterCheckResultResponse = localStackContainer.createSqsQueue(registerCheckResultResponseQueueName, objectMapper)
+        val queueUrlRemoveRegisterCheckData = localStackContainer.createSqsQueue(removeRegisterCheckDataMessageQueueName, objectMapper)
 
         val apiUrl = "http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}"
 
-        TestPropertyValues.of(
-            "cloud.aws.sqs.endpoint=$apiUrl",
-        ).applyTo(applicationContext)
+        TestPropertyValues.of("spring.cloud.aws.sqs.endpoint=$apiUrl").applyTo(applicationContext)
 
         return LocalStackContainerSettings(
             apiUrl = apiUrl,
-            proxyApplicationQueueUrl = proxyApplicationQueueUrl,
-            postalApplicationQueueUrl = postalApplicationQueueUrl,
-            deletedProxyApplicationQueueUrl = deletedProxyApplicationQueueUrl,
-            deletedPostalApplicationQueueUrl = deletedPostalApplicationQueueUrl,
-            removeApplicationEmsDataQueueUrl = removeApplicationEmsDataQueueUrl,
-            sesMessagesUrl = "$apiUrl/_localstack/ses",
+            queueUrlInitiateApplicantRegisterCheck = queueUrlInitiateApplicantRegisterCheck,
+            queueUrlConfirmRegisterCheckResult = queueUrlConfirmRegisterCheckResult,
+            queueUrlPostalVoteConfirmRegisterCheckResult = queueUrlPostalVoteConfirmRegisterCheckResult,
+            queueUrlProxyVoteConfirmRegisterCheckResult = queueUrlProxyVoteConfirmRegisterCheckResult,
+            queueUrlOverseasVoteConfirmRegisterCheckResult = queueUrlOverseasVoteConfirmRegisterCheckResult,
+            queueUrlRemoveRegisterCheckData = queueUrlRemoveRegisterCheckData,
+            queueUrlRegisterCheckResultResponse = queueUrlRegisterCheckResultResponse
         )
     }
 
-    private fun GenericContainer<*>.createSqsQueue(queueName: String): String {
+    private fun GenericContainer<*>.createSqsQueue(queueName: String, objectMapper: ObjectMapper): String {
         val execInContainer = execInContainer(
-            "awslocal",
-            "sqs",
-            "create-queue",
-            "--queue-name",
-            queueName,
-            "--attributes",
-            "VisibilityTimeout=1,MessageRetentionPeriod=5"
+            "awslocal", "sqs", "create-queue", "--queue-name", queueName, "--attributes", "DelaySeconds=1"
         )
         return execInContainer.stdout.let {
             objectMapper.readValue(it, Map::class.java)
@@ -146,14 +144,14 @@ class LocalStackContainerConfiguration {
     @Primary
     fun configureEmailIdentityAndExposeEmailClient(
         @Qualifier("localstackContainer") localStackContainer: GenericContainer<*>,
-        @Value("\${cloud.aws.region.static}") region: String,
+        awsRegionProvider: AwsRegionProvider,
         awsBasicCredentialsProvider: AwsCredentialsProvider,
         emailClientProperties: EmailClientProperties,
     ): SesClient {
         localStackContainer.verifyEmailIdentity(emailClientProperties.sender)
 
         return SesClient.builder()
-            .region(Region.of(region))
+            .region(awsRegionProvider.region)
             .credentialsProvider(awsBasicCredentialsProvider)
             .applyMutation { builder -> builder.endpointOverride(localStackContainer.getEndpointOverride()) }
             .build()
@@ -172,13 +170,3 @@ class LocalStackContainerConfiguration {
         }
     }
 }
-
-data class LocalStackContainerSettings(
-    val apiUrl: String,
-    val proxyApplicationQueueUrl: String,
-    val postalApplicationQueueUrl: String,
-    val deletedProxyApplicationQueueUrl: String,
-    val deletedPostalApplicationQueueUrl: String,
-    val removeApplicationEmsDataQueueUrl: String,
-    val sesMessagesUrl: String,
-)

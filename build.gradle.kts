@@ -3,35 +3,31 @@ import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.owasp.dependencycheck.reporting.ReportGenerator.Format.HTML
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+import java.lang.ProcessBuilder.Redirect
 
 plugins {
-    id("org.springframework.boot") version "2.7.14"
-    id("io.spring.dependency-management") version "1.1.0"
-    kotlin("jvm") version "1.8.22"
-    kotlin("kapt") version "1.8.22"
-    kotlin("plugin.spring") version "1.8.22"
-    kotlin("plugin.jpa") version "1.8.22"
-    kotlin("plugin.allopen") version "1.8.22"
+    id("org.springframework.boot") version "3.3.5"
+    id("io.spring.dependency-management") version "1.1.3"
+    kotlin("jvm") version "1.9.24"
+    kotlin("kapt") version "1.9.24"
+    kotlin("plugin.spring") version "1.9.24"
+    kotlin("plugin.jpa") version "1.9.24"
+    kotlin("plugin.allopen") version "1.9.24"
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
-    id("org.openapi.generator") version "6.2.1"
-    id("org.owasp.dependencycheck") version "8.1.2"
-    id("org.liquibase.gradle") version "2.0.4"
+    id("org.openapi.generator") version "7.0.1"
+    id("org.owasp.dependencycheck") version "8.2.1"
 }
 
 group = "uk.gov.dluhc"
 version = "latest"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
-ext["snakeyaml.version"] = "1.33"
-extra["springCloudVersion"] = "2.4.2"
-ext["spring-security.version"] = "5.8.5"
-extra["awsSdkVersion"] = "2.18.9"
-extra["cucumberVersion"] = "7.11.1"
-extra["junitJupiterVersion"] = "5.8.2"
+extra["awsSdkVersion"] = "2.26.20"
+extra["springCloudAwsVersion"] = "3.1.1"
 
 allOpen {
-    annotations("javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embedabble")
+    annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
 }
 
 val awsProfile = System.getenv("AWS_PROFILE_ARG") ?: "--profile code-artifact"
@@ -56,12 +52,6 @@ apply(plugin = "org.jetbrains.kotlin.jvm")
 apply(plugin = "org.jetbrains.kotlin.plugin.spring")
 apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
 apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
-apply(plugin = "org.liquibase.gradle")
-
-liquibase {
-    activities.register("main")
-    runList = "main"
-}
 
 dependencies {
     // framework
@@ -71,97 +61,72 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("org.apache.httpcomponents:httpclient:4.5.14")
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     // internal libs
+    implementation("uk.gov.dluhc:logging-library:3.0.3")
+    implementation("uk.gov.dluhc:messaging-support-library:2.2.0")
     implementation("uk.gov.dluhc:email-client:1.0.0")
 
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
+    implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+
+    // Logging
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
 
     // spring security
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
 
-    implementation("io.awspring.cloud:spring-cloud-starter-aws-messaging")
+    // jpa/liquibase
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.liquibase:liquibase-core")
-    implementation("org.hibernate:hibernate-envers")
-
-    // AWS dependencies (that are defined in the BOM io.awspring.cloud:spring-cloud-aws-dependencies)
-    implementation("com.amazonaws:aws-java-sdk-sts")
-    // email
-    implementation("software.amazon.awssdk:ses")
 
     // mysql
     runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.4")
+    runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.10")
     runtimeOnly("software.amazon.awssdk:rds")
 
-    // Scheduling
-    implementation("net.javacrumbs.shedlock:shedlock-spring:4.43.0")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.43.0")
+    // AWS dependencies (that are defined in the BOM "software.amazon.awssdk")
+    implementation("software.amazon.awssdk:sts")
+    // email
+    implementation("software.amazon.awssdk:ses")
+
+    // messaging
+    implementation("org.springframework:spring-messaging")
+    implementation(platform("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudAwsVersion")}"))
+    implementation("io.awspring.cloud:spring-cloud-aws-starter")
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
 
     // AWS signer using SDK V2 library is available at https://mvnrepository.com/artifact/io.github.acm19/aws-request-signing-apache-interceptor/2.1.1
-    implementation("io.github.acm19:aws-request-signing-apache-interceptor:2.1.1")
-
-    // Test implementations
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
-
-    testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
-
-    testImplementation("org.testcontainers:junit-jupiter:1.17.6")
-    testImplementation("org.testcontainers:testcontainers:1.17.6")
-    testImplementation("org.testcontainers:mysql:1.17.6")
-
-    testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
-    testImplementation("net.datafaker:datafaker:1.6.0")
+    implementation("io.github.acm19:aws-request-signing-apache-interceptor:2.3.1")
+    implementation("org.apache.httpcomponents.client5:httpclient5")
 
     // caching
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine")
 
-    // sts
-    implementation("software.amazon.awssdk:sts")
+    // Scheduling
+    implementation("net.javacrumbs.shedlock:shedlock-spring:4.43.0")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.43.0")
 
-    // AWS library to support tests
-    testImplementation("software.amazon.awssdk:auth")
-    // Libraries to support creating JWTs in tests
-    testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-    testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    // tests
+    testImplementation("software.amazon.awssdk:sqs") // required to send messages to a queue, which we only need to do in test at the moment
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("org.wiremock:wiremock-standalone:3.9.1")
+    testImplementation("net.datafaker:datafaker:1.7.0")
 
-    // Cucumber support
-    testImplementation("io.cucumber:cucumber-java8")
-    testImplementation("io.cucumber:cucumber-junit-platform-engine")
-    testImplementation("org.junit.platform:junit-platform-suite")
-    testImplementation("io.cucumber:cucumber-spring")
-
-    // Logging
-    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
-    // Liquibase plugin for local development
-    val liquibaseRuntime by configurations
-    liquibaseRuntime("org.liquibase:liquibase-core")
-    liquibaseRuntime("mysql:mysql-connector-java")
-    liquibaseRuntime("org.springframework.boot:spring-boot")
-    liquibaseRuntime("info.picocli:picocli:4.6.1")
-    liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-    liquibaseRuntime("org.yaml:snakeyaml:1.33")
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudVersion")}")
-        mavenBom("software.amazon.awssdk:bom:${property("awsSdkVersion")}")
-        mavenBom("io.cucumber:cucumber-bom:${property("cucumberVersion")}")
-        mavenBom("org.junit:junit-bom:${property("junitJupiterVersion")}")
-    }
+    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+    testImplementation("org.testcontainers:testcontainers:1.19.8")
+    testImplementation("org.testcontainers:mysql:1.19.8")
+    testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
 }
 
 tasks.withType<KotlinCompile> {
@@ -175,7 +140,6 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     dependsOn(tasks.withType<GenerateTask>())
     useJUnitPlatform()
-    jvmArgs("--add-opens", "java.base/java.time=ALL-UNNAMED")
 }
 
 tasks.withType<GenerateTask> {
@@ -195,35 +159,18 @@ tasks.withType<GenerateTask> {
     configOptions.set(
         mapOf(
             "dateLibrary" to "java8",
-            "serializationLibrary" to "jackson",
             "enumPropertyNaming" to "UPPERCASE",
             "useBeanValidation" to "true",
+            "useSpringBoot3" to "true",
         )
     )
 }
 
-tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", GenerateTask::class) {
+tasks.create("api-generate RegisterCheckApi model", GenerateTask::class) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/EMSIntegrationAPIs.yaml")
-    packageName.set("uk.gov.dluhc.emsintegrationapi")
-}
-// Postal SQS Message
-tasks.create(
-    "generate-models-from-openapi-document-postal-vote-application-sqs-messaging.yaml",
-    GenerateTask::class
-) {
-    enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/postal-vote-application-sqs-messaging.yaml")
-    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
-}
-
-tasks.create(
-    "generate-models-from-openapi-document-proxy-vote-application-sqs-messaging.yaml",
-    GenerateTask::class
-) {
-    enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/proxy-vote-application-sqs-messaging.yaml")
-    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
+    inputSpec.set("$projectDir/src/main/resources/openapi/RegisterCheckerAPIs.yaml")
+    packageName.set("uk.gov.dluhc.registercheckerapi")
+    configOptions.put("documentationProvider", "none")
 }
 
 tasks.create("api-generate IERApi model", GenerateTask::class) {
@@ -232,19 +179,10 @@ tasks.create("api-generate IERApi model", GenerateTask::class) {
     packageName.set("uk.gov.dluhc.external.ier")
 }
 
-tasks.create("api-generate EROManagementApi model", GenerateTask::class) {
+tasks.create("api-generate rca-sqs-messaging model", GenerateTask::class) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/external/EROManagementAPIs.yaml")
-    packageName.set("uk.gov.dluhc.eromanagementapi")
-}
-
-tasks.create(
-    "generate-models-from-remove-application-ems-integration-data-sqs-messaging.yaml",
-    GenerateTask::class
-) {
-    enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/remove-application-ems-integration-data-sqs-messaging.yaml")
-    packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
+    inputSpec.set("$projectDir/src/main/resources/openapi/sqs/rca-sqs-messaging.yaml")
+    packageName.set("uk.gov.dluhc.registercheckerapi.messaging")
 }
 
 // Add the generated code to the source sets
@@ -258,10 +196,12 @@ tasks.withType<KtLintCheckTask> {
 }
 
 tasks.withType<BootBuildImage> {
-    environment = mapOf("BP_HEALTH_CHECKER_ENABLED" to "true")
-    buildpacks = listOf(
-        "urn:cnb:builder:paketo-buildpacks/java",
-        "gcr.io/paketo-buildpacks/health-checker",
+    environment.set(mapOf("BP_HEALTH_CHECKER_ENABLED" to "true"))
+    buildpacks.set(
+        listOf(
+            "urn:cnb:builder:paketo-buildpacks/java",
+            "gcr.io/paketo-buildpacks/health-checker",
+        )
     )
 }
 
@@ -272,10 +212,18 @@ ktlint {
     }
 }
 
+kapt {
+    arguments {
+        arg("mapstruct.defaultComponentModel", "spring")
+        arg("mapstruct.unmappedTargetPolicy", "IGNORE")
+    }
+    correctErrorTypes = true
+}
+
 fun String.runCommand(): String {
     val parts = this.split("\\s".toRegex())
     val process = ProcessBuilder(*parts.toTypedArray())
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+        .redirectOutput(Redirect.PIPE)
         .start()
     process.waitFor()
     return process.inputStream.bufferedReader().readText().trim()
