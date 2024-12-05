@@ -1,3 +1,13 @@
+logging:
+  wiremock: false
+# Uncomment the below for detailed SQL logs
+#  level:
+#    org:
+#      hibernate:
+#        SQL: TRACE
+#        orm:
+#          jdbc:
+#            bind: TRACE
 spring:
   codec:
     max-in-memory-size: 1MB
@@ -7,13 +17,6 @@ spring:
     readOnlyUrl: ${spring.datasource.url}?readonly=true
   liquibase:
     contexts: ddl
-
-  jpa:
-    properties:
-      hibernate:
-        enable_lazy_load_no_trans: true
-        format_sql: ${FORMAT_SQL:false}
-        show_sql: ${SHOW_SQL:false}
   cloud:
     aws:
       region:
@@ -21,7 +24,12 @@ spring:
       credentials:
         access-key: test
         secret-key: test
-
+  jpa:
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        format_sql: ${FORMAT_SQL:false}
+        show_sql: ${SHOW_SQL:false}
 dluhc:
   request.header.name: client-cert-serial
   default-page-size: 20
@@ -76,5 +84,3 @@ email:
     email-body-template: email-templates/pending-register-checks.html
     recipients: recipient1@domain.com,recipient2@domain.com
 
-logging:
-  wiremock: true

@@ -3,13 +3,13 @@ spring:
     max-in-memory-size: ${CODEC_MAX_MEMORY_SIZE_IN_MB:25MB}
   application:
     name: 'eip-ero-ems-integration-api'
-    cloud:
-      aws:
-        region:
-          auto: true
-          use-default-aws-region-chain: true
-        credentials:
-          use-default-aws-credentials-chain: true
+  cloud:
+    aws:
+      region:
+        auto: true
+        use-default-aws-region-chain: true
+      credentials:
+        use-default-aws-credentials-chain: true
   datasource:
     url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/ems_integration_application
     readOnlyUrl: ${SPRING_DATASOURCE_READONLYURL}
@@ -25,14 +25,6 @@ dluhc:
   default-page-size: ${DEFAULT_PAGE_SIZE:100}
   max-page-size: ${MAX_PAGE_SIZE:500}
   force-max-page-size: ${FORCE_MAX_PAGE_SIZE:200}
-
-  cloud:
-    aws:
-      region:
-        auto: true
-        use-default-aws-region-chain: true
-      credentials:
-        use-default-aws-credentials-chain: true
 
 sqs:
   proxy-application-queue-name: ${SQS_PROXY_APPLICATION_QUEUE_NAME}

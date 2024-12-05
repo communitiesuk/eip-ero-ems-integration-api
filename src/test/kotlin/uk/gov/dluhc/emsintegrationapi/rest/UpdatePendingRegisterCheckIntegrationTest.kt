@@ -42,8 +42,8 @@ import java.util.concurrent.TimeUnit
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType as SourceTypeEntity
 
 private const val REQUEST_HEADER_NAME = "client-cert-serial"
-const val CERT_SERIAL_NUMBER_VALUE = "543212222"
 
+const val CERT_SERIAL_NUMBER_VALUE = "543212222"
 internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
     @Test
