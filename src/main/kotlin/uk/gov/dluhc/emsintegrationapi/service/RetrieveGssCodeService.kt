@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import uk.gov.dluhc.emsintegrationapi.client.ElectoralRegistrationOfficeManagementApiClient
 import uk.gov.dluhc.emsintegrationapi.client.IerApiClient
 import uk.gov.dluhc.emsintegrationapi.client.IerEroNotFoundException
 

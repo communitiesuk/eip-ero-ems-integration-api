@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheV5Interceptor
 import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.ClientHttpRequestFactory
@@ -29,12 +30,15 @@ import uk.gov.dluhc.logging.rest.CorrelationIdRestTemplateClientHttpRequestInter
 class IerRestClientConfiguration(
     @Value("\${api.ier.base.url}") private val ierApiBaseUrl: String,
     @Value("\${api.ier.sts.assume.role}") private val ierStsAssumeRole: String,
-    private val correlationIdRestTemplateClientHttpRequestInterceptor: CorrelationIdRestTemplateClientHttpRequestInterceptor,
 ) {
+
+    private val correlationIdRestTemplateClientHttpRequestInterceptor: CorrelationIdRestTemplateClientHttpRequestInterceptor = CorrelationIdRestTemplateClientHttpRequestInterceptor()
 
     companion object {
         private const val API_GATEWAY_SERVICE_NAME = "execute-api"
-        private const val STS_SESSION_NAME = "RegisterChecker_IER_Session"
+        private const val STS_SESSION_NAME_REG_CHECK = "RegisterChecker_IER_Session"
+        private const val STS_SESSION_NAME_EMS = "EMS_Integration_API_IER_Session"
+
     }
 
     @Bean
@@ -55,6 +59,15 @@ class IerRestClientConfiguration(
             .build()
 
     @Bean
+    fun ierRestTemplate(ierClientHttpRequestFactory: ClientHttpRequestFactory): RestTemplate {
+        return RestTemplateBuilder()
+            .requestFactory { -> ierClientHttpRequestFactory }
+            .rootUri(ierApiBaseUrl)
+            .interceptors(correlationIdRestTemplateClientHttpRequestInterceptor)
+            .build()
+    }
+
+    @Bean
     fun httpMessageConverters(objectMapper: ObjectMapper): List<HttpMessageConverter<*>> =
         listOf(MappingJackson2HttpMessageConverter(objectMapper))
 
@@ -64,7 +77,7 @@ class IerRestClientConfiguration(
             .refreshRequest(
                 AssumeRoleRequest.builder()
                     .roleArn(ierStsAssumeRole)
-                    .roleSessionName(STS_SESSION_NAME)
+                    .roleSessionName(STS_SESSION_NAME_EMS)
                     .build()
             )
             .stsClient(stsClient)

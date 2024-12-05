@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestTemplate
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetailsList
 import uk.gov.dluhc.external.ier.models.ErosGet200Response
 
@@ -30,6 +31,9 @@ internal class IerApiClientTest {
 
     @Mock
     private lateinit var ierRestClient: RestClient
+
+    @Mock
+    private lateinit var ierRestTemplate: RestTemplate
 
     @InjectMocks
     private lateinit var ierApiClient: IerApiClient

@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration
 import java.time.Duration
 
 const val IER_ELECTORAL_REGISTRATION_OFFICES_CACHE = "ier-eros"
+const val ERO_CERTIFICATE_MAPPING_CACHE = "eroCertificateMappings"
+const val ERO_GSS_CODE_BY_ERO_ID_CACHE = "eroGssCodesByEroId"
 
 @Configuration
 @EnableCaching

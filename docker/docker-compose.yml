@@ -1,0 +1,100 @@
+version: "3.8"
+services:
+  localstack:
+    image: localstack/localstack:1.1.0
+    container_name: localstack
+    volumes:
+      - localstack-data:/tmp/localstack
+    networks:
+      - dluhc
+    environment:
+      SERVICES: sqs,sts
+      AWS_DEFAULT_REGION: eu-west-2
+      DATA_DIR: /tmp/localstack/data
+      EXTRA_CORS_ALLOWED_ORIGINS: http://localhost:4566
+    ports:
+      - "4566:4566"
+
+  ems-integration:
+    image: eip-ero-ems-integration-api:latest
+    container_name: ems-integration
+    ports:
+      - "5005:5005"
+    environment:
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      AWS_REGION: eu-west-2
+      CLOUD_AWS_CREDENTIALS_ACCESS_KEY: test
+      CLOUD_AWS_CREDENTIALS_SECRET_KEY: test
+      CLOUD_AWS_REGION_STATIC: eu-west-2
+      CLOUD_AWS_SQS_ENDPOINT: http://localstack:4566
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      STS_ENDPOINT: http://localstack:4566
+      MYSQL_HOST: database
+      MYSQL_PORT: 3306
+      SPRING_DATASOURCE_READONLYURL: jdbc:mysql://database:3306/ems_integration_application
+      MYSQL_USER: root
+      MYSQL_PASSWORD: rootPassword
+      LIQUIBASE_CONTEXTS: ddl
+      SQS_PROXY_APPLICATION_QUEUE_NAME: ems-proxy-application
+      SQS_POSTAL_APPLICATION_QUEUE_NAME: ems-postal-application
+      SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME: delete-proxy-application
+      SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME: delete-postal-application
+      REQUEST_HEADER_CLIENT_CERT_SERIAL: client-cert-serial
+      API_ERO_MANAGEMENT_URL: http://wiremock:8080/ero-management-api
+      API_IER_BASE_URL: http://wiremock:8080/ier-ero
+      API_IER_STS_ASSUME_ROLE: arn:aws:iam::123456789098:role/grant-me-access-to-ier
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - dluhc
+
+  database:
+    image: mysql:8
+    container_name: database
+    volumes:
+#      - mysql-data:/var/lib/mysql
+      - ./sql:/sql
+    ports:
+      - 3306:3306
+    command: --init-file /sql/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootPassword
+      MYSQL_USER: eipUser
+      MYSQL_PASSWORD: eipUserPassword
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=rootPassword
+      interval: 1s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    networks:
+      - dluhc
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx/conf.d:/etc/nginx/conf.d"
+    depends_on:
+      ems-integration:
+        condition: service_started
+    networks:
+      - dluhc
+
+  wiremock:
+    image: wiremock/wiremock:2.35.0
+    container_name: wiremock
+    volumes:
+      - "./wiremock:/home/wiremock/mappings"
+    networks:
+      - dluhc
+
+networks:
+  dluhc:
+
+volumes:
+  localstack-data:
