@@ -14,5 +14,4 @@ class LoggingConfiguration : WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(correlationIdMdcInterceptor)
     }
-
 }

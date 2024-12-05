@@ -56,6 +56,9 @@ internal abstract class IntegrationTest {
     protected lateinit var sqsAsyncClient: SqsAsyncClient
 
     @Autowired
+    protected lateinit var sqsMessagingTemplate: SqsTemplate
+
+    @Autowired
     protected lateinit var objectMapper: ObjectMapper
 
     @Autowired
@@ -79,9 +82,6 @@ internal abstract class IntegrationTest {
     @Value("\${sqs.remove-applicant-register-check-data-queue-name}")
     protected lateinit var removeApplicantRegisterCheckDataQueueName: String
 
-    @Autowired
-    protected lateinit var sqsMessagingTemplate: SqsTemplate
-
     @Value("\${caching.time-to-live}")
     protected lateinit var timeToLive: Duration
 
@@ -103,6 +103,8 @@ internal abstract class IntegrationTest {
         registerCheckResultDataRepository.deleteAll()
         registerCheckRepository.deleteAll()
         votingArrangementRepository.deleteAll()
+        cacheManager.getCache(IER_ELECTORAL_REGISTRATION_OFFICES_CACHE)?.clear()
+        cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         cacheManager.getCache(IER_ELECTORAL_REGISTRATION_OFFICES_CACHE)?.clear()
     }
 

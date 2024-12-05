@@ -29,8 +29,11 @@ private val logger = KotlinLogging.logger {}
 @Configuration
 class LocalStackContainerConfiguration {
 
-    private companion object {
+    companion object {
         const val DEFAULT_PORT = 4566
+        const val DEFAULT_ACCESS_KEY_ID = "test"
+        const val DEFAULT_SECRET_KEY = "test"
+        val objectMapper = ObjectMapper()
     }
 
     @Bean

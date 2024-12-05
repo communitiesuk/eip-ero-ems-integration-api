@@ -9,5 +9,4 @@ data class AddressDto(
     val postcode: String,
     val uprn: String?,
     val createdBy: String?,
-    val version: Long?,
 )

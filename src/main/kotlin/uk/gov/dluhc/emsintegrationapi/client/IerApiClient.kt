@@ -97,7 +97,7 @@ class IerApiClient(
     ): IerGeneralException =
         throw IerGeneralException(
             "Unable to retrieve EROCertificateMapping for certificate serial " +
-                    "[$certificateSerial] due to error: [${restClientException.message}]"
+                "[$certificateSerial] due to error: [${restClientException.message}]"
         )
 
     private fun handleException(ex: Throwable, message: String): IerApiException = when (ex) {

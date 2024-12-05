@@ -7,10 +7,8 @@
 
     <changeSet author="simon.payne@softwire.com" id="0026_register_check_result_data" context="ddl">
         <modifyDataType tableName="address" columnName="created_by" newDataType="varchar(255)"/>
-        <modifyDataType tableName="address" columnName="version" newDataType="bigint"/>
         <rollback>
             <modifyDataType tableName="address" columnName="created_by" newDataType="varchar(255) NOT NULL"/>
-            <modifyDataType tableName="address" columnName="version" newDataType="bigint NOT NULL"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

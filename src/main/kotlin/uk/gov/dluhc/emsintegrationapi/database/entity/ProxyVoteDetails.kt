@@ -1,8 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import org.hibernate.annotations.NotFound
-import org.hibernate.annotations.NotFoundAction
-import java.time.LocalDate
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
@@ -11,6 +8,9 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Size
+import org.hibernate.annotations.NotFound
+import org.hibernate.annotations.NotFoundAction
+import java.time.LocalDate
 
 @Embeddable
 class ProxyVoteDetails(

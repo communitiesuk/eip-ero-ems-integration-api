@@ -1,10 +1,10 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import java.time.Instant
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.validation.constraints.Size
+import java.time.Instant
 
 @Embeddable
 class ApplicationDetails(
@@ -31,6 +31,7 @@ class ApplicationDetails(
     @field:Size(max = 500)
     val signatureWaivedReason: String?,
 
+    @Enumerated(EnumType.STRING)
     var emsStatus: EmsStatus?,
 
     var emsMessage: String?,

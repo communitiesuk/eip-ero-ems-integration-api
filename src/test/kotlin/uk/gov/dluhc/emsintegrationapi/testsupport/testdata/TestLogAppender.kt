@@ -29,7 +29,7 @@ class TestLogAppender : AppenderBase<ILoggingEvent>() {
         private fun hasMessage(event: ILoggingEvent, message: String, level: Level): Boolean {
             val throwableProxy = event.throwableProxy
             return (
-                message == event.formattedMessage || (throwableProxy != null && message == throwableProxy.message)
+                message == event.formattedMessage || (throwableProxy != null && throwableProxy.message != null && message == throwableProxy.message)
                 ) && event.level == level
         }
 
@@ -37,7 +37,7 @@ class TestLogAppender : AppenderBase<ILoggingEvent>() {
             val throwableProxy = event.throwableProxy
             return (
                 regex.matches(event.formattedMessage) ||
-                    (throwableProxy != null && throwableProxy.message != null && regex.matches(throwableProxy.message))
+                    (throwableProxy != null && regex.matches(throwableProxy.message))
                 ) && event.level == level
         }
 

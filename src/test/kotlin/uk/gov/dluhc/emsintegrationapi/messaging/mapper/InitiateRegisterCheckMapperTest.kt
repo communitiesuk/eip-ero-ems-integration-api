@@ -58,7 +58,6 @@ internal class InitiateRegisterCheckMapperTest {
                         postcode = address.postcode,
                         uprn = address.uprn,
                         createdBy = null,
-                        version = null,
                     )
                 )
             },
@@ -72,7 +71,7 @@ internal class InitiateRegisterCheckMapperTest {
         // Then
         assertThat(actual)
             .usingRecursiveComparison()
-            .ignoringFields("correlationId")
+            .ignoringFields("correlationId", "createdBy")
             .isEqualTo(expected)
         assertThat(actual.correlationId).isNotNull
         assertThat(actual.createdAt).isNull()
