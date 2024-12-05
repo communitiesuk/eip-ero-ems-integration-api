@@ -15,6 +15,9 @@ import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_99
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_INVALID
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.PostalIntegrationTestHelpers
 
@@ -69,12 +72,12 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System rejects the request with status code 400 if the page size is greater than the configured page size 50`() {
-        // When I send a get postal vote applications request with the page size 51 and the certificate serial number "1234567891"
+        // When I send a get postal vote applications request with the page size 51 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
             testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                "1234567891",
+                CERTIFICATE_SERIAL_NUM_1,
                 51,
             )
 
@@ -88,12 +91,12 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System does not have any postal vote applications`() {
-        // When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
+        // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
             testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                "1234567891",
+                CERTIFICATE_SERIAL_NUM_1,
                 10,
             )
 
@@ -108,49 +111,49 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 404 if the attached certificate serial number does not exist`() {
-        // Given the certificate serial "INVALID123" does not exist in ERO
-        wireMockService.stubIerApiGetEroIdentifierThrowsNotFoundError("INVALID123")
+        // Given the certificate serial INVALID_SERIAL_NUM does not exist in ERO
+        wireMockService.stubIerApiGetEroIdentifierThrowsNotFoundError(CERTIFICATE_SERIAL_NUM_INVALID)
 
-        // When I send a get postal vote applications request with the page size 10 and the certificate serial number "INVALID123"
+        // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_INVALID
         val responseSpec =
             testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 "/postalvotes",
-                "INVALID123",
+                CERTIFICATE_SERIAL_NUM_INVALID,
                 10,
             )
 
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
 
-        // And it has an error message of "The EROCertificateMapping for certificateSerial=[INVALID123] could not be found"
+        // And it has an error message of "The EROCertificateMapping for certificateSerial=[INVALID_SERIAL_NUM] could not be found"
         val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The EROCertificateMapping for certificateSerial=[INVALID123] could not be found")
+        assertThat(message).isEqualTo("The EROCertificateMapping for certificateSerial=[$CERTIFICATE_SERIAL_NUM_INVALID] could not be found")
     }
 
     @Test
     fun `System returns http status 500 if ERO could not process the get mapping request`() {
-        // Given the ERO could not process the get mapping request for "1234567899"
-        wireMockService.stubIerApiGetEroIdentifierThrowsInternalServerError("1234567899")
+        // Given the ERO could not process the get mapping request for CERTIFICATE_SERIAL_NUM_99
+        wireMockService.stubIerApiGetEroIdentifierThrowsInternalServerError(CERTIFICATE_SERIAL_NUM_99)
 
-        // When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567899"
+        // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_99
         val responseSpec =
             testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                "1234567899",
+                CERTIFICATE_SERIAL_NUM_99,
                 10,
             )
 
         // Then I received the http status 500
         responseSpec.expectStatus().is5xxServerError
 
-        // And it has an error message of "Unable to retrieve EROCertificateMapping for certificate serial [1234567899] due to error: [500 Server Error: \"Error\"]"
+        // And it has an error message of "Unable to retrieve EROCertificateMapping for certificate serial [CERTIFICATE_SERIAL_NUM_99] due to error: [500 Server Error: \"Error\"]"
         val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
         assertThat(
             message,
         ).isEqualTo(
-            "Unable to retrieve EROCertificateMapping for certificate serial [1234567899] due to error: [500 Server Error: \"Error\"]",
+            "Unable to retrieve EROCertificateMapping for certificate serial [$CERTIFICATE_SERIAL_NUM_99] due to error: [500 Server Error: \"Error\"]",
         )
     }
 
@@ -159,12 +162,12 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Given the ERO Id "camden-city-council" does not exist in ERO
         wireMockService.stubEroManagementGetEroThrowsNotFoundError("camden-city-council")
 
-        // When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
+        // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
             testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                "1234567891",
+                CERTIFICATE_SERIAL_NUM_1,
                 10,
             )
 
@@ -181,12 +184,12 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Given the ERO could not process the get gss codes request for "camden-city-council"
         wireMockService.stubEroManagementGetEroThrowsInternalServerError("camden-city-council")
 
-        // When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
+        // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
             testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                "1234567891",
+                CERTIFICATE_SERIAL_NUM_1,
                 10,
             )
 
@@ -205,12 +208,12 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Given there are 20 postal vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
         val postalVoteApplicationMap = testHelpers!!.buildPostalVoteApplications(20, "RECEIVED", "E12345678", "E12345679")
 
-        // When I send a get postal vote applications request with the page size 10 and the certificate serial number "1234567891"
+        // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
             testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                "1234567891",
+                CERTIFICATE_SERIAL_NUM_1,
                 10,
             )
 
@@ -228,12 +231,12 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Given there are 2 postal vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
         val postalVoteApplicationMap = testHelpers!!.buildPostalVoteApplications(2, "RECEIVED", "E12345678", "E12345679")
 
-        // When I send a get postal vote applications request with the page size 3 and the certificate serial number "1234567891"
+        // When I send a get postal vote applications request with the page size 3 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
             testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                "1234567891",
+                CERTIFICATE_SERIAL_NUM_1,
                 3,
             )
 
@@ -251,9 +254,9 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Given there are 21 postal vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
         val postalVoteApplicationMap = testHelpers!!.buildPostalVoteApplications(21, "RECEIVED", "E12345678", "E12345679")
 
-        // When I send a get postal vote request without the page size and with the certificate serial number "1234567891"
+        // When I send a get postal vote request without the page size and with the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
-            testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, "1234567891")
+            testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, CERTIFICATE_SERIAL_NUM_1)
 
         // Then I received a response with 20 postal vote applications with signature
         testHelpers!!.validatePostalResponse(
@@ -277,9 +280,9 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
                 signatureWaiverReason = SIGNATURE_WAIVER_REASON,
             )
 
-        // When I send a get postal vote request without the page size and with the certificate serial number "1234567891"
+        // When I send a get postal vote request without the page size and with the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
-            testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, "1234567891")
+            testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, CERTIFICATE_SERIAL_NUM_1)
 
         // Then I received a response with 20 postal vote applications with signature waiver
         testHelpers!!.validatePostalResponse(

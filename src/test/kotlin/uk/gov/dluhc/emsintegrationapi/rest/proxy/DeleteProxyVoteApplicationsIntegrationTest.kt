@@ -20,6 +20,9 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_2
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.ProxyIntegrationTestHelpers
 import java.util.concurrent.TimeUnit
 
@@ -70,8 +73,8 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 403 if certificate serial number is not attached to the request`() {
-        // When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and without the certificate serial number in the request header
-        val responseSpec = apiClient!!.delete("/proxyvotes/502cf250036469154b4f85fb", attachSerialNumber = false)
+        // When the EMS send a delete request to "/proxyvotes" with an application id APPLICATION_ID_1 and without the certificate serial number in the request header
+        val responseSpec = apiClient!!.delete("/proxyvotes/$APPLICATION_ID_1", attachSerialNumber = false)
 
         // Then I received the http status 403
         responseSpec.expectStatus().isForbidden
@@ -80,7 +83,7 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     @Test
     fun `System rejects the request with status code 400 if the application id format is invalid`() {
         // When the EMS send a delete request to "/proxyvotes" with an application id "123"
-        val responseSpec = apiClient!!.delete("/proxyvotes/123", serialNumber = "1234567891")
+        val responseSpec = apiClient!!.delete("/proxyvotes/123", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
         // Then I received the http status 400
         responseSpec.expectStatus().isBadRequest
@@ -92,47 +95,47 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 404 if a given application does not exist`() {
-        // When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
-        val responseSpec = apiClient!!.delete("/proxyvotes/502cf250036469154b4f85fb", serialNumber = "1234567891")
+        // When the EMS send a delete request to "/proxyvotes" with an application id APPLICATION_ID_1 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        val responseSpec = apiClient!!.delete("/proxyvotes/$APPLICATION_ID_1", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
 
-        // And it has an error message of "The Proxy application could not be found with id `502cf250036469154b4f85fb`"
+        // And it has an error message of "The Proxy application could not be found with id `APPLICATION_ID_1`"
         val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Proxy application could not be found with id `502cf250036469154b4f85fb`")
+        assertThat(message).isEqualTo("The Proxy application could not be found with id `$APPLICATION_ID_1`")
     }
 
     @Test
     fun `System returns http status 404 if the gss codes retrieved from ERO and the application gss code are different`() {
-        // Given a proxy vote application with the application id "502cf250036469154b4f85fc", status "RECEIVED" and GSS Code "E12345699" exists
-        fixtures!!.createProxyApplicationWithApplicationId("502cf250036469154b4f85fc", "E12345699", "RECEIVED")
+        // Given a proxy vote application with the application id APPLICATION_ID_2, status "RECEIVED" and GSS Code "E12345699" exists
+        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_2, "E12345699", "RECEIVED")
 
-        // When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fc" and the certificate serial number "1234567891"
-        val responseSpec = apiClient!!.delete("/proxyvotes/502cf250036469154b4f85fc", serialNumber = "1234567891")
+        // When the EMS send a delete request to "/proxyvotes" with an application id APPLICATION_ID_2 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        val responseSpec = apiClient!!.delete("/proxyvotes/$APPLICATION_ID_2", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
 
-        // And it has an error message of "The Proxy application could not be found with id `502cf250036469154b4f85fc`"
+        // And it has an error message of "The Proxy application could not be found with id `APPLICATION_ID_2`"
         val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Proxy application could not be found with id `502cf250036469154b4f85fc`")
+        assertThat(message).isEqualTo("The Proxy application could not be found with id `$APPLICATION_ID_2`")
     }
 
     @Test
     fun `System returns http status 204 on successful deletion`() {
-        // Given a proxy vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
-        fixtures!!.createProxyApplicationWithApplicationId("502cf250036469154b4f85fb", "E12345678", "RECEIVED")
+        // Given a proxy vote application with the application id APPLICATION_ID_1, status "RECEIVED" and GSS Code "E12345678" exists
+        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_1, "E12345678", "RECEIVED")
 
-        // When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
-        val responseSpec = apiClient!!.delete("/proxyvotes/502cf250036469154b4f85fb", serialNumber = "1234567891")
+        // When the EMS send a delete request to "/proxyvotes" with an application id APPLICATION_ID_1 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        val responseSpec = apiClient!!.delete("/proxyvotes/$APPLICATION_ID_1", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
-        // Then the system updated the proxy application with the id "502cf250036469154b4f85fb" status as "DELETED"
-        val proxyVoteApplication = proxyVoteApplicationRepository.findById("502cf250036469154b4f85fb").get()
+        // Then the system updated the proxy application with the id APPLICATION_ID_1 status as "DELETED"
+        val proxyVoteApplication = proxyVoteApplicationRepository.findById(APPLICATION_ID_1).get()
         assertThat(proxyVoteApplication.status).isEqualTo(RecordStatus.valueOf("DELETED"))
         assertThat(proxyVoteApplication.updatedBy).isEqualTo(SourceSystem.EMS)
 
-        // And the "deleted-proxy-application" queue has a SUCCESS confirmation message for the application id "502cf250036469154b4f85fb"
+        // And the "deleted-proxy-application" queue has a SUCCESS confirmation message for the application id APPLICATION_ID_1
         await
             .pollDelay(2, TimeUnit.SECONDS)
             .untilAsserted {
@@ -140,7 +143,7 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
                     .isNotNull
                     .isEqualTo(
                         EmsConfirmedReceiptMessage(
-                            "502cf250036469154b4f85fb",
+                            APPLICATION_ID_1,
                             EmsConfirmedReceiptMessage.Status.SUCCESS,
                         ),
                     )
@@ -152,14 +155,14 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System ignores the request if proxy vote application is already DELETED and no message will be place on queue`() {
-        // Given a proxy vote application with the application id "502cf250036469154b4f85fb", status "DELETED" and GSS Code "E12345678" exists
-        fixtures!!.createProxyApplicationWithApplicationId("502cf250036469154b4f85fb", "E12345678", "DELETED")
+        // Given a proxy vote application with the application id APPLICATION_ID_1, status "DELETED" and GSS Code "E12345678" exists
+        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_1, "E12345678", "DELETED")
 
-        // When the EMS send a delete request to "/proxyvotes" with an application id "502cf250036469154b4f85fb" and the certificate serial number "1234567891"
-        val responseSpec = apiClient!!.delete("/proxyvotes/502cf250036469154b4f85fb", serialNumber = "1234567891")
+        // When the EMS send a delete request to "/proxyvotes" with an application id APPLICATION_ID_1 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        val responseSpec = apiClient!!.delete("/proxyvotes/$APPLICATION_ID_1", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
-        // Then the system ignores request and did not update the proxy application with the id "502cf250036469154b4f85fb"
-        val applicationFromDB = proxyVoteApplicationRepository.findById("502cf250036469154b4f85fb").get()
+        // Then the system ignores request and did not update the proxy application with the id APPLICATION_ID_1
+        val applicationFromDB = proxyVoteApplicationRepository.findById(APPLICATION_ID_1).get()
         assertThat(applicationFromDB.status).isEqualTo(RecordStatus.DELETED)
 
         // And there will be no confirmation message on the queue "deleted-proxy-application"

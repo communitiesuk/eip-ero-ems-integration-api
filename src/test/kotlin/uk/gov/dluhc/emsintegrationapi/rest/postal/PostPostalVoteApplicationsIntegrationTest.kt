@@ -22,6 +22,9 @@ import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_2
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.PostalIntegrationTestHelpers
 import java.util.concurrent.TimeUnit
 
@@ -72,9 +75,9 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 403 if certificate serial number is not attached to the request`() {
-        // When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and without the certificate serial number in the request header
+        // When the EMS sends a post request to "/postalvotes" with an application id APPLICATION_ID_1 and without the certificate serial number in the request header
         val responseSpec =
-            apiClient!!.postEmsApplication("/postalvotes/502cf250036469154b4f85fb", attachSerialNumber = false)
+            apiClient!!.postEmsApplication("/postalvotes/$APPLICATION_ID_1", attachSerialNumber = false)
 
         // Then I received the http status 403
         responseSpec.expectStatus().isForbidden
@@ -83,7 +86,7 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
     @Test
     fun `System rejects the request with status code 400 if the application id format is invalid`() {
         // When the EMS sends a post request to "/postalvotes" with an application id "123"
-        val responseSpec = apiClient!!.postEmsApplication("/postalvotes/123", serialNumber = "1234567891")
+        val responseSpec = apiClient!!.postEmsApplication("/postalvotes/123", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
         // Then I received the http status 400
         responseSpec.expectStatus().isBadRequest
@@ -95,54 +98,54 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 404 if a given application does not exist`() {
-        // When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85aa" and certificate serial number "1234567891" and SUCCESS status
+        // When the EMS sends a post request to "/postalvotes" with an application id APPLICATION_ID_3 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and SUCCESS status
         val responseSpec =
-            apiClient!!.postEmsApplication("/postalvotes/502cf250036469154b4f85fb", serialNumber = "1234567891")
+            apiClient!!.postEmsApplication("/postalvotes/$APPLICATION_ID_1", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
 
         // And it has an error message of "The Postal application could not be found with id `502cf250036469154b4f85aa`"
         val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Postal application could not be found with id `502cf250036469154b4f85fb`")
+        assertThat(message).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_1`")
     }
 
     @Test
     fun `System returns http status 404 if the gss codes retrieved from ERO and the application gss code are different`() {
-        // Given a postal vote application with the application id "502cf250036469154b4f85fc", status "RECEIVED" and GSS Code "E12345699" exists
-        testHelpers!!.createPostalApplicationWithApplicationId("502cf250036469154b4f85fc", "E12345699", "RECEIVED")
+        // Given a postal vote application with the application id APPLICATION_ID_2, status "RECEIVED" and GSS Code "E12345699" exists
+        testHelpers!!.createPostalApplicationWithApplicationId(APPLICATION_ID_2, "E12345699", "RECEIVED")
 
-        // When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fc" and certificate serial number "1234567891" and SUCCESS status
+        // When the EMS sends a post request to "/postalvotes" with an application id APPLICATION_ID_2 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and SUCCESS status
         val responseSpec =
-            apiClient!!.postEmsApplication("/postalvotes/502cf250036469154b4f85fc", serialNumber = "1234567891")
+            apiClient!!.postEmsApplication("/postalvotes/$APPLICATION_ID_2", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
 
-        // And it has an error message of "The Postal application could not be found with id `502cf250036469154b4f85fc`"
+        // And it has an error message of "The Postal application could not be found with id `APPLICATION_ID_2`"
         val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Postal application could not be found with id `502cf250036469154b4f85fc`")
+        assertThat(message).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_2`")
     }
 
     @Test
     fun `System returns http status 204 on successful deletion of a success status`() {
-        // Given a postal vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
-        testHelpers!!.createPostalApplicationWithApplicationId("502cf250036469154b4f85fb", "E12345678", "RECEIVED")
+        // Given a postal vote application with the application id APPLICATION_ID_1, status "RECEIVED" and GSS Code "E12345678" exists
+        testHelpers!!.createPostalApplicationWithApplicationId(APPLICATION_ID_1, "E12345678", "RECEIVED")
 
-        // When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and certificate serial number "1234567891" and SUCCESS status
+        // When the EMS sends a post request to "/postalvotes" with an application id APPLICATION_ID_1 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and SUCCESS status
         val responseSpec =
-            apiClient!!.postEmsApplication("/postalvotes/502cf250036469154b4f85fb", serialNumber = "1234567891")
+            apiClient!!.postEmsApplication("/postalvotes/$APPLICATION_ID_1", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
-        // Then the system updated the postal application with the id "502cf250036469154b4f85fb" status as "DELETED"
-        val postalVoteApplication = postalVoteApplicationRepository.findById("502cf250036469154b4f85fb").get()
+        // Then the system updated the postal application with the id APPLICATION_ID_1 status as "DELETED"
+        val postalVoteApplication = postalVoteApplicationRepository.findById(APPLICATION_ID_1).get()
         assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.valueOf("DELETED"))
         assertThat(postalVoteApplication.updatedBy).isEqualTo(SourceSystem.EMS)
 
-        // And the "deleted-postal-application" queue has a SUCCESS confirmation message for the application id "502cf250036469154b4f85fb"
+        // And the "deleted-postal-application" queue has a SUCCESS confirmation message for the application id APPLICATION_ID_1
         testHelpers!!.checkQueueHasMessage(
             "deleted-postal-application",
             EmsConfirmedReceiptMessage(
-                "502cf250036469154b4f85fb",
+                APPLICATION_ID_1,
                 EmsConfirmedReceiptMessage.Status.SUCCESS,
             ),
         )
@@ -153,27 +156,27 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 204 on successful deletion of a failure status`() {
-        // Given a postal vote application with the application id "502cf250036469154b4f85fb", status "RECEIVED" and GSS Code "E12345678" exists
-        testHelpers!!.createPostalApplicationWithApplicationId("502cf250036469154b4f85fb", "E12345678", "RECEIVED")
+        // Given a postal vote application with the application id APPLICATION_ID_1, status "RECEIVED" and GSS Code "E12345678" exists
+        testHelpers!!.createPostalApplicationWithApplicationId(APPLICATION_ID_1, "E12345678", "RECEIVED")
 
-        // When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and certificate serial number "1234567891" and FAILURE status
+        // When the EMS sends a post request to "/postalvotes" with an application id APPLICATION_ID_1 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and FAILURE status
         val responseSpec =
             apiClient!!.postEmsApplication(
-                "/postalvotes/502cf250036469154b4f85fb",
-                serialNumber = "1234567891",
+                "/postalvotes/$APPLICATION_ID_1",
+                serialNumber = CERTIFICATE_SERIAL_NUM_1,
                 request = EMSApplicationResponse(status = EMSApplicationStatus.FAILURE),
             )
 
-        // Then the system updated the postal application with the id "502cf250036469154b4f85fb" status as "DELETED"
-        val postalVoteApplication = postalVoteApplicationRepository.findById("502cf250036469154b4f85fb").get()
+        // Then the system updated the postal application with the id APPLICATION_ID_1 status as "DELETED"
+        val postalVoteApplication = postalVoteApplicationRepository.findById(APPLICATION_ID_1).get()
         assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.valueOf("DELETED"))
         assertThat(postalVoteApplication.updatedBy).isEqualTo(SourceSystem.EMS)
 
-        // And the "deleted-postal-application" queue has a FAILURE confirmation message for the application id "502cf250036469154b4f85fb"
+        // And the "deleted-postal-application" queue has a FAILURE confirmation message for the application id APPLICATION_ID_1
         testHelpers!!.checkQueueHasMessage(
             "deleted-postal-application",
             EmsConfirmedReceiptMessage(
-                "502cf250036469154b4f85fb",
+                APPLICATION_ID_1,
                 EmsConfirmedReceiptMessage.Status.FAILURE,
             ),
         )
@@ -184,15 +187,15 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System ignores the request if postal vote application is already DELETED and no message will be place on queue`() {
-        // Given a postal vote application with the application id "502cf250036469154b4f85fb", status "DELETED" and GSS Code "E12345678" exists
-        testHelpers!!.createPostalApplicationWithApplicationId("502cf250036469154b4f85fb", "E12345678", "DELETED")
+        // Given a postal vote application with the application id APPLICATION_ID_1, status "DELETED" and GSS Code "E12345678" exists
+        testHelpers!!.createPostalApplicationWithApplicationId(APPLICATION_ID_1, "E12345678", "DELETED")
 
-        // When the EMS sends a post request to "/postalvotes" with an application id "502cf250036469154b4f85fb" and certificate serial number "1234567891" and SUCCESS status
+        // When the EMS sends a post request to "/postalvotes" with an application id APPLICATION_ID_1 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and SUCCESS status
         val responseSpec =
-            apiClient!!.postEmsApplication("/postalvotes/502cf250036469154b4f85fb", serialNumber = "1234567891")
+            apiClient!!.postEmsApplication("/postalvotes/$APPLICATION_ID_1", serialNumber = CERTIFICATE_SERIAL_NUM_1)
 
-        // Then the system ignores request and did not update the postal application with the id "502cf250036469154b4f85fb"
-        val applicationFromDB = postalVoteApplicationRepository.findById("502cf250036469154b4f85fb").get()
+        // Then the system ignores request and did not update the postal application with the id APPLICATION_ID_1
+        val applicationFromDB = postalVoteApplicationRepository.findById(APPLICATION_ID_1).get()
         assertThat(applicationFromDB.status).isEqualTo(RecordStatus.DELETED)
 
         // And there will be no confirmation message on the queue "deleted-postal-application"
