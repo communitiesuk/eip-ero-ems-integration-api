@@ -1,20 +1,29 @@
+logging:
+  wiremock: false
+# Uncomment the below for detailed SQL logs
+#  level:
+#    org:
+#      hibernate:
+#        SQL: TRACE
+#        orm:
+#          jdbc:
+#            bind: TRACE
 spring:
   codec:
     max-in-memory-size: 1MB
-  cloud:
-    aws:
-      region:
-        static: us-east-1
-      credentials:
-        access-key: test
-        secret-key: test
   datasource:
     username: root
     password: password
     readOnlyUrl: ${spring.datasource.url}?readonly=true
   liquibase:
     contexts: ddl
-
+  cloud:
+    aws:
+      region:
+        static: eu-west-2
+      credentials:
+        access-key: test
+        secret-key: test
   jpa:
     properties:
       hibernate:
@@ -26,13 +35,6 @@ dluhc:
   default-page-size: 20
   max-page-size: 50
   force-max-page-size: 50
-cloud:
-  aws:
-    region:
-      static: eu-west-2
-    credentials:
-      access-key: test
-      secret-key: test
 
 sqs:
   proxy-application-queue-name: proxy-application
@@ -54,7 +56,7 @@ api:
     url: http://replaced-by-wireMockServer-bean
   ier:
     base.url: http://replaced-by-wireMockServer-bean
-    sts.assume.role: arn:aws:iam::1234567890987:role/grant-me-access-to-ier
+    sts.assume.role: arn:aws:iam::123456789098:role/grant-me-access-to-ier
 
 caching.time-to-live: PT2S
 
@@ -81,3 +83,4 @@ email:
     subject: "Register Check Monitoring"
     email-body-template: email-templates/pending-register-checks.html
     recipients: recipient1@domain.com,recipient2@domain.com
+
