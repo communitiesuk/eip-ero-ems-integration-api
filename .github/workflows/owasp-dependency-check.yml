@@ -2,7 +2,7 @@ name: OWASP Dependency Check
 
 on:
   schedule:
-    - cron: "0 1 * * SUN" # 1am every Sunday
+    - cron: '0 1 * * SUN' # 1am every Sunday
 
 jobs:
   owasp-dependency-check:
@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: main
       # Installing JDK needs to come after checking out the repo because the action (setup-java) looks for the gradle wrapper files
       - name: Install JDK 17
         uses: actions/setup-java@v3
@@ -36,7 +34,7 @@ jobs:
           PROJECT_NAME=$(echo "${{ github.repository }}" | grep -Eo "([^/]+$)")
           # Construct the URL of this run to include in the slack message
           GITHUB_ACTION_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
+          
           cat <<EOF >>slack-notification.json
           {
             "blocks": [
@@ -85,5 +83,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Dependency Analysis Logs
-          path: |
+          path: | 
             build/reports/dependency-check-report.html
