@@ -6,9 +6,8 @@ on:
       - main
 
 jobs:
-  build-and-tag:
-    # Pin to ubuntu 22.04 for as long as we manually install a specific Docker version
-    runs-on: ubuntu-22.04
+  tag:
+    runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.bump-semver.outputs.new_version }}
     steps:
@@ -54,60 +53,19 @@ jobs:
           git tag -a "${tag}" -m "${{ github.event.head_commit.message }}"
           git push origin "${tag}"
 
-      # https://github.com/spring-projects/spring-boot/issues/39323
-      # Spring Boot 2 has a bug in the way it installs buildpacks which is
-      # not compatible with Docker versions >= 25.
-      - name: Install Docker version 24 for compatibility with Spring Boot 2
-        run: |
-          VERSION_STRING=5:24.0.9-1~ubuntu.22.04~jammy
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates curl
-          sudo install -m 0755 -d /etc/apt/keyrings
-          sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-          sudo chmod a+r /etc/apt/keyrings/docker.asc
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-          sudo apt-get update
-          sudo apt-get install -y --allow-downgrades docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-buildx-plugin docker-compose-plugin
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          AWS_PROFILE_ARG: ""
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ems-integration-api-repo
-          IMAGE_TAG: ${{ steps.bump-semver.outputs.new_version }}
-        run: |
-          ./gradlew bootBuildImage
-          IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag eip-ero-ems-integration-api:latest $IMAGE
-          docker push $IMAGE
-
-      - name: Configure AWS credentials (live env)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.LIVE_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.LIVE_AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
-
-      - name: Login to Amazon ECR (live env)
-        id: login-ecr-live
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, tag, and push image to Amazon ECR (live env)
-        id: build-image-live
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr-live.outputs.registry }}
-          ECR_REPOSITORY: ems-integration-api-repo
-          IMAGE_TAG: ${{ steps.bump-semver.outputs.new_version }}
-        run: |
-          IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag eip-ero-ems-integration-api:latest $IMAGE
-          docker push $IMAGE
+  build-and-push:
+    needs: tag
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      version: ${{ needs.tag.outputs.version }}
+    secrets: inherit
 
   deploy:
-    needs: build-and-tag
+    needs:
+      - tag
+      - build-and-push
     uses: ./.github/workflows/deploy.yml
     with:
       deploy_environment: dev2
-      version: ${{ needs.build-and-tag.outputs.version }}
+      version: ${{ needs.tag.outputs.version }}
     secrets: inherit

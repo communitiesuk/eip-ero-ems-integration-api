@@ -7,14 +7,15 @@ on:
     types:
       - closed
     paths:
-      - "src/main/resources/openapi/EMSIntegrationAPIs.yaml"
+      - "src/main/resources/openapi/ems/EMSIntegrationAPIs.yaml"
+      - "src/main/resources/openapi/registerchecker/RegisterCheckerAPIs.yaml"
 
 jobs:
   trigger-raise-openapi-spec-change-pr:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
-      - name: Trigger the eip-ero-infra openapi-changed dispatch workflow
+      - name: Trigger the eip-ero-infra openapi-changed dispatch workflow (EMS)
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.CABINETOFFICE_EIP_ERO_PAT }}
@@ -25,7 +26,22 @@ jobs:
               workflow_id: 'openapi-changed.yml',
               ref: 'main',
               inputs: {
-                file_to_update: 'src/main/resources/openapi/EMSIntegrationAPIs.yaml',
+                file_to_update: 'src/main/resources/openapi/ems/EMSIntegrationAPIs.yaml',
+                repo: 'eip-ero-ems-integration-api'
+              }
+            });
+      - name: Trigger the eip-ero-infra openapi-changed dispatch workflow (Register Checker)
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.CABINETOFFICE_EIP_ERO_PAT }}
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: 'eip-ero-infra',
+              workflow_id: 'openapi-changed.yml',
+              ref: 'main',
+              inputs: {
+                file_to_update: 'src/main/resources/openapi/registerchecker/RegisterCheckerAPIs.yaml',
                 repo: 'eip-ero-ems-integration-api'
               }
             });
