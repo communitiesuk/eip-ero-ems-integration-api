@@ -50,6 +50,7 @@ private class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
         fun deletePostalRecordsBefore() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
+                registerCheckRepository = registerCheckRepository,
                 queueName = removeApplicationEmsDataQueueName
             )
         }
@@ -58,6 +59,7 @@ private class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
         fun deletePostalRecordsAfter() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
+                registerCheckRepository = registerCheckRepository,
                 queueName = removeApplicationEmsDataQueueName
             )
         }
