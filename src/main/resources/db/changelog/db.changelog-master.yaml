@@ -58,4 +58,4 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0029_EIP1-11111_register_check_created_by_version_nullable.xml
   - include:
-      file: db/changelog/create/0030_EIP1-11198_add-is-from-applications-api-flag.xml
+      file: /db/changelog/create/0030_EIP1-11198_add-is-from-applications-api-flag.xml
