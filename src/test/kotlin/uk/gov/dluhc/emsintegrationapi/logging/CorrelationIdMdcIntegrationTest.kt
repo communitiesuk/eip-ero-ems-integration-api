@@ -190,6 +190,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         fun deletePostalRecordsBefore() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
+                registerCheckRepository = registerCheckRepository,
                 sqsAsyncClient = sqsAsyncClient,
                 queueName = postalApplicationQueueName
             )
@@ -199,6 +200,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         fun deletePostalRecordsAfter() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
+                registerCheckRepository = registerCheckRepository,
                 sqsAsyncClient = sqsAsyncClient,
                 queueName = postalApplicationQueueName
             )
