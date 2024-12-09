@@ -2,7 +2,6 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.exception.PendingRegisterCheckArchiveInvalidStatusException

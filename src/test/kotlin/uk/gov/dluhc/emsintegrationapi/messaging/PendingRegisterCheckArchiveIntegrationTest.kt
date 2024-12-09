@@ -14,7 +14,6 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
 import uk.gov.dluhc.registercheckerapi.messaging.models.PendingRegisterCheckArchiveMessage
 import java.time.Instant
-import java.time.temporal.TemporalAdjuster
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
