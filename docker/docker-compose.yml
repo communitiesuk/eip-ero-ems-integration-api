@@ -44,6 +44,7 @@ services:
       API_ERO_MANAGEMENT_URL: http://wiremock:8080/ero-management-api
       API_IER_BASE_URL: http://wiremock:8080/ier-ero
       API_IER_STS_ASSUME_ROLE: arn:aws:iam::1234567890987:role/grant-me-access-to-ier
+      API_IER_STS_ASSUME_ROLE_EXTERNAL_ID: abc123
     depends_on:
       database:
         condition: service_healthy
