@@ -40,6 +40,7 @@ api:
   ier:
     base.url: http://replaced-by-wireMockServer-bean
     sts.assume.role: arn:aws:iam::1234567890987:role/grant-me-access-to-ier
+    sts.assume.role.external-id: abc123
 
 caching.time-to-live: PT2S
 
