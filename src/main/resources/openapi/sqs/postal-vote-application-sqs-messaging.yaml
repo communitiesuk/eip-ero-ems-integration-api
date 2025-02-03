@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Approved/Rejected Postal Application SQS Message
-  version: 1.2.2
+  version: 1.2.3
   description: |-
     Approved/Rejected Postal application API SQS Message Types for EROP
 
@@ -140,10 +140,6 @@ components:
               $ref: './Models/RejectedReason.yaml'
             welshReason:
               $ref: './Models/RejectedReason.yaml'
-        rejectedReason:
-          title: Rejected Reason
-          description: |
-            
 
     PrimaryElectorDetails:
       title: PrimaryElectorDetails
