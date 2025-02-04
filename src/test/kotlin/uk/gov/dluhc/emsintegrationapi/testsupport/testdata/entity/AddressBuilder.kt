@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity
 
 import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
+import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem as SourceSystemEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.registercheckerapi.models.SourceSystem
 
@@ -23,7 +24,7 @@ fun buildAddress(
     area = area,
     postcode = postcode,
     uprn = uprn,
-    createdBy = createdBy,
+    createdBy = createdBy.let { if(it == null) null else SourceSystemEntity.EMS },
     version = version,
 )
 

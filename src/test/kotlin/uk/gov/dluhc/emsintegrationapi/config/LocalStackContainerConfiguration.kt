@@ -64,7 +64,7 @@ class LocalStackContainerConfiguration {
             )
             .withExposedPorts(DEFAULT_PORT)
             .withReuse(true)
-            .withCreateContainerCmdModifier { it.withName("register-checker-api-integration-test-localstack") }
+            .withCreateContainerCmdModifier { it.withName("ems-integration-api-integration-test-localstack") }
             .apply { start() }
 
     @Bean
