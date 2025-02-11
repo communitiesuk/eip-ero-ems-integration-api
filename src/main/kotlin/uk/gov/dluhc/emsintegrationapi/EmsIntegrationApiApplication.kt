@@ -8,8 +8,8 @@ import org.springframework.boot.runApplication
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan
-class RegisterCheckerApiApplication
+class EmsIntegrationApiApplication
 
 fun main(args: Array<String>) {
-    runApplication<RegisterCheckerApiApplication>(*args)
+    runApplication<EmsIntegrationApiApplication>(*args)
 }
