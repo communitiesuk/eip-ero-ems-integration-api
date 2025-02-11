@@ -82,6 +82,9 @@ internal abstract class IntegrationTest {
     @Value("\${sqs.remove-applicant-register-check-data-queue-name}")
     protected lateinit var removeApplicantRegisterCheckDataQueueName: String
 
+    @Value("\${sqs.pending-register-check-archive-queue-name}")
+    protected lateinit var pendingRegisterCheckArchiveQueueName: String
+
     @Value("\${caching.time-to-live}")
     protected lateinit var timeToLive: Duration
 
