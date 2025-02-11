@@ -1,4 +1,3 @@
-liquibase.properties
 HELP.md
 .gradle
 build/
@@ -46,3 +45,4 @@ cypress/screenshots
 ### Others ###
 .DS_Store
 openapi/reference/test
+.envrc

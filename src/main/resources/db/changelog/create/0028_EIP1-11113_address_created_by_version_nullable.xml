@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="simon.payne@softwire.com" id="0026_register_check_result_data" context="ddl">
+        <modifyDataType tableName="address" columnName="created_by" newDataType="varchar(255)"/>
+        <modifyDataType tableName="address" columnName="version" newDataType="bigint"/>
+        <rollback>
+            <modifyDataType tableName="address" columnName="created_by" newDataType="varchar(255) NOT NULL"/>
+            <modifyDataType tableName="address" columnName="version" newDataType="bigint NOT NULL"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

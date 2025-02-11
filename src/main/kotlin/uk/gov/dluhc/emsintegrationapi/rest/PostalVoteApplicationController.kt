@@ -24,8 +24,8 @@ import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.P
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteApplications
 import uk.gov.dluhc.emsintegrationapi.service.PostalVoteApplicationService
-import javax.validation.Valid
-import javax.validation.constraints.Pattern
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
 
 private val logger = KotlinLogging.logger { }
 

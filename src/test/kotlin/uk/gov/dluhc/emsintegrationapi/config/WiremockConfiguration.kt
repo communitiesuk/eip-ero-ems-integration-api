@@ -19,7 +19,7 @@ class WiremockConfiguration {
     @Bean
     fun wireMockServer(
         applicationContext: ConfigurableApplicationContext,
-        @Value("\${logWiremockRequests:false}") logWiremockRequests: Boolean
+        @Value("\${logging.wiremock}") logWiremockRequests: Boolean,
     ): WireMockServer =
         WireMockServer(
             options()
@@ -27,16 +27,21 @@ class WiremockConfiguration {
                 .dynamicHttpsPort()
         ).apply {
             if (logWiremockRequests) {
-                addMockServiceRequestListener { request: Request, _: Response ->
+                addMockServiceRequestListener { request: Request, response: Response ->
                     val formattedHeaders = request.headers.all().joinToString("\n") {
                         "${it.key()}: ${it.values().joinToString(", ")}"
                     }
                     val logMessage = StringBuilder()
-                        .appendLine("Request sent to wiremock:")
+                        .appendLine("\n\nRequest sent to wiremock:")
+                        .appendLine()
                         .appendLine("${request.method} ${request.absoluteUrl}")
                         .appendLine(formattedHeaders)
                         .appendLine()
                         .appendLine(request.bodyAsString)
+                        .appendLine()
+                        .appendLine("Response sent from wiremock:")
+                        .appendLine()
+                        .appendLine(response.bodyAsString)
                     logger.info { logMessage }
                 }
             }

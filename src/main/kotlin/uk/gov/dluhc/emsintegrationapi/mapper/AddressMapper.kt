@@ -16,7 +16,7 @@ class AddressMapper {
             area = it.area,
             postcode = it.postcode,
             uprn = it.uprn,
-            createdBy = createdBy
+            createdBy = SourceSystem.valueOf(createdBy.toString())
         )
     }
 }

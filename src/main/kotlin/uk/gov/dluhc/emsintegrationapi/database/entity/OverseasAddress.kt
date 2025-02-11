@@ -1,32 +1,28 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
 import org.hibernate.Hibernate
-import org.hibernate.annotations.GenericGenerator
-import org.hibernate.annotations.Type
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import uk.gov.dluhc.emsintegrationapi.database.repository.UUIDCharType
-import uk.gov.dluhc.emsintegrationapi.database.repository.UseExistingOrGenerateUUID
 import java.time.Instant
 import java.util.UUID
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Version
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Id
+import jakarta.persistence.Version
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.annotations.UuidGenerator
+import java.sql.Types
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)
 class OverseasAddress(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = UseExistingOrGenerateUUID.NAME)
-    @Type(type = UUIDCharType)
+    @UuidGenerator
+    @JdbcTypeCode(Types.CHAR)
     var id: UUID? = null,
 
     @Size(max = 255)

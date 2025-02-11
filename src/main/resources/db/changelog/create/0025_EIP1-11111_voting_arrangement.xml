@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="simon.payne@softwire.com" id="0027_voting_arrangement - create table" context="ddl">
+        <createTable tableName="voting_arrangement">
+            <column name="id" type="uuid">
+                <constraints
+                        nullable="false"
+                        primaryKey="true"
+                        primaryKeyName="voting_arrangement_pkey"
+                />
+            </column>
+            <column name="until_further_notice" type="bit(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="for_single_date" type="date"/>
+            <column name="start_date" type="date"/>
+            <column name="end_date" type="date"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="voting_arrangement"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -1,19 +1,19 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
 import java.time.Instant
-import javax.persistence.Embeddable
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.validation.constraints.Size
+import jakarta.persistence.Embeddable
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.validation.constraints.Size
 
 @Embeddable
 class ApplicationDetails(
-    val createdAt: Instant,
+    val createdAt: Instant?,
 
     @field:Size(max = 9)
     val gssCode: String,
 
-    val authorisedAt: Instant,
+    val authorisedAt: Instant?,
 
     @field:Size(max = 255)
     val authorisingStaffId: String,

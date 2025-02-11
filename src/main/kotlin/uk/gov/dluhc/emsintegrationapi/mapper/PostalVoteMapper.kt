@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.mapper
 
-import org.apache.commons.codec.binary.Base64
+import org.apache.hc.client5.http.utils.Base64
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.models.Address
@@ -82,10 +82,10 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                     postalProxy = postalProxy,
                 ),
                 id = applicationId,
-                createdAt = instantMapper.toOffsetDateTime(applicationDetails.createdAt),
+                createdAt = instantMapper.toOffsetDateTime(applicationDetails.createdAt)!!,
                 gssCode = applicationDetails.gssCode,
                 source = applicationDetails.source,
-                authorisedAt = instantMapper.toOffsetDateTime(applicationDetails.authorisedAt),
+                authorisedAt = instantMapper.toOffsetDateTime(applicationDetails.authorisedAt)!!,
                 authorisingStaffId = applicationDetails.authorisingStaffId,
             )
         }

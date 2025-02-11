@@ -3,14 +3,14 @@ package uk.gov.dluhc.emsintegrationapi.database.entity
 import org.hibernate.annotations.NotFound
 import org.hibernate.annotations.NotFoundAction
 import java.time.LocalDate
-import javax.persistence.CascadeType
-import javax.persistence.Column
-import javax.persistence.Embeddable
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.OneToOne
-import javax.validation.Valid
-import javax.validation.constraints.Size
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.OneToOne
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Size
 
 @Embeddable
 class ProxyVoteDetails(
