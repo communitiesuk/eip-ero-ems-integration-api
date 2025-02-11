@@ -1,5 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
+import jakarta.validation.ConstraintValidatorContext
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -13,7 +14,6 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
-import javax.validation.ConstraintValidatorContext
 
 @ExtendWith(MockitoExtension::class)
 internal class PageSizeValidatorTest {

@@ -1,5 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -19,8 +21,6 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.servlet.HandlerInterceptor
 import reactor.core.publisher.Mono
 import java.util.UUID
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 /**
  * MVC Interceptor and AOP beans that set MDC variables for inclusion in all log statements.

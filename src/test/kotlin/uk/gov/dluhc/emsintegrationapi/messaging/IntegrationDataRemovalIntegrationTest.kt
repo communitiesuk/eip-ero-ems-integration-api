@@ -1,8 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.messaging
 
 import ch.qos.logback.classic.Level
-import com.amazonaws.services.sqs.AmazonSQSAsync
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
+import io.awspring.cloud.sqs.operations.SqsSendOptions
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.AfterEach
@@ -13,15 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.config.MESSAGE_ID
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteRecords
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.Companion.deleteSqsMessage
-import uk.gov.dluhc.emsintegrationapi.cucumber.common.StepHelper.TestPhase
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.POSTAL
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage.Source.PROXY
+import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ILoggingEventAssert.Companion.assertThat
@@ -30,19 +27,13 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplica
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.randomHexadecimalString
 import java.util.concurrent.TimeUnit
 
-class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
-
-    @Autowired
-    protected lateinit var sqsMessagingTemplate: QueueMessagingTemplate
+private class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
 
     @Autowired
     protected lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
 
     @Autowired
     protected lateinit var proxyVoteApplicationRepository: ProxyVoteApplicationRepository
-
-    @Autowired
-    protected lateinit var amazonSQSAsync: AmazonSQSAsync
 
     @Value("\${sqs.remove-application-ems-integration-data-queue-name}")
     protected lateinit var removeApplicationEmsDataQueueName: String
@@ -57,16 +48,20 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
 
         @BeforeEach
         fun deletePostalRecordsBefore() {
-            deleteRecords(postalVoteApplicationRepository, TestPhase.BEFORE)
-            deleteRecords(proxyVoteApplicationRepository, TestPhase.BEFORE)
-            deleteSqsMessage(amazonSQSAsync, removeApplicationEmsDataQueueName, TestPhase.BEFORE)
+            ClearDownUtils.clearDownRecords(
+                postalRepository = postalVoteApplicationRepository,
+                registerCheckRepository = registerCheckRepository,
+                queueName = removeApplicationEmsDataQueueName
+            )
         }
 
         @AfterEach
         fun deletePostalRecordsAfter() {
-            deleteRecords(postalVoteApplicationRepository, TestPhase.AFTER)
-            deleteRecords(proxyVoteApplicationRepository, TestPhase.AFTER)
-            deleteSqsMessage(amazonSQSAsync, removeApplicationEmsDataQueueName, TestPhase.AFTER)
+            ClearDownUtils.clearDownRecords(
+                postalRepository = postalVoteApplicationRepository,
+                registerCheckRepository = registerCheckRepository,
+                queueName = removeApplicationEmsDataQueueName
+            )
         }
 
         @Test
@@ -82,9 +77,12 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
                 POSTAL,
             )
 
-            sqsMessagingTemplate.convertAndSend(
-                removeApplicationEmsDataQueueName,
-                payload
+            sqsMessagingTemplate.send(
+                { to: SqsSendOptions<RemoveApplicationEmsIntegrationDataMessage> ->
+                    to
+                        .queue(removeApplicationEmsDataQueueName)
+                        .payload(payload)
+                }
             )
 
             await.atMost(10, TimeUnit.SECONDS).untilAsserted {
@@ -122,9 +120,12 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
             PROXY,
         )
 
-        sqsMessagingTemplate.convertAndSend(
-            removeApplicationEmsDataQueueName,
-            payload
+        sqsMessagingTemplate.send(
+            { to: SqsSendOptions<RemoveApplicationEmsIntegrationDataMessage> ->
+                to
+                    .queue(removeApplicationEmsDataQueueName)
+                    .payload(payload)
+            }
         )
 
         await.atMost(10, TimeUnit.SECONDS).untilAsserted {

@@ -37,7 +37,6 @@ class PostalVoteApplicationMessageMapper(
                 englishRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.englishReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
                 welshRejectionNotes = it.postalVoteDetails?.rejectedReasons?.welshReason?.notes,
                 welshRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.welshReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
-                isFromApplicationsApi = it.isFromApplicationsApi,
             )
         }
 }

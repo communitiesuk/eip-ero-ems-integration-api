@@ -1,3 +1,5 @@
 jobs:
   pending-downloads-monitoring:
     send-email: false
+  register-check-monitoring:
+    send-email: false

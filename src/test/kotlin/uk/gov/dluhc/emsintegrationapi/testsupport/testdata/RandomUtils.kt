@@ -2,7 +2,6 @@ package uk.gov.dluhc.emsintegrationapi.testsupport.testdata
 
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.commons.lang3.RandomUtils
-import uk.gov.dluhc.emsintegrationapi.testsupport.replaceSpacesWith
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import java.time.Instant
 import java.time.LocalDate

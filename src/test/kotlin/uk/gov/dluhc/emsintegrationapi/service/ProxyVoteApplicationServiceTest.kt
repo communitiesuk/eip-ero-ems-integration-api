@@ -65,7 +65,7 @@ internal class ProxyVoteApplicationServiceTest {
     }
 
     @BeforeEach
-    private fun setup() {
+    public fun setup() {
         given { retrieveGssCodeService.getGssCodeFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
             GSS_CODES
         )
@@ -215,32 +215,6 @@ internal class ProxyVoteApplicationServiceTest {
                     EmsConfirmedReceiptMessage.Status.SUCCESS
                 ),
                 QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
-            )
-        }
-
-        @Test
-        fun `should send SUCCESS confirmation message to EMS_APPLICATION_PROCESSED_QUEUE `() {
-            // Given
-            val proxyVoteApplication = buildProxyVoteApplication(isFromApplicationsApi = true)
-            given(
-                proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
-                    proxyVoteApplication.applicationId,
-                    GSS_CODES
-                )
-            ).willReturn(proxyVoteApplication)
-            // When
-            proxyVoteApplicationService.confirmReceipt(
-                CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId,
-                requestSuccess
-            )
-
-            // Then
-            verify(messageSender).send(
-                EmsConfirmedReceiptMessage(
-                    proxyVoteApplication.applicationId,
-                    EmsConfirmedReceiptMessage.Status.SUCCESS
-                ),
-                QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE
             )
         }
 

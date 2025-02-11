@@ -29,7 +29,7 @@ fun buildProxyVoteApplication(
     englishRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
     welshRejectionNotes: String? = null,
     welshRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
-    isFromApplicationsApi: Boolean? = null,
+    dateCreated: Instant = Instant.now(),
 ) = ProxyVoteApplication(
     applicationId = applicationId,
     applicationDetails = applicationDetails,
@@ -45,17 +45,15 @@ fun buildProxyVoteApplication(
     englishRejectedReasonItems = englishRejectedReasonItems,
     welshRejectionNotes = welshRejectionNotes,
     welshRejectedReasonItems = welshRejectedReasonItems,
-    isFromApplicationsApi = isFromApplicationsApi
+    dateCreated = dateCreated
 )
 
 fun buildProxyVoteApplicationMessageDto(
     applicationDetails: ApplicationDetailsMessageDto = buildApplicationDetailsMessageDto(),
     applicantDetails: ApplicantDetailsMessageDto = buildApplicantDetailsMessageDto(),
     proxyVoteDetails: ProxyVoteDetailsMessageDto = buildProxyVoteDetailsMessageDto(),
-    isFromApplicationsApi: Boolean? = null,
 ) = ProxyVoteApplicationMessage(
     applicationDetails = applicationDetails,
     applicantDetails = applicantDetails,
     proxyVoteDetails = proxyVoteDetails,
-    isFromApplicationsApi = isFromApplicationsApi,
 )
