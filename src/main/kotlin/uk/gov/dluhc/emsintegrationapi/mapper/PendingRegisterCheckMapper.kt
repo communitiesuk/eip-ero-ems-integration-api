@@ -15,6 +15,7 @@ import uk.gov.dluhc.registercheckerapi.models.PendingRegisterCheck
         InstantMapper::class,
         PersonalDetailMapper::class,
         SourceTypeMapper::class,
+        AddressMapper::class
     ]
 )
 abstract class PendingRegisterCheckMapper {

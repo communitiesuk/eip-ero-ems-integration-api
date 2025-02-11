@@ -1,11 +1,11 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
-import org.springframework.stereotype.Component
-import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import jakarta.validation.Payload
+import org.springframework.stereotype.Component
+import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import kotlin.reflect.KClass
 
 @Component

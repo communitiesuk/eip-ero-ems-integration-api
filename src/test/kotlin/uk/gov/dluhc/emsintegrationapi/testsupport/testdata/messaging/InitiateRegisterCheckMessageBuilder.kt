@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging
 
-import net.datafaker.providers.base.Address
+import net.datafaker.Address
 import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage

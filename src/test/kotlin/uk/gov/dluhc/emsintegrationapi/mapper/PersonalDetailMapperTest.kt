@@ -20,6 +20,9 @@ internal class PersonalDetailMapperTest {
         val JPA_MANAGED_FIELDS = arrayOf(
             "id",
             "dateCreated",
+            "address.id",
+            "address.dateCreated",
+            "address.version",
         )
     }
 

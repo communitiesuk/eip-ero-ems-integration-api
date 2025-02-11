@@ -13,7 +13,6 @@ fun buildAddressDto(
     postcode: String = faker.address().postcode(),
     uprn: String? = RandomStringUtils.randomNumeric(12),
     createdBy: String? = null,
-    version: Long? = null,
 ) = AddressDto(
     street = street,
     property = property,
@@ -23,7 +22,6 @@ fun buildAddressDto(
     postcode = postcode,
     uprn = uprn,
     createdBy = createdBy,
-    version = version,
 )
 
 fun buildAddressDtoWithOptionalFieldsNull(
@@ -38,5 +36,4 @@ fun buildAddressDtoWithOptionalFieldsNull(
     area = null,
     uprn = null,
     createdBy = null,
-    version = null,
 )

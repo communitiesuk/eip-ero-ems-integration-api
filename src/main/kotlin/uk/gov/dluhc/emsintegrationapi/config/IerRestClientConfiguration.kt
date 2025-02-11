@@ -38,7 +38,6 @@ class IerRestClientConfiguration(
         private const val API_GATEWAY_SERVICE_NAME = "execute-api"
         private const val STS_SESSION_NAME_REG_CHECK = "RegisterChecker_IER_Session"
         private const val STS_SESSION_NAME_EMS = "EMS_Integration_API_IER_Session"
-
     }
 
     @Bean

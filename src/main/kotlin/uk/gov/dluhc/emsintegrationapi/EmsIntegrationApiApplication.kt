@@ -2,14 +2,16 @@ package uk.gov.dluhc.emsintegrationapi
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 /**
  * Spring Boot application bootstrapping class.
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan
-class RegisterCheckerApiApplication
+@EnableJpaAuditing
+class EmsIntegrationApiApplication
 
 fun main(args: Array<String>) {
-    runApplication<RegisterCheckerApiApplication>(*args)
+    runApplication<EmsIntegrationApiApplication>(*args)
 }
