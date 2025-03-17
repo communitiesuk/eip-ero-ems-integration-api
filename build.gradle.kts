@@ -6,7 +6,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import java.lang.ProcessBuilder.Redirect
 
 plugins {
-    id("org.springframework.boot") version "3.3.8"
+    id("org.springframework.boot") version "3.3.9"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("jvm") version "1.9.24"
     kotlin("kapt") version "1.9.24"
@@ -82,7 +82,8 @@ dependencies {
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
+    implementation("org.webjars:swagger-ui:4.19.1")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -178,7 +179,7 @@ dependencies {
     liquibaseRuntime("org.springframework.boot:spring-boot")
     liquibaseRuntime("info.picocli:picocli:4.6.1")
     liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-    liquibaseRuntime("org.yaml:snakeyaml:1.33")
+    // liquibaseRuntime("org.yaml:snakeyaml:1.33")
 }
 
 dependencyManagement {
