@@ -82,7 +82,7 @@ class ProxyVoteApplicationService(
             doConfirmedReceiptApplicationStatus(request, proxyVoteApplication.applicationDetails)
         }
 
-        sendMessage(request, proxyVoteApplication.applicationId)
+        sendMessage(request, proxyVoteApplication.applicationId, proxyVoteApplication.isFromApplicationsApi)
 
         logger.info { "Confirmation ${request.status} message sent to the proxy vote application for ${proxyVoteApplication.applicationId}" }
     }

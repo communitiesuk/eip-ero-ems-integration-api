@@ -35,6 +35,36 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
     }
 
     @Test
+    fun `should save a proxy vote application when isFromApplicationsApi is true`() {
+        // Given
+        val proxyVoteApplication = buildProxyVoteApplication(isFromApplicationsApi = true)
+
+        // When
+        proxyVoteApplicationRepository.saveAndFlush(proxyVoteApplication)
+
+        // Then
+        val savedApplication =
+            proxyVoteApplicationRepository.findById(proxyVoteApplication.applicationId).get()
+
+        assertThat(savedApplication).usingRecursiveComparison().isEqualTo(proxyVoteApplication)
+    }
+
+    @Test
+    fun `should save a proxy vote application when isFromApplicationsApi is false`() {
+        // Given
+        val proxyVoteApplication = buildProxyVoteApplication(isFromApplicationsApi = false)
+
+        // When
+        proxyVoteApplicationRepository.saveAndFlush(proxyVoteApplication)
+
+        // Then
+        val savedApplication =
+            proxyVoteApplicationRepository.findById(proxyVoteApplication.applicationId).get()
+
+        assertThat(savedApplication).usingRecursiveComparison().isEqualTo(proxyVoteApplication)
+    }
+
+    @Test
     fun `should return records by gss codes and record status order by created date using two step process`() {
         // Given
 

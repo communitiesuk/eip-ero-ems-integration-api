@@ -46,6 +46,8 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0023_EIP1-11111_register_check.xml
   - include:
+      file: /db/changelog/create/0023_EIP1-11198_add-is-from-applications-api-flag.xml
+  - include:
       file: /db/changelog/create/0024_EIP1-11111_personal_detail.xml
   - include:
       file: /db/changelog/create/0025_EIP1-11111_voting_arrangement.xml

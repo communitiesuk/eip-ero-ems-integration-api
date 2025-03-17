@@ -219,6 +219,32 @@ internal class ProxyVoteApplicationServiceTest {
         }
 
         @Test
+        fun `should send SUCCESS confirmation message to EMS_APPLICATION_PROCESSED_QUEUE `() {
+            // Given
+            val proxyVoteApplication = buildProxyVoteApplication(isFromApplicationsApi = true)
+            given(
+                proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
+                    proxyVoteApplication.applicationId,
+                    GSS_CODES
+                )
+            ).willReturn(proxyVoteApplication)
+            // When
+            proxyVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId,
+                requestSuccess
+            )
+
+            // Then
+            verify(messageSender).send(
+                EmsConfirmedReceiptMessage(
+                    proxyVoteApplication.applicationId,
+                    EmsConfirmedReceiptMessage.Status.SUCCESS
+                ),
+                QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE
+            )
+        }
+
+        @Test
         fun `should update the record status to be DELETED and send FAILURE confirmation message`() {
             // Given
             val proxyVoteApplication = buildProxyVoteApplication()

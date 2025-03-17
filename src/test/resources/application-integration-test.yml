@@ -44,6 +44,7 @@ sqs:
   deleted-proxy-application-queue-name: deleted-proxy-application
   deleted-postal-application-queue-name: deleted-postal-application
   remove-application-ems-integration-data-queue-name: remove-application-ems-integration-data
+  ems-application-processed-queue-name: ems-application-processed
   ems-cidr-update-queue-name: unknown-queue-yet-to-be-configured
   initiate-applicant-register-check-queue-name: initiate-applicant-register-check
   confirm-applicant-register-check-result-queue-name: confirm-applicant-register-check-result

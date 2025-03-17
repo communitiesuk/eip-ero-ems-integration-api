@@ -40,10 +40,12 @@ services:
       SQS_POSTAL_APPLICATION_QUEUE_NAME: ems-postal-application
       SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME: delete-proxy-application
       SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME: delete-postal-application
+      SQS_EMS_APPLICATION_PROCESSED_QUEUE_NAME: ems-application-processed
       REQUEST_HEADER_CLIENT_CERT_SERIAL: client-cert-serial
       API_ERO_MANAGEMENT_URL: http://wiremock:8080/ero-management-api
       API_IER_BASE_URL: http://wiremock:8080/ier-ero
       API_IER_STS_ASSUME_ROLE: arn:aws:iam::123456789098:role/grant-me-access-to-ier
+      API_IER_STS_ASSUME_ROLE_EXTERNAL_ID: abc123
     depends_on:
       database:
         condition: service_healthy

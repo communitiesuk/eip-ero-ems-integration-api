@@ -19,6 +19,7 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
+import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.EMS_DETAILS_TEXT
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.EMS_MESSAGE_TEXT
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
@@ -222,6 +223,33 @@ internal class PostalVoteApplicationServiceTest {
                     EmsConfirmedReceiptMessage.Status.SUCCESS
                 ),
                 DELETED_POSTAL_APPLICATION_QUEUE
+            )
+        }
+
+        @Test
+        fun `should send SUCCESS confirmation message to EMS_APPLICATION_PROCESSED_QUEUE`() {
+            // Given
+            val postalVoteApplication = buildPostalVoteApplication(isFromApplicationsApi = true)
+            given(
+                postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
+                    postalVoteApplication.applicationId,
+                    GSS_CODES
+                )
+            ).willReturn(postalVoteApplication)
+            // When
+            postalVoteApplicationService.confirmReceipt(
+                CERTIFICATE_SERIAL_NUMBER,
+                postalVoteApplication.applicationId,
+                requestSuccess
+            )
+
+            // Then
+            verify(messageSender).send(
+                EmsConfirmedReceiptMessage(
+                    postalVoteApplication.applicationId,
+                    EmsConfirmedReceiptMessage.Status.SUCCESS
+                ),
+                EMS_APPLICATION_PROCESSED_QUEUE
             )
         }
 
