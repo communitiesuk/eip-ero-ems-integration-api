@@ -187,7 +187,7 @@ internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
         assertThat(
             message!!.message,
-        ).startsWith("Unable to retrieve GSS Codes for camden-city-council due to error: [500 Internal Server Error from GET")
+        ).isEqualTo("Error getting eroId for certificate serial")
     }
 
     @Test
