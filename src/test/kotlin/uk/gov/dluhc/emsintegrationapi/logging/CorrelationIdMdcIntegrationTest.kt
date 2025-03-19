@@ -70,7 +70,6 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         @BeforeEach
         fun setupWiremockStubs() {
             wireMockService.stubIerApiGetEros(CERTIFICATE_SERIAL_NUMBER, ERO_ID, listOf(getRandomGssCode()))
-            wireMockService.stubEroManagementGetEro(ERO_ID)
         }
 
         @Test

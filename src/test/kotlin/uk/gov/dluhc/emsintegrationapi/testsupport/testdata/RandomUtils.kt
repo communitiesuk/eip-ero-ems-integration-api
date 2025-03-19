@@ -21,10 +21,11 @@ fun getRandomIpAddress(): String =
     }
 
 fun getPastDateTime(days: Int = MIN_LENGTH): Instant =
-    faker.date().past(days, TimeUnit.DAYS).toInstant().truncatedTo(SECONDS)
-
-fun getFutureDateTime(days: Int = MIN_LENGTH): Instant =
-    faker.date().future(days, TimeUnit.DAYS).toInstant().truncatedTo(SECONDS)
+    faker
+        .date()
+        .past(days, TimeUnit.DAYS)
+        .toInstant()
+        .truncatedTo(SECONDS)
 
 fun getRandomGssCode() = "E${RandomStringUtils.randomNumeric(8)}"
 
@@ -33,15 +34,22 @@ fun getRandomEroId(): String = "${faker.address().city().lowercase()}-city-counc
 fun getRandomEmailAddress(): String = "contact@${getRandomEroId().replaceSpacesWith("-")}.gov.uk"
 
 fun getRandomDOB(): LocalDate =
-    faker.date().birthday(MIN_AGE, MAX_AGE).toLocalDateTime().toLocalDate()
+    faker
+        .date()
+        .birthday(MIN_AGE, MAX_AGE)
+        .toLocalDateTime()
+        .toLocalDate()
 
 fun getRandomString(length: Int = MIN_LENGTH): String = RandomStringUtils.randomAlphabetic(length)
 
-fun getRandomAlphaNumeric(maxLength: Int = MIN_LENGTH): String =
-    RandomStringUtils.randomAlphanumeric(maxLength)
+fun getRandomAlphaNumeric(maxLength: Int = MIN_LENGTH): String = RandomStringUtils.randomAlphanumeric(maxLength)
 
 fun getRandomPastDate(inDays: Int = MIN_LENGTH): LocalDate =
-    faker.date().past(inDays, TimeUnit.DAYS).toLocalDateTime().toLocalDate()
+    faker
+        .date()
+        .past(inDays, TimeUnit.DAYS)
+        .toLocalDateTime()
+        .toLocalDate()
 
 fun randomHexadecimalString(size: Int): String {
     var generated = ""

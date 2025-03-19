@@ -36,41 +36,55 @@ class RegisterCheckService(
     private val registerCheckResultMapper: RegisterCheckResultMapper,
     private val registerCheckResultMessageMapper: RegisterCheckResultMessageMapper,
     private val messageQueueResolver: MessageQueueResolver,
-    private val matchStatusResolver: MatchStatusResolver
+    private val matchStatusResolver: MatchStatusResolver,
 ) {
-
     @Transactional(readOnly = true)
-    fun getPendingRegisterChecks(certificateSerial: String, pageSize: Int): List<PendingRegisterCheckDto> {
-        val gssCodes = retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial)
-        return registerCheckRepository.findPendingEntriesByGssCodes(gssCodes, pageSize)
+    fun getPendingRegisterChecks(
+        certificateSerial: String,
+        pageSize: Int,
+    ): List<PendingRegisterCheckDto> {
+        val gssCodes = retrieveGssCodeService.getGssCodesFromCertificateSerial(certificateSerial)
+        return registerCheckRepository
+            .findPendingEntriesByGssCodes(gssCodes, pageSize)
             .map(pendingRegisterCheckMapper::registerCheckEntityToPendingRegisterCheckDto)
     }
 
     @Transactional
     fun save(pendingRegisterCheckDto: PendingRegisterCheckDto) {
-        pendingRegisterCheckMapper.pendingRegisterCheckDtoToRegisterCheckEntity(pendingRegisterCheckDto)
+        pendingRegisterCheckMapper
+            .pendingRegisterCheckDtoToRegisterCheckEntity(pendingRegisterCheckDto)
             .let(registerCheckRepository::save)
     }
 
     @Transactional
-    fun auditRequestBody(correlationId: UUID, requestBodyJson: String) {
+    fun auditRequestBody(
+        correlationId: UUID,
+        requestBodyJson: String,
+    ) {
         registerCheckResultDataRepository.save(
             RegisterCheckResultData(
                 correlationId = correlationId,
-                requestBody = requestBodyJson
-            )
+                requestBody = requestBodyJson,
+            ),
         )
         logger.debug { "Register check POST request payload audited/saved for requestId:[$correlationId]" }
     }
 
     @Transactional
-    fun updatePendingRegisterCheck(certificateSerial: String, registerCheckResultDto: RegisterCheckResultDto): RegisterCheck {
+    fun updatePendingRegisterCheck(
+        certificateSerial: String,
+        registerCheckResultDto: RegisterCheckResultDto,
+    ): RegisterCheck {
         validateGssCodeMatch(certificateSerial, registerCheckResultDto.gssCode)
         return getPendingRegisterCheck(registerCheckResultDto.correlationId).apply {
             when (status) {
                 CheckStatus.PENDING -> recordCheckResult(registerCheckResultDto, this)
                 else -> throw RegisterCheckUnexpectedStatusException(correlationId, status)
-                    .also { logger.warn { "Register check with correlationId:[$correlationId] is in status [$status] and cannot be set to [${registerCheckResultDto.registerCheckStatus}]" } }
+                    .also {
+                        logger.warn {
+                            "Register check with correlationId:[$correlationId] is in status [$status] and cannot be set to [${registerCheckResultDto.registerCheckStatus}]"
+                        }
+                    }
             }
         }
     }
@@ -85,54 +99,71 @@ class RegisterCheckService(
         }
     }
 
-    private fun recordCheckResult(registerCheckResultDto: RegisterCheckResultDto, registerCheck: RegisterCheck) {
+    private fun recordCheckResult(
+        registerCheckResultDto: RegisterCheckResultDto,
+        registerCheck: RegisterCheck,
+    ) {
         with(registerCheckResultDto) {
             registerCheckStatus = matchStatusResolver.resolveStatus(this, registerCheck)
-            val matches = registerCheckMatches?.map(registerCheckResultMapper::fromDtoToRegisterCheckMatchEntity) ?: emptyList()
+            val matches =
+                registerCheckMatches?.map(registerCheckResultMapper::fromDtoToRegisterCheckMatchEntity) ?: emptyList()
             when (registerCheckStatus!!) {
                 RegisterCheckStatus.NO_MATCH -> registerCheck.recordNoMatch(matchResultSentAt)
-                RegisterCheckStatus.EXACT_MATCH -> registerCheck.recordExactMatch(
-                    EXACT_MATCH,
-                    matchResultSentAt,
-                    matches.first(),
-                    historicalSearchEarliestDate
-                )
-                RegisterCheckStatus.PARTIAL_MATCH -> registerCheck.recordExactMatch(
-                    PARTIAL_MATCH,
-                    matchResultSentAt,
-                    matches.first(),
-                    historicalSearchEarliestDate
-                )
-                RegisterCheckStatus.PENDING_DETERMINATION -> registerCheck.recordExactMatch(
-                    PENDING_DETERMINATION,
-                    matchResultSentAt,
-                    matches.first(),
-                    historicalSearchEarliestDate
-                )
-                RegisterCheckStatus.EXPIRED -> registerCheck.recordExactMatch(
-                    EXPIRED,
-                    matchResultSentAt,
-                    matches.first(),
-                    historicalSearchEarliestDate
-                )
-                RegisterCheckStatus.NOT_STARTED -> registerCheck.recordExactMatch(
-                    NOT_STARTED,
-                    matchResultSentAt,
-                    matches.first(),
-                    historicalSearchEarliestDate
-                )
-                RegisterCheckStatus.MULTIPLE_MATCH -> registerCheck.recordMultipleMatches(
-                    matchResultSentAt,
-                    matchCount,
-                    matches,
-                    historicalSearchEarliestDate
-                )
-                RegisterCheckStatus.TOO_MANY_MATCHES -> registerCheck.recordTooManyMatches(
-                    matchResultSentAt,
-                    matchCount,
-                    matches,
-                    historicalSearchEarliestDate
-                )
+                RegisterCheckStatus.EXACT_MATCH ->
+                    registerCheck.recordExactMatch(
+                        EXACT_MATCH,
+                        matchResultSentAt,
+                        matches.first(),
+                        historicalSearchEarliestDate,
+                    )
+
+                RegisterCheckStatus.PARTIAL_MATCH ->
+                    registerCheck.recordExactMatch(
+                        PARTIAL_MATCH,
+                        matchResultSentAt,
+                        matches.first(),
+                        historicalSearchEarliestDate,
+                    )
+
+                RegisterCheckStatus.PENDING_DETERMINATION ->
+                    registerCheck.recordExactMatch(
+                        PENDING_DETERMINATION,
+                        matchResultSentAt,
+                        matches.first(),
+                        historicalSearchEarliestDate,
+                    )
+
+                RegisterCheckStatus.EXPIRED ->
+                    registerCheck.recordExactMatch(
+                        EXPIRED,
+                        matchResultSentAt,
+                        matches.first(),
+                        historicalSearchEarliestDate,
+                    )
+
+                RegisterCheckStatus.NOT_STARTED ->
+                    registerCheck.recordExactMatch(
+                        NOT_STARTED,
+                        matchResultSentAt,
+                        matches.first(),
+                        historicalSearchEarliestDate,
+                    )
+
+                RegisterCheckStatus.MULTIPLE_MATCH ->
+                    registerCheck.recordMultipleMatches(
+                        matchResultSentAt,
+                        matchCount,
+                        matches,
+                        historicalSearchEarliestDate,
+                    )
+
+                RegisterCheckStatus.TOO_MANY_MATCHES ->
+                    registerCheck.recordTooManyMatches(
+                        matchResultSentAt,
+                        matchCount,
+                        matches,
+                        historicalSearchEarliestDate,
+                    )
             }.also {
                 logger.info {
                     "Updated register check status to [${registerCheck.status}], matchCount to [${registerCheck.matchCount}], " +
@@ -147,9 +178,13 @@ class RegisterCheckService(
             ?: throw PendingRegisterCheckNotFoundException(correlationId)
                 .also { logger.warn { it.message } }
 
-    private fun validateGssCodeMatch(certificateSerial: String, requestGssCode: String) {
-        if (requestGssCode !in retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerial))
+    private fun validateGssCodeMatch(
+        certificateSerial: String,
+        requestGssCode: String,
+    ) {
+        if (requestGssCode !in retrieveGssCodeService.getGssCodesFromCertificateSerial(certificateSerial)) {
             throw GssCodeMismatchException(certificateSerial, requestGssCode)
                 .also { logger.warn { it.message } }
+        }
     }
 }

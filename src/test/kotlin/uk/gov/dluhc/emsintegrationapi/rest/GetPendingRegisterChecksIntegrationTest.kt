@@ -16,7 +16,6 @@ import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
-
     companion object {
         private const val GET_PENDING_REGISTER_CHECKS_ENDPOINT = "/registerchecks"
         private const val QUERY_PARAM_PAGE_SIZE = "pageSize"
@@ -26,7 +25,8 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
 
     @Test
     fun `should return forbidden given valid header key is not present`() {
-        webTestClient.get()
+        webTestClient
+            .get()
             .uri(buildUriStringWithQueryParam(10))
             .exchange()
             .expectStatus()
@@ -43,12 +43,15 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, listOf(gssCode))
 
         // When
-        val response = webTestClient.get()
-            .uri(buildUriStringWithoutQueryParam())
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .exchange()
-            .expectStatus().isOk
-            .returnResult(PendingRegisterChecksResponse::class.java)
+        val response =
+            webTestClient
+                .get()
+                .uri(buildUriStringWithoutQueryParam())
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .returnResult(PendingRegisterChecksResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -73,23 +76,53 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
         val correlationId2 = UUID.fromString("293dbc1d-81df-4db3-8ed6-64f05c083372")
         val correlationId3 = UUID.fromString("39147305-ba6d-4c14-8609-5d777afe4dc3")
 
-        registerCheckRepository.save(buildRegisterCheck(correlationId = UUID.randomUUID(), gssCode = "UNKNOWN1", status = PENDING))
-        val pendingRegisterCheckResult1ForGssCode1 = registerCheckRepository.save(buildRegisterCheck(correlationId = correlationId1, gssCode = firstGssCode, status = PENDING))
+        registerCheckRepository.save(
+            buildRegisterCheck(
+                correlationId = UUID.randomUUID(),
+                gssCode = "UNKNOWN1",
+                status = PENDING,
+            ),
+        )
+        val pendingRegisterCheckResult1ForGssCode1 =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    correlationId = correlationId1,
+                    gssCode = firstGssCode,
+                    status = PENDING,
+                ),
+            )
         Thread.sleep(1000) // To ensure records are created 1 sec apart
 
-        val pendingRegisterCheckResult2ForGssCode2 = registerCheckRepository.save(buildRegisterCheck(correlationId = correlationId2, gssCode = secondGssCode, status = PENDING))
+        val pendingRegisterCheckResult2ForGssCode2 =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    correlationId = correlationId2,
+                    gssCode = secondGssCode,
+                    status = PENDING,
+                ),
+            )
         Thread.sleep(1000) // To ensure records are created 1 sec apart
 
-        val pendingRegisterCheckResult3ForGssCode1 = registerCheckRepository.save(buildRegisterCheck(correlationId = correlationId3, gssCode = firstGssCode, status = PENDING))
+        val pendingRegisterCheckResult3ForGssCode1 =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    correlationId = correlationId3,
+                    gssCode = firstGssCode,
+                    status = PENDING,
+                ),
+            )
         registerCheckRepository.save(buildRegisterCheck(gssCode = "UNKNOWN2"))
 
         // When
-        val response = webTestClient.get()
-            .uri(buildUriStringWithQueryParam(10))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .exchange()
-            .expectStatus().isOk
-            .returnResult(PendingRegisterChecksResponse::class.java)
+        val response =
+            webTestClient
+                .get()
+                .uri(buildUriStringWithQueryParam(10))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .exchange()
+                .expectStatus()
+                .isOk
+                .returnResult(PendingRegisterChecksResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -103,8 +136,8 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
                 listOf(
                     pendingRegisterCheckResult1ForGssCode1,
                     pendingRegisterCheckResult2ForGssCode2,
-                    pendingRegisterCheckResult3ForGssCode1
-                )
+                    pendingRegisterCheckResult3ForGssCode1,
+                ),
             )
 
         wireMockService.verifyIerGetErosCalledOnce()
@@ -122,12 +155,15 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.get()
-            .uri(buildUriStringWithQueryParam(10))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .exchange()
-            .expectStatus().is4xxClientError
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .get()
+                .uri(buildUriStringWithQueryParam(10))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .exchange()
+                .expectStatus()
+                .is4xxClientError
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -143,10 +179,12 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
         UriComponentsBuilder
             .fromUriString(GET_PENDING_REGISTER_CHECKS_ENDPOINT)
             .queryParam(QUERY_PARAM_PAGE_SIZE, pageSize)
-            .build().toUriString()
+            .build()
+            .toUriString()
 
     private fun buildUriStringWithoutQueryParam() =
         UriComponentsBuilder
             .fromUriString(GET_PENDING_REGISTER_CHECKS_ENDPOINT)
-            .build().toUriString()
+            .build()
+            .toUriString()
 }

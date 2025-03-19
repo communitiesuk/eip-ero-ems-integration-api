@@ -22,7 +22,7 @@ fun buildProxyVoteDetailsEntity(
     voteStartDate: LocalDate? = getRandomPastDate(10),
     voteEndDate: LocalDate? = getRandomPastDate(1),
     proxyFamilyRelationship: String? = randomString(20),
-    voteUntilFurtherNotice: Boolean? = false
+    voteUntilFurtherNotice: Boolean? = false,
 ) = ProxyVoteDetails(
     proxyFirstName = proxyFirstName,
     proxyMiddleNames = proxyMiddleNames,
@@ -35,7 +35,7 @@ fun buildProxyVoteDetailsEntity(
     voteForSingleDate = voteForSingleDate,
     voteStartDate = voteStartDate,
     voteEndDate = voteEndDate,
-    voteUntilFurtherNotice = voteUntilFurtherNotice
+    voteUntilFurtherNotice = voteUntilFurtherNotice,
 )
 
 fun buildProxyVoteDetailsMessageDto(
@@ -51,7 +51,7 @@ fun buildProxyVoteDetailsMessageDto(
     voteEndDate: LocalDate? = getRandomPastDate(1),
     proxyFamilyRelationship: String? = randomString(20),
     voteUntilFurtherNotice: Boolean? = false,
-    rejectedReasons: RejectedReasonsDto? = buildProxyRejectedReasonsDto()
+    rejectedReasons: RejectedReasonsDto? = buildProxyRejectedReasonsDto(),
 ) = ProxyVoteDetailsMessageDto(
     proxyFirstName = proxyFirstName,
     proxyMiddleNames = proxyMiddleNames,
@@ -65,7 +65,7 @@ fun buildProxyVoteDetailsMessageDto(
     voteStartDate = voteStartDate,
     voteEndDate = voteEndDate,
     voteUntilFurtherNotice = voteUntilFurtherNotice,
-    rejectedReasons = rejectedReasons
+    rejectedReasons = rejectedReasons,
 )
 
 fun buildProxyRejectedReasonsDto(
@@ -74,6 +74,14 @@ fun buildProxyRejectedReasonsDto(
     welshNotes: String? = DataFaker.faker.house().furniture(),
     welshReason: Set<String>? = setOf(),
 ) = RejectedReasonsDto(
-    englishReason = RejectedReasonDto(notes = englishNotes, reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON", false) }),
-    welshReason = RejectedReasonDto(notes = welshNotes, reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON", false) }),
+    englishReason =
+    RejectedReasonDto(
+        notes = englishNotes,
+        reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON", false) },
+    ),
+    welshReason =
+    RejectedReasonDto(
+        notes = welshNotes,
+        reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON", false) },
+    ),
 )

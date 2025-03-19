@@ -27,7 +27,6 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 extra["awsSdkVersion"] = "2.26.20"
 extra["springCloudVersion"] = "3.2.1"
 extra["springCloudAwsVersion"] = "3.2.1"
-extra["cucumberVersion"] = "7.15.0"
 extra["junitJupiterVersion"] = "5.10.5"
 
 allOpen {
@@ -164,12 +163,6 @@ dependencies {
     testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
     testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-    // Cucumber support
-    testImplementation("io.cucumber:cucumber-java8")
-    testImplementation("io.cucumber:cucumber-junit-platform-engine")
-    testImplementation("org.junit.platform:junit-platform-suite")
-    testImplementation("io.cucumber:cucumber-spring")
-
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
     // Liquibase plugin for local development
@@ -186,7 +179,6 @@ dependencyManagement {
     imports {
         mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudVersion")}")
         mavenBom("software.amazon.awssdk:bom:${property("awsSdkVersion")}")
-        mavenBom("io.cucumber:cucumber-bom:${property("cucumberVersion")}")
         mavenBom("org.junit:junit-bom:${property("junitJupiterVersion")}")
     }
 }
@@ -322,7 +314,7 @@ tasks.withType<BootBuildImage> {
 // Exclude generated code from linting
 ktlint {
     filter {
-        exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/") }
+        exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/generated/") }
     }
 }
 

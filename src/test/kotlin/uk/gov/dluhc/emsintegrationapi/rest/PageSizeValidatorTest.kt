@@ -17,25 +17,27 @@ import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 
 @ExtendWith(MockitoExtension::class)
 internal class PageSizeValidatorTest {
-
-    private val apiProperties = ApiProperties(
-        requestHeaderName = "test",
-        defaultPageSize = 10,
-        maxPageSize = 20,
-        forceMaxPageSize = 20
-    )
+    private val apiProperties =
+        ApiProperties(
+            requestHeaderName = "test",
+            defaultPageSize = 10,
+            maxPageSize = 20,
+            forceMaxPageSize = 20,
+        )
 
     private val validationErrorMessage =
         "The page size must be greater than or equal to 1 and less than or equal to ${apiProperties.maxPageSize}"
 
-    private val pageSizeValidator = PageSizeValidator(
-        apiProperties = ApiProperties(
-            requestHeaderName = "test",
-            defaultPageSize = 10,
-            maxPageSize = 20,
-            forceMaxPageSize = 20
+    private val pageSizeValidator =
+        PageSizeValidator(
+            apiProperties =
+            ApiProperties(
+                requestHeaderName = "test",
+                defaultPageSize = 10,
+                maxPageSize = 20,
+                forceMaxPageSize = 20,
+            ),
         )
-    )
 
     @Mock
     private lateinit var constraintContext: ConstraintValidatorContext
@@ -54,7 +56,7 @@ internal class PageSizeValidatorTest {
         @Test
         fun `should return true if page size is greater than 1`() {
             assertThat(pageSizeValidator.isValid(pageSize = apiProperties.maxPageSize, constraintContext)).isEqualTo(
-                true
+                true,
             )
             verifyNoInteractions(constraintContext)
         }
@@ -66,7 +68,7 @@ internal class PageSizeValidatorTest {
         fun mockConstraintContextMethods() {
             BDDMockito.willDoNothing().given(constraintContext).disableDefaultConstraintViolation()
             given(constraintContext.buildConstraintViolationWithTemplate(BDDMockito.anyString())).willReturn(
-                constraintViolationBuilder
+                constraintViolationBuilder,
             )
         }
 
@@ -86,10 +88,10 @@ internal class PageSizeValidatorTest {
             assertThat(
                 pageSizeValidator.isValid(
                     pageSize = apiProperties.maxPageSize + 1,
-                    constraintContext
-                )
+                    constraintContext,
+                ),
             ).isEqualTo(
-                false
+                false,
             )
         }
     }

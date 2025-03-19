@@ -24,24 +24,35 @@ class PostalVoteApplicationService(
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository,
     private val postalVoteMapper: PostalVoteMapper,
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
-    private val retrieveGssCodeService: RetrieveGssCodeService
-) : AbstractApplicationService(QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE, retrieveGssCodeService, messageSender) {
+    private val retrieveGssCodeService: RetrieveGssCodeService,
+) : AbstractApplicationService(
+        QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE,
+        retrieveGssCodeService,
+        messageSender,
+    ) {
     @Transactional(readOnly = true)
-    fun getPostalVoteApplications(certificateSerialNumber: String, pageSize: Int?): PostalVoteApplications {
+    fun getPostalVoteApplications(
+        certificateSerialNumber: String,
+        pageSize: Int?,
+    ): PostalVoteApplications {
         val gssCodes = getGssCodes(certificateSerialNumber)
         var numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
         if (numberOfRecordsToFetch > apiProperties.forceMaxPageSize) {
-            logger.warn("Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch")
+            logger.warn(
+                "Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch",
+            )
             numberOfRecordsToFetch = apiProperties.forceMaxPageSize
         }
-        val postalApplicationIds = postalVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
-            gssCodes,
-            RecordStatus.RECEIVED,
-            Pageable.ofSize(numberOfRecordsToFetch)
-        )
+        val postalApplicationIds =
+            postalVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+                gssCodes,
+                RecordStatus.RECEIVED,
+                Pageable.ofSize(numberOfRecordsToFetch),
+            )
         val postalApplications = postalVoteApplicationRepository.findByApplicationIdIn(postalApplicationIds)
-        val postalApplicationsList = postalApplicationIds.map { id -> postalApplications.find { it.applicationId == id }!! }
+        val postalApplicationsList =
+            postalApplicationIds.map { id -> postalApplications.find { it.applicationId == id }!! }
 
         val actualPageSize = postalApplicationsList.size
         logger.info("The actual number of records fetched is $actualPageSize")
@@ -52,15 +63,15 @@ class PostalVoteApplicationService(
     fun confirmReceipt(
         certificateSerialNumber: String,
         postalVoteApplicationId: String,
-        request: EMSApplicationResponse
+        request: EMSApplicationResponse,
     ) {
         val gssCodes = getGssCodes(certificateSerialNumber)
         logger.info("Updating the postal vote application with the id $postalVoteApplicationId with status ${RecordStatus.DELETED}")
-        postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
-            postalVoteApplicationId,
-            gssCodes
-        )
-            ?.let { postalVoteApplication ->
+        postalVoteApplicationRepository
+            .findByApplicationIdAndApplicationDetailsGssCodeIn(
+                postalVoteApplicationId,
+                gssCodes,
+            )?.let { postalVoteApplication ->
                 if (postalVoteApplication.status != RecordStatus.DELETED) {
                     doConfirmedReceiptApplication(request, postalVoteApplication)
                 } else {
@@ -71,10 +82,14 @@ class PostalVoteApplicationService(
                 }
             } ?: throw ApplicationNotFoundException(
             applicationId = postalVoteApplicationId,
-            applicationType = ApplicationType.POSTAL
+            applicationType = ApplicationType.POSTAL,
         )
     }
-    private fun doConfirmedReceiptApplication(request: EMSApplicationResponse, postalVoteApplication: PostalVoteApplication) {
+
+    private fun doConfirmedReceiptApplication(
+        request: EMSApplicationResponse,
+        postalVoteApplication: PostalVoteApplication,
+    ) {
         with(postalVoteApplication) {
             status = RecordStatus.DELETED
             updatedBy = SourceSystem.EMS
@@ -83,6 +98,8 @@ class PostalVoteApplicationService(
 
         sendMessage(request, postalVoteApplication.applicationId, postalVoteApplication.isFromApplicationsApi)
 
-        logger.info { "Confirmation ${request.status} message sent to the postal vote application for ${postalVoteApplication.applicationId}" }
+        logger.info {
+            "Confirmation ${request.status} message sent to the postal vote application for ${postalVoteApplication.applicationId}"
+        }
     }
 }

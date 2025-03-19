@@ -69,7 +69,7 @@ internal class PostalVoteApplicationServiceTest {
 
     @BeforeEach
     public fun setup() {
-        given { retrieveGssCodeService.getGssCodeFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+        given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
             GSS_CODES
         )
     }

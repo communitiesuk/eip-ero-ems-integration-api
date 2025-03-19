@@ -45,21 +45,20 @@ private const val REQUEST_HEADER_NAME = "client-cert-serial"
 const val CERT_SERIAL_NUMBER_VALUE = "543219999"
 
 internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
-
     @Test
     fun `should return forbidden given valid header key is not present`() {
         // Given
         val requestId = UUID.randomUUID()
 
         // When
-        webTestClient.post()
+        webTestClient
+            .post()
             .uri(buildUri(requestId))
             .contentType(APPLICATION_JSON)
             .body(
                 Mono.just(buildRegisterCheckResultRequest()),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
+                RegisterCheckResultRequest::class.java,
+            ).exchange()
             .expectStatus()
             .isForbidden
 
@@ -76,17 +75,19 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri(requestIdInQueryParam))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .body(
-                Mono.just(buildRegisterCheckResultRequest(requestId = requestIdInRequestBody)),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
-            .expectStatus().isBadRequest
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri(requestIdInQueryParam))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .body(
+                    Mono.just(buildRegisterCheckResultRequest(requestId = requestIdInRequestBody)),
+                    RegisterCheckResultRequest::class.java,
+                ).exchange()
+                .expectStatus()
+                .isBadRequest
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -94,8 +95,9 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasTimestampNotBefore(earliestExpectedTimeStamp)
             .hasStatus(400)
             .hasError("Bad Request")
-            .hasMessage("Request requestId:[322ff65f-a0a1-497d-a224-04800711a1fb] does not match with requestid:[533ff65f-a0a1-497d-a224-04800711a1fc] in body payload")
-            .hasNoValidationErrors()
+            .hasMessage(
+                "Request requestId:[322ff65f-a0a1-497d-a224-04800711a1fb] does not match with requestid:[533ff65f-a0a1-497d-a224-04800711a1fc] in body payload",
+            ).hasNoValidationErrors()
         wireMockService.verifyIerGetErosNeverCalled()
         assertRequestIsAudited(requestIdInRequestBody)
     }
@@ -113,17 +115,19 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri(requestId))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .body(
-                Mono.just(buildRegisterCheckResultRequest(requestId = requestId)),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
-            .expectStatus().is4xxClientError
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri(requestId))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .body(
+                    Mono.just(buildRegisterCheckResultRequest(requestId = requestId)),
+                    RegisterCheckResultRequest::class.java,
+                ).exchange()
+                .expectStatus()
+                .is4xxClientError
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -150,17 +154,19 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri(requestId))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .body(
-                Mono.just(buildRegisterCheckResultRequest(requestId = requestId)),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
-            .expectStatus().isNotFound
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri(requestId))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .body(
+                    Mono.just(buildRegisterCheckResultRequest(requestId = requestId)),
+                    RegisterCheckResultRequest::class.java,
+                ).exchange()
+                .expectStatus()
+                .isNotFound
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -187,24 +193,25 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri(requestId))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .body(
-                Mono.just(
-                    buildRegisterCheckResultRequest(
-                        requestId = requestId,
-                        registerCheckMatchCount = registerCheckMatchCount,
-                        registerCheckMatches = listOf(buildRegisterCheckMatchRequest())
-                    )
-                ),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
-            .expectStatus()
-            .isBadRequest
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri(requestId))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .body(
+                    Mono.just(
+                        buildRegisterCheckResultRequest(
+                            requestId = requestId,
+                            registerCheckMatchCount = registerCheckMatchCount,
+                            registerCheckMatches = listOf(buildRegisterCheckMatchRequest()),
+                        ),
+                    ),
+                    RegisterCheckResultRequest::class.java,
+                ).exchange()
+                .expectStatus()
+                .isBadRequest
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -232,18 +239,19 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri(requestId))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .body(
-                Mono.just(buildRegisterCheckResultRequest(requestId = requestId, gssCode = gssCodeFromRequestBody)),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
-            .expectStatus()
-            .isForbidden
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri(requestId))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .body(
+                    Mono.just(buildRegisterCheckResultRequest(requestId = requestId, gssCode = gssCodeFromRequestBody)),
+                    RegisterCheckResultRequest::class.java,
+                ).exchange()
+                .expectStatus()
+                .isForbidden
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -265,17 +273,19 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri(requestId))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .body(
-                Mono.just(buildRegisterCheckResultRequest(requestId = requestId)),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
-            .expectStatus().is5xxServerError
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri(requestId))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .body(
+                    Mono.just(buildRegisterCheckResultRequest(requestId = requestId)),
+                    RegisterCheckResultRequest::class.java,
+                ).exchange()
+                .expectStatus()
+                .is5xxServerError
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -292,7 +302,8 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
     fun `should return bad request given request with invalid field names that cannot deserialize into a RegisterCheckResultRequest`() {
         // Given
         val requestIdInBody = UUID.fromString("5e881061-57fd-4dc1-935f-8401ebe5758f")
-        val requestBody = """
+        val requestBody =
+            """
             {
               "requestid": "$requestIdInBody",
               "gssCode": "T12345678",
@@ -317,19 +328,23 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
                 }
               ]
             }            
-        """.trimIndent() // request is invalid and cannot be deserialized (kotlin constructor) because createdAt is null
+            """.trimIndent()
+        // request is invalid and cannot be deserialized (kotlin constructor) because createdAt is null
 
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri())
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .bodyValue(requestBody)
-            .exchange()
-            .expectStatus().isBadRequest
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri())
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus()
+                .isBadRequest
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -345,7 +360,8 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
     @Test
     fun `should return bad request given request with invalid field values that fail constraint validation`() {
         // Given
-        val requestBody = """
+        val requestBody =
+            """
             {
               "requestid": "5e881061-57fd-4dc1-935f-8401ebe5758f",
               "gssCode": "1234",
@@ -370,19 +386,23 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
                 }
               ]
             }            
-        """.trimIndent() // request has invalid gssCode and email field values
+            """.trimIndent()
+        // request has invalid gssCode and email field values
 
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri())
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .bodyValue(requestBody)
-            .exchange()
-            .expectStatus().isBadRequest
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri())
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus()
+                .isBadRequest
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -406,29 +426,37 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val registerCheckMatchCountInRequest = 1 // Exact match
 
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, gssCodes)
-        val savedPendingRegisterCheckEntity = registerCheckRepository.save(
-            buildRegisterCheck(
-                correlationId = requestId,
-                gssCode = firstGssCode,
-                status = CheckStatus.NO_MATCH, // Existing record with NO_MATCH check status
-                matchCount = 0
+        val savedPendingRegisterCheckEntity =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    correlationId = requestId,
+                    gssCode = firstGssCode,
+                    status = CheckStatus.NO_MATCH, // Existing record with NO_MATCH check status
+                    matchCount = 0,
+                ),
             )
-        )
 
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri(requestId))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .body(
-                Mono.just(buildRegisterCheckResultRequest(requestId = requestId, registerCheckMatchCount = registerCheckMatchCountInRequest)),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
-            .expectStatus().is4xxClientError
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri(requestId))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .body(
+                    Mono.just(
+                        buildRegisterCheckResultRequest(
+                            requestId = requestId,
+                            registerCheckMatchCount = registerCheckMatchCountInRequest,
+                        ),
+                    ),
+                    RegisterCheckResultRequest::class.java,
+                ).exchange()
+                .expectStatus()
+                .is4xxClientError
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -443,7 +471,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         assertRequestIsAudited(requestId)
         assertMessageNotSubmittedToSqs(
             queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
-            sourceReferenceNotExpected = savedPendingRegisterCheckEntity.sourceReference
+            sourceReferenceNotExpected = savedPendingRegisterCheckEntity.sourceReference,
         )
     }
 
@@ -463,7 +491,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
                 correlationId = requestId,
                 gssCode = firstGssCode,
                 status = CheckStatus.PENDING,
-            )
+            ),
         )
 
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
@@ -476,16 +504,21 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         for (i in 1..2) {
             executor.execute {
                 responses.add(
-                    webTestClient.post()
+                    webTestClient
+                        .post()
                         .uri(buildUri(requestId))
                         .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
                         .contentType(APPLICATION_JSON)
                         .body(
-                            Mono.just(buildRegisterCheckResultRequest(requestId = requestId, registerCheckMatchCount = 1)),
-                            RegisterCheckResultRequest::class.java
-                        )
-                        .exchange()
-                        .returnResult(ErrorResponse::class.java)
+                            Mono.just(
+                                buildRegisterCheckResultRequest(
+                                    requestId = requestId,
+                                    registerCheckMatchCount = 1,
+                                ),
+                            ),
+                            RegisterCheckResultRequest::class.java,
+                        ).exchange()
+                        .returnResult(ErrorResponse::class.java),
                 )
             }
         }
@@ -519,50 +552,54 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, gssCodes)
 
-        val savedPendingRegisterCheckEntity = registerCheckRepository.save(
-            buildRegisterCheck(
-                correlationId = requestId,
-                gssCode = gssCode,
-                status = CheckStatus.PENDING,
-                historicalSearchEarliestDate = null,
+        val savedPendingRegisterCheckEntity =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    correlationId = requestId,
+                    gssCode = gssCode,
+                    status = CheckStatus.PENDING,
+                    historicalSearchEarliestDate = null,
+                ),
             )
-        )
         registerCheckRepository.save(buildRegisterCheck(correlationId = UUID.randomUUID()))
 
         val matchResultSentAt = OffsetDateTime.now(ZoneOffset.UTC)
         val matchCount = 2
         val matches = listOf(buildRegisterCheckMatchRequest(), buildRegisterCheckMatchRequest())
-        val expectedRegisterCheckMatchEntityList = listOf(
-            buildRegisterCheckMatchEntityFromRegisterCheckMatchApi(matches[0]),
-            buildRegisterCheckMatchEntityFromRegisterCheckMatchApi(matches[1])
-        )
-        val expectedMessageContent = RegisterCheckResultMessage(
-            sourceType = SourceType.VOTER_MINUS_CARD,
-            sourceReference = savedPendingRegisterCheckEntity.sourceReference,
-            sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-            registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
-            matches = matches.map { buildVcaRegisterCheckMatchFromMatchApi(it) },
-            historicalSearchEarliestDate = historicalSearchEarliestDate,
-        )
-        val requestBody = buildRegisterCheckResultRequest(
-            requestId = requestId,
-            gssCode = gssCode,
-            createdAt = matchResultSentAt,
-            registerCheckMatchCount = matchCount,
-            registerCheckMatches = matches,
-            historicalSearchEarliestDate = historicalSearchEarliestDate,
-        )
+        val expectedRegisterCheckMatchEntityList =
+            listOf(
+                buildRegisterCheckMatchEntityFromRegisterCheckMatchApi(matches[0]),
+                buildRegisterCheckMatchEntityFromRegisterCheckMatchApi(matches[1]),
+            )
+        val expectedMessageContent =
+            RegisterCheckResultMessage(
+                sourceType = SourceType.VOTER_MINUS_CARD,
+                sourceReference = savedPendingRegisterCheckEntity.sourceReference,
+                sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
+                registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
+                matches = matches.map { buildVcaRegisterCheckMatchFromMatchApi(it) },
+                historicalSearchEarliestDate = historicalSearchEarliestDate,
+            )
+        val requestBody =
+            buildRegisterCheckResultRequest(
+                requestId = requestId,
+                gssCode = gssCode,
+                createdAt = matchResultSentAt,
+                registerCheckMatchCount = matchCount,
+                registerCheckMatches = matches,
+                historicalSearchEarliestDate = historicalSearchEarliestDate,
+            )
 
         // When
-        webTestClient.post()
+        webTestClient
+            .post()
             .uri(buildUri(requestId))
             .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
             .contentType(APPLICATION_JSON)
             .body(
                 Mono.just(requestBody),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
+                RegisterCheckResultRequest::class.java,
+            ).exchange()
             .expectStatus()
             .isCreated
 
@@ -581,14 +618,16 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         val actualRegisterResultData = registerCheckResultDataRepository.findByCorrelationIdIn(setOf(requestId))[0]
         assertRequestIsAudited(actualRegisterResultData, requestId, matchResultSentAt.toString(), gssCode, matchCount)
-        val persistedRequest = objectMapper.readValue(actualRegisterResultData.requestBody, RegisterCheckResultRequest::class.java)
-        assertThat(persistedRequest).usingRecursiveComparison()
+        val persistedRequest =
+            objectMapper.readValue(actualRegisterResultData.requestBody, RegisterCheckResultRequest::class.java)
+        assertThat(persistedRequest)
+            .usingRecursiveComparison()
             .ignoringFields("registerCheckMatches.applicationCreatedAt")
             .isEqualTo(requestBody)
 
         assertMessageSubmittedToSqs(
             queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
-            expectedMessageContent
+            expectedMessageContent,
         )
     }
 
@@ -600,8 +639,8 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             // handle UTC date format and Pending franchise code
             "1986-05-01T02:42:44.348Z, Pending,  BS1 1AB, BS1 1AB, PENDING_MINUS_DETERMINATION, PENDING_DETERMINATION",
             // handle partial match
-            "2022-11-17T21:33:03.7788394+00:00, '', BS1 1AB, BS2 2CD, PARTIAL_MINUS_MATCH, PARTIAL_MATCH"
-        ]
+            "2022-11-17T21:33:03.7788394+00:00, '', BS1 1AB, BS2 2CD, PARTIAL_MINUS_MATCH, PARTIAL_MATCH",
+        ],
     )
     fun `should return created given a post request with one match found`(
         createdAtFromRequest: String,
@@ -619,63 +658,69 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, listOf(gssCode))
 
-        val savedPendingRegisterCheckEntity = registerCheckRepository.save(
-            buildRegisterCheck(
-                correlationId = requestId,
-                gssCode = gssCode,
-                status = CheckStatus.PENDING,
-                personalDetail = buildPersonalDetail(
-                    address = buildAddress(postcode = applicationPostcode)
+        val savedPendingRegisterCheckEntity =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    correlationId = requestId,
+                    gssCode = gssCode,
+                    status = CheckStatus.PENDING,
+                    personalDetail =
+                    buildPersonalDetail(
+                        address = buildAddress(postcode = applicationPostcode),
+                    ),
+                    historicalSearchEarliestDate = null,
                 ),
-                historicalSearchEarliestDate = null
             )
-        )
         registerCheckRepository.save(buildRegisterCheck(correlationId = UUID.randomUUID()))
 
         val matchResultSentAt = OffsetDateTime.parse(createdAtFromRequest)
         val matchCount = 1
-        val matches = listOf(
-            buildRegisterCheckMatchRequest(
-                franchiseCode = toRootUpperCase(trim(franchiseCodeFromRequest)),
-                fn = savedPendingRegisterCheckEntity.personalDetail.firstName,
-                ln = savedPendingRegisterCheckEntity.personalDetail.surname,
-                dob = savedPendingRegisterCheckEntity.personalDetail.dateOfBirth,
-                regproperty = savedPendingRegisterCheckEntity.personalDetail.address.property,
-                regstreet = savedPendingRegisterCheckEntity.personalDetail.address.street,
-                regpostcode = postcodeFromRequest
+        val matches =
+            listOf(
+                buildRegisterCheckMatchRequest(
+                    franchiseCode = toRootUpperCase(trim(franchiseCodeFromRequest)),
+                    fn = savedPendingRegisterCheckEntity.personalDetail.firstName,
+                    ln = savedPendingRegisterCheckEntity.personalDetail.surname,
+                    dob = savedPendingRegisterCheckEntity.personalDetail.dateOfBirth,
+                    regproperty = savedPendingRegisterCheckEntity.personalDetail.address.property,
+                    regstreet = savedPendingRegisterCheckEntity.personalDetail.address.street,
+                    regpostcode = postcodeFromRequest,
+                ),
             )
-        )
-        val expectedRegisterCheckMatchEntityList = listOf(
-            buildRegisterCheckMatchEntityFromRegisterCheckMatchApi(matches[0])
-        )
-        val expectedMessageContentSentToVca = buildRegisterCheckResultMessage(
-            sourceType = SourceType.VOTER_MINUS_CARD,
-            sourceReference = savedPendingRegisterCheckEntity.sourceReference,
-            sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-            registerCheckResult = expectedRegisterCheckResult,
-            matches = matches.map { buildVcaRegisterCheckMatchFromMatchApi(it) },
-            historicalSearchEarliestDate = historicalSearchEarliestDate,
-        )
+        val expectedRegisterCheckMatchEntityList =
+            listOf(
+                buildRegisterCheckMatchEntityFromRegisterCheckMatchApi(matches[0]),
+            )
+        val expectedMessageContentSentToVca =
+            buildRegisterCheckResultMessage(
+                sourceType = SourceType.VOTER_MINUS_CARD,
+                sourceReference = savedPendingRegisterCheckEntity.sourceReference,
+                sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
+                registerCheckResult = expectedRegisterCheckResult,
+                matches = matches.map { buildVcaRegisterCheckMatchFromMatchApi(it) },
+                historicalSearchEarliestDate = historicalSearchEarliestDate,
+            )
 
-        val requestBody = buildRegisterCheckResultRequest(
-            requestId = requestId,
-            gssCode = gssCode,
-            createdAt = matchResultSentAt,
-            registerCheckMatchCount = matchCount,
-            registerCheckMatches = matches,
-            historicalSearchEarliestDate = historicalSearchEarliestDate
-        )
+        val requestBody =
+            buildRegisterCheckResultRequest(
+                requestId = requestId,
+                gssCode = gssCode,
+                createdAt = matchResultSentAt,
+                registerCheckMatchCount = matchCount,
+                registerCheckMatches = matches,
+                historicalSearchEarliestDate = historicalSearchEarliestDate,
+            )
 
         // When
-        webTestClient.post()
+        webTestClient
+            .post()
             .uri(buildUri(requestId))
             .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
             .contentType(APPLICATION_JSON)
             .body(
                 Mono.just(requestBody),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
+                RegisterCheckResultRequest::class.java,
+            ).exchange()
             .expectStatus()
             .isCreated
 
@@ -697,7 +742,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         assertMessageSubmittedToSqs(
             queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
-            expectedMessageContentSentToVca
+            expectedMessageContentSentToVca,
         )
     }
 
@@ -712,25 +757,28 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, listOf(gssCode))
 
-        val bodyPayloadAsJson = buildJsonPayloadWithNoMatches(
-            requestId = requestId.toString(),
-            createdAt = createdAtFromRequest,
-            gssCode = gssCode,
-            historicalSearchEarliestDate = historicalSearchEarliestDate,
-        )
+        val bodyPayloadAsJson =
+            buildJsonPayloadWithNoMatches(
+                requestId = requestId.toString(),
+                createdAt = createdAtFromRequest,
+                gssCode = gssCode,
+                historicalSearchEarliestDate = historicalSearchEarliestDate,
+            )
 
         val earliestExpectedTimeStamp = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         // When
-        val response = webTestClient.post()
-            .uri(buildUri(requestId))
-            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
-            .contentType(APPLICATION_JSON)
-            .bodyValue(bodyPayloadAsJson)
-            .exchange()
-            .expectStatus()
-            .isBadRequest
-            .returnResult(ErrorResponse::class.java)
+        val response =
+            webTestClient
+                .post()
+                .uri(buildUri(requestId))
+                .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+                .contentType(APPLICATION_JSON)
+                .bodyValue(bodyPayloadAsJson)
+                .exchange()
+                .expectStatus()
+                .isBadRequest
+                .returnResult(ErrorResponse::class.java)
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -738,7 +786,9 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasTimestampNotBefore(earliestExpectedTimeStamp)
             .hasStatus(400)
             .hasError("Bad Request")
-            .hasMessage("Request requestId:[$requestId] cannot have historicalSearchEarliestDate:[$historicalSearchEarliestDate] as dates before 1970 UTC are not valid")
+            .hasMessage(
+                "Request requestId:[$requestId] cannot have historicalSearchEarliestDate:[$historicalSearchEarliestDate] as dates before 1970 UTC are not valid",
+            )
         assertRequestIsAudited(requestId)
     }
 
@@ -752,35 +802,39 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, listOf(gssCode))
 
-        val savedPendingRegisterCheckEntity = registerCheckRepository.save(
-            buildRegisterCheck(
-                correlationId = requestId,
-                gssCode = gssCode,
-                status = CheckStatus.PENDING,
-                historicalSearch = true,
-                historicalSearchEarliestDate = null,
+        val savedPendingRegisterCheckEntity =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    correlationId = requestId,
+                    gssCode = gssCode,
+                    status = CheckStatus.PENDING,
+                    historicalSearch = true,
+                    historicalSearchEarliestDate = null,
+                ),
             )
-        )
 
-        val expectedMessageContentSentToVca = RegisterCheckResultMessage(
-            sourceType = SourceType.VOTER_MINUS_CARD,
-            sourceReference = savedPendingRegisterCheckEntity.sourceReference,
-            sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-            registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
-            matches = emptyList()
-        )
+        val expectedMessageContentSentToVca =
+            RegisterCheckResultMessage(
+                sourceType = SourceType.VOTER_MINUS_CARD,
+                sourceReference = savedPendingRegisterCheckEntity.sourceReference,
+                sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
+                registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
+                matches = emptyList(),
+            )
 
         val matchCount = 0
-        val bodyPayloadAsJson = buildJsonPayloadWithNoMatches(
-            requestId = requestId.toString(),
-            createdAt = createdAtFromRequest,
-            historicalSearchEarliestDate = OffsetDateTime.parse("1970-01-01T00:00:01Z"),
-            gssCode = gssCode
-        )
+        val bodyPayloadAsJson =
+            buildJsonPayloadWithNoMatches(
+                requestId = requestId.toString(),
+                createdAt = createdAtFromRequest,
+                historicalSearchEarliestDate = OffsetDateTime.parse("1970-01-01T00:00:01Z"),
+                gssCode = gssCode,
+            )
         val matchResultSentAt = OffsetDateTime.parse(createdAtFromRequest)
 
         // When
-        webTestClient.post()
+        webTestClient
+            .post()
             .uri(buildUri(requestId))
             .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
             .contentType(APPLICATION_JSON)
@@ -806,7 +860,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         assertMessageSubmittedToSqs(
             queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
-            expectedMessageContentSentToVca
+            expectedMessageContentSentToVca,
         )
     }
 
@@ -820,34 +874,38 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, listOf(gssCode))
 
-        val savedPendingRegisterCheckEntity = registerCheckRepository.save(
-            buildRegisterCheck(
-                correlationId = requestId,
-                gssCode = gssCode,
-                status = CheckStatus.PENDING,
-                historicalSearchEarliestDate = null
+        val savedPendingRegisterCheckEntity =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    correlationId = requestId,
+                    gssCode = gssCode,
+                    status = CheckStatus.PENDING,
+                    historicalSearchEarliestDate = null,
+                ),
             )
-        )
         registerCheckRepository.save(buildRegisterCheck(correlationId = UUID.randomUUID()))
 
-        val expectedMessageContentSentToVca = RegisterCheckResultMessage(
-            sourceType = SourceType.VOTER_MINUS_CARD,
-            sourceReference = savedPendingRegisterCheckEntity.sourceReference,
-            sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-            registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
-            matches = emptyList()
-        )
+        val expectedMessageContentSentToVca =
+            RegisterCheckResultMessage(
+                sourceType = SourceType.VOTER_MINUS_CARD,
+                sourceReference = savedPendingRegisterCheckEntity.sourceReference,
+                sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
+                registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
+                matches = emptyList(),
+            )
 
         val matchCount = 0
-        val bodyPayloadAsJson = buildJsonPayloadWithNoMatches(
-            requestId = requestId.toString(),
-            createdAt = createdAtFromRequest,
-            gssCode = gssCode
-        )
+        val bodyPayloadAsJson =
+            buildJsonPayloadWithNoMatches(
+                requestId = requestId.toString(),
+                createdAt = createdAtFromRequest,
+                gssCode = gssCode,
+            )
         val matchResultSentAt = OffsetDateTime.parse(createdAtFromRequest)
 
         // When
-        webTestClient.post()
+        webTestClient
+            .post()
             .uri(buildUri(requestId))
             .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
             .contentType(APPLICATION_JSON)
@@ -873,7 +931,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         assertMessageSubmittedToSqs(
             queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
-            expectedMessageContentSentToVca
+            expectedMessageContentSentToVca,
         )
     }
 
@@ -884,12 +942,12 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             "POSTAL_VOTE, POSTAL_MINUS_VOTE,",
             "PROXY_VOTE, PROXY_MINUS_VOTE,",
             "OVERSEAS_VOTE, OVERSEAS_MINUS_VOTE,",
-            "APPLICATIONS_API, APPLICATIONS_MINUS_API"
-        ]
+            "APPLICATIONS_API, APPLICATIONS_MINUS_API",
+        ],
     )
     fun `should submit the different service result messages to the correct queues`(
         sourceTypeEntity: SourceTypeEntity,
-        sourceType: SourceType
+        sourceType: SourceType,
     ) {
         // Given
         val requestId = UUID.randomUUID()
@@ -901,48 +959,51 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, gssCodes)
 
-        val savedPendingRegisterCheckEntity = registerCheckRepository.save(
-            buildRegisterCheck(
-                sourceType = sourceTypeEntity,
-                correlationId = requestId,
-                gssCode = gssCode,
-                status = CheckStatus.PENDING,
-                historicalSearchEarliestDate = null
+        val savedPendingRegisterCheckEntity =
+            registerCheckRepository.save(
+                buildRegisterCheck(
+                    sourceType = sourceTypeEntity,
+                    correlationId = requestId,
+                    gssCode = gssCode,
+                    status = CheckStatus.PENDING,
+                    historicalSearchEarliestDate = null,
+                ),
             )
-        )
         registerCheckRepository.save(buildRegisterCheck(correlationId = UUID.randomUUID()))
 
         val matchResultSentAt = OffsetDateTime.now(ZoneOffset.UTC)
         val matchCount = 2
         val matches = listOf(buildRegisterCheckMatchRequest(), buildRegisterCheckMatchRequest())
 
-        val expectedMessageContent = RegisterCheckResultMessage(
-            sourceType = sourceType,
-            sourceReference = savedPendingRegisterCheckEntity.sourceReference,
-            sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-            registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
-            matches = matches.map { buildVcaRegisterCheckMatchFromMatchApi(it) },
-            historicalSearchEarliestDate = historicalSearchEarliestDate,
-        )
-        val requestBody = buildRegisterCheckResultRequest(
-            requestId = requestId,
-            gssCode = gssCode,
-            createdAt = matchResultSentAt,
-            registerCheckMatchCount = matchCount,
-            registerCheckMatches = matches,
-            historicalSearchEarliestDate = historicalSearchEarliestDate,
-        )
+        val expectedMessageContent =
+            RegisterCheckResultMessage(
+                sourceType = sourceType,
+                sourceReference = savedPendingRegisterCheckEntity.sourceReference,
+                sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
+                registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
+                matches = matches.map { buildVcaRegisterCheckMatchFromMatchApi(it) },
+                historicalSearchEarliestDate = historicalSearchEarliestDate,
+            )
+        val requestBody =
+            buildRegisterCheckResultRequest(
+                requestId = requestId,
+                gssCode = gssCode,
+                createdAt = matchResultSentAt,
+                registerCheckMatchCount = matchCount,
+                registerCheckMatches = matches,
+                historicalSearchEarliestDate = historicalSearchEarliestDate,
+            )
 
         // When
-        webTestClient.post()
+        webTestClient
+            .post()
             .uri(buildUri(requestId))
             .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
             .contentType(APPLICATION_JSON)
             .body(
                 Mono.just(requestBody),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
+                RegisterCheckResultRequest::class.java,
+            ).exchange()
             .expectStatus()
             .isCreated
 
@@ -950,11 +1011,14 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val queueUrlForSourceType = getQueueUrlForSourceType(sourceType)
         assertMessageSubmittedToSqs(
             queueUrl = queueUrlForSourceType,
-            expectedMessageContent = expectedMessageContent
+            expectedMessageContent = expectedMessageContent,
         )
     }
 
-    private fun assertMessageSubmittedToSqs(queueUrl: String, expectedMessageContent: RegisterCheckResultMessage) {
+    private fun assertMessageSubmittedToSqs(
+        queueUrl: String,
+        expectedMessageContent: RegisterCheckResultMessage,
+    ) {
         await.atMost(5, TimeUnit.SECONDS).untilAsserted {
             val sqsMessages: List<Message> = getLatestSqsMessagesFromQueue(queueUrl)
             assertThat(sqsMessages).anyMatch {
@@ -970,15 +1034,19 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         }
     }
 
-    private fun assertMessageNotSubmittedToSqs(queueUrl: String, sourceReferenceNotExpected: String) {
+    private fun assertMessageNotSubmittedToSqs(
+        queueUrl: String,
+        sourceReferenceNotExpected: String,
+    ) {
         try {
             await.atMost(5, TimeUnit.SECONDS).until {
                 val sqsMessages: List<Message> = getLatestSqsMessagesFromQueue(queueUrl)
                 assertThat(sqsMessages).noneMatch {
-                    val actualRegisterCheckResultMessage = objectMapper.readValue(
-                        it.body(),
-                        RegisterCheckResultMessage::class.java,
-                    )
+                    val actualRegisterCheckResultMessage =
+                        objectMapper.readValue(
+                            it.body(),
+                            RegisterCheckResultMessage::class.java,
+                        )
                     actualRegisterCheckResultMessage.sourceReference == sourceReferenceNotExpected
                 }
                 false
@@ -989,24 +1057,28 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
     }
 
     private fun getLatestSqsMessagesFromQueue(queueUrl: String): List<Message> {
-        val receiveMessageRequest = ReceiveMessageRequest.builder()
-            .queueUrl(queueUrl)
-            .maxNumberOfMessages(10)
-            .build()
+        val receiveMessageRequest =
+            ReceiveMessageRequest
+                .builder()
+                .queueUrl(queueUrl)
+                .maxNumberOfMessages(10)
+                .build()
 
-        return sqsAsyncClient.receiveMessage(receiveMessageRequest)
+        return sqsAsyncClient
+            .receiveMessage(receiveMessageRequest)
             .get()
             .messages()
     }
 
     private fun assertRegisterCheckResultMessage(
         actualMessage: Message,
-        expectedMessage: RegisterCheckResultMessage
+        expectedMessage: RegisterCheckResultMessage,
     ): Boolean {
-        val actualRegisterCheckResultMessage = objectMapper.readValue(
-            actualMessage.body(),
-            RegisterCheckResultMessage::class.java,
-        )
+        val actualRegisterCheckResultMessage =
+            objectMapper.readValue(
+                actualMessage.body(),
+                RegisterCheckResultMessage::class.java,
+            )
 
         assertThat(actualRegisterCheckResultMessage)
             .usingRecursiveComparison()
@@ -1033,13 +1105,14 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         expectedRequestId: UUID,
         expectedCreatedAt: String,
         expectedGssCode: String,
-        matchCount: Int
+        matchCount: Int,
     ) {
         assertThat(actualRegisterResultData).isNotNull
         assertThat(actualRegisterResultData!!.id).isNotNull
         assertThat(actualRegisterResultData.correlationId).isNotNull
         assertThat(actualRegisterResultData.dateCreated).isNotNull
-        val persistedRequest = objectMapper.readValue(actualRegisterResultData.requestBody, RegisterCheckResultRequest::class.java)
+        val persistedRequest =
+            objectMapper.readValue(actualRegisterResultData.requestBody, RegisterCheckResultRequest::class.java)
         assertThat(persistedRequest.requestid).isEqualTo(expectedRequestId)
         assertThat(persistedRequest.createdAt).isEqualTo(expectedCreatedAt)
         assertThat(persistedRequest.gssCode).isEqualTo(expectedGssCode)
@@ -1050,29 +1123,26 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         requestId: String,
         createdAt: String,
         gssCode: String,
-        historicalSearchEarliestDate: OffsetDateTime? = null
-    ): String {
-        return """
-            {
-            "requestid": "$requestId",
-            "gssCode": "$gssCode",
-            "createdAt": "$createdAt",
-            ${if (historicalSearchEarliestDate == null) "" else "\"historicalSearchEarliestDate\": \"$historicalSearchEarliestDate\"," }
-            "registerCheckMatchCount": 0
-            }
+        historicalSearchEarliestDate: OffsetDateTime? = null,
+    ): String =
+        """
+        {
+        "requestid": "$requestId",
+        "gssCode": "$gssCode",
+        "createdAt": "$createdAt",
+        ${if (historicalSearchEarliestDate == null) "" else "\"historicalSearchEarliestDate\": \"$historicalSearchEarliestDate\","}
+        "registerCheckMatchCount": 0
+        }
         """.trimIndent()
-    }
 
-    private fun buildUri(requestId: UUID = UUID.randomUUID()) =
-        "/registerchecks/$requestId"
+    private fun buildUri(requestId: UUID = UUID.randomUUID()) = "/registerchecks/$requestId"
 
-    private fun getQueueUrlForSourceType(sourceType: SourceType): String {
-        return when (sourceType) {
+    private fun getQueueUrlForSourceType(sourceType: SourceType): String =
+        when (sourceType) {
             SourceType.APPLICATIONS_MINUS_API -> localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse
             SourceType.VOTER_MINUS_CARD -> localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult
             SourceType.PROXY_MINUS_VOTE -> localStackContainerSettings.mappedQueueUrlProxyVoteConfirmRegisterCheckResult
             SourceType.POSTAL_MINUS_VOTE -> localStackContainerSettings.mappedQueueUrlPostalVoteConfirmRegisterCheckResult
             SourceType.OVERSEAS_MINUS_VOTE -> localStackContainerSettings.mappedQueueUrlOverseasVoteConfirmRegisterCheckResult
         }
-    }
 }

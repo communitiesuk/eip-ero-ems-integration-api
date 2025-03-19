@@ -20,7 +20,6 @@ import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import java.util.UUID
 
 internal class TransactionRoutingDataSourceIntegrationTest : IntegrationTest() {
-
     @Test
     fun `should use read-only data source for get function`() {
         // Given
@@ -30,14 +29,15 @@ internal class TransactionRoutingDataSourceIntegrationTest : IntegrationTest() {
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, listOf(gssCode))
 
         // When
-        webTestClient.get()
+        webTestClient
+            .get()
             .uri("/registerchecks")
             .header(
                 REQUEST_HEADER_NAME,
-                CERT_SERIAL_NUMBER_VALUE
-            )
-            .exchange()
-            .expectStatus().isOk
+                CERT_SERIAL_NUMBER_VALUE,
+            ).exchange()
+            .expectStatus()
+            .isOk
             .returnResult(PendingRegisterChecksResponse::class.java)
 
         // Then
@@ -56,16 +56,17 @@ internal class TransactionRoutingDataSourceIntegrationTest : IntegrationTest() {
         wireMockService.stubIerApiGetEros(CERT_SERIAL_NUMBER_VALUE, eroId, gssCodes)
 
         // When
-        webTestClient.post()
+        webTestClient
+            .post()
             .uri("/registerchecks/$requestId")
             .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
             .contentType(MediaType.APPLICATION_JSON)
             .body(
                 Mono.just(buildRegisterCheckResultRequest(requestId = requestId)),
-                RegisterCheckResultRequest::class.java
-            )
-            .exchange()
-            .expectStatus().isNotFound
+                RegisterCheckResultRequest::class.java,
+            ).exchange()
+            .expectStatus()
+            .isNotFound
             .returnResult(ErrorResponse::class.java)
 
         // Then
@@ -82,7 +83,7 @@ internal class TransactionRoutingDataSourceIntegrationTest : IntegrationTest() {
         assertThat(dataSources).hasExactlyElementsOfTypes(
             TransactionRoutingDataSource::class.java,
             HikariDataSource::class.java,
-            HikariDataSource::class.java
+            HikariDataSource::class.java,
         )
     }
 }

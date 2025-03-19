@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.rest
 
 import jakarta.servlet.RequestDispatcher.ERROR_MESSAGE
 import jakarta.servlet.RequestDispatcher.ERROR_STATUS_CODE
+import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
@@ -27,6 +28,7 @@ import uk.gov.dluhc.emsintegrationapi.exception.Pre1970EarliestSearchException
 import uk.gov.dluhc.emsintegrationapi.exception.RegisterCheckMatchCountMismatchException
 import uk.gov.dluhc.emsintegrationapi.exception.RegisterCheckUnexpectedStatusException
 import uk.gov.dluhc.emsintegrationapi.exception.RequestIdMismatchException
+import uk.gov.dluhc.emsintegrationapi.service.ApplicationNotFoundException
 
 @ControllerAdvice
 class GlobalExceptionHandler(
@@ -50,7 +52,8 @@ class GlobalExceptionHandler(
         value = [
             IerEroNotFoundException::class,
             PendingRegisterCheckNotFoundException::class,
-        ]
+            ApplicationNotFoundException::class,
+        ],
     )
     protected fun handleResourceNotFound(
         e: RuntimeException,
@@ -68,7 +71,8 @@ class GlobalExceptionHandler(
             RequestIdMismatchException::class,
             RegisterCheckMatchCountMismatchException::class,
             Pre1970EarliestSearchException::class,
-        ]
+            ConstraintViolationException::class,
+        ],
     )
     protected fun handleBadRequestBusinessException(
         e: RuntimeException,
@@ -79,7 +83,7 @@ class GlobalExceptionHandler(
         value = [
             RegisterCheckUnexpectedStatusException::class,
             OptimisticLockingFailureException::class,
-        ]
+        ],
     )
     fun handleExceptionReturnConflictResponse(
         e: RuntimeException,

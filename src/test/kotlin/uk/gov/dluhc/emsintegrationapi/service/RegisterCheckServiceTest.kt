@@ -122,7 +122,7 @@ internal class RegisterCheckServiceTest {
             val certificateSerial = "123456789"
             val gssCodeFromEroApi = getRandomGssCode()
 
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willReturn(listOf(gssCodeFromEroApi))
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willReturn(listOf(gssCodeFromEroApi))
             given(registerCheckRepository.findPendingEntriesByGssCodes(any(), any())).willReturn(emptyList())
 
             // When
@@ -131,7 +131,7 @@ internal class RegisterCheckServiceTest {
             // Then
             assertThat(actualPendingRegisterChecks).isNotNull
             assertThat(actualPendingRegisterChecks).isEmpty()
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
             verify(registerCheckRepository).findPendingEntriesByGssCodes(listOf(gssCodeFromEroApi), DEFAULT_PAGE_SIZE)
             verifyNoInteractions(pendingRegisterCheckMapper)
         }
@@ -147,7 +147,7 @@ internal class RegisterCheckServiceTest {
             val matchedRegisterCheckEntity = buildRegisterCheck(correlationId = correlationId, gssCode = gssCodeFromEroApi, status = PENDING)
             val expectedRegisterCheckDto = buildPendingRegisterCheckDto(correlationId = correlationId, gssCode = gssCodeFromEroApi)
 
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willReturn(listOf(gssCodeFromEroApi))
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willReturn(listOf(gssCodeFromEroApi))
             given(registerCheckRepository.findPendingEntriesByGssCodes(any(), any())).willReturn(listOf(matchedRegisterCheckEntity))
             given(pendingRegisterCheckMapper.registerCheckEntityToPendingRegisterCheckDto(any())).willReturn(expectedRegisterCheckDto)
 
@@ -162,7 +162,7 @@ internal class RegisterCheckServiceTest {
                 .isEqualTo(expectedPendingRegisterChecks)
                 .usingRecursiveComparison()
                 .ignoringCollectionOrder()
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
             verify(registerCheckRepository).findPendingEntriesByGssCodes(listOf(gssCodeFromEroApi), DEFAULT_PAGE_SIZE)
             verify(pendingRegisterCheckMapper).registerCheckEntityToPendingRegisterCheckDto(matchedRegisterCheckEntity)
             verifyNoMoreInteractions(registerCheckRepository, pendingRegisterCheckMapper)
@@ -190,7 +190,7 @@ internal class RegisterCheckServiceTest {
             val thirdRegisterCheckDto = buildPendingRegisterCheckDto(correlationId = correlationId3, gssCode = secondGssCodeFromEroApi)
 
             val expectedGssCodes = listOf(firstGssCodeFromEroApi, secondGssCodeFromEroApi, anotherGssCodeFromEroApi)
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willReturn(expectedGssCodes)
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willReturn(expectedGssCodes)
             given(registerCheckRepository.findPendingEntriesByGssCodes(any(), any())).willReturn(listOf(firstRegisterCheckEntity, secondRegisterCheckEntity, thirdRegisterCheckEntity))
             given(pendingRegisterCheckMapper.registerCheckEntityToPendingRegisterCheckDto(eq(firstRegisterCheckEntity))).willReturn(firstRegisterCheckDto)
             given(pendingRegisterCheckMapper.registerCheckEntityToPendingRegisterCheckDto(eq(secondRegisterCheckEntity))).willReturn(secondRegisterCheckDto)
@@ -207,7 +207,7 @@ internal class RegisterCheckServiceTest {
                 .isEqualTo(expectedPendingRegisterChecks)
                 .usingRecursiveComparison()
                 .ignoringCollectionOrder()
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
             verify(registerCheckRepository).findPendingEntriesByGssCodes(listOf(firstGssCodeFromEroApi, secondGssCodeFromEroApi, anotherGssCodeFromEroApi), DEFAULT_PAGE_SIZE)
             verify(pendingRegisterCheckMapper).registerCheckEntityToPendingRegisterCheckDto(firstRegisterCheckEntity)
             verify(pendingRegisterCheckMapper).registerCheckEntityToPendingRegisterCheckDto(secondRegisterCheckEntity)
@@ -221,7 +221,7 @@ internal class RegisterCheckServiceTest {
             val certificateSerial = "123456789"
 
             val expected = IerEroNotFoundException(certificateSerial)
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willThrow(expected)
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willThrow(expected)
 
             // When
             val ex = catchThrowableOfType(
@@ -231,7 +231,7 @@ internal class RegisterCheckServiceTest {
 
             // Then
             assertThat(ex).isEqualTo(expected)
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
             verifyNoInteractions(registerCheckRepository, pendingRegisterCheckMapper)
         }
 
@@ -241,7 +241,7 @@ internal class RegisterCheckServiceTest {
             val certificateSerial = "123456789"
 
             val expected = IerGeneralException("Error getting eroId for certificate serial $certificateSerial")
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willThrow(expected)
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willThrow(expected)
 
             // When
             val ex = catchThrowableOfType(
@@ -251,7 +251,7 @@ internal class RegisterCheckServiceTest {
 
             // Then
             assertThat(ex).isEqualTo(expected)
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
             verifyNoInteractions(registerCheckRepository, pendingRegisterCheckMapper)
         }
     }
@@ -319,7 +319,7 @@ internal class RegisterCheckServiceTest {
             val registerCheckResultDto = buildRegisterCheckResultDto(requestId = requestId, correlationId = requestId, gssCode = expectedGssCode)
             val expected = PendingRegisterCheckNotFoundException(requestId)
 
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willReturn(listOf(expectedGssCode))
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willReturn(listOf(expectedGssCode))
             given(registerCheckRepository.findByCorrelationId(any())).willReturn(null)
             // When
             val ex = catchThrowableOfType(
@@ -331,7 +331,7 @@ internal class RegisterCheckServiceTest {
             assertThat(ex.message).isEqualTo(expected.message)
             assertThat(ex.message).isEqualTo("Pending register check for requestid:[$requestId] not found")
             verify(registerCheckRepository).findByCorrelationId(requestId)
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
             verifyNoInteractions(registerCheckResultMapper, confirmRegisterCheckResultMessageQueue)
         }
 
@@ -355,7 +355,7 @@ internal class RegisterCheckServiceTest {
             )
             val expected = RegisterCheckUnexpectedStatusException(requestId, existingCheckStatusInDb)
             given(registerCheckRepository.findByCorrelationId(any())).willReturn(buildRegisterCheck(correlationId = requestId, status = existingCheckStatusInDb))
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willReturn(listOf(expectedGssCode))
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willReturn(listOf(expectedGssCode))
 
             // When
             val ex = catchThrowableOfType(
@@ -367,7 +367,7 @@ internal class RegisterCheckServiceTest {
             assertThat(ex.message).isEqualTo(expected.message)
             assertThat(ex.message).isEqualTo("Register check with requestid:[$requestId] has an unexpected status:[$existingCheckStatusInDb]")
             verify(registerCheckRepository).findByCorrelationId(requestId)
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
             verifyNoInteractions(registerCheckResultMapper, confirmRegisterCheckResultMessageQueue)
         }
 
@@ -410,7 +410,7 @@ internal class RegisterCheckServiceTest {
                 status = PENDING
             )
 
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willReturn(listOf(matchingGssCode, otherGssCode))
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willReturn(listOf(matchingGssCode, otherGssCode))
             given(registerCheckRepository.findByCorrelationId(any())).willReturn(savedPendingRegisterCheckEntity)
             registerCheckMatchDtoList.forEach {
                 given(registerCheckResultMapper.fromDtoToRegisterCheckMatchEntity(it)).willReturn(buildRegisterCheckMatch())
@@ -424,7 +424,7 @@ internal class RegisterCheckServiceTest {
             verify(registerCheckRepository).findByCorrelationId(requestId)
             verify(matchStatusResolver).resolveStatus(registerCheckResultDto, savedPendingRegisterCheckEntity)
             registerCheckMatchDtoList.forEach { verify(registerCheckResultMapper).fromDtoToRegisterCheckMatchEntity(it) }
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
         }
 
         @Test
@@ -437,7 +437,7 @@ internal class RegisterCheckServiceTest {
             val registerCheckResultDto = buildRegisterCheckResultDto(requestId = requestId, correlationId = requestId, gssCode = requestGssCode)
             val expected = GssCodeMismatchException(certificateSerial, requestGssCode)
 
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willReturn(listOf(differentGssCodeFromEroApi))
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willReturn(listOf(differentGssCodeFromEroApi))
 
             // When
             val ex = catchThrowableOfType(
@@ -448,7 +448,7 @@ internal class RegisterCheckServiceTest {
             // Then
             assertThat(ex.message).isEqualTo(expected.message)
             assertThat(ex.message).isEqualTo("Request gssCode:[E12345678] does not match with gssCode for certificateSerial:[123456789]")
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
         }
 
         @Test
@@ -458,7 +458,7 @@ internal class RegisterCheckServiceTest {
             val registerCheckResultDto = buildRegisterCheckResultDto()
 
             val expected = IerEroNotFoundException(certificateSerial)
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willThrow(expected)
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willThrow(expected)
 
             // When
             val ex = catchThrowableOfType(
@@ -468,7 +468,7 @@ internal class RegisterCheckServiceTest {
 
             // Then
             assertThat(ex).isEqualTo(expected)
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
         }
 
         @Test
@@ -478,7 +478,7 @@ internal class RegisterCheckServiceTest {
             val registerCheckResultDto = buildRegisterCheckResultDto()
             val expected = IerGeneralException("Error getting eroId for certificate serial 123456789")
 
-            given(retrieveGssCodeService.getGssCodeFromCertificateSerial(any())).willThrow(expected)
+            given(retrieveGssCodeService.getGssCodesFromCertificateSerial(any())).willThrow(expected)
 
             // When
             val ex = catchThrowableOfType(
@@ -488,7 +488,7 @@ internal class RegisterCheckServiceTest {
 
             // Then
             assertThat(ex).isEqualTo(expected)
-            verify(retrieveGssCodeService).getGssCodeFromCertificateSerial(certificateSerial)
+            verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
         }
 
         @Test

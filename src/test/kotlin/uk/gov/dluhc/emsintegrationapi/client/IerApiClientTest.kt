@@ -70,7 +70,7 @@ internal class IerApiClientTest {
         val expectedUrl = "/eros"
         val exceptionMessage = "Forbidden while communicating to IER"
         val expectedException =
-            IerGeneralException(message = "Error getting EROs from IER API")
+            IerGeneralException(message = "Error getting EROs from IER API: 403 Forbidden while communicating to IER")
 
         given(uriSpec.retrieve())
             .willThrow(HttpClientErrorException(HttpStatus.FORBIDDEN, exceptionMessage))
@@ -91,7 +91,7 @@ internal class IerApiClientTest {
         // Given
         val expectedUrl = "/eros"
         val expectedException =
-            IerGeneralException(message = "Error getting EROs from IER API")
+            IerGeneralException(message = "Error getting EROs from IER API: 500 INTERNAL_SERVER_ERROR")
 
         given(uriSpec.retrieve())
             .willThrow(HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR))

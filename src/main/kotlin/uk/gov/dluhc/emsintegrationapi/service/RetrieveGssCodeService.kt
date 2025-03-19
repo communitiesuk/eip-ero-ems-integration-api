@@ -14,13 +14,13 @@ class RetrieveGssCodeService(
     private val ierApiClient: IerApiClient,
 ) {
     @Cacheable(ERO_GSS_CODE_BY_ERO_ID_CACHE)
-    fun getGssCodeFromCertificateSerial(certificateSerial: String): List<String> {
+    fun getGssCodesFromCertificateSerial(certificateSerial: String): List<String> {
         val eros = ierApiClient.getEros()
-        val ero = eros.find { it.activeClientCertificateSerials.contains(certificateSerial) }
-        if (ero == null) {
+        val erosMatchingCertificateSerial = eros.filter { it.activeClientCertificateSerials.contains(certificateSerial) }
+        if (erosMatchingCertificateSerial.isEmpty()) {
             throw IerEroNotFoundException(certificateSerial)
-                .also { logger.warn { "Certificate serial not found" } }
+                .also { logger.warn { "No ERO found matching certificate serial $certificateSerial" } }
         }
-        return ero.localAuthorities.map { it.gssCode }
+        return erosMatchingCertificateSerial.flatMap { ero -> ero.localAuthorities.map { it.gssCode } }
     }
 }

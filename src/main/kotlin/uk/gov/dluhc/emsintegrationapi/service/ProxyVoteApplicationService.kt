@@ -25,24 +25,35 @@ class ProxyVoteApplicationService(
     private val proxyVoteMapper: ProxyVoteMapper,
     private val retrieveGssCodeService: RetrieveGssCodeService,
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
-) : AbstractApplicationService(QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE, retrieveGssCodeService, messageSender) {
+) : AbstractApplicationService(
+        QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE,
+        retrieveGssCodeService,
+        messageSender,
+    ) {
     @Transactional(readOnly = true)
-    fun getProxyVoteApplications(certificateSerialNumber: String, pageSize: Int?): ProxyVoteApplications {
+    fun getProxyVoteApplications(
+        certificateSerialNumber: String,
+        pageSize: Int?,
+    ): ProxyVoteApplications {
         logger.info { "Proxy Service fetching GSS Codes for $certificateSerialNumber" }
-        val gssCodes = retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
+        val gssCodes = retrieveGssCodeService.getGssCodesFromCertificateSerial(certificateSerialNumber)
         var numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize proxy vote applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
         if (numberOfRecordsToFetch > apiProperties.forceMaxPageSize) {
-            logger.warn("Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch")
+            logger.warn(
+                "Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch",
+            )
             numberOfRecordsToFetch = apiProperties.forceMaxPageSize
         }
-        val proxyApplicationIds = proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
-            gssCodes,
-            RecordStatus.RECEIVED,
-            Pageable.ofSize(numberOfRecordsToFetch)
-        )
+        val proxyApplicationIds =
+            proxyVoteApplicationRepository.findApplicationIdsByApplicationDetailsGssCodeInAndStatusOrderByDateCreated(
+                gssCodes,
+                RecordStatus.RECEIVED,
+                Pageable.ofSize(numberOfRecordsToFetch),
+            )
         val proxyApplications = proxyVoteApplicationRepository.findByApplicationIdIn(proxyApplicationIds)
-        val proxyApplicationsList = proxyApplicationIds.map { id -> proxyApplications.find { it.applicationId == id }!! }
+        val proxyApplicationsList =
+            proxyApplicationIds.map { id -> proxyApplications.find { it.applicationId == id }!! }
         val actualPageSize = proxyApplicationsList.size
         logger.info("The actual number of records fetched is $actualPageSize")
         return ProxyVoteApplications(actualPageSize, proxyVoteMapper.mapFromEntities(proxyApplicationsList))
@@ -52,15 +63,15 @@ class ProxyVoteApplicationService(
     fun confirmReceipt(
         certificateSerialNumber: String,
         proxyVoteApplicationId: String,
-        request: EMSApplicationResponse
+        request: EMSApplicationResponse,
     ) {
         val gssCodes = getGssCodes(certificateSerialNumber)
         logger.info("Updating the proxy vote application with the id $proxyVoteApplicationId with status ${RecordStatus.DELETED}")
-        proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
-            proxyVoteApplicationId,
-            gssCodes
-        )
-            ?.let { proxyVoteApplication ->
+        proxyVoteApplicationRepository
+            .findByApplicationIdAndApplicationDetailsGssCodeIn(
+                proxyVoteApplicationId,
+                gssCodes,
+            )?.let { proxyVoteApplication ->
                 if (proxyVoteApplication.status != RecordStatus.DELETED) {
                     doConfirmedReceiptApplication(request, proxyVoteApplication)
                 } else {
@@ -71,11 +82,14 @@ class ProxyVoteApplicationService(
                 }
             } ?: throw ApplicationNotFoundException(
             applicationId = proxyVoteApplicationId,
-            applicationType = ApplicationType.PROXY
+            applicationType = ApplicationType.PROXY,
         )
     }
 
-    private fun doConfirmedReceiptApplication(request: EMSApplicationResponse, proxyVoteApplication: ProxyVoteApplication) {
+    private fun doConfirmedReceiptApplication(
+        request: EMSApplicationResponse,
+        proxyVoteApplication: ProxyVoteApplication,
+    ) {
         with(proxyVoteApplication) {
             status = RecordStatus.DELETED
             updatedBy = SourceSystem.EMS
@@ -84,6 +98,8 @@ class ProxyVoteApplicationService(
 
         sendMessage(request, proxyVoteApplication.applicationId, proxyVoteApplication.isFromApplicationsApi)
 
-        logger.info { "Confirmation ${request.status} message sent to the proxy vote application for ${proxyVoteApplication.applicationId}" }
+        logger.info {
+            "Confirmation ${request.status} message sent to the proxy vote application for ${proxyVoteApplication.applicationId}"
+        }
     }
 }

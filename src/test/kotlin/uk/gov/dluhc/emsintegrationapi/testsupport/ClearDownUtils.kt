@@ -7,13 +7,12 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 
 object ClearDownUtils {
-
     fun clearDownRecords(
         proxyRepository: ProxyVoteApplicationRepository? = null,
         postalRepository: PostalVoteApplicationRepository? = null,
         registerCheckRepository: RegisterCheckRepository? = null,
         sqsAsyncClient: SqsAsyncClient? = null,
-        queueName: String? = null
+        queueName: String? = null,
     ) {
         proxyRepository?.deleteAll()
         postalRepository?.deleteAll()

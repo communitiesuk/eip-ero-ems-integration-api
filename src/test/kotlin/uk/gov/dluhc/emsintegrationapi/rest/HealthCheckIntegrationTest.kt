@@ -6,7 +6,6 @@ import org.springframework.test.web.reactive.server.returnResult
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 
 internal class HealthCheckIntegrationTest : IntegrationTest() {
-
     @Test
     fun `should return health check status UP given microservice is running healthily`() {
         // Given
