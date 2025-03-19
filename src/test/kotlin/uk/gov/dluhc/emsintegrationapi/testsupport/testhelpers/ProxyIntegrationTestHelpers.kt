@@ -56,10 +56,10 @@ class ProxyIntegrationTestHelpers(
                     eroIdentifier = "camden-city-council",
                     name = "Camden City Council",
                     localAuthorities =
-                        listOf(
-                            buildIerLocalAuthorityDetails(gssCode = "E12345678"),
-                            buildIerLocalAuthorityDetails(gssCode = "E12345679"),
-                        ),
+                    listOf(
+                        buildIerLocalAuthorityDetails(gssCode = "E12345678"),
+                        buildIerLocalAuthorityDetails(gssCode = "E12345679"),
+                    ),
                     activeClientCertificateSerials = listOf("1234567891"),
                 ),
             ),
@@ -142,12 +142,12 @@ class ProxyIntegrationTestHelpers(
                 buildProxyVoteApplication(
                     recordStatus = RecordStatus.valueOf(recordStatus),
                     applicationDetails =
-                        buildApplicationDetailsEntity(
-                            gssCode = DataFaker.faker.options().option(*gssCodes),
-                            signatureBase64 = signatureBase64,
-                            signatureWaived = signatureWaived,
-                            signatureWaivedReason = signatureWaiverReason,
-                        ),
+                    buildApplicationDetailsEntity(
+                        gssCode = DataFaker.faker.options().option(*gssCodes),
+                        signatureBase64 = signatureBase64,
+                        signatureWaived = signatureWaived,
+                        signatureWaivedReason = signatureWaiverReason,
+                    ),
                 )
             }
         // Let us create a map out of it so it will be easy for the validation
@@ -210,14 +210,14 @@ class ProxyIntegrationTestHelpers(
     ): ProxyVoteApplicationMessage =
         buildProxyVoteApplicationMessageDto(
             applicationDetails =
-                buildApplicationDetailsMessageDto(
-                    applicationStatus =
-                        ApplicationDetails.ApplicationStatus.valueOf(
-                            applicationStatus,
-                        ),
-                    applicationId = applicationId,
-                    signatureBase64 = SIGNATURE_BASE64_STRING,
+            buildApplicationDetailsMessageDto(
+                applicationStatus =
+                ApplicationDetails.ApplicationStatus.valueOf(
+                    applicationStatus,
                 ),
+                applicationId = applicationId,
+                signatureBase64 = SIGNATURE_BASE64_STRING,
+            ),
             applicantDetails = buildApplicantDetailsMessageDto(emsElectorId = emsElectorId),
         )
 
@@ -235,9 +235,9 @@ class ProxyIntegrationTestHelpers(
         emsElectorId: String,
     ) = buildProxyVoteApplicationMessageDto(
         applicationDetails =
-            buildApplicationDetailsMessageDto(
-                applicationId = applicationId,
-            ),
+        buildApplicationDetailsMessageDto(
+            applicationId = applicationId,
+        ),
         applicantDetails = buildApplicantDetailsMessageDto(emsElectorId = emsElectorId),
     )
 

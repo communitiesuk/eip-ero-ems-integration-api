@@ -26,10 +26,10 @@ class PostalVoteApplicationService(
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
     private val retrieveGssCodeService: RetrieveGssCodeService,
 ) : AbstractApplicationService(
-        QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE,
-        retrieveGssCodeService,
-        messageSender,
-    ) {
+    QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE,
+    retrieveGssCodeService,
+    messageSender,
+) {
     @Transactional(readOnly = true)
     fun getPostalVoteApplications(
         certificateSerialNumber: String,

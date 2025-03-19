@@ -26,10 +26,10 @@ class ProxyVoteApplicationService(
     private val retrieveGssCodeService: RetrieveGssCodeService,
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
 ) : AbstractApplicationService(
-        QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE,
-        retrieveGssCodeService,
-        messageSender,
-    ) {
+    QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE,
+    retrieveGssCodeService,
+    messageSender,
+) {
     @Transactional(readOnly = true)
     fun getProxyVoteApplications(
         certificateSerialNumber: String,

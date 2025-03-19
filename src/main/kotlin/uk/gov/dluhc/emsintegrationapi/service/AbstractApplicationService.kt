@@ -46,10 +46,10 @@ abstract class AbstractApplicationService(
             EmsConfirmedReceiptMessage(
                 id = applicationId,
                 status =
-                    when (request.status) {
-                        EMSApplicationStatus.SUCCESS -> EmsConfirmedReceiptMessage.Status.SUCCESS
-                        EMSApplicationStatus.FAILURE -> EmsConfirmedReceiptMessage.Status.FAILURE
-                    },
+                when (request.status) {
+                    EMSApplicationStatus.SUCCESS -> EmsConfirmedReceiptMessage.Status.SUCCESS
+                    EMSApplicationStatus.FAILURE -> EmsConfirmedReceiptMessage.Status.FAILURE
+                },
                 message = request.message,
                 details = request.details,
             ),
