@@ -47,8 +47,9 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         ClearDownUtils.clearDownRecords(
-            postalRepository = postalVoteApplicationRepository,
             proxyRepository = proxyVoteApplicationRepository,
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
         )
     }
 
@@ -58,8 +59,9 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         ClearDownUtils.clearDownRecords(
-            postalRepository = postalVoteApplicationRepository,
             proxyRepository = proxyVoteApplicationRepository,
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
         )
     }
 

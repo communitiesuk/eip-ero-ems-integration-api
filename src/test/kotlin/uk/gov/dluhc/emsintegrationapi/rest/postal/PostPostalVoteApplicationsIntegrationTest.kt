@@ -45,6 +45,7 @@ internal class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         ClearDownUtils.clearDownRecords(
             postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
             sqsAsyncClient = sqsAsyncClient,
             queueName = "deleted-postal-application",
         )

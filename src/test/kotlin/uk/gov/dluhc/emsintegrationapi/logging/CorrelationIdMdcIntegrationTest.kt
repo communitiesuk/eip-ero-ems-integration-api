@@ -190,6 +190,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
                 registerCheckRepository = registerCheckRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
                 sqsAsyncClient = sqsAsyncClient,
                 queueName = postalApplicationQueueName
             )
@@ -200,6 +201,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
                 registerCheckRepository = registerCheckRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
                 sqsAsyncClient = sqsAsyncClient,
                 queueName = postalApplicationQueueName
             )

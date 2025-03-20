@@ -51,6 +51,7 @@ private class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
                 registerCheckRepository = registerCheckRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
                 queueName = removeApplicationEmsDataQueueName
             )
         }
@@ -60,6 +61,7 @@ private class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
                 registerCheckRepository = registerCheckRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
                 queueName = removeApplicationEmsDataQueueName
             )
         }

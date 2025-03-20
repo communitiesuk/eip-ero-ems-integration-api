@@ -46,6 +46,7 @@ internal class PutPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         ClearDownUtils
             .clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
                 sqsAsyncClient = sqsAsyncClient,
                 queueName = "deleted-postal-application",
             )

@@ -44,7 +44,10 @@ internal class PutProxyVoteApplicationIntegrationTest : IntegrationTest() {
     fun setup() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        ClearDownUtils.clearDownRecords(proxyRepository = proxyApplicationRepository)
+        ClearDownUtils.clearDownRecords(
+            proxyRepository = proxyApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository
+        )
         apiClient = ApiClient(webClient, apiProperties)
         fixtures =
             ProxyIntegrationTestHelpers(

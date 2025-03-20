@@ -42,7 +42,10 @@ internal class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
     fun setup() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        ClearDownUtils.clearDownRecords(postalRepository = postalVoteApplicationRepository)
+        ClearDownUtils.clearDownRecords(
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository
+        )
         apiClient = ApiClient(webClient, apiProperties)
         testHelpers =
             PostalIntegrationTestHelpers(
@@ -57,7 +60,10 @@ internal class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
     fun tearDown() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        ClearDownUtils.clearDownRecords(postalRepository = postalVoteApplicationRepository)
+        ClearDownUtils.clearDownRecords(
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository
+        )
     }
 
     @Test

@@ -44,6 +44,7 @@ internal class SaveProxyVoteApplicationIntegrationTest : IntegrationTest() {
             )
         ClearDownUtils.clearDownRecords(
             proxyRepository = proxyVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
             sqsAsyncClient = sqsAsyncClient,
             queueName = removeApplicationEmsDataQueueName,
         )
@@ -53,6 +54,7 @@ internal class SaveProxyVoteApplicationIntegrationTest : IntegrationTest() {
     fun deleteProxyRecordsAfter() {
         ClearDownUtils.clearDownRecords(
             proxyRepository = proxyVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
             sqsAsyncClient = sqsAsyncClient,
             queueName = removeApplicationEmsDataQueueName,
         )

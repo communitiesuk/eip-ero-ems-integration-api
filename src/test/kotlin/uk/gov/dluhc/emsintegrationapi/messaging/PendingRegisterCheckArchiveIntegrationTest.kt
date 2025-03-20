@@ -22,6 +22,7 @@ internal class PendingRegisterCheckArchiveIntegrationTest : IntegrationTest() {
     fun deletePostalRecordsBefore() {
         ClearDownUtils.clearDownRecords(
             registerCheckRepository = registerCheckRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
             queueName = pendingRegisterCheckArchiveQueueName,
         )
     }
@@ -30,6 +31,7 @@ internal class PendingRegisterCheckArchiveIntegrationTest : IntegrationTest() {
     fun deletePostalRecordsAfter() {
         ClearDownUtils.clearDownRecords(
             registerCheckRepository = registerCheckRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
             queueName = pendingRegisterCheckArchiveQueueName,
         )
     }
