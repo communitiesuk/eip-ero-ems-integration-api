@@ -16,7 +16,7 @@ class QueueConfiguration(
     private val postalApplicationQueueName: String,
     private val deletedProxyApplicationQueueName: String,
     private val deletedPostalApplicationQueueName: String,
-    private val removeApplicationEmsIntegrationDataQueueName: String,
+    private val emsApplicationProcessedQueueName: String,
 ) {
     companion object {
         const val SQS_CONFIGURATION_PREFIX = "sqs"
@@ -28,7 +28,7 @@ class QueueConfiguration(
             PROXY_APPLICATION_QUEUE -> proxyApplicationQueueName
             DELETED_POSTAL_APPLICATION_QUEUE -> deletedPostalApplicationQueueName
             DELETED_PROXY_APPLICATION_QUEUE -> deletedProxyApplicationQueueName
-            EMS_APPLICATION_PROCESSED_QUEUE -> removeApplicationEmsIntegrationDataQueueName
+            EMS_APPLICATION_PROCESSED_QUEUE -> emsApplicationProcessedQueueName
         }
     }
 
@@ -37,6 +37,6 @@ class QueueConfiguration(
         PROXY_APPLICATION_QUEUE,
         DELETED_POSTAL_APPLICATION_QUEUE,
         DELETED_PROXY_APPLICATION_QUEUE,
-        EMS_APPLICATION_PROCESSED_QUEUE,
+        EMS_APPLICATION_PROCESSED_QUEUE
     }
 }
