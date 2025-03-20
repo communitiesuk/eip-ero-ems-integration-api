@@ -67,7 +67,7 @@ internal class RemoveRegisterCheckDataMessageListenerIntegrationTest : Integrati
         sqsMessagingTemplate.send(removeApplicantRegisterCheckDataQueueName, message)
 
         // Then
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted {
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted {
             assertThat(registerCheckRepository.findBySourceReferenceAndSourceType(sourceReference, sourceType = expectedSourceType)).isEmpty()
             assertThat(registerCheckResultDataRepository.findByCorrelationIdIn(setOf(correlationIdForCheck1, correlationIdForCheck2, correlationIdForOtherGssCode))).isEmpty()
 

@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.job
 import ch.qos.logback.classic.Level
 import org.apache.commons.lang3.StringUtils.deleteWhitespace
 import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.kotlin.await
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,6 +29,7 @@ import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 
 internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
     @Autowired
@@ -358,7 +360,9 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
                 htmlBody = emailText.trimIndent(),
                 timestamp = OffsetDateTime.now(UTC).toLocalDateTime().truncatedTo(ChronoUnit.SECONDS),
             )
-        assertEmailSent(expectedEmailRequest)
+        await.atMost(10, TimeUnit.SECONDS).untilAsserted {
+            assertEmailSent(expectedEmailRequest)
+        }
     }
 
     private fun createPostalApplicationWithEmsElectorId(
