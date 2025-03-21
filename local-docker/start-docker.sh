@@ -34,9 +34,20 @@ function start_whole_environment {
   docker exec -it localstack awslocal sqs create-queue --queue-name "ems-postal-application" 2>&1 > /dev/null
   docker exec -it localstack awslocal sqs create-queue --queue-name "delete-proxy-application" 2>&1 > /dev/null
   docker exec -it localstack awslocal sqs create-queue --queue-name "delete-postal-application" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "confirm-applicant-register-check-result" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "ems-application-processed" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "initiate-applicant-register-check" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "confirm-applicant-register-check-result" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "postal-vote-confirm-applicant-register-check-result" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "proxy-vote-confirm-applicant-register-check-result" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "overseas-vote-confirm-applicant-register-check-result" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "register-check-result-response" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "remove-applicant-register-check-data" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "pending-register-check-archive" 2>&1 > /dev/null
+  docker exec -it localstack awslocal sqs create-queue --queue-name "remove-application-ems-integration-data" 2>&1 > /dev/null
 
   echo "Starting remaining containers"
-  docker compose up -d nginx ems-integration wiremock
+  docker compose up -d nginx database ems-integration wiremock sqs-admin
 }
 
 function restart_environment {

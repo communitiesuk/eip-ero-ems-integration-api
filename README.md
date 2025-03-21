@@ -86,7 +86,7 @@ This will build a docker image for the Spring Boot application.
 
 ## Running the application
 
-See [docker/README.md](docker/README.md)
+See [local-docker/README.md](local-docker/README.md)
 
 Alternatively, either `./gradlew bootRun` or run the class `EmsIntegrationApiApplication`
 
@@ -127,6 +127,27 @@ The following are overridden by the task definition in AWS:
   application.
 * `SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME` - This is overridden to use the actual queue name for the deleted postal
   application.
+* `SQS_REMOVE_APPLICATION_EMS_DATA_QUEUE_NAME` - This is overridden to use the actual queue name for removal of ems
+  integration data.
+* `SQS_EMS_APPLICATION_PROCESSED_QUEUE_NAME` - This is overridden to use the actual queue name for processed
+  applications.
+* `SQS_EMS_CIDR_UPDATE_QUEUE_NAME` - This is overridden to use the actual queue name for a queue yet to be implemented.
+* `SQS_INITIATE_APPLICANT_REGISTER_CHECK_QUEUE_NAME` - This is overridden to use the actual queue name for initiation of
+  applicant register checks.
+* `SQS_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME` - This is overridden to use the actual queue name for
+  confirmation of applicant register check results
+* `SQS_POSTAL_VOTE_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME` - This is overridden to use the actual queue name
+  for confirmation of postal applicant register check results
+* `SQS_PROXY_VOTE_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME` - This is overridden to use the actual queue name
+  for confirmation of proxy applicant register check results
+* `SQS_OVERSEAS_VOTE_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME` - This is overridden to use the actual queue
+  name for confirmation of overseas applicant register check results
+* `SQS_REGISTER_CHECK_RESULT_RESPONSE_QUEUE_NAME` - This is overridden to use the actual queue name for register check
+  result responses
+* `SQS_REMOVE_APPLICANT_REGISTER_CHECK_DATA_QUEUE_NAME` - This is overridden to use the actual queue name for removal of
+  applicant register check data
+* `SQS_PENDING_REGISTER_CHECK_ARCHIVE_QUEUE_NAME` - This is overridden to use the actual queue name for archival of
+  pending register checks
 * `REQUEST_HEADER_CLIENT_CERT_SERIAL` - the name of the request header to set the serial number, must present in every
   api request except health check
 * `DEFAULT_PAGE_SIZE` - The default page size if a GET request did not pass the page size parameter

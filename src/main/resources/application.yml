@@ -41,7 +41,7 @@ sqs:
   overseas-vote-confirm-applicant-register-check-result-queue-name: ${SQS_OVERSEAS_VOTE_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME}
   register-check-result-response-queue-name: ${SQS_REGISTER_CHECK_RESULT_RESPONSE_QUEUE_NAME}
   remove-applicant-register-check-data-queue-name: ${SQS_REMOVE_APPLICANT_REGISTER_CHECK_DATA_QUEUE_NAME}
-  pending-register-check-archive-queue-name: ${SQS_PENDING_REGISTER_CHECK_AERCHIVE_QUEUE_NAME}
+  pending-register-check-archive-queue-name: ${SQS_PENDING_REGISTER_CHECK_ARCHIVE_QUEUE_NAME}
 
 api:
   ero-management:
