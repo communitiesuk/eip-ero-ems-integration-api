@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions
 
-import org.apache.commons.codec.binary.Base64
+import org.apache.hc.client5.http.utils.Base64
 import org.assertj.core.api.AbstractAssert
 import org.assertj.core.api.Assertions
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address

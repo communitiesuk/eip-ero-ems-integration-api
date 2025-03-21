@@ -3,7 +3,8 @@ package uk.gov.dluhc.emsintegrationapi.database.entity
 enum class SourceSystem {
     PROXY,
     POSTAL,
-    EMS
+    EMS,
+    EROP
 }
 
 enum class RetentionStatus {

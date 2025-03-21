@@ -1,30 +1,27 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
-import org.hibernate.annotations.GenericGenerator
-import org.hibernate.annotations.Type
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import jakarta.persistence.Version
+import jakarta.validation.constraints.Size
+import org.hibernate.Hibernate
+import org.hibernate.annotations.JdbcTypeCode
 import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import uk.gov.dluhc.emsintegrationapi.database.repository.UUIDCharType
-import uk.gov.dluhc.emsintegrationapi.database.repository.UseExistingOrGenerateUUID
+import java.sql.Types
 import java.time.Instant
 import java.util.UUID
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.Version
-import javax.validation.constraints.Size
 
+@Table
 @Entity
-@EntityListeners(AuditingEntityListener::class)
 class Address(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = UseExistingOrGenerateUUID.NAME)
-    @Type(type = UUIDCharType)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(Types.CHAR)
     var id: UUID? = null,
 
     @field:Size(max = 255)
@@ -52,15 +49,23 @@ class Address(
     var dateCreated: Instant? = null,
 
     @Enumerated(EnumType.STRING)
-    val createdBy: SourceSystem,
+    val createdBy: SourceSystem? = null,
 
     @Version
-    var version: Long? = null
+    var version: Long? = 0L
 ) {
-    override fun equals(other: Any?) = areEqual(this, other, Address::id)
-    override fun hashCode() = javaClass.hashCode()
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        other as Address
+
+        return id != null && id == other.id
+    }
+
+    override fun hashCode(): Int = javaClass.hashCode()
+
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , dateCreated = $dateCreated , createdBy = $createdBy , version = $version )"
+        return this::class.simpleName + "(id = $id , dateCreated = $dateCreated)"
     }
 }

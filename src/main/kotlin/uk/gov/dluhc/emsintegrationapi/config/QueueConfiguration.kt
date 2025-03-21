@@ -1,7 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.Companion.SQS_CONFIGURATION_PREFIX
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
@@ -12,7 +11,6 @@ import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.PROXY_
 
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = SQS_CONFIGURATION_PREFIX)
-@ConstructorBinding
 class QueueConfiguration(
     private val proxyApplicationQueueName: String,
     private val postalApplicationQueueName: String,

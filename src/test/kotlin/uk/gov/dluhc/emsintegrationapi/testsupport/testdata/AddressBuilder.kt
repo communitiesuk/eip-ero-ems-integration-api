@@ -4,10 +4,10 @@ import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
-import java.util.UUID
+import java.time.Instant
 import uk.gov.dluhc.emsintegrationapi.messaging.models.Address as AddressMessageDto
+
 fun buildAddressEntity(
-    id: UUID? = UUID.randomUUID(),
     street: String = faker.address().streetName(),
     postcode: String = faker.address().postcode(),
     property: String = faker.address().buildingNumber(),
@@ -15,9 +15,9 @@ fun buildAddressEntity(
     town: String = faker.address().city(),
     area: String = faker.address().state(),
     uprn: String = RandomStringUtils.randomNumeric(12),
-    createdBy: SourceSystem? = SourceSystem.EMS
+    dateCreated: Instant = Instant.now(),
+    createdBy: SourceSystem? = SourceSystem.EROP
 ) = Address(
-    id = id,
     street = street,
     postcode = postcode,
     property = property,
@@ -25,6 +25,7 @@ fun buildAddressEntity(
     town = town,
     area = area,
     uprn = uprn,
+    dateCreated = dateCreated,
     createdBy = createdBy!!,
 )
 

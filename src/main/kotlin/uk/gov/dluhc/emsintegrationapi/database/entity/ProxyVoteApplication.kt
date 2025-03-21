@@ -1,20 +1,20 @@
 package uk.gov.dluhc.emsintegrationapi.database.entity
 
+import jakarta.persistence.CollectionTable
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.Version
+import jakarta.validation.Valid
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
-import javax.persistence.CollectionTable
-import javax.persistence.ElementCollection
-import javax.persistence.Embedded
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.Version
-import javax.validation.Valid
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)

@@ -1,11 +1,9 @@
 package uk.gov.dluhc.emsintegrationapi.rest.postal
 
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.CacheManager
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
@@ -14,20 +12,14 @@ import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
-import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_99
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_INVALID
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.PostalIntegrationTestHelpers
+import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
 
-class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
-    @Autowired
-    private lateinit var cacheManager: CacheManager
-
-    @Autowired
-    private lateinit var wireMockService: WiremockService
-
+internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var webClient: WebTestClient
 
@@ -36,9 +28,6 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Autowired
     private lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
-
-    @Autowired
-    private lateinit var queueMessagingTemplate: QueueMessagingTemplate
 
     private var apiClient: ApiClient? = null
 
@@ -50,13 +39,16 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
     fun setup() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        ClearDownUtils.clearDownRecords(postalRepository = postalVoteApplicationRepository)
+        ClearDownUtils.clearDownRecords(
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository
+        )
         apiClient = ApiClient(webClient, apiProperties)
         testHelpers =
             PostalIntegrationTestHelpers(
                 wiremockService = wireMockService,
                 postalVoteApplicationRepository = postalVoteApplicationRepository,
-                queueMessagingTemplate = queueMessagingTemplate,
+                queueMessagingTemplate = sqsMessagingTemplate,
             )
         testHelpers!!.givenEroIdAndGssCodesMapped()
     }
@@ -85,8 +77,10 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         responseSpec.expectStatus().isBadRequest
 
         // And it has an error message of "The page size must be greater than or equal to 1 and less than or equal to 50"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The page size must be greater than or equal to 1 and less than or equal to 50")
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(
+            message!!.message,
+        ).isEqualTo("getPostalVoteApplications.pageSize: The page size must be greater than or equal to 1 and less than or equal to 50")
     }
 
     @Test
@@ -126,15 +120,15 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
 
-        // And it has an error message of "The EROCertificateMapping for certificateSerial=[INVALID_SERIAL_NUM] could not be found"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The EROCertificateMapping for certificateSerial=[$CERTIFICATE_SERIAL_NUM_INVALID] could not be found")
+        // And it has an error message of "EROCertificateMapping for certificateSerial=[INVALID_SERIAL_NUM] not found"
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(message!!.message).isEqualTo("EROCertificateMapping for certificateSerial=[$CERTIFICATE_SERIAL_NUM_INVALID] not found")
     }
 
     @Test
     fun `System returns http status 500 if ERO could not process the get mapping request`() {
         // Given the ERO could not process the get mapping request for CERTIFICATE_SERIAL_NUM_99
-        wireMockService.stubIerApiGetEroIdentifierThrowsInternalServerError(CERTIFICATE_SERIAL_NUM_99)
+        wireMockService.stubIerInternalServerError()
 
         // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_99
         val responseSpec =
@@ -149,18 +143,14 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         responseSpec.expectStatus().is5xxServerError
 
         // And it has an error message of "Unable to retrieve EROCertificateMapping for certificate serial [CERTIFICATE_SERIAL_NUM_99] due to error: [500 Server Error: \"Error\"]"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(
-            message,
-        ).isEqualTo(
-            "Unable to retrieve EROCertificateMapping for certificate serial [$CERTIFICATE_SERIAL_NUM_99] due to error: [500 Server Error: \"Error\"]",
-        )
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(message!!.message).isEqualTo("Error getting eroId for certificate serial")
     }
 
     @Test
     fun `System returns http status 404 if ERO Mapping Id does not exist`() {
         // Given the ERO Id "camden-city-council" does not exist in ERO
-        wireMockService.stubEroManagementGetEroThrowsNotFoundError("camden-city-council")
+        wireMockService.stubIerApiGetNoEros()
 
         // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
@@ -174,15 +164,15 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
 
-        // And it has an error message of "The ERO camden-city-council could not be found"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The ERO camden-city-council could not be found")
+        // And it has an error message of "EROCertificateMapping for certificateSerial=[1234567891] not found"
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(message!!.message).isEqualTo("EROCertificateMapping for certificateSerial=[1234567891] not found")
     }
 
     @Test
     fun `System returns http status 500 if ERO could not process the get gss code request`() {
         // Given the ERO could not process the get gss codes request for "camden-city-council"
-        wireMockService.stubEroManagementGetEroThrowsInternalServerError("camden-city-council")
+        wireMockService.stubIerInternalServerError()
 
         // When I send a get postal vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
         val responseSpec =
@@ -196,11 +186,11 @@ class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 500
         responseSpec.expectStatus().is5xxServerError
 
-        // And the error message contains "Unable to retrieve GSS Codes for camden-city-council due to error: [500 Internal Server Error from GET"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
+        // And it has an error message of "Error getting eroId for certificate serial"
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
         assertThat(
-            message,
-        ).startsWith("Unable to retrieve GSS Codes for camden-city-council due to error: [500 Internal Server Error from GET")
+            message!!.message,
+        ).isEqualTo("Error getting eroId for certificate serial")
     }
 
     @Test

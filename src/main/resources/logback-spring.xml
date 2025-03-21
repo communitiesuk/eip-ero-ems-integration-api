@@ -3,6 +3,11 @@
 <configuration>
     <springProperty source="spring.application.name" name="service_name"/>
 
+    <!--
+   Logging configuration for when the application is run with a profile `jsonLogging`, resulting in log messages
+   being written as a structured json object graph.
+   Typically used in deployed environments where the spring profile is set to `jsonLogging` by `infra`
+   -->
     <springProfile name="jsonLogging">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
@@ -27,6 +32,18 @@
         </appender>
     </springProfile>
 
+    <!--
+    Logging configuration for when the application is not run with a profile `jsonLogging`, resulting in log messages
+    being written in a standard string format.
+    Typically used when the application is being run locally / docker-compose
+    This uses the standard Spring Boot logback configuration, including console appender and pattern.
+
+    Unit and integration tests use the logging configuration `logback-test.xml` in the test resources.
+
+    To customise log format output, unless it is agreed as a standard by the team, it is not recommended to add an appender
+    pattern here. Instead, refer to https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-logging.html#boot-features-custom-log-configuration
+    and use local environment variables such as `CONSOLE_LOG_PATTERN` or `LOG_DATEFORMAT_PATTERN` etc.
+    -->
     <springProfile name="!jsonLogging">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>

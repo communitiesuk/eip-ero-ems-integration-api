@@ -65,8 +65,8 @@ internal class ProxyVoteApplicationServiceTest {
     }
 
     @BeforeEach
-    private fun setup() {
-        given { retrieveGssCodeService.getGssCodeFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+    public fun setup() {
+        given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
             GSS_CODES
         )
     }

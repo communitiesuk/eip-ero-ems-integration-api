@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers
 
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
+import io.awspring.cloud.sqs.operations.SqsTemplate
 import mu.KLogging
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.await
@@ -30,26 +30,40 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetai
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetails
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerLocalAuthorityDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.validateObjects
 import java.time.Instant
 import java.time.Period
 import java.util.concurrent.TimeUnit
 import java.util.stream.IntStream
+import kotlin.jvm.optionals.getOrNull
 
 class PostalIntegrationTestHelpers(
     private val wiremockService: WiremockService,
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository? = null,
-    private val queueMessagingTemplate: QueueMessagingTemplate,
+    private val queueMessagingTemplate: SqsTemplate,
     private val messageSenderPostal: MessageSender<PostalVoteApplicationMessage>? = null,
 ) {
-    val logger = KLogging().logger
+    private val logger = KLogging().logger
 
     fun givenEroIdAndGssCodesMapped() {
         // Given the certificate serial number "1234567891" mapped to the ERO Id "camden-city-council"
-        wiremockService.stubIerApiGetEroIdentifier("1234567891", "camden-city-council")
-
         // And the gss codes "E12345678" and "E12345679" mapped to the ERO Id
-        wiremockService.stubEroManagementGetEro("camden-city-council", "E12345678", "E12345679")
+        wiremockService.stubIerApiGetEros(
+            listOf(
+                buildIerEroDetails(
+                    eroIdentifier = "camden-city-council",
+                    name = "Camden City Council",
+                    localAuthorities =
+                    listOf(
+                        buildIerLocalAuthorityDetails(gssCode = "E12345678"),
+                        buildIerLocalAuthorityDetails(gssCode = "E12345679"),
+                    ),
+                    activeClientCertificateSerials = listOf("1234567891"),
+                ),
+            ),
+        )
     }
 
     fun createPostalApplicationWithApplicationId(
@@ -72,10 +86,12 @@ class PostalIntegrationTestHelpers(
 
     fun readMessage(queueName: String): EmsConfirmedReceiptMessage? {
         val message =
-            queueMessagingTemplate.receiveAndConvert(
-                queueName,
-                EmsConfirmedReceiptMessage::class.java,
-            )
+            queueMessagingTemplate
+                .receive(
+                    queueName,
+                    EmsConfirmedReceiptMessage::class.java,
+                ).map { it.payload }
+                .getOrNull()
         return message
     }
 
@@ -99,7 +115,8 @@ class PostalIntegrationTestHelpers(
             .atMost(2, TimeUnit.SECONDS)
             .untilAsserted {
                 val actualMessage = readMessage(queueName)
-                Assertions.assertThat(actualMessage)
+                Assertions
+                    .assertThat(actualMessage)
                     .isNotNull
                     .isEqualTo(expectedMessage)
             }
@@ -220,7 +237,8 @@ class PostalIntegrationTestHelpers(
         postalVoteApplicationsMap: Map<String, PostalVoteApplication>,
     ) {
         postalApplications!!.postalVotes!!.forEach { postalVote ->
-            PostalVoteAssert.assertThat(postalVote)
+            PostalVoteAssert
+                .assertThat(postalVote)
                 .hasCorrectFieldsFromPostalApplication(postalVoteApplicationsMap[postalVote.id]!!)
                 .hasSignature(SIGNATURE_BASE64_STRING)
                 .hasSignatureWaiverReason("false")

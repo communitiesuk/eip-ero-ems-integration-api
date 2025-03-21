@@ -2,7 +2,6 @@ package uk.gov.dluhc.emsintegrationapi.rest.healthcheck
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.returnResult
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
@@ -11,9 +10,7 @@ data class HealthStatus(
     val status: String,
 )
 
-class HealthCheckIntegrationTest : IntegrationTest() {
-    @Autowired
-    private lateinit var webTestClient: WebTestClient
+internal class HealthCheckIntegrationTest : IntegrationTest() {
 
     var apiHeaderSpec: WebTestClient.RequestHeadersSpec<*>? = null
     var apiResponseSpec: WebTestClient.ResponseSpec? = null

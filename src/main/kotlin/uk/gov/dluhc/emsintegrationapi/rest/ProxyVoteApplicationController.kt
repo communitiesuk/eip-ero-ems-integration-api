@@ -1,5 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
@@ -21,8 +23,6 @@ import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.P
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
 import uk.gov.dluhc.emsintegrationapi.service.ProxyVoteApplicationService
-import javax.validation.Valid
-import javax.validation.constraints.Pattern
 
 private val logger = KotlinLogging.logger { }
 
@@ -30,21 +30,24 @@ private val logger = KotlinLogging.logger { }
 @CrossOrigin
 @Validated
 @RequestMapping("/proxyvotes")
-class ProxyVoteApplicationController(private val proxyVoteApplicationService: ProxyVoteApplicationService) {
-
+class ProxyVoteApplicationController(
+    private val proxyVoteApplicationService: ProxyVoteApplicationService,
+) {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     fun getProxyVoteApplications(
         authentication: Authentication,
         @RequestParam(
             name = PAGE_SIZE_PARAM,
-            required = false
+            required = false,
         )
         @ValidPageSize
-        pageSize: Int?
+        pageSize: Int?,
     ): ProxyVoteApplications {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing a get proxy vote applications request with page size =$pageSize and certificate serial no =$serialNumber" }
+        logger.info {
+            "Processing a get proxy vote applications request with page size =$pageSize and certificate serial no =$serialNumber"
+        }
         return proxyVoteApplicationService.getProxyVoteApplications(serialNumber, pageSize)
     }
 
@@ -57,13 +60,15 @@ class ProxyVoteApplicationController(private val proxyVoteApplicationService: Pr
         @PathVariable(name = ApplicationConstants.APPLICATION_ID)
         @Pattern(
             regexp = ApplicationConstants.APPLICATION_ID_REGEX,
-            message = ApplicationConstants.APPLICATION_ID_ERROR_MESSAGE
+            message = ApplicationConstants.APPLICATION_ID_ERROR_MESSAGE,
         )
-        applicationId: String
+        applicationId: String,
     ) {
         logger.info { "DELETE: Processing EMS confirmation of a proxy vote application" }
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing EMS confirmation of a proxy vote application with the id $applicationId and certificate serial no=$serialNumber" }
+        logger.info {
+            "Processing EMS confirmation of a proxy vote application with the id $applicationId and certificate serial no=$serialNumber"
+        }
         proxyVoteApplicationService.confirmReceipt(serialNumber, applicationId, EMSApplicationResponse())
     }
 
@@ -74,12 +79,17 @@ class ProxyVoteApplicationController(private val proxyVoteApplicationService: Pr
     fun emsAcceptedByPost(
         authentication: Authentication,
         @PathVariable(name = ApplicationConstants.APPLICATION_ID)
-        @Pattern(regexp = ApplicationConstants.APPLICATION_ID_REGEX, message = ApplicationConstants.APPLICATION_ID_ERROR_MESSAGE)
+        @Pattern(
+            regexp = ApplicationConstants.APPLICATION_ID_REGEX,
+            message = ApplicationConstants.APPLICATION_ID_ERROR_MESSAGE,
+        )
         applicationId: String,
-        @Valid @RequestBody request: EMSApplicationResponse = EMSApplicationResponse()
+        @Valid @RequestBody request: EMSApplicationResponse = EMSApplicationResponse(),
     ) {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing EMS confirmation of a proxy vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}" }
+        logger.info {
+            "Processing EMS confirmation of a proxy vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}"
+        }
         proxyVoteApplicationService.confirmReceipt(serialNumber, applicationId, request)
     }
 
@@ -89,12 +99,17 @@ class ProxyVoteApplicationController(private val proxyVoteApplicationService: Pr
     fun emsAccepted(
         authentication: Authentication,
         @PathVariable(name = ApplicationConstants.APPLICATION_ID)
-        @Pattern(regexp = ApplicationConstants.APPLICATION_ID_REGEX, message = ApplicationConstants.APPLICATION_ID_ERROR_MESSAGE)
+        @Pattern(
+            regexp = ApplicationConstants.APPLICATION_ID_REGEX,
+            message = ApplicationConstants.APPLICATION_ID_ERROR_MESSAGE,
+        )
         applicationId: String,
-        @Valid @RequestBody request: EMSApplicationResponse = EMSApplicationResponse()
+        @Valid @RequestBody request: EMSApplicationResponse = EMSApplicationResponse(),
     ) {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing EMS confirmation of a proxy vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}" }
+        logger.info {
+            "Processing EMS confirmation of a proxy vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}"
+        }
         proxyVoteApplicationService.confirmReceipt(serialNumber, applicationId, request)
     }
 }

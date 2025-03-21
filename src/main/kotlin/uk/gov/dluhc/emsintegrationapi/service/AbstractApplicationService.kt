@@ -17,33 +17,43 @@ abstract class AbstractApplicationService(
 ) {
     protected fun getGssCodes(certificateSerialNumber: String): List<String> {
         logger.info { "Fetching GSS Codes for $certificateSerialNumber" }
-        return retrieveGssCodeService.getGssCodeFromCertificateSerial(certificateSerialNumber)
+        return retrieveGssCodeService.getGssCodesFromCertificateSerial(certificateSerialNumber)
     }
 
-    protected fun doConfirmedReceiptApplicationStatus(request: EMSApplicationResponse, applicationDetails: ApplicationDetails) {
+    protected fun doConfirmedReceiptApplicationStatus(
+        request: EMSApplicationResponse,
+        applicationDetails: ApplicationDetails,
+    ) {
         with(applicationDetails) {
-            emsStatus = when (request.status) {
-                EMSApplicationStatus.SUCCESS -> ApplicationDetails.EmsStatus.SUCCESS
-                EMSApplicationStatus.FAILURE -> ApplicationDetails.EmsStatus.FAILURE
-            }
+            emsStatus =
+                when (request.status) {
+                    EMSApplicationStatus.SUCCESS -> ApplicationDetails.EmsStatus.SUCCESS
+                    EMSApplicationStatus.FAILURE -> ApplicationDetails.EmsStatus.FAILURE
+                }
             emsMessage = request.message
             emsDetails = request.details
         }
     }
 
-    protected fun sendMessage(request: EMSApplicationResponse, applicationId: String, isFromApplicationsApi: Boolean? = null) {
-        val targetQueueName = if (isFromApplicationsApi == true) QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE else queueName
+    protected fun sendMessage(
+        request: EMSApplicationResponse,
+        applicationId: String,
+        isFromApplicationsApi: Boolean? = null,
+    ) {
+        val targetQueueName =
+            if (isFromApplicationsApi == true) QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE else queueName
         messageSender.send(
             EmsConfirmedReceiptMessage(
                 id = applicationId,
-                status = when (request.status) {
+                status =
+                when (request.status) {
                     EMSApplicationStatus.SUCCESS -> EmsConfirmedReceiptMessage.Status.SUCCESS
                     EMSApplicationStatus.FAILURE -> EmsConfirmedReceiptMessage.Status.FAILURE
                 },
                 message = request.message,
-                details = request.details
+                details = request.details,
             ),
-            targetQueueName
+            targetQueueName,
         )
     }
 }

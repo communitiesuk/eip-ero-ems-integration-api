@@ -1,8 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.logging
 
 import ch.qos.logback.classic.Level
-import com.amazonaws.services.sqs.AmazonSQSAsync
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
+import io.awspring.cloud.sqs.operations.SqsSendOptions
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.AfterEach
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.cache.CacheManager
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.CORRELATION_ID
@@ -22,11 +20,12 @@ import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.config.MESSAGE_ID
 import uk.gov.dluhc.emsintegrationapi.config.REQUEST_ID_HEADER
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
+import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender.Companion.logs
-import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ILoggingEventAssert.Companion.assertThat
+import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 import java.util.UUID.randomUUID
 import java.util.concurrent.TimeUnit
@@ -41,8 +40,6 @@ import java.util.concurrent.TimeUnit
  * These tests do not include all controllers, listeners e.t.c. We simply test one of each to prove the mdc logging is in place.
  */
 internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
-    @Autowired
-    protected lateinit var sqsMessagingTemplate: QueueMessagingTemplate
 
     @Autowired
     protected lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
@@ -51,19 +48,10 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
     protected lateinit var postalApplicationQueueName: String
 
     @Autowired
-    protected lateinit var amazonSQSAsync: AmazonSQSAsync
-
-    @Autowired
-    protected lateinit var wireMockService: WiremockService
-
-    @Autowired
     protected lateinit var webClient: WebTestClient
 
     @Autowired
     protected lateinit var apiProperties: ApiProperties
-
-    @Autowired
-    protected lateinit var cacheManager: CacheManager
 
     @AfterEach
     fun tearDown() {
@@ -81,8 +69,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
 
         @BeforeEach
         fun setupWiremockStubs() {
-            wireMockService.stubIerApiGetEroIdentifier(CERTIFICATE_SERIAL_NUMBER, ERO_ID)
-            wireMockService.stubEroManagementGetEro(ERO_ID)
+            wireMockService.stubIerApiGetEros(CERTIFICATE_SERIAL_NUMBER, ERO_ID, listOf(getRandomGssCode()))
         }
 
         @Test
@@ -109,7 +96,6 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
                     assertThat(it).`as`("Message: ${it.message}").hasCorrelationId(correlationId)
                 }
                 wireMockService.verifyIerApiRequestWithCorrelationId(correlationId)
-                wireMockService.verifyEroManagementApiRequestWithCorrelationId(correlationId)
             }
         }
 
@@ -139,7 +125,6 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
                     assertThat(it).`as`("Message: ${it.message}").hasCorrelationId(expectedCorrelationId)
                 }
                 wireMockService.verifyIerApiRequestWithCorrelationId(expectedCorrelationId)
-                wireMockService.verifyEroManagementApiRequestWithCorrelationId(expectedCorrelationId)
             }
         }
 
@@ -204,7 +189,9 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         fun deletePostalRecordsBefore() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
-                amazonSQSAsync = amazonSQSAsync,
+                registerCheckRepository = registerCheckRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
+                sqsAsyncClient = sqsAsyncClient,
                 queueName = postalApplicationQueueName
             )
         }
@@ -213,7 +200,9 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         fun deletePostalRecordsAfter() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
-                amazonSQSAsync = amazonSQSAsync,
+                registerCheckRepository = registerCheckRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
+                sqsAsyncClient = sqsAsyncClient,
                 queueName = postalApplicationQueueName
             )
         }
@@ -224,10 +213,13 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
 
             val expectedCorrelationId = randomUUID().toString().replace("-", "")
 
-            sqsMessagingTemplate.convertAndSend(
-                postalApplicationQueueName,
-                payload,
-                mapOf("x-correlation-id" to expectedCorrelationId)
+            sqsMessagingTemplate.send(
+                { to: SqsSendOptions<PostalVoteApplicationMessage> ->
+                    to
+                        .queue(postalApplicationQueueName)
+                        .payload(payload)
+                        .headers(mapOf("x-correlation-id" to expectedCorrelationId))
+                }
             )
 
             await.atMost(10, TimeUnit.SECONDS).untilAsserted {

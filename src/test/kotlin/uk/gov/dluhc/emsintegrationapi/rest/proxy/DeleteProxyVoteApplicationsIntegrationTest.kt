@@ -1,13 +1,11 @@
 package uk.gov.dluhc.emsintegrationapi.rest.proxy
 
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.CacheManager
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
@@ -19,20 +17,14 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
-import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.ProxyIntegrationTestHelpers
+import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
 import java.util.concurrent.TimeUnit
 
-class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
-    @Autowired
-    private lateinit var cacheManager: CacheManager
-
-    @Autowired
-    private lateinit var wireMockService: WiremockService
-
+internal class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var webClient: WebTestClient
 
@@ -42,9 +34,6 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var proxyVoteApplicationRepository: ProxyVoteApplicationRepository
 
-    @Autowired
-    private lateinit var queueMessagingTemplate: QueueMessagingTemplate
-
     private var apiClient: ApiClient? = null
 
     private var fixtures: ProxyIntegrationTestHelpers? = null
@@ -53,13 +42,16 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     fun setup() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        ClearDownUtils.clearDownRecords(proxyRepository = proxyVoteApplicationRepository)
+        ClearDownUtils.clearDownRecords(
+            proxyRepository = proxyVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository
+        )
         apiClient = ApiClient(webClient, apiProperties)
         fixtures =
             ProxyIntegrationTestHelpers(
                 wiremockService = wireMockService,
                 proxyVoteApplicationRepository = proxyVoteApplicationRepository,
-                queueMessagingTemplate = queueMessagingTemplate,
+                queueMessagingTemplate = sqsMessagingTemplate,
             )
         fixtures!!.givenEroIdAndGssCodesMapped()
     }
@@ -68,7 +60,10 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     fun tearDown() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        ClearDownUtils.clearDownRecords(proxyRepository = proxyVoteApplicationRepository)
+        ClearDownUtils.clearDownRecords(
+            proxyRepository = proxyVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository
+        )
     }
 
     @Test
@@ -88,9 +83,11 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 400
         responseSpec.expectStatus().isBadRequest
 
-        // And it has an error message of "The application id must match the pattern ^[a-fA-F\d]{24}$"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The application id must match the pattern ^[a-fA-F\\d]{24}$")
+        // And it has an error message of "emsAcceptedByDelete.applicationId: The application id must match the pattern ^[a-fA-F\d]{24}$"
+        val errorResponse = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(
+            errorResponse!!.message,
+        ).isEqualTo("emsAcceptedByDelete.applicationId: The application id must match the pattern ^[a-fA-F\\d]{24}$")
     }
 
     @Test
@@ -102,8 +99,8 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         responseSpec.expectStatus().isNotFound
 
         // And it has an error message of "The Proxy application could not be found with id `APPLICATION_ID_1`"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Proxy application could not be found with id `$APPLICATION_ID_1`")
+        val errorResponse = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(errorResponse!!.message).isEqualTo("The Proxy application could not be found with id `$APPLICATION_ID_1`")
     }
 
     @Test
@@ -118,8 +115,8 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         responseSpec.expectStatus().isNotFound
 
         // And it has an error message of "The Proxy application could not be found with id `APPLICATION_ID_2`"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Proxy application could not be found with id `$APPLICATION_ID_2`")
+        val errorResponse = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(errorResponse!!.message).isEqualTo("The Proxy application could not be found with id `$APPLICATION_ID_2`")
     }
 
     @Test
@@ -168,6 +165,7 @@ class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         // And there will be no confirmation message on the queue "deleted-proxy-application"
         await
             .pollDelay(2, TimeUnit.SECONDS)
+            .timeout(20L, TimeUnit.SECONDS)
             .untilAsserted { assertThat(fixtures!!.readMessage("deleted-proxy-application")).isNull() }
 
         // And I received the http status 204

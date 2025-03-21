@@ -1,16 +1,28 @@
 package uk.gov.dluhc.emsintegrationapi.database.repository
 
 import org.hibernate.engine.spi.SharedSessionContractImplementor
-import org.hibernate.id.UUIDGenerator
-import java.io.Serializable
+import org.hibernate.generator.BeforeExecutionGenerator
+import org.hibernate.generator.EventType
+import java.util.EnumSet
+import java.util.UUID
 
-class UseExistingOrGenerateUUID : UUIDGenerator() {
-    companion object {
-        const val NAME = "uk.gov.dluhc.emsintegrationapi.database.repository.UseExistingOrGenerateUUID"
+class UseExistingOrGenerateUUID : BeforeExecutionGenerator {
+
+    override fun getEventTypes(): EnumSet<EventType> {
+        return EnumSet.of(EventType.INSERT)
     }
 
-    override fun generate(session: SharedSessionContractImplementor, entity: Any?): Serializable {
-        val id = session.getEntityPersister(null, entity).classMetadata.getIdentifier(entity, session)
-        return id ?: super.generate(session, entity)
+    override fun generate(
+        session: SharedSessionContractImplementor,
+        owner: Any?,
+        entity: Any?,
+        eventType: EventType?
+    ): Any {
+        val entityPersister = entity.let { session.getEntityPersister(null, it!!) }
+        val id = entityPersister.classMetadata?.getIdentifier(entity, session)
+        if (id != null) {
+            return id
+        }
+        return UUID.randomUUID()
     }
 }

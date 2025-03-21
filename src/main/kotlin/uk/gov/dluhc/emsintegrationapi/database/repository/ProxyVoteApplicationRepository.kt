@@ -43,6 +43,7 @@ interface ProxyVoteApplicationRepository :
         FROM ProxyVoteApplication app
         WHERE app.status = 'RECEIVED' AND app.dateCreated < :createdBefore
         GROUP BY app.applicationDetails.gssCode
+        ORDER BY app.applicationDetails.gssCode
         """
     )
     fun summarisePendingProxyVotesByGssCode(createdBefore: Instant): List<PendingDownloadsSummaryByGssCode>

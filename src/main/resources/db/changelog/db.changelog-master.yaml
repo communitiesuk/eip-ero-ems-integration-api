@@ -44,4 +44,20 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0022_EROPSPT-350_add_index_on_status.xml
   - include:
-      file: db/changelog/create/0023_EIP1-11198_add-is-from-applications-api-flag.xml
+      file: /db/changelog/create/0023_EIP1-11111_register_check.xml
+  - include:
+      file: /db/changelog/create/0023_EIP1-11198_add-is-from-applications-api-flag.xml
+  - include:
+      file: /db/changelog/create/0024_EIP1-11111_personal_detail.xml
+  - include:
+      file: /db/changelog/create/0025_EIP1-11111_voting_arrangement.xml
+  - include:
+      file: /db/changelog/create/0026_EIP1-11111_register_check_match.xml
+  - include:
+      file: /db/changelog/create/0027_EIP1-11111_register_check_result_data.xml
+  - include:
+      file: /db/changelog/create/0028_EIP1-11113_address_created_by_version_nullable.xml
+  - include:
+      file: /db/changelog/create/0029_EIP1-11113_register_check_created_by_version_nullable.xml
+  - include:
+      file: /db/changelog/create/0030_EIP1-11113_date_created_nullable.xml

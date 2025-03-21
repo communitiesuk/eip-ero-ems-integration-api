@@ -1,7 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.messaging.postal
 
-import com.amazonaws.services.sqs.AmazonSQSAsync
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -15,23 +13,14 @@ import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteApplicationMessageMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
-import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.PostalIntegrationTestHelpers
 
-class SavePostalVoteApplicationIntegrationTest : IntegrationTest() {
-    @Autowired
-    private lateinit var wireMockService: WiremockService
-
-    @Autowired
-    private lateinit var queueMessagingTemplate: QueueMessagingTemplate
+internal class SavePostalVoteApplicationIntegrationTest : IntegrationTest() {
 
     @Autowired
     protected lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
-
-    @Autowired
-    protected lateinit var amazonSQSAsync: AmazonSQSAsync
 
     @Autowired
     protected lateinit var messageSender: MessageSender<PostalVoteApplicationMessage>
@@ -50,12 +39,13 @@ class SavePostalVoteApplicationIntegrationTest : IntegrationTest() {
             PostalIntegrationTestHelpers(
                 wiremockService = wireMockService,
                 postalVoteApplicationRepository = postalVoteApplicationRepository,
-                queueMessagingTemplate = queueMessagingTemplate,
+                queueMessagingTemplate = sqsMessagingTemplate,
                 messageSenderPostal = messageSender,
             )
         ClearDownUtils.clearDownRecords(
             postalRepository = postalVoteApplicationRepository,
-            amazonSQSAsync = amazonSQSAsync,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
+            sqsAsyncClient = sqsAsyncClient,
             queueName = removeApplicationEmsDataQueueName,
         )
     }
@@ -64,7 +54,8 @@ class SavePostalVoteApplicationIntegrationTest : IntegrationTest() {
     fun deletePostalRecordsAfter() {
         ClearDownUtils.clearDownRecords(
             postalRepository = postalVoteApplicationRepository,
-            amazonSQSAsync = amazonSQSAsync,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
+            sqsAsyncClient = sqsAsyncClient,
             queueName = removeApplicationEmsDataQueueName,
         )
     }

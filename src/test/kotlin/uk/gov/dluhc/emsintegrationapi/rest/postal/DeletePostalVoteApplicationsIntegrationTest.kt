@@ -1,13 +1,11 @@
 package uk.gov.dluhc.emsintegrationapi.rest.postal
 
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.CacheManager
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
@@ -19,20 +17,14 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
-import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.PostalIntegrationTestHelpers
+import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
 import java.util.concurrent.TimeUnit
 
-class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
-    @Autowired
-    private lateinit var cacheManager: CacheManager
-
-    @Autowired
-    private lateinit var wireMockService: WiremockService
-
+internal class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var webClient: WebTestClient
 
@@ -42,9 +34,6 @@ class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
 
-    @Autowired
-    private lateinit var queueMessagingTemplate: QueueMessagingTemplate
-
     private var apiClient: ApiClient? = null
 
     private var testHelpers: PostalIntegrationTestHelpers? = null
@@ -53,13 +42,16 @@ class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
     fun setup() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        ClearDownUtils.clearDownRecords(postalRepository = postalVoteApplicationRepository)
+        ClearDownUtils.clearDownRecords(
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository
+        )
         apiClient = ApiClient(webClient, apiProperties)
         testHelpers =
             PostalIntegrationTestHelpers(
                 wiremockService = wireMockService,
                 postalVoteApplicationRepository = postalVoteApplicationRepository,
-                queueMessagingTemplate = queueMessagingTemplate,
+                queueMessagingTemplate = sqsMessagingTemplate,
             )
         testHelpers!!.givenEroIdAndGssCodesMapped()
     }
@@ -68,7 +60,10 @@ class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
     fun tearDown() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        ClearDownUtils.clearDownRecords(postalRepository = postalVoteApplicationRepository)
+        ClearDownUtils.clearDownRecords(
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository
+        )
     }
 
     @Test
@@ -88,9 +83,11 @@ class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 400
         responseSpec.expectStatus().isBadRequest
 
-        // And it has an error message of "The application id must match the pattern ^[a-fA-F\d]{24}$"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The application id must match the pattern ^[a-fA-F\\d]{24}$")
+        // And it has an error message of "emsAcceptedByDelete.applicationId: The application id must match the pattern ^[a-fA-F\d]{24}$"
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(
+            message!!.message,
+        ).isEqualTo("emsAcceptedByDelete.applicationId: The application id must match the pattern ^[a-fA-F\\d]{24}\$")
     }
 
     @Test
@@ -101,9 +98,11 @@ class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
 
-        // And it has an error message of "The Postal application could not be found with id `APPLICATION_ID_1`
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_1`")
+        // And it has an error message of "The Postal application could not be found with id `APPLICATION_ID_1`"
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(
+            message!!.message,
+        ).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_1`")
     }
 
     @Test
@@ -118,8 +117,10 @@ class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
         responseSpec.expectStatus().isNotFound
 
         // And it has an error message of "The Postal application could not be found with id `APPLICATION_ID_2`"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_2`")
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(
+            message!!.message,
+        ).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_2`")
     }
 
     @Test
@@ -168,6 +169,7 @@ class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // And there will be no confirmation message on the queue "deleted-postal-application"
         await
             .pollDelay(2, TimeUnit.SECONDS)
+            .timeout(20, TimeUnit.SECONDS)
             .untilAsserted { assertThat(testHelpers!!.readMessage("deleted-postal-application")).isNull() }
 
         // And I received the http status 204

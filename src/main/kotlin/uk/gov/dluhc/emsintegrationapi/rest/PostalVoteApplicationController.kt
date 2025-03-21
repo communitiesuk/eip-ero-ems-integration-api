@@ -1,5 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
@@ -24,8 +26,6 @@ import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.P
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteApplications
 import uk.gov.dluhc.emsintegrationapi.service.PostalVoteApplicationService
-import javax.validation.Valid
-import javax.validation.constraints.Pattern
 
 private val logger = KotlinLogging.logger { }
 
@@ -33,21 +33,24 @@ private val logger = KotlinLogging.logger { }
 @CrossOrigin
 @Validated
 @RequestMapping("/postalvotes")
-class PostalVoteApplicationController(private val postalVoteApplicationService: PostalVoteApplicationService) {
-
+class PostalVoteApplicationController(
+    private val postalVoteApplicationService: PostalVoteApplicationService,
+) {
     @GetMapping
     @PreAuthorize(IS_AUTHENTICATED)
     fun getPostalVoteApplications(
         authentication: Authentication,
         @RequestParam(
             name = PAGE_SIZE_PARAM,
-            required = false
+            required = false,
         )
         @ValidPageSize
-        pageSize: Int?
+        pageSize: Int?,
     ): PostalVoteApplications {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing a get postal vote applications request with page size =$pageSize and certificate serial no =$serialNumber" }
+        logger.info {
+            "Processing a get postal vote applications request with page size =$pageSize and certificate serial no =$serialNumber"
+        }
         return postalVoteApplicationService.getPostalVoteApplications(serialNumber, pageSize)
     }
 
@@ -59,10 +62,12 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         authentication: Authentication,
         @PathVariable(name = APPLICATION_ID)
         @Pattern(regexp = APPLICATION_ID_REGEX, message = APPLICATION_ID_ERROR_MESSAGE)
-        applicationId: String
+        applicationId: String,
     ) {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing EMS confirmation of a postal vote application with id $applicationId, certificate serial no=$serialNumber" }
+        logger.info {
+            "Processing EMS confirmation of a postal vote application with id $applicationId, certificate serial no=$serialNumber"
+        }
         postalVoteApplicationService.confirmReceipt(serialNumber, applicationId, EMSApplicationResponse())
     }
 
@@ -75,10 +80,12 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         @PathVariable(name = APPLICATION_ID)
         @Pattern(regexp = APPLICATION_ID_REGEX, message = APPLICATION_ID_ERROR_MESSAGE)
         applicationId: String,
-        @Valid @RequestBody request: EMSApplicationResponse = EMSApplicationResponse()
+        @Valid @RequestBody request: EMSApplicationResponse = EMSApplicationResponse(),
     ) {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing EMS confirmation of a postal vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}" }
+        logger.info {
+            "Processing EMS confirmation of a postal vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}"
+        }
         postalVoteApplicationService.confirmReceipt(serialNumber, applicationId, request)
     }
 
@@ -90,10 +97,12 @@ class PostalVoteApplicationController(private val postalVoteApplicationService: 
         @PathVariable(name = APPLICATION_ID)
         @Pattern(regexp = APPLICATION_ID_REGEX, message = APPLICATION_ID_ERROR_MESSAGE)
         applicationId: String,
-        @Valid @RequestBody request: EMSApplicationResponse = EMSApplicationResponse()
+        @Valid @RequestBody request: EMSApplicationResponse = EMSApplicationResponse(),
     ) {
         val serialNumber = authentication.credentials.toString()
-        logger.info { "Processing EMS confirmation of a postal vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}" }
+        logger.info {
+            "Processing EMS confirmation of a postal vote application with id $applicationId, certificate serial no=$serialNumber and EMS status ${request.status}"
+        }
         postalVoteApplicationService.confirmReceipt(serialNumber, applicationId, request)
     }
 }

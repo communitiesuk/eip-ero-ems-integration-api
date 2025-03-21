@@ -1,8 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.messaging
 
 import ch.qos.logback.classic.Level
-import com.amazonaws.services.sqs.AmazonSQSAsync
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
+import io.awspring.cloud.sqs.operations.SqsSendOptions
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.AfterEach
@@ -28,19 +27,13 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplica
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.randomHexadecimalString
 import java.util.concurrent.TimeUnit
 
-class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
-
-    @Autowired
-    protected lateinit var sqsMessagingTemplate: QueueMessagingTemplate
+private class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
 
     @Autowired
     protected lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
 
     @Autowired
     protected lateinit var proxyVoteApplicationRepository: ProxyVoteApplicationRepository
-
-    @Autowired
-    protected lateinit var amazonSQSAsync: AmazonSQSAsync
 
     @Value("\${sqs.remove-application-ems-integration-data-queue-name}")
     protected lateinit var removeApplicationEmsDataQueueName: String
@@ -57,8 +50,8 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
         fun deletePostalRecordsBefore() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
-                proxyRepository = proxyVoteApplicationRepository,
-                amazonSQSAsync = amazonSQSAsync,
+                registerCheckRepository = registerCheckRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
                 queueName = removeApplicationEmsDataQueueName
             )
         }
@@ -67,8 +60,8 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
         fun deletePostalRecordsAfter() {
             ClearDownUtils.clearDownRecords(
                 postalRepository = postalVoteApplicationRepository,
-                proxyRepository = proxyVoteApplicationRepository,
-                amazonSQSAsync = amazonSQSAsync,
+                registerCheckRepository = registerCheckRepository,
+                registerCheckResultDataRepository = registerCheckResultDataRepository,
                 queueName = removeApplicationEmsDataQueueName
             )
         }
@@ -86,9 +79,12 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
                 POSTAL,
             )
 
-            sqsMessagingTemplate.convertAndSend(
-                removeApplicationEmsDataQueueName,
-                payload
+            sqsMessagingTemplate.send(
+                { to: SqsSendOptions<RemoveApplicationEmsIntegrationDataMessage> ->
+                    to
+                        .queue(removeApplicationEmsDataQueueName)
+                        .payload(payload)
+                }
             )
 
             await.atMost(10, TimeUnit.SECONDS).untilAsserted {
@@ -126,9 +122,12 @@ class IntegrationDataRemovalIntegrationTest : IntegrationTest() {
             PROXY,
         )
 
-        sqsMessagingTemplate.convertAndSend(
-            removeApplicationEmsDataQueueName,
-            payload
+        sqsMessagingTemplate.send(
+            { to: SqsSendOptions<RemoveApplicationEmsIntegrationDataMessage> ->
+                to
+                    .queue(removeApplicationEmsDataQueueName)
+                    .payload(payload)
+            }
         )
 
         await.atMost(10, TimeUnit.SECONDS).untilAsserted {

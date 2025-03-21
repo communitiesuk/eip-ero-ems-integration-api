@@ -3,15 +3,14 @@ package uk.gov.dluhc.emsintegrationapi.job
 import ch.qos.logback.classic.Level
 import org.apache.commons.lang3.StringUtils.deleteWhitespace
 import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.kotlin.await
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.CacheManager
 import uk.gov.dluhc.emsintegrationapi.config.ERO_CERTIFICATE_MAPPING_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
-import uk.gov.dluhc.emsintegrationapi.config.LocalStackContainerSettings
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
@@ -19,7 +18,6 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationR
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
-import uk.gov.dluhc.emsintegrationapi.testsupport.emails.EmailMessagesSentClient
 import uk.gov.dluhc.emsintegrationapi.testsupport.emails.LocalstackEmailMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.emails.buildLocalstackEmailMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsEntity
@@ -31,8 +29,9 @@ import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneOffset.UTC
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 
-class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
+internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
 
@@ -42,23 +41,15 @@ class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var pendingDownloadsMonitoringJob: PendingDownloadsMonitoringJob
 
-    @Autowired
-    protected lateinit var cacheManager: CacheManager
-
-    @Autowired
-    protected lateinit var emailMessagesSentClient: EmailMessagesSentClient
-
-    @Autowired
-    protected lateinit var localStackContainerSettings: LocalStackContainerSettings
-
     @BeforeEach
     fun setUp() {
         TestLogAppender.reset()
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         ClearDownUtils.clearDownRecords(
-            postalRepository = postalVoteApplicationRepository,
             proxyRepository = proxyVoteApplicationRepository,
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
         )
     }
 
@@ -68,8 +59,9 @@ class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         ClearDownUtils.clearDownRecords(
-            postalRepository = postalVoteApplicationRepository,
             proxyRepository = proxyVoteApplicationRepository,
+            postalRepository = postalVoteApplicationRepository,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
         )
     }
 
@@ -370,7 +362,9 @@ class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
                 htmlBody = emailText.trimIndent(),
                 timestamp = OffsetDateTime.now(UTC).toLocalDateTime().truncatedTo(ChronoUnit.SECONDS),
             )
-        assertEmailSent(expectedEmailRequest)
+        await.atMost(10, TimeUnit.SECONDS).untilAsserted {
+            assertEmailSent(expectedEmailRequest)
+        }
     }
 
     private fun createPostalApplicationWithEmsElectorId(

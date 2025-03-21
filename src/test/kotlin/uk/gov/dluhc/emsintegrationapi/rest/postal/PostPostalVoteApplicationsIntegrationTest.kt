@@ -1,13 +1,10 @@
 package uk.gov.dluhc.emsintegrationapi.rest.postal
 
-import com.amazonaws.services.sqs.AmazonSQSAsync
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.CacheManager
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
@@ -21,20 +18,14 @@ import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessag
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
-import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.PostalIntegrationTestHelpers
+import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
 import java.util.concurrent.TimeUnit
 
-class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
-    @Autowired
-    private lateinit var cacheManager: CacheManager
-
-    @Autowired
-    private lateinit var wireMockService: WiremockService
-
+internal class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var webClient: WebTestClient
 
@@ -43,12 +34,6 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Autowired
     private lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
-
-    @Autowired
-    private lateinit var queueMessagingTemplate: QueueMessagingTemplate
-
-    @Autowired
-    private lateinit var amazonSQSAsync: AmazonSQSAsync
 
     private var apiClient: ApiClient? = null
 
@@ -60,7 +45,8 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         ClearDownUtils.clearDownRecords(
             postalRepository = postalVoteApplicationRepository,
-            amazonSQSAsync = amazonSQSAsync,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
+            sqsAsyncClient = sqsAsyncClient,
             queueName = "deleted-postal-application",
         )
         apiClient = ApiClient(webClient, apiProperties)
@@ -68,7 +54,7 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
             PostalIntegrationTestHelpers(
                 wiremockService = wireMockService,
                 postalVoteApplicationRepository = postalVoteApplicationRepository,
-                queueMessagingTemplate = queueMessagingTemplate,
+                queueMessagingTemplate = sqsMessagingTemplate,
             )
         testHelpers!!.givenEroIdAndGssCodesMapped()
     }
@@ -91,9 +77,11 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 400
         responseSpec.expectStatus().isBadRequest
 
-        // And it has an error message of "The application id must match the pattern ^[a-fA-F\d]{24}$"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The application id must match the pattern ^[a-fA-F\\d]{24}$")
+        // And it has an error message of "emsAcceptedByPost.applicationId: The application id must match the pattern ^[a-fA-F\d]{24}$"
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(
+            message!!.message,
+        ).isEqualTo("emsAcceptedByPost.applicationId: The application id must match the pattern ^[a-fA-F\\d]{24}$")
     }
 
     @Test
@@ -106,8 +94,10 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         responseSpec.expectStatus().isNotFound
 
         // And it has an error message of "The Postal application could not be found with id `502cf250036469154b4f85aa`"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_1`")
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(
+            message!!.message,
+        ).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_1`")
     }
 
     @Test
@@ -123,8 +113,10 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         responseSpec.expectStatus().isNotFound
 
         // And it has an error message of "The Postal application could not be found with id `APPLICATION_ID_2`"
-        val message = responseSpec.returnResult(String::class.java).responseBody.blockFirst()
-        assertThat(message).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_2`")
+        val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
+        assertThat(
+            message!!.message,
+        ).isEqualTo("The Postal application could not be found with id `$APPLICATION_ID_2`")
     }
 
     @Test
@@ -201,6 +193,7 @@ class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // And there will be no confirmation message on the queue "deleted-postal-application"
         await
             .pollDelay(2, TimeUnit.SECONDS)
+            .timeout(20L, TimeUnit.SECONDS)
             .untilAsserted { assertThat(testHelpers!!.readMessage("deleted-postal-application")).isNull() }
 
         // And I received the http status 204

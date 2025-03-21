@@ -1,7 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.messaging.proxy
 
-import com.amazonaws.services.sqs.AmazonSQSAsync
-import io.awspring.cloud.messaging.core.QueueMessagingTemplate
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -15,23 +13,14 @@ import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteApplicationMessageMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
-import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplicationMessageDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.ProxyIntegrationTestHelpers
 
-class SaveProxyVoteApplicationIntegrationTest : IntegrationTest() {
-    @Autowired
-    private lateinit var wireMockService: WiremockService
-
-    @Autowired
-    private lateinit var queueMessagingTemplate: QueueMessagingTemplate
+internal class SaveProxyVoteApplicationIntegrationTest : IntegrationTest() {
 
     @Autowired
     protected lateinit var proxyVoteApplicationRepository: ProxyVoteApplicationRepository
-
-    @Autowired
-    protected lateinit var amazonSQSAsync: AmazonSQSAsync
 
     @Autowired
     protected lateinit var messageSender: MessageSender<ProxyVoteApplicationMessage>
@@ -50,12 +39,13 @@ class SaveProxyVoteApplicationIntegrationTest : IntegrationTest() {
             ProxyIntegrationTestHelpers(
                 wiremockService = wireMockService,
                 proxyVoteApplicationRepository = proxyVoteApplicationRepository,
-                queueMessagingTemplate = queueMessagingTemplate,
+                queueMessagingTemplate = sqsMessagingTemplate,
                 messageSenderProxy = messageSender,
             )
         ClearDownUtils.clearDownRecords(
             proxyRepository = proxyVoteApplicationRepository,
-            amazonSQSAsync = amazonSQSAsync,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
+            sqsAsyncClient = sqsAsyncClient,
             queueName = removeApplicationEmsDataQueueName,
         )
     }
@@ -64,7 +54,8 @@ class SaveProxyVoteApplicationIntegrationTest : IntegrationTest() {
     fun deleteProxyRecordsAfter() {
         ClearDownUtils.clearDownRecords(
             proxyRepository = proxyVoteApplicationRepository,
-            amazonSQSAsync = amazonSQSAsync,
+            registerCheckResultDataRepository = registerCheckResultDataRepository,
+            sqsAsyncClient = sqsAsyncClient,
             queueName = removeApplicationEmsDataQueueName,
         )
     }
