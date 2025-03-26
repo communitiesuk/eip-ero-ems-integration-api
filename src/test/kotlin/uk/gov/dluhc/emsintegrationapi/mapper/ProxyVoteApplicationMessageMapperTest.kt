@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants.Companion.APPLICATION_FIELDS_TO_IGNORE
@@ -41,6 +42,7 @@ internal class ProxyVoteApplicationMessageMapperTest {
                 assertThat(it.output.welshRejectionNotes).isNotNull()
                 assertThat(it.output.welshRejectedReasonItems?.isNotEmpty())
                 assertThat(it.output.isFromApplicationsApi).isNull()
+                assertThat(it.output.applicationDetails.emsStatus).isEqualTo(ApplicationDetails.EmsStatus.INIT)
             }
         }
     }

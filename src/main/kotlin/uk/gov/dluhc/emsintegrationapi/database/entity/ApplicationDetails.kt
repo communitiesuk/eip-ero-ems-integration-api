@@ -47,6 +47,7 @@ class ApplicationDetails(
 
     enum class EmsStatus {
         SUCCESS,
-        FAILURE
+        FAILURE,
+        INIT,
     }
 }
