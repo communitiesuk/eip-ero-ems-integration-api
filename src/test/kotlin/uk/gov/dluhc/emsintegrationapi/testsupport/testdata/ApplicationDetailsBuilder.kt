@@ -21,7 +21,6 @@ fun buildApplicationDetailsEntity(
     signatureBase64: String? = null,
     signatureWaived: Boolean? = null,
     signatureWaivedReason: String? = null,
-    emsStatus: ApplicationDetails.EmsStatus = ApplicationDetails.EmsStatus.INIT,
 ) = ApplicationDetails(
     createdAt = createdAt,
     gssCode = gssCode,
@@ -32,7 +31,7 @@ fun buildApplicationDetailsEntity(
     signatureWaivedReason = signatureWaivedReason,
     signatureWaived = signatureWaived,
     applicationStatus = applicationStatus,
-    emsStatus = emsStatus,
+    emsStatus = null,
     emsMessage = null,
     emsDetails = null
 )

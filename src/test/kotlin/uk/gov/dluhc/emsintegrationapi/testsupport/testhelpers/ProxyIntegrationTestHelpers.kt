@@ -10,7 +10,6 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
-import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails.EmsStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
@@ -292,7 +291,6 @@ class ProxyIntegrationTestHelpers(
         Assertions
             .assertThat(proxyVoteApplication.applicationDetails.signatureBase64)
             .isEqualTo(SIGNATURE_BASE64_STRING)
-        Assertions.assertThat(proxyVoteApplication.applicationDetails.emsStatus).isEqualTo(EmsStatus.INIT)
     }
 
     private fun <T> saveRecords(

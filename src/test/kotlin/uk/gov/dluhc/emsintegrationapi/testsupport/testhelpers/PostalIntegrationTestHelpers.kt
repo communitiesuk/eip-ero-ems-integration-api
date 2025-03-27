@@ -10,7 +10,6 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
-import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails.EmsStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
@@ -296,7 +295,6 @@ class PostalIntegrationTestHelpers(
         Assertions
             .assertThat(postalVoteApplication.applicationDetails.signatureBase64)
             .isEqualTo(SIGNATURE_BASE64_STRING)
-        Assertions.assertThat(postalVoteApplication.applicationDetails.emsStatus).isEqualTo(EmsStatus.INIT)
         Assertions.assertThat(postalVoteApplication.postalVoteDetails?.ballotOverseasAddress).isNotNull
         Assertions.assertThat(postalVoteApplication.postalVoteDetails?.ballotBfpoAddress).isNotNull
     }

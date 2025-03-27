@@ -3,7 +3,6 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicationDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails as ApprovalDetailsEntity
-import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails.EmsStatus as ApprovalDetailsEmsStatus
 
 @Component
 class ApplicationDetailsMapper(private val instantMapper: InstantMapper) {
@@ -19,7 +18,7 @@ class ApplicationDetailsMapper(private val instantMapper: InstantMapper) {
             signatureWaived = it.signatureWaived,
             signatureWaivedReason = it.signatureWaivedReason,
             applicationStatus = ApprovalDetailsEntity.ApplicationStatus.valueOf(it.applicationStatus.name),
-            emsStatus = ApprovalDetailsEmsStatus.INIT,
+            emsStatus = null,
             emsDetails = null,
             emsMessage = null
         )
