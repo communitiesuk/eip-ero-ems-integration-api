@@ -9,8 +9,8 @@
         <modifyDataType tableName="postal_vote_application" columnName="ems_status" newDataType="int"/>
         <modifyDataType tableName="proxy_vote_application" columnName="ems_status" newDataType="int"/>
         <rollback>
-            <modifyDataType tableName="postal_vote_application" columnName="ems_status" newDataType="int"/>
-            <modifyDataType tableName="proxy_vote_application" columnName="ems_status" newDataType="int"/>
+            <modifyDataType tableName="postal_vote_application" columnName="ems_status" newDataType="varchar(20)"/>
+            <modifyDataType tableName="proxy_vote_application" columnName="ems_status" newDataType="varchar(20)"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>
