@@ -49,7 +49,7 @@ class ApplicationDetails(
         REJECTED
     }
 
-    // NB this is persisted as ORDINAL so as new types must be added to the end of the list of constants
+    // NB this is persisted as ORDINAL so new types must be added to the end of the list of constants
     enum class EmsStatus {
         SUCCESS,
         FAILURE
