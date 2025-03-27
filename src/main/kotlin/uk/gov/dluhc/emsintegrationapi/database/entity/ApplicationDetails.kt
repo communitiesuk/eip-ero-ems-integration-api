@@ -31,7 +31,6 @@ class ApplicationDetails(
     @field:Size(max = 500)
     val signatureWaivedReason: String?,
 
-    @Enumerated(EnumType.ORDINAL)
     var emsStatus: EmsStatus?,
 
     var emsMessage: String?,
