@@ -33,6 +33,7 @@ class ApplicationDetails(
     @field:Size(max = 500)
     val signatureWaivedReason: String?,
 
+    // Hibernate 6 gets confused unless the column type is stated explicitly
     @JdbcTypeCode(SqlTypes.INTEGER)
     @Enumerated(EnumType.ORDINAL)
     var emsStatus: EmsStatus?,
@@ -48,6 +49,7 @@ class ApplicationDetails(
         REJECTED
     }
 
+    // NB this is persisted as ORDINAL so as new types must be added to the end of the list of constants
     enum class EmsStatus {
         SUCCESS,
         FAILURE
