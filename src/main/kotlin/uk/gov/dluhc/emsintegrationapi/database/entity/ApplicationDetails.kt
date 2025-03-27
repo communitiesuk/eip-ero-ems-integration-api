@@ -4,6 +4,8 @@ import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.validation.constraints.Size
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.Instant
 
 @Embeddable
@@ -31,6 +33,8 @@ class ApplicationDetails(
     @field:Size(max = 500)
     val signatureWaivedReason: String?,
 
+    @JdbcTypeCode(SqlTypes.INTEGER)
+    @Enumerated(EnumType.ORDINAL)
     var emsStatus: EmsStatus?,
 
     var emsMessage: String?,
