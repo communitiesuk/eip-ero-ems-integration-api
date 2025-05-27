@@ -6,7 +6,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import java.lang.ProcessBuilder.Redirect
 
 plugins {
-    id("org.springframework.boot") version "3.3.11"
+    id("org.springframework.boot") version "3.3.12"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("jvm") version "1.9.24"
     kotlin("kapt") version "1.9.24"
