@@ -13,7 +13,10 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.email.EmailClient
 import uk.gov.dluhc.emsintegrationapi.config.MonitorPendingDownloadsEmailContentConfiguration
 import uk.gov.dluhc.emsintegrationapi.config.PendingRegisterChecksEmailContentConfiguration
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheckMatchResultSentAtByGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheckSummaryByGssCode
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @ExtendWith(MockitoExtension::class)
 internal class EmailServiceRegisterCheckTest {
@@ -30,9 +33,17 @@ internal class EmailServiceRegisterCheckTest {
         private const val GSS_CODE_2 = "E00000002"
         private const val EXPECTED_TOTAL_STUCK_APPLICATIONS = "3"
         private const val EXPECTED_MAXIMUM_PENDING_PERIOD = "24 hours"
+        private val DATE_CREATED_1 = LocalDateTime.of(2025, 3, 1, 10, 30).toInstant(ZoneOffset.UTC)
+        private val DATE_CREATED_2 = LocalDateTime.of(2025, 3, 2, 10, 30).toInstant(ZoneOffset.UTC)
+        private val MATCH_RESULT_DATE_1 = LocalDateTime.of(2025, 3, 1, 9, 30).toInstant(ZoneOffset.UTC)
+        private val MATCH_RESULT_DATE_2 = LocalDateTime.of(2025, 3, 2, 9, 30).toInstant(ZoneOffset.UTC)
         private val EXPECTED_STUCK_REGISTER_CHECK_SUMMARIES = listOf(
-            buildRegisterCheckSummaryByGssCode(gssCode = GSS_CODE_1, registerCheckCount = 2),
-            buildRegisterCheckSummaryByGssCode(gssCode = GSS_CODE_2, registerCheckCount = 1),
+            buildRegisterCheckSummaryByGssCode(gssCode = GSS_CODE_1, registerCheckCount = 2, earliestDateCreated = DATE_CREATED_1),
+            buildRegisterCheckSummaryByGssCode(gssCode = GSS_CODE_2, registerCheckCount = 1, earliestDateCreated = DATE_CREATED_2),
+        )
+        private val EXPECTED_RECENT_EMS_RESPONSE_TIMES = mapOf(
+            GSS_CODE_1 to buildRegisterCheckMatchResultSentAtByGssCode(gssCode = GSS_CODE_1, latestMatchResultSentAt = MATCH_RESULT_DATE_1),
+            GSS_CODE_2 to buildRegisterCheckMatchResultSentAtByGssCode(gssCode = GSS_CODE_2, latestMatchResultSentAt = MATCH_RESULT_DATE_2),
         )
     }
 
@@ -62,16 +73,22 @@ internal class EmailServiceRegisterCheckTest {
                 "        <tr>\n" +
                 "            <th>GSS code</th>\n" +
                 "            <th>Register check count</th>\n" +
+                "            <th>Date of oldest pending check</th>\n" +
+                "            <th>Date of most recent successful EMS response</th>\n" +
                 "        </tr>\n" +
                 "        </thead>\n" +
                 "        <tbody>\n" +
                 "            <tr>\n" +
                 "                <td>$GSS_CODE_1</td>\n" +
                 "                <td>2</td>\n" +
+                "                <td>2025-03-01T10:30:00Z</td>\n" +
+                "                <td>2025-03-01T09:30:00Z</td>\n" +
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td>$GSS_CODE_2</td>\n" +
                 "                <td>1</td>\n" +
+                "                <td>2025-03-02T10:30:00Z</td>\n" +
+                "                <td>2025-03-02T09:30:00Z</td>\n" +
                 "            </tr>\n" +
                 "        </tbody>\n" +
                 "    </table>\n" +
@@ -87,6 +104,7 @@ internal class EmailServiceRegisterCheckTest {
             emailService = EmailService(emailClient, emailContentConfiguration, dummyEmsContentConfiguration)
             emailService.sendRegisterCheckMonitoringEmail(
                 stuckRegisterCheckSummaries = EXPECTED_STUCK_REGISTER_CHECK_SUMMARIES,
+                mostRecentResponseTimesByGssCode = EXPECTED_RECENT_EMS_RESPONSE_TIMES,
                 totalStuck = EXPECTED_TOTAL_STUCK_APPLICATIONS,
                 expectedMaximumPendingPeriod = EXPECTED_MAXIMUM_PENDING_PERIOD
             )

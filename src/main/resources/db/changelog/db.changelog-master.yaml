@@ -63,3 +63,5 @@ databaseChangeLog:
       file: /db/changelog/create/0030_EIP1-11113_date_created_nullable.xml
   - include:
       file: /db/changelog/create/0031_EIP1-12292_ems_status_as_int.xml
+  - include:
+      file: /db/changelog/create/0032_EIP1-12568_add_gss_code_match_result_sent_at_index_to_register_check.xml
