@@ -144,7 +144,7 @@ internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
         // And it has an error message of "Unable to retrieve EROCertificateMapping for certificate serial [CERTIFICATE_SERIAL_NUM_99] due to error: [500 Server Error: \"Error\"]"
         val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
-        assertThat(message!!.message).isEqualTo("Error getting eroId for certificate serial")
+        assertThat(message!!.message).isEqualTo("Error retrieving EROs from IER API")
     }
 
     @Test
@@ -186,11 +186,11 @@ internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 500
         responseSpec.expectStatus().is5xxServerError
 
-        // And it has an error message of "Error getting eroId for certificate serial"
+        // And it has an error message of "Error retrieving EROs from IER API"
         val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
         assertThat(
             message!!.message,
-        ).isEqualTo("Error getting eroId for certificate serial")
+        ).isEqualTo("Error retrieving EROs from IER API")
     }
 
     @Test
