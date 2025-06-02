@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.service
 import mu.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
+import uk.gov.dluhc.emsintegrationapi.client.EroIdNotFoundException
 import uk.gov.dluhc.emsintegrationapi.client.IerApiClient
 import uk.gov.dluhc.emsintegrationapi.client.IerEroNotFoundException
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
@@ -22,5 +23,14 @@ class RetrieveGssCodeService(
                 .also { logger.warn { "No ERO found matching certificate serial $certificateSerial" } }
         }
         return erosMatchingCertificateSerial.flatMap { ero -> ero.localAuthorities.map { it.gssCode } }
+    }
+
+    fun getGssCodesFromEroId(eroId: String): List<String> {
+        val eros = ierApiClient.getEros()
+        val ero = eros.find { it.eroIdentifier == eroId }
+        if (ero == null) {
+            throw EroIdNotFoundException(eroId).also { logger.warn { "ERO ID not found" } }
+        }
+        return ero.localAuthorities.map { it.gssCode }
     }
 }

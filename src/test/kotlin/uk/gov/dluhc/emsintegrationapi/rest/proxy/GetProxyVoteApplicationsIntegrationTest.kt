@@ -144,12 +144,12 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 500
         responseSpec.expectStatus().is5xxServerError
 
-        // And it has an error message of "Error getting eroId for certificate serial"
+        // And it has an error message of "Error retrieving EROs from IER API"
         val errorResponse = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
         assertThat(
             errorResponse!!.message,
         ).isEqualTo(
-            "Error getting eroId for certificate serial",
+            "Error retrieving EROs from IER API",
         )
     }
 
@@ -192,9 +192,9 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         // Then I received the http status 500
         responseSpec.expectStatus().is5xxServerError
 
-        // And it has an error message of "Error getting eroId for certificate serial"
+        // And it has an error message of "Error retrieving EROs from IER API"
         val message = responseSpec.returnResult(ErrorResponse::class.java).responseBody.blockFirst()
-        assertThat(message!!.message).isEqualTo("Error getting eroId for certificate serial")
+        assertThat(message!!.message).isEqualTo("Error retrieving EROs from IER API")
     }
 
     @Test
