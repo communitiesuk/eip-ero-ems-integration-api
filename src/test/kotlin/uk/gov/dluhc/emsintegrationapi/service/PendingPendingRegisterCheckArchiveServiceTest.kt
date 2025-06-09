@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowableOfType
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
@@ -12,6 +13,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
+import uk.gov.dluhc.emsintegrationapi.config.FeatureToggleConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.exception.OptimisticLockingFailureException
@@ -24,6 +26,9 @@ import java.util.UUID
 internal class PendingPendingRegisterCheckArchiveServiceTest {
     @Mock
     private lateinit var registerCheckRepository: RegisterCheckRepository
+
+    @Mock
+    private lateinit var featureToggleConfiguration: FeatureToggleConfiguration
 
     @InjectMocks
     private lateinit var pendingRegisterCheckArchiveService: PendingRegisterCheckArchiveService
@@ -41,10 +46,12 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
         }
 
         @Test
-        fun `should not archive any records for a non-existing register check`() {
+        fun `should not archive any records for a non-existing register check and should throw error if the suppress not found errors flag is false`() {
             // Given
             val correlationId = UUID.randomUUID()
             val expected = PendingRegisterCheckNotFoundException(correlationId)
+
+            given(featureToggleConfiguration.suppressEmsArchiveRegisterCheckNotFoundErrors).willReturn(false)
 
             // When
             val ex =
@@ -55,6 +62,19 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
 
             // Then
             assertThat(ex).message().isEqualTo(expected.message)
+        }
+
+        @Test
+        fun `should not archive any records for a non-existing register check and should not throw error if the suppress not found errors flag is true`() {
+            // Given
+            val correlationId = UUID.randomUUID()
+
+            given(featureToggleConfiguration.suppressEmsArchiveRegisterCheckNotFoundErrors).willReturn(true)
+
+            // When, Then
+            assertDoesNotThrow {
+                pendingRegisterCheckArchiveService.archiveIfStatusIsPending(correlationId)
+            }
         }
 
         @Test
