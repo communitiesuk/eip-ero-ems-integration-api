@@ -46,12 +46,12 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
         }
 
         @Test
-        fun `should not archive any records for a non-existing register check and should throw error if the suppressEmsArchiveRegisterCheckNotFoundErrors flag is set to true`() {
+        fun `should not archive any records for a non-existing register check and should throw error if the suppress not found errors flag is false`() {
             // Given
             val correlationId = UUID.randomUUID()
             val expected = PendingRegisterCheckNotFoundException(correlationId)
 
-            given(featureToggleConfiguration.suppressEmsArchiveRegisterCheckNotFoundErrors).willReturn(true)
+            given(featureToggleConfiguration.suppressEmsArchiveRegisterCheckNotFoundErrors).willReturn(false)
 
             // When
             val ex =
@@ -65,12 +65,11 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
         }
 
         @Test
-        fun `should not archive any records for a non-existing register check and should not throw error if the suppressEmsArchiveRegisterCheckNotFoundErrors flag is set to false`() {
+        fun `should not archive any records for a non-existing register check and should not throw error if the suppress not found errors flag is true`() {
             // Given
             val correlationId = UUID.randomUUID()
-            val expected = PendingRegisterCheckNotFoundException(correlationId)
 
-            given(featureToggleConfiguration.suppressEmsArchiveRegisterCheckNotFoundErrors).willReturn(false)
+            given(featureToggleConfiguration.suppressEmsArchiveRegisterCheckNotFoundErrors).willReturn(true)
 
             // When, Then
             assertDoesNotThrow {
