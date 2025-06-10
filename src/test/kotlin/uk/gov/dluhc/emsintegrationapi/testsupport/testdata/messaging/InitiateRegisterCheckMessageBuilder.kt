@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging
 import net.datafaker.Address
 import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker
+import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckForwardingMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckAddress
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckPersonalDetail
@@ -20,6 +21,28 @@ fun buildInitiateRegisterCheckMessage(
     emsElectorId: String = RandomStringUtils.randomAlphanumeric(30),
     historicalSearch: Boolean = false,
 ) = InitiateRegisterCheckMessage(
+    sourceType = sourceType,
+    sourceReference = sourceReference,
+    sourceCorrelationId = sourceCorrelationId,
+    requestedBy = requestedBy,
+    gssCode = gssCode,
+    personalDetail = personalDetail,
+    emsElectorId = emsElectorId,
+    historicalSearch = historicalSearch,
+)
+
+fun buildInitiateRegisterCheckForwardingMessage(
+    correlationId: UUID? = UUID.randomUUID(),
+    sourceType: SourceType = SourceType.VOTER_MINUS_CARD,
+    sourceReference: String = "VPIOKNHPBP",
+    sourceCorrelationId: UUID = UUID.randomUUID(),
+    requestedBy: String = "system",
+    gssCode: String = "E123456789",
+    personalDetail: RegisterCheckPersonalDetail = buildRegisterCheckPersonalDetail(),
+    emsElectorId: String = RandomStringUtils.randomAlphanumeric(30),
+    historicalSearch: Boolean = false,
+) = InitiateRegisterCheckForwardingMessage(
+    correlationId = correlationId,
     sourceType = sourceType,
     sourceReference = sourceReference,
     sourceCorrelationId = sourceCorrelationId,
