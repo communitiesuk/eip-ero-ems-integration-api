@@ -16,7 +16,6 @@ import uk.gov.dluhc.emsintegrationapi.dto.PersonalDetailDto
 import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildInitiateRegisterCheckMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
-import java.util.UUID.randomUUID
 import uk.gov.dluhc.emsintegrationapi.dto.SourceType as DtoSourceType
 
 @ExtendWith(MockitoExtension::class)
@@ -35,11 +34,11 @@ internal class InitiateRegisterCheckMapperTest {
         given(sourceTypeMapper.fromSqsToDtoEnum(any())).willReturn(DtoSourceType.VOTER_CARD)
 
         val expected = PendingRegisterCheckDto(
-            correlationId = randomUUID(),
+            correlationId = message.sourceCorrelationId,
             sourceType = DtoSourceType.VOTER_CARD,
             sourceReference = message.sourceReference,
             sourceCorrelationId = message.sourceCorrelationId,
-            createdBy = "system",
+            createdBy = message.requestedBy,
             gssCode = message.gssCode,
             personalDetail = with(message.personalDetail) {
                 PersonalDetailDto(
@@ -71,7 +70,6 @@ internal class InitiateRegisterCheckMapperTest {
         // Then
         assertThat(actual)
             .usingRecursiveComparison()
-            .ignoringFields("correlationId", "createdBy")
             .isEqualTo(expected)
         assertThat(actual.correlationId).isNotNull
         assertThat(actual.createdAt).isNull()

@@ -16,7 +16,7 @@ import java.util.UUID
 )
 interface InitiateRegisterCheckMapper {
 
-    @Mapping(target = "correlationId", expression = "java(UUID.randomUUID())")
+    @Mapping(target = "correlationId", source = "sourceCorrelationId")
     @Mapping(target = "createdBy", source = "requestedBy")
     fun initiateCheckMessageToPendingRegisterCheckDto(initiateRegisterCheckMessage: InitiateRegisterCheckMessage): PendingRegisterCheckDto
 }
