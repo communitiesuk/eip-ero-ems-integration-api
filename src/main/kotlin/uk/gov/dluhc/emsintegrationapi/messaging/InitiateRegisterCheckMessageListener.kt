@@ -32,6 +32,7 @@ class InitiateRegisterCheckMessageListener(
                     "correlationId: $correlationId"
             }
 
+            // TODO EIP1-12676 update to use InitiateRegisterCheckMessage instead of the temporary type of InitiateRegisterCheckForwardingMessage as part of the cleanup actions
             val pendingRegisterCheckDto = mapper.initiateCheckForwardingMessageToPendingRegisterCheckDto(this)
             registerCheckService.save(pendingRegisterCheckDto)
         }
