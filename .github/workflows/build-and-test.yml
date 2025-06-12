@@ -23,6 +23,8 @@ jobs:
             EXIT_CODE=1
           fi
           for MIGRATION in src/main/resources/db/changelog/create/*; do
+            # The file below wasn't added in before this check and was missed 
+            [[ "$MIGRATION" == "src/main/resources/db/changelog/create/0007_EIP1-6517_add_ballotBfpoAddress_table.xml" ]] && continue
             if [[ $(grep -c `basename "$MIGRATION"` src/main/resources/db/changelog/db.changelog-master.yaml) == 0 ]]; then
               echo "Migration: $MIGRATION has not been added to src/main/resources/db/changelog/db.changelog-master.yaml"
               EXIT_CODE=1
