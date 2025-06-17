@@ -11,5 +11,5 @@ jobs:
       version: ${{ github.ref_name }}
       image_name: eip-ero-${{ vars.app_name }}
       ecr_repo: ${{ vars.app_name }}-repo
-      preprod_deploy_environment: dev2 # Technically, all preprod environments would be fine here
+      preprod_deploy_environment: dev2 # All envs can use dev2 GitHub role
     secrets: inherit

@@ -23,6 +23,6 @@ jobs:
     with:
       deploy_environment: ${{ inputs.deploy_environment }}
       version: ${{ github.ref_name }}
-      app_name_with_env: ${{ inputs.deploy_environment }}-${{ vars.app_name }}
+      app_name_with_env: ${{ inputs.deploy_environment }}-ems-integr-api
       ecr_repo: ${{ vars.app_name }}-repo
     secrets: inherit

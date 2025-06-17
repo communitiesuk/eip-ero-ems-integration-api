@@ -15,5 +15,5 @@ jobs:
     with:
       image_name: eip-ero-${{ vars.app_name }}
       ecr_repo: ${{ vars.app_name }}-repo
-      app_name_dev2_prefix: dev2-${{ vars.app_name }}
+      app_name_dev2_prefix: dev2-ems-integr-api
     secrets: inherit
