@@ -8,21 +8,20 @@ on:
         required: true
         type: choice
         options:
-          - dev2
           - int
-          - int2
           - pvt
           - test
-          - test2
           - live
+          - dev2
+          - int2
+          - test2
+          - beta
 
 jobs:
   deploy:
     if: startsWith(github.ref, 'refs/tags/v')
-    uses: communitiesuk/eip-ero-shared-workflows/.github/workflows/deploy.yml@main
+    uses: ./.github/workflows/deploy.yml
     with:
-      deploy_environment: ${{ inputs.deploy_environment }}
-      version: ${{ github.ref_name }}
-      app_name_with_env: ${{ inputs.deploy_environment }}-${{ vars.app_name }}
-      ecr_repo: ${{ vars.app_name }}-repo
+      deploy_environment: ${{inputs.deploy_environment}}
+      version: ${{github.ref_name}}
     secrets: inherit
