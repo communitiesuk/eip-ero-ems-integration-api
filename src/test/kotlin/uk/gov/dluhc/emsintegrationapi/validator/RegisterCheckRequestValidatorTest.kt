@@ -32,7 +32,7 @@ internal class RegisterCheckRequestValidatorTest {
 
             // When
             val ex = catchThrowableOfType(RequestIdMismatchException::class.java) {
-                registerCheckRequestValidator.validateRequestBody("123456789", registerCheckResultDto)
+                registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
             }
 
             // Then
@@ -55,7 +55,7 @@ internal class RegisterCheckRequestValidatorTest {
 
             // When
             val ex = catchThrowableOfType(RegisterCheckMatchCountMismatchException::class.java) {
-                registerCheckRequestValidator.validateRequestBody("123456789", registerCheckResultDto)
+                registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
             }
 
             // Then
@@ -77,7 +77,7 @@ internal class RegisterCheckRequestValidatorTest {
             )
 
             // When
-            registerCheckRequestValidator.validateRequestBody("123456789", registerCheckResultDto)
+            registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
 
             // Then
         }
@@ -95,7 +95,7 @@ internal class RegisterCheckRequestValidatorTest {
             )
 
             // When
-            registerCheckRequestValidator.validateRequestBody("123456789", registerCheckResultDto)
+            registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
 
             // Then
         }
@@ -115,7 +115,7 @@ internal class RegisterCheckRequestValidatorTest {
             )
 
             // When
-            registerCheckRequestValidator.validateRequestBody("123456789", registerCheckResultDto)
+            registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
 
             // Then
         }
@@ -135,7 +135,7 @@ internal class RegisterCheckRequestValidatorTest {
 
             // When
             val ex = catchThrowableOfType(RegisterCheckMatchCountMismatchException::class.java) {
-                registerCheckRequestValidator.validateRequestBody("123456789", registerCheckResultDto)
+                registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
             }
 
             // Then
@@ -158,7 +158,7 @@ internal class RegisterCheckRequestValidatorTest {
 
             // When
             val ex = catchThrowableOfType(RegisterCheckMatchCountMismatchException::class.java) {
-                registerCheckRequestValidator.validateRequestBody("123456789", registerCheckResultDto)
+                registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
             }
 
             // Then
@@ -180,7 +180,7 @@ internal class RegisterCheckRequestValidatorTest {
             )
 
             // When
-            registerCheckRequestValidator.validateRequestBody("123456789", registerCheckResultDto)
+            registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
 
             // Then
         }
