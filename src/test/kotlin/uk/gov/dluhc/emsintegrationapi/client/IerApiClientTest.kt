@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.client
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowableOfType
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -76,10 +77,7 @@ internal class IerApiClientTest {
             .willThrow(HttpClientErrorException(HttpStatus.FORBIDDEN, exceptionMessage))
 
         // When
-        val ex = Assertions.catchThrowableOfType(
-            { ierApiClient.getEros() },
-            IerGeneralException::class.java
-        )
+        val ex = catchThrowableOfType(IerGeneralException::class.java) { ierApiClient.getEros() }
 
         // Then
         assertThat(ex.message).isEqualTo(expectedException.message)
@@ -97,10 +95,7 @@ internal class IerApiClientTest {
             .willThrow(HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR))
 
         // When
-        val ex = Assertions.catchThrowableOfType(
-            { ierApiClient.getEros() },
-            IerGeneralException::class.java
-        )
+        val ex = catchThrowableOfType(IerGeneralException::class.java) { ierApiClient.getEros() }
 
         // Then
         assertThat(ex.message).isEqualTo(expectedException.message)
