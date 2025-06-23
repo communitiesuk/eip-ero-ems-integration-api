@@ -13,7 +13,7 @@ private val logger = KotlinLogging.logger {}
 @Component
 class RegisterCheckRequestValidator {
 
-    fun validateRequestBody(certificateSerial: String, registerCheckResultDto: RegisterCheckResultDto) {
+    fun validateRequestBody(registerCheckResultDto: RegisterCheckResultDto) {
         validateRequestIdMatch(registerCheckResultDto)
         validateMatchCountWithRegisterCheckMatchList(registerCheckResultDto)
         validateHistoricSearchEarliestDateIsPost1970(registerCheckResultDto)

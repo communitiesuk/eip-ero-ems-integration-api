@@ -86,7 +86,7 @@ class RegisterCheckerController(
         registerCheckService.auditRequestBody(request.requestid, objectMapper.writeValueAsString(request))
 
         val registerCheckResultDto = registerCheckResultMapper.fromRegisterCheckResultRequestApiToDto(requestId, request)
-        registerCheckRequestValidator.validateRequestBody(certificateSerial, registerCheckResultDto)
+        registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
 
         logger.debug("Post request body validation successful for EMS certificateSerial=[$certificateSerial] with requestId=[$requestId]")
 

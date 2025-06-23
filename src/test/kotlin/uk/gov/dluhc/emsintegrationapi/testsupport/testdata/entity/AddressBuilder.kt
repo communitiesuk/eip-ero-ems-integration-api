@@ -9,6 +9,7 @@ import java.util.UUID
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem as SourceSystemEntity
 
 fun buildAddress(
+    persisted: Boolean = false,
     street: String = faker.address().streetName(),
     property: String? = faker.address().buildingNumber(),
     locality: String? = faker.address().streetName(),
@@ -19,7 +20,7 @@ fun buildAddress(
     dateCreated: Instant? = Instant.now(),
     createdBy: SourceSystem? = null
 ) = Address(
-    id = UUID.randomUUID(),
+    id = if (persisted) UUID.randomUUID() else null,
     street = street,
     property = property,
     locality = locality,

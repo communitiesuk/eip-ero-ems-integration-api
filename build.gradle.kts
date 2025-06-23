@@ -6,7 +6,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import java.lang.ProcessBuilder.Redirect
 
 plugins {
-    id("org.springframework.boot") version "3.3.11"
+    id("org.springframework.boot") version "3.4.7"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("jvm") version "1.9.24"
     kotlin("kapt") version "1.9.24"
@@ -16,7 +16,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
     id("org.openapi.generator") version "7.0.1"
-    id("org.owasp.dependencycheck") version "8.2.1"
+    id("org.owasp.dependencycheck") version "12.1.3"
     id("org.liquibase.gradle") version "2.0.4"
 }
 
@@ -120,8 +120,7 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
 
-    // AWS signer using SDK V2 library is available at https://mvnrepository.com/artifact/io.github.acm19/aws-request-signing-apache-interceptor/2.1.1
-    implementation("io.github.acm19:aws-request-signing-apache-interceptor:2.3.1")
+    implementation("io.github.acm19:aws-request-signing-apache-interceptor:3.0.0")
     implementation("org.apache.httpcomponents.client5:httpclient5")
 
     // caching
@@ -138,7 +137,6 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("net.datafaker:datafaker:1.7.0")
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.assertj:assertj-core:3.25.3")
 
     testImplementation("org.testcontainers:junit-jupiter:1.19.8")
     testImplementation("org.testcontainers:testcontainers:1.19.8")
@@ -302,6 +300,7 @@ tasks.withType<KtLintCheckTask> {
 }
 
 tasks.withType<BootBuildImage> {
+    builder.set("paketobuildpacks/builder-jammy-base")
     environment.set(mapOf("BP_HEALTH_CHECKER_ENABLED" to "true"))
     buildpacks.set(
         listOf(
