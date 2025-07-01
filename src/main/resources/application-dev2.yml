@@ -1,5 +1,24 @@
 jobs:
+  enabled: true
+  lock-at-most-for: "PT100M" # Time Period of 100 Minutes
   pending-downloads-monitoring:
     send-email: false
   register-check-monitoring:
-    send-email: false
+    enabled: true
+    name: "PendingRegisterCheckMonitoring"
+    cron: "0 */5 5 * * *" # Runs at 05:00 daily
+    expected-maximum-pending-period: 24H
+    excluded-gss-codes: "E99999999"
+    send-email: true
+
+email:
+  client:
+    sender: ${EMS_INTEGRATION_DOWNLOADS_MONITORING_SENDING_EMAIL_ADDRESS}
+  monitor-pending-downloads-content:
+    subject: "Postal and Proxy Pending Downloads Monitoring"
+    email-body-template: email-templates/monitor-pending-downloads.html
+    recipients: ${EMS_INTEGRATION_DOWNLOADS_MONITORING_RECIPIENTS}
+  pending-register-checks-content:
+    subject: "Register Check Monitoring"
+    email-body-template: email-templates/pending-register-checks.html
+    recipients: ${REGISTER_CHECK_MONITORING_RECIPIENTS}
