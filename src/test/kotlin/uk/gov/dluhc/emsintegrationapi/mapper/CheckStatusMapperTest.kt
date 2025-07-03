@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.mapper
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowableOfType
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -79,10 +79,9 @@ internal class CheckStatusMapperTest {
             // Given
 
             // When
-            val ex = Assertions.catchThrowableOfType(
-                { mapper.toRegisterCheckResultEnum(source) },
-                IllegalArgumentException::class.java
-            )
+            val ex = catchThrowableOfType(IllegalArgumentException::class.java) {
+                mapper.toRegisterCheckResultEnum(source)
+            }
 
             // Then
             assertThat(ex).isInstanceOf(IllegalArgumentException::class.java)

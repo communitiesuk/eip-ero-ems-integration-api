@@ -37,11 +37,9 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
     inner class ArchiveRegisterCheckData {
         @Test
         fun `should handle null correlation ID`() {
-            val ex =
-                catchThrowableOfType(
-                    { pendingRegisterCheckArchiveService.archiveIfStatusIsPending(null) },
-                    IllegalArgumentException::class.java,
-                )
+            val ex = catchThrowableOfType(IllegalArgumentException::class.java) {
+                pendingRegisterCheckArchiveService.archiveIfStatusIsPending(null)
+            }
             assertThat(ex.message).isEqualTo("Correlation ID is null")
         }
 
@@ -54,11 +52,9 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
             given(featureToggleConfiguration.suppressEmsArchiveRegisterCheckNotFoundErrors).willReturn(false)
 
             // When
-            val ex =
-                catchThrowableOfType(
-                    { pendingRegisterCheckArchiveService.archiveIfStatusIsPending(correlationId) },
-                    PendingRegisterCheckNotFoundException::class.java,
-                )
+            val ex = catchThrowableOfType(PendingRegisterCheckNotFoundException::class.java) {
+                pendingRegisterCheckArchiveService.archiveIfStatusIsPending(correlationId)
+            }
 
             // Then
             assertThat(ex).message().isEqualTo(expected.message)
@@ -86,11 +82,9 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
             val expected = PendingRegisterCheckArchiveInvalidStatusException(CheckStatus.ARCHIVED)
 
             // When
-            val ex =
-                catchThrowableOfType(
-                    { pendingRegisterCheckArchiveService.archiveIfStatusIsPending(correlationId) },
-                    PendingRegisterCheckArchiveInvalidStatusException::class.java,
-                )
+            val ex = catchThrowableOfType(PendingRegisterCheckArchiveInvalidStatusException::class.java) {
+                pendingRegisterCheckArchiveService.archiveIfStatusIsPending(correlationId)
+            }
 
             // Then
             verify(registerCheckRepository).findByCorrelationId(correlationId)
@@ -104,7 +98,6 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
             val correlationId = UUID.randomUUID()
             val registerCheck = buildRegisterCheck(correlationId = correlationId, status = CheckStatus.PENDING)
             given(registerCheckRepository.findByCorrelationId(correlationId)).willReturn(registerCheck)
-            val expected = PendingRegisterCheckArchiveInvalidStatusException(CheckStatus.ARCHIVED)
 
             // When
             pendingRegisterCheckArchiveService.archiveIfStatusIsPending(correlationId)
@@ -122,10 +115,9 @@ internal class PendingPendingRegisterCheckArchiveServiceTest {
             given(registerCheckRepository.findByCorrelationId(correlationId)).willReturn(registerCheck)
             given(registerCheckRepository.save(any())).willThrow(OptimisticLockingFailureException(correlationId = correlationId))
             val ex =
-                catchThrowableOfType(
-                    { pendingRegisterCheckArchiveService.archiveIfStatusIsPending(correlationId) },
-                    OptimisticLockingFailureException::class.java,
-                )
+                catchThrowableOfType(OptimisticLockingFailureException::class.java) {
+                    pendingRegisterCheckArchiveService.archiveIfStatusIsPending(correlationId)
+                }
             assertThat(ex.message).isEqualTo("Register check with requestid:[$correlationId] has an optimistic locking failure")
             verify(registerCheckRepository).findByCorrelationId(correlationId)
             // save call was made although it threw exception
