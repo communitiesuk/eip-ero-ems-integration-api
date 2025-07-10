@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.CollectionUtils
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckResultDataRepository
@@ -18,6 +19,7 @@ class RegisterCheckRemovalService(
     private val sourceTypeMapper: SourceTypeMapper,
 ) {
 
+    @Transactional
     fun removeRegisterCheckData(dto: RegisterCheckRemovalDto) {
         val correlationIds = removeRegisterCheck(dto)
         removeRegisterCheckResult(correlationIds)

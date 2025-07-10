@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.FeatureToggleConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
@@ -17,6 +18,7 @@ class PendingRegisterCheckArchiveService(
     private val registerCheckRepository: RegisterCheckRepository,
     private val featureToggleConfiguration: FeatureToggleConfiguration,
 ) {
+    @Transactional
     fun archiveIfStatusIsPending(correlationId: UUID?) {
         val corrid = correlationId ?: throw IllegalArgumentException("Correlation ID is null")
         val registerCheck = registerCheckRepository.findByCorrelationId(corrid)
