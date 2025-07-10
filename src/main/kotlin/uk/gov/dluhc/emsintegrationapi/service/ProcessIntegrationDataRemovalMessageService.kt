@@ -28,7 +28,7 @@ class ProcessIntegrationDataRemovalMessageService(
         }
     }
 
-    fun processPostalApplicationRemoval(applicationId: String) {
+    private fun processPostalApplicationRemoval(applicationId: String) {
         postalVoteApplicationRepository.findById(applicationId)
             .let { it ->
                 it.map {
@@ -48,7 +48,7 @@ class ProcessIntegrationDataRemovalMessageService(
             }
     }
 
-    fun processProxyApplicationRemoval(applicationId: String) {
+    private fun processProxyApplicationRemoval(applicationId: String) {
         proxyVoteApplicationRepository.findById(applicationId)
             .let { it ->
                 it.map {
