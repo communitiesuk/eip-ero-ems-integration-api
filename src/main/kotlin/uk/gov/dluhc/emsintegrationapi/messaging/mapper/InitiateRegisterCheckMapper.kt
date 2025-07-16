@@ -4,7 +4,6 @@ import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import uk.gov.dluhc.emsintegrationapi.dto.PendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
-import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckForwardingMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 import java.util.UUID
 
