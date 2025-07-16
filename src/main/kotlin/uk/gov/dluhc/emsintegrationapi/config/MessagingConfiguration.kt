@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import uk.gov.dluhc.messagingsupport.MessageQueue
 import uk.gov.dluhc.messagingsupport.MessagingConfigurationHelper
-import uk.gov.dluhc.registercheckerapi.messaging.models.PendingRegisterCheckArchiveMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
 
 @Configuration
@@ -30,9 +29,6 @@ class MessagingConfiguration {
     @Value("\${sqs.register-check-result-response-queue-name}")
     private lateinit var registerCheckResultResponseQueueName: String
 
-    @Value("\${sqs.pending-register-check-archive-queue-name}")
-    private lateinit var pendingRegisterCheckArchiveQueueName: String
-
     @Bean(name = ["confirmRegisterCheckResultQueue"])
     fun confirmRegisterCheckResultQueue(sqsTemplate: SqsTemplate) =
         MessageQueue<RegisterCheckResultMessage>(pendingRegisterCheckResultQueueName, sqsTemplate)
@@ -52,10 +48,6 @@ class MessagingConfiguration {
     @Bean(name = ["registerCheckResultResponseQueue"])
     fun registerCheckResultResponseQueue(sqsTemplate: SqsTemplate) =
         MessageQueue<RegisterCheckResultMessage>(registerCheckResultResponseQueueName, sqsTemplate)
-
-    @Bean(name = ["pendingRegisterCheckArchiveQueue"])
-    fun pendingRegisterCheckArchiveQueue(sqsTemplate: SqsTemplate) =
-        MessageQueue<PendingRegisterCheckArchiveMessage>(pendingRegisterCheckResultQueueName, sqsTemplate)
 
     @Bean
     fun sqsMessagingMessageConverter(

@@ -3,7 +3,6 @@ package uk.gov.dluhc.emsintegrationapi.messaging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.messagingsupport.MessageQueue
-import uk.gov.dluhc.registercheckerapi.messaging.models.PendingRegisterCheckArchiveMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType.APPLICATIONS_MINUS_API
@@ -19,7 +18,6 @@ class MessageQueueResolver(
     @Qualifier("proxyVoteConfirmRegisterCheckResultQueue") private val proxyVoteConfirmRegisterCheckResultQueue: MessageQueue<RegisterCheckResultMessage>,
     @Qualifier("overseasVoteConfirmRegisterCheckResultQueue") private val overseasVoteConfirmRegisterCheckResultQueue: MessageQueue<RegisterCheckResultMessage>,
     @Qualifier("registerCheckResultResponseQueue") private val registerCheckResultResponseQueue: MessageQueue<RegisterCheckResultMessage>,
-    @Qualifier("pendingRegisterCheckArchiveQueue") private val pendingRegisterCheckArchiveQueue: MessageQueue<PendingRegisterCheckArchiveMessage>,
 ) {
 
     fun getTargetQueueForSourceType(sourceType: SourceType) =

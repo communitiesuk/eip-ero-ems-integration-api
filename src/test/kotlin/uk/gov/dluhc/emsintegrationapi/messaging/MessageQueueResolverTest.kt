@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.dluhc.messagingsupport.MessageQueue
-import uk.gov.dluhc.registercheckerapi.messaging.models.PendingRegisterCheckArchiveMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 
@@ -30,9 +29,6 @@ internal class MessageQueueResolverTest {
     @Mock
     private lateinit var registerCheckResultResponseQueue: MessageQueue<RegisterCheckResultMessage>
 
-    @Mock
-    private lateinit var pendingRegisterCheckArchiveQueue: MessageQueue<PendingRegisterCheckArchiveMessage>
-
     private lateinit var messageQueueResolver: MessageQueueResolver
 
     @BeforeEach
@@ -44,7 +40,6 @@ internal class MessageQueueResolverTest {
             overseasVoteConfirmRegisterCheckResultQueue = overseasVoteConfirmRegisterCheckResultMockQueue,
             confirmRegisterCheckResultQueue = confirmRegisterCheckResultMockQueue,
             registerCheckResultResponseQueue = registerCheckResultResponseQueue,
-            pendingRegisterCheckArchiveQueue = pendingRegisterCheckArchiveQueue,
         )
     }
 
