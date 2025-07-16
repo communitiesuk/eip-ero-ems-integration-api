@@ -17,8 +17,7 @@ import java.util.UUID
 )
 interface InitiateRegisterCheckMapper {
 
-    // TODO EIP1-12676 Remove the source mapping and default expression here and replace both with an expression to assign a random UUID as part of the cleanup actions
-    @Mapping(target = "correlationId", source = "correlationId", defaultExpression = "java(UUID.randomUUID())")
+    @Mapping(target = "correlationId", expression = "java(UUID.randomUUID())")
     @Mapping(target = "createdBy", source = "requestedBy")
-    fun initiateCheckForwardingMessageToPendingRegisterCheckDto(initiateRegisterCheckMessage: InitiateRegisterCheckForwardingMessage): PendingRegisterCheckDto
+    fun initiateCheckMessageToPendingRegisterCheckDto(initiateRegisterCheckMessage: InitiateRegisterCheckMessage): PendingRegisterCheckDto
 }

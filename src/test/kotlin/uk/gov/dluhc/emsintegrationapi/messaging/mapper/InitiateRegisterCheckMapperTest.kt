@@ -14,7 +14,7 @@ import uk.gov.dluhc.emsintegrationapi.dto.AddressDto
 import uk.gov.dluhc.emsintegrationapi.dto.PendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.dto.PersonalDetailDto
 import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildInitiateRegisterCheckForwardingMessage
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildInitiateRegisterCheckMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import java.util.UUID
 import uk.gov.dluhc.emsintegrationapi.dto.SourceType as DtoSourceType
@@ -29,59 +29,9 @@ internal class InitiateRegisterCheckMapperTest {
     private val mapper = InitiateRegisterCheckMapperImpl()
 
     @Test
-    fun `should map model to dto when correlationId is provided`() {
+    fun `should map model to dto`() {
         // Given
-        val message = buildInitiateRegisterCheckForwardingMessage()
-        given(sourceTypeMapper.fromSqsToDtoEnum(any())).willReturn(DtoSourceType.VOTER_CARD)
-
-        val expected = PendingRegisterCheckDto(
-            correlationId = message.correlationId!!,
-            sourceType = DtoSourceType.VOTER_CARD,
-            sourceReference = message.sourceReference,
-            sourceCorrelationId = message.sourceCorrelationId,
-            createdBy = message.requestedBy,
-            gssCode = message.gssCode,
-            personalDetail = with(message.personalDetail) {
-                PersonalDetailDto(
-                    firstName = firstName,
-                    middleNames = middleNames,
-                    surname = surname,
-                    dateOfBirth = dateOfBirth,
-                    phone = phone,
-                    email = email,
-                    address = AddressDto(
-                        property = address.property,
-                        street = address.street,
-                        locality = address.locality,
-                        town = address.town,
-                        area = address.area,
-                        postcode = address.postcode,
-                        uprn = address.uprn,
-                        createdBy = null,
-                    )
-                )
-            },
-            emsElectorId = message.emsElectorId,
-            historicalSearch = message.historicalSearch,
-        )
-
-        // When
-        val actual = mapper.initiateCheckForwardingMessageToPendingRegisterCheckDto(message)
-
-        // Then
-        assertThat(actual)
-            .usingRecursiveComparison()
-            .isEqualTo(expected)
-        assertThat(actual.correlationId).isNotNull
-        assertThat(actual.createdAt).isNull()
-        verify(sourceTypeMapper).fromSqsToDtoEnum(SourceType.VOTER_MINUS_CARD)
-        verifyNoMoreInteractions(sourceTypeMapper)
-    }
-
-    @Test
-    fun `should map model to dto when correlationId is not provided`() {
-        // Given
-        val message = buildInitiateRegisterCheckForwardingMessage(correlationId = null)
+        val message = buildInitiateRegisterCheckMessage()
         given(sourceTypeMapper.fromSqsToDtoEnum(any())).willReturn(DtoSourceType.VOTER_CARD)
 
         val expected = PendingRegisterCheckDto(
@@ -116,7 +66,7 @@ internal class InitiateRegisterCheckMapperTest {
         )
 
         // When
-        val actual = mapper.initiateCheckForwardingMessageToPendingRegisterCheckDto(message)
+        val actual = mapper.initiateCheckMessageToPendingRegisterCheckDto(message)
 
         // Then
         assertThat(actual)
