@@ -84,6 +84,3 @@ email:
     recipients: ${REGISTER_CHECK_MONITORING_RECIPIENTS}
 
 caching.time-to-live: PT1H
-
-feature-toggles:
-  suppress-ems-archive-register-check-not-found-errors: ${SUPPRESS_EMS_ARCHIVE_REGISTER_CHECK_NOT_FOUND_ERRORS}

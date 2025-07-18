@@ -87,6 +87,3 @@ email:
     subject: "Register Check Monitoring"
     email-body-template: email-templates/pending-register-checks.html
     recipients: recipient1@domain.com,recipient2@domain.com
-
-feature-toggles:
-  suppress-ems-archive-register-check-not-found-errors: false
