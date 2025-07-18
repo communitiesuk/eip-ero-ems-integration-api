@@ -8,32 +8,30 @@ import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.messaging.mapper.InitiateRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.service.RegisterCheckService
 import uk.gov.dluhc.messagingsupport.MessageListener
-import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckForwardingMessage
+import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 
 private val logger = KotlinLogging.logger { }
 
 /**
- * Implementation of [MessageListener] to handle [InitiateRegisterCheckForwardingMessage] messages
+ * Implementation of [MessageListener] to handle [InitiateRegisterCheckMessage] messages
  */
 @Component
 class InitiateRegisterCheckMessageListener(
     private val registerCheckService: RegisterCheckService,
     private val mapper: InitiateRegisterCheckMapper
 ) :
-    MessageListener<InitiateRegisterCheckForwardingMessage> {
+    MessageListener<InitiateRegisterCheckMessage> {
 
     @SqsListener("\${sqs.initiate-applicant-register-check-queue-name}")
-    override fun handleMessage(@Valid @Payload payload: InitiateRegisterCheckForwardingMessage) {
+    override fun handleMessage(@Valid @Payload payload: InitiateRegisterCheckMessage) {
         with(payload) {
             logger.info {
                 "New InitiateRegisterCheckMessage received with " +
                     "sourceReference: $sourceReference and " +
-                    "sourceCorrelationId: $sourceCorrelationId and " +
-                    "correlationId: $correlationId"
+                    "sourceCorrelationId: $sourceCorrelationId"
             }
 
-            // TODO EIP1-12676 update to use InitiateRegisterCheckMessage instead of the temporary type of InitiateRegisterCheckForwardingMessage as part of the cleanup actions
-            val pendingRegisterCheckDto = mapper.initiateCheckForwardingMessageToPendingRegisterCheckDto(this)
+            val pendingRegisterCheckDto = mapper.initiateCheckMessageToPendingRegisterCheckDto(this)
             registerCheckService.save(pendingRegisterCheckDto)
         }
     }

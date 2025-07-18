@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Register Checker SQS Message Types
-  version: '1.3.1'
+  version: '1.3.2'
   description: |-
     Register Checker SQS Message Types
     
@@ -113,21 +113,6 @@ components:
             - requestedBy
             - personalDetail
 
-    # TODO EIP1-12676 remove this temporary type as part of the cleanup actions
-    InitiateRegisterCheckForwardingMessage:
-      title: InitiateRegisterCheckForwardingMessage
-      type: object
-      description: SQS Message for forwarding an initiate applicant register check to the EMS api.
-      allOf:
-        - $ref: '#/components/schemas/InitiateRegisterCheckMessage'
-        - type: object
-          properties:
-            correlationId:
-              type: string
-              format: uuid
-              description: The id to allow the response from rca to be associated with the correct register status e.g. `VoterCardApplicationRegisterStatus.id`
-              example: c73bcdcc-2669-4bf6-81d3-e4ae73fb11fd
-
     RemoveRegisterCheckDataMessage:
       title: RemoveRegisterCheckDataMessage
       type: object
@@ -176,20 +161,6 @@ components:
         - sourceCorrelationId
         - registerCheckResult
         - matches
-
-    PendingRegisterCheckArchiveMessage:
-      title: PendingRegisterCheckArchiveMessage
-      type: object
-      description: SQS message containing a request to archive all data related to a register check
-      properties:
-        correlationId:
-          type: string
-          format: uuid
-          description: The id to allow the response from rca to be associated with the correct register status e.g. `VoterCardApplicationRegisterStatus.id`
-          example: c73bcdcc-2669-4bf6-81d3-e4ae73fb11fd
-
-      required:
-        - correlationId
 
     RegisterCheckResult:
       title: RegisterCheckResult
@@ -380,8 +351,3 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterCheckResultMessage'
-    PendingRegisterCheckArchiveMessage:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PendingRegisterCheckArchiveMessage'
