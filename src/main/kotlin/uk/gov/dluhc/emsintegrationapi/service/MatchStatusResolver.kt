@@ -1,7 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
-import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.StringUtils.equalsIgnoreCase
+import org.apache.commons.lang3.Strings
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
@@ -21,7 +20,10 @@ import java.time.LocalDate
 @Component
 class MatchStatusResolver {
 
-    fun resolveStatus(registerCheckResultDto: RegisterCheckResultDto, registerCheckEntity: RegisterCheck): RegisterCheckStatus =
+    fun resolveStatus(
+        registerCheckResultDto: RegisterCheckResultDto,
+        registerCheckEntity: RegisterCheck
+    ): RegisterCheckStatus =
         when (registerCheckResultDto.matchCount) {
             0 -> RegisterCheckStatus.NO_MATCH
             1 -> evaluateRegisterCheckStatusWithOneMatch(
@@ -40,7 +42,7 @@ class MatchStatusResolver {
         isHistoricalSearch: Boolean = false,
     ): RegisterCheckStatus =
         with(registerCheckMatchDto) {
-            return if (equalsIgnoreCase(franchiseCode.trim(), "PENDING")) {
+            return if (Strings.CI.equals(franchiseCode.trim(), "PENDING")) {
                 RegisterCheckStatus.PENDING_DETERMINATION
             } else {
                 val now = LocalDate.now()
@@ -60,9 +62,15 @@ class MatchStatusResolver {
         !keyPersonalDetailsMatch(personalDetailDto, personalDetailEntity) ||
             !keyAddressDetailsMatch(personalDetailDto.address, personalDetailEntity.address)
 
-    private fun keyPersonalDetailsMatch(personalDetailDto: PersonalDetailDto, personalDetailEntity: PersonalDetail): Boolean =
+    private fun keyPersonalDetailsMatch(
+        personalDetailDto: PersonalDetailDto,
+        personalDetailEntity: PersonalDetail
+    ): Boolean =
         trimAndEqualsIgnoreCase(personalDetailDto.firstName, personalDetailEntity.firstName) &&
-            StringUtils.equals(sanitizeSurname(personalDetailDto.surname), sanitizeSurname(personalDetailEntity.surname)) &&
+            Strings.CS.equals(
+                sanitizeSurname(personalDetailDto.surname),
+                sanitizeSurname(personalDetailEntity.surname)
+            ) &&
             personalDetailDto.dateOfBirth == personalDetailEntity.dateOfBirth
 
     private fun keyAddressDetailsMatch(addressDto: AddressDto, addressEntity: Address): Boolean =
@@ -71,14 +79,14 @@ class MatchStatusResolver {
         } else {
             trimAndEqualsIgnoreCase(addressDto.property, addressEntity.property) &&
                 trimAndEqualsIgnoreCase(addressDto.street, addressEntity.street) &&
-                StringUtils.equals(sanitizePostcode(addressDto.postcode), sanitizePostcode(addressEntity.postcode))
+                Strings.CS.equals(sanitizePostcode(addressDto.postcode), sanitizePostcode(addressEntity.postcode))
         }
 
     private fun trimAndEqualsIgnoreCase(str1: String?, str2: String?) =
-        equalsIgnoreCase(str1?.trim(), str2?.trim())
+        Strings.CI.equals(str1?.trim(), str2?.trim())
 
     private fun uprnsAreEqual(uprn1: String?, uprn2: String?) =
-        equalsIgnoreCase(uprn1?.trim()?.trimStart('0'), uprn2?.trim()?.trimStart('0'))
+        Strings.CI.equals(uprn1?.trim()?.trimStart('0'), uprn2?.trim()?.trimStart('0'))
 
     private fun sanitizeSurname(surname: String): String =
         surname.uppercase()

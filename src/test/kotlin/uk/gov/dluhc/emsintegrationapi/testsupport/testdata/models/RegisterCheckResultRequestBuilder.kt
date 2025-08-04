@@ -42,7 +42,7 @@ fun buildRegisterCheckMatchRequest(
     regtown: String? = faker.address().city(),
     regarea: String? = faker.address().state(),
     regpostcode: String = faker.address().postcode(),
-    reguprn: String? = RandomStringUtils.randomNumeric(12),
+    reguprn: String? = RandomStringUtils.secure().nextNumeric(12),
     registeredStartDate: LocalDate? = LocalDate.now().minusDays(2),
     registeredEndDate: LocalDate? = LocalDate.now().plusDays(2),
     applicationCreatedAt: OffsetDateTime? = OffsetDateTime.now(),
