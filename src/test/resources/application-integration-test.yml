@@ -41,8 +41,6 @@ dluhc:
 sqs:
   proxy-application-queue-name: proxy-application
   postal-application-queue-name: postal-application
-  deleted-proxy-application-queue-name: deleted-proxy-application
-  deleted-postal-application-queue-name: deleted-postal-application
   remove-application-ems-integration-data-queue-name: remove-application-ems-integration-data
   ems-application-processed-queue-name: ems-application-processed
   ems-cidr-update-queue-name: unknown-queue-yet-to-be-configured

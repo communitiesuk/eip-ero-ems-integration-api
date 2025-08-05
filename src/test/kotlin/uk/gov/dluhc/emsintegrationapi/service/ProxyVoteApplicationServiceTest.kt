@@ -193,35 +193,9 @@ internal class ProxyVoteApplicationServiceTest {
     @Nested
     inner class ConfirmedReceipt {
         @Test
-        fun `should update the record status to be DELETED and send SUCCESS confirmation message`() {
-            // Given
-            val proxyVoteApplication = buildProxyVoteApplication()
-            given(
-                proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
-                    proxyVoteApplication.applicationId,
-                    GSS_CODES
-                )
-            ).willReturn(proxyVoteApplication)
-            // When
-            proxyVoteApplicationService.confirmReceipt(
-                CERTIFICATE_SERIAL_NUMBER, proxyVoteApplication.applicationId,
-                requestSuccess
-            )
-
-            // Then
-            verify(messageSender).send(
-                EmsConfirmedReceiptMessage(
-                    proxyVoteApplication.applicationId,
-                    EmsConfirmedReceiptMessage.Status.SUCCESS
-                ),
-                QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
-            )
-        }
-
-        @Test
         fun `should send SUCCESS confirmation message to EMS_APPLICATION_PROCESSED_QUEUE `() {
             // Given
-            val proxyVoteApplication = buildProxyVoteApplication(isFromApplicationsApi = true)
+            val proxyVoteApplication = buildProxyVoteApplication()
             given(
                 proxyVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                     proxyVoteApplication.applicationId,
@@ -274,7 +248,7 @@ internal class ProxyVoteApplicationServiceTest {
                     message = ApplicationConstants.EMS_MESSAGE_TEXT,
                     details = ApplicationConstants.EMS_DETAILS_TEXT
                 ),
-                QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE
+                QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE
             )
         }
 
