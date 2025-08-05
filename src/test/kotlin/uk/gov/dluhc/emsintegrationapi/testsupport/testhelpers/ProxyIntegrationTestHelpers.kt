@@ -10,8 +10,10 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
+import uk.gov.dluhc.emsintegrationapi.database.entity.EroAbsentVoteHold
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.database.repository.EroAbsentVoteHoldRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteApplicationMessageMapper
@@ -44,6 +46,7 @@ class ProxyIntegrationTestHelpers(
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository? = null,
     private val queueMessagingTemplate: SqsTemplate,
     private val messageSenderProxy: MessageSender<ProxyVoteApplicationMessage>? = null,
+    private val eroAbsentVoteHoldRepository: EroAbsentVoteHoldRepository? = null,
 ) {
     val logger = KLogging().logger
 
@@ -332,4 +335,13 @@ class ProxyIntegrationTestHelpers(
                 Assertions.assertThat(proxyVoteApplicationRepository?.findById(applicationId)).isPresent
             }
         }
+
+    fun createEroAbsentVoteHold(eroId: String, holdEnabled: Boolean) {
+        eroAbsentVoteHoldRepository?.save(
+            EroAbsentVoteHold(
+                eroId = eroId,
+                holdEnabled = holdEnabled
+            )
+        )
+    }
 }

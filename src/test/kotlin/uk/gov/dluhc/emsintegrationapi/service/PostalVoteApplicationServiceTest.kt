@@ -9,6 +9,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.given
@@ -34,10 +35,14 @@ import uk.gov.dluhc.emsintegrationapi.service.ApplicationType.POSTAL
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
+import java.time.Clock
+import java.time.Instant
 import java.util.stream.IntStream
 
 @ExtendWith(MockitoExtension::class)
 internal class PostalVoteApplicationServiceTest {
+    @Spy
+    private var clock: Clock = Clock.systemUTC()
 
     @Mock
     private lateinit var apiProperties: ApiProperties
@@ -54,6 +59,9 @@ internal class PostalVoteApplicationServiceTest {
     @Mock
     private lateinit var retrieveGssCodeService: RetrieveGssCodeService
 
+    @Mock
+    private lateinit var retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService
+
     @InjectMocks
     private lateinit var postalVoteApplicationService: PostalVoteApplicationService
 
@@ -67,97 +75,163 @@ internal class PostalVoteApplicationServiceTest {
         private val requestSuccess = EMSApplicationResponse()
     }
 
-    @BeforeEach
-    public fun setup() {
-        given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
-            GSS_CODES
-        )
-    }
-
     @Nested
-    inner class PageSizeIsNotProvided {
-
+    inner class GetProxyVoteApplications {
         @BeforeEach
-        fun beforeEach() {
-            given(apiProperties.defaultPageSize).willReturn(DEFAULT_PAGE_SIZE)
-            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+        public fun setup() {
+            val now = Instant.now()
+            given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(false)
+            given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
         }
 
-        @AfterEach
-        fun afterEach() {
-            verify(apiProperties).defaultPageSize
-            verify(apiProperties, atLeastOnce()).forceMaxPageSize
+        @Nested
+        inner class PageSizeIsNotProvided {
+            @BeforeEach
+            public fun setup() {
+                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                    GSS_CODES
+                )
+            }
+
+            @BeforeEach
+            fun beforeEach() {
+                given(apiProperties.defaultPageSize).willReturn(DEFAULT_PAGE_SIZE)
+                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+            }
+
+            @AfterEach
+            fun afterEach() {
+                verify(apiProperties).defaultPageSize
+                verify(apiProperties, atLeastOnce()).forceMaxPageSize
+            }
+
+            @Test
+            fun `should return maximum of DEFAULT_PAGE_SIZE postal vote applications`() =
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = DEFAULT_PAGE_SIZE,
+                    numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                    pageSizeRequested = null
+                )
+
+            @Test
+            fun `system does not have requested number of records in the DB`() =
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = 10,
+                    numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                    pageSizeRequested = null
+                )
+
+            @Test
+            fun `system does not have any records`() =
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = 0,
+                    numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                    pageSizeRequested = null
+                )
         }
 
-        @Test
-        fun `should return maximum of DEFAULT_PAGE_SIZE postal vote applications`() =
-            validateFetchPostalVoteApplications(
-                numberOfRecordsToBeReturned = DEFAULT_PAGE_SIZE,
-                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
-                pageSizeRequested = null
-            )
+        @Nested
+        inner class PageSizeIsProvided {
+            @BeforeEach
+            fun beforeEach() {
+                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                    GSS_CODES
+                )
+            }
 
-        @Test
-        fun `system does not have requested number of records in the DB`() =
-            validateFetchPostalVoteApplications(
-                numberOfRecordsToBeReturned = 10,
-                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
-                pageSizeRequested = null
-            )
+            @AfterEach
+            fun afterEach() {
+                verify(apiProperties, atLeastOnce()).forceMaxPageSize
+                verifyNoMoreInteractions(apiProperties)
+            }
 
-        @Test
-        fun `system does not have any records`() =
-            validateFetchPostalVoteApplications(
-                numberOfRecordsToBeReturned = 0,
-                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
-                pageSizeRequested = null
-            )
-    }
+            @Test
+            fun `should request and return maximum of FORCE_MAX_PAGE_SIZE postal vote applications`() =
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = FORCE_MAX_PAGE_SIZE,
+                    numberOfRecordsToBeRequested = FORCE_MAX_PAGE_SIZE,
+                    pageSizeRequested = MORE_THAN_FORCE_MAX_PAGE_SIZE
+                )
 
-    @Nested
-    inner class PageSizeIsProvided {
-        @BeforeEach
-        fun beforeEach() {
-            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+            @Test
+            fun `should request and return the page size requested postal vote applications`() =
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                    numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                    pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+                )
+
+            @Test
+            fun `system does not have requested number of records in the DB`() =
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = 10,
+                    numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                    pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+                )
+
+            @Test
+            fun `system does not have any records`() =
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = 0,
+                    numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                    pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+                )
         }
 
-        @AfterEach
-        fun afterEach() {
-            verify(apiProperties, atLeastOnce()).forceMaxPageSize
-            verifyNoMoreInteractions(apiProperties)
+        @Nested
+        inner class HoldingPool {
+            @Test
+            fun `should return postal applications if after threshold date and hold not enabled`() {
+                val now = Instant.now()
+                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(false)
+                given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
+                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                    GSS_CODES
+                )
+
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = 1,
+                    numberOfRecordsToBeRequested = 1,
+                    pageSizeRequested = 1
+                )
+            }
+
+            @Test
+            fun `should return postal applications if before threshold date and hold enabled`() {
+                val now = Instant.now()
+                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(true)
+                given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
+                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                    GSS_CODES
+                )
+
+                validateFetchPostalVoteApplications(
+                    numberOfRecordsToBeReturned = 1,
+                    numberOfRecordsToBeRequested = 1,
+                    pageSizeRequested = 1
+                )
+            }
+
+            @Test
+            fun `should not return any postal applications if after threshold date and hold enabled`() {
+                val now = Instant.now()
+                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(true)
+                given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
+
+                val postalVoteApplications =
+                    postalVoteApplicationService.getPostalVoteApplications(
+                        certificateSerialNumber = CERTIFICATE_SERIAL_NUMBER,
+                        pageSize = 1
+                    )
+
+                assertThat(postalVoteApplications.pageSize).isEqualTo(0)
+                assertThat(postalVoteApplications.postalVotes).isEmpty()
+                verifyNoInteractions(postalVoteApplicationRepository)
+            }
         }
-
-        @Test
-        fun `should request and return maximum of FORCE_MAX_PAGE_SIZE postal vote applications`() =
-            validateFetchPostalVoteApplications(
-                numberOfRecordsToBeReturned = FORCE_MAX_PAGE_SIZE,
-                numberOfRecordsToBeRequested = FORCE_MAX_PAGE_SIZE,
-                pageSizeRequested = MORE_THAN_FORCE_MAX_PAGE_SIZE
-            )
-
-        @Test
-        fun `should request and return the page size requested postal vote applications`() =
-            validateFetchPostalVoteApplications(
-                numberOfRecordsToBeReturned = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
-                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
-                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
-            )
-
-        @Test
-        fun `system does not have requested number of records in the DB`() =
-            validateFetchPostalVoteApplications(
-                numberOfRecordsToBeReturned = 10,
-                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
-                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
-            )
-
-        @Test
-        fun `system does not have any records`() =
-            validateFetchPostalVoteApplications(
-                numberOfRecordsToBeReturned = 0,
-                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
-                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
-            )
     }
 
     private fun validateFetchPostalVoteApplications(
@@ -199,6 +273,13 @@ internal class PostalVoteApplicationServiceTest {
 
     @Nested
     inner class ConfirmedReceipt {
+        @BeforeEach
+        fun beforeEach() {
+            given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                GSS_CODES
+            )
+        }
+
         @Test
         fun `should update the record status to be DELETED and send SUCCESS confirmation message`() {
             // Given

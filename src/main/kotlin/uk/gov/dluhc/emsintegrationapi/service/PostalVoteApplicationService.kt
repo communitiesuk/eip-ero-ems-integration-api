@@ -15,19 +15,27 @@ import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
 import uk.gov.dluhc.emsintegrationapi.models.PostalVoteApplications
+import java.time.Clock
 
 private val logger = KotlinLogging.logger { }
 
 @Service
 class PostalVoteApplicationService(
+    // IntelliJ cannot resolve the clock bean as it's determined at runtime. See https://stackoverflow.com/questions/21323309/intellij-idea-shows-errors-when-using-springs-autowired-annotation
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    private val clock: Clock,
     private val apiProperties: ApiProperties,
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository,
     private val postalVoteMapper: PostalVoteMapper,
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
     private val retrieveGssCodeService: RetrieveGssCodeService,
+    private val retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService,
 ) : AbstractApplicationService(
+    clock,
     QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE,
+    apiProperties,
     retrieveGssCodeService,
+    retrieveIsHoldEnabledForEroService,
     messageSender,
 ) {
     @Transactional(readOnly = true)
@@ -35,6 +43,11 @@ class PostalVoteApplicationService(
         certificateSerialNumber: String,
         pageSize: Int?,
     ): PostalVoteApplications {
+        if (shouldHoldApplicationsForEro(certificateSerialNumber)) {
+            logger.info("No postal records fetched for $certificateSerialNumber, as hold is enabled for ERO and after holding pool threshold date")
+            return PostalVoteApplications(0, emptyList())
+        }
+
         val gssCodes = getGssCodes(certificateSerialNumber)
         var numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
         logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")

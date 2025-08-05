@@ -9,6 +9,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.given
@@ -31,10 +32,14 @@ import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
+import java.time.Clock
+import java.time.Instant
 import java.util.stream.IntStream
 
 @ExtendWith(MockitoExtension::class)
 internal class ProxyVoteApplicationServiceTest {
+    @Spy
+    private var clock: Clock = Clock.systemUTC()
 
     @Mock
     private lateinit var apiProperties: ApiProperties
@@ -51,6 +56,9 @@ internal class ProxyVoteApplicationServiceTest {
     @Mock
     private lateinit var retrieveGssCodeService: RetrieveGssCodeService
 
+    @Mock
+    private lateinit var retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService
+
     @InjectMocks
     private lateinit var proxyVoteApplicationService: ProxyVoteApplicationService
 
@@ -64,96 +72,159 @@ internal class ProxyVoteApplicationServiceTest {
         private val requestSuccess = EMSApplicationResponse()
     }
 
-    @BeforeEach
-    public fun setup() {
-        given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
-            GSS_CODES
-        )
-    }
-
     @Nested
-    inner class PageSizeIsNotProvided {
+    inner class GetProxyVoteApplications {
         @BeforeEach
-        fun beforeEach() {
-            given(apiProperties.defaultPageSize).willReturn(DEFAULT_PAGE_SIZE)
-            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+        public fun setup() {
+            val now = Instant.now()
+            given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(false)
+            given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
         }
 
-        @AfterEach
-        fun afterEach() {
-            verify(apiProperties).defaultPageSize
-            verify(apiProperties, atLeastOnce()).forceMaxPageSize
+        @Nested
+        inner class PageSizeIsNotProvided {
+            @BeforeEach
+            fun beforeEach() {
+                given(apiProperties.defaultPageSize).willReturn(DEFAULT_PAGE_SIZE)
+                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                    GSS_CODES
+                )
+            }
+
+            @AfterEach
+            fun afterEach() {
+                verify(apiProperties).defaultPageSize
+                verify(apiProperties, atLeastOnce()).forceMaxPageSize
+            }
+
+            @Test
+            fun `should return maximum of DEFAULT_PAGE_SIZE proxy vote applications`() =
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = DEFAULT_PAGE_SIZE,
+                    numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                    pageSizeRequested = null
+                )
+
+            @Test
+            fun `system does not have requested number of records in the DB`() =
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = 10,
+                    numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                    pageSizeRequested = null
+                )
+
+            @Test
+            fun `system does not have any records`() =
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = 0,
+                    numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
+                    pageSizeRequested = null
+                )
         }
 
-        @Test
-        fun `should return maximum of DEFAULT_PAGE_SIZE proxy vote applications`() =
-            validateFetchProxyVoteApplications(
-                numberOfRecordsToBeReturned = DEFAULT_PAGE_SIZE,
-                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
-                pageSizeRequested = null
-            )
+        @Nested
+        inner class PageSizeIsProvided {
+            @BeforeEach
+            fun beforeEach() {
+                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                    GSS_CODES
+                )
+            }
 
-        @Test
-        fun `system does not have requested number of records in the DB`() =
-            validateFetchProxyVoteApplications(
-                numberOfRecordsToBeReturned = 10,
-                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
-                pageSizeRequested = null
-            )
+            @AfterEach
+            fun afterEach() {
+                verify(apiProperties, atLeastOnce()).forceMaxPageSize
+                verifyNoMoreInteractions(apiProperties)
+            }
 
-        @Test
-        fun `system does not have any records`() =
-            validateFetchProxyVoteApplications(
-                numberOfRecordsToBeReturned = 0,
-                numberOfRecordsToBeRequested = DEFAULT_PAGE_SIZE,
-                pageSizeRequested = null
-            )
-    }
+            @Test
+            fun `should request and return maximum of FORCE_MAX_PAGE_SIZE proxy vote applications`() =
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = FORCE_MAX_PAGE_SIZE,
+                    numberOfRecordsToBeRequested = FORCE_MAX_PAGE_SIZE,
+                    pageSizeRequested = MORE_THAN_FORCE_MAX_PAGE_SIZE
+                )
 
-    @Nested
-    inner class PageSizeIsProvided {
-        @BeforeEach
-        fun beforeEach() {
-            given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+            @Test
+            fun `should request and return the page size requested proxy vote applications`() =
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                    numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                    pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+                )
+
+            @Test
+            fun `system does not have requested number of records in the DB`() =
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = 10,
+                    numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                    pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+                )
+
+            @Test
+            fun `system does not have any records`() =
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = 0,
+                    numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
+                    pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
+                )
         }
 
-        @AfterEach
-        fun afterEach() {
-            verify(apiProperties, atLeastOnce()).forceMaxPageSize
-            verifyNoMoreInteractions(apiProperties)
+        @Nested
+        inner class HoldingPool {
+            @Test
+            fun `should return proxy applications if after threshold date and hold not enabled`() {
+                val now = Instant.now()
+                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(false)
+                given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
+                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                    GSS_CODES
+                )
+                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = 1,
+                    numberOfRecordsToBeRequested = 1,
+                    pageSizeRequested = 1
+                )
+            }
+
+            @Test
+            fun `should return proxy applications if before threshold date and hold enabled`() {
+                val now = Instant.now()
+                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(true)
+                given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
+                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                    GSS_CODES
+                )
+                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
+
+                validateFetchProxyVoteApplications(
+                    numberOfRecordsToBeReturned = 1,
+                    numberOfRecordsToBeRequested = 1,
+                    pageSizeRequested = 1
+                )
+            }
+
+            @Test
+            fun `should not return any proxy applications if after threshold date and hold enabled`() {
+                val now = Instant.now()
+                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(true)
+                given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
+
+                val proxyVoteApplications =
+                    proxyVoteApplicationService.getProxyVoteApplications(
+                        certificateSerialNumber = CERTIFICATE_SERIAL_NUMBER,
+                        pageSize = 1
+                    )
+
+                assertThat(proxyVoteApplications.pageSize).isEqualTo(0)
+                assertThat(proxyVoteApplications.proxyVotes).isEmpty()
+                verifyNoInteractions(proxyVoteApplicationRepository)
+            }
         }
-
-        @Test
-        fun `should request and return maximum of FORCE_MAX_PAGE_SIZE proxy vote applications`() =
-            validateFetchProxyVoteApplications(
-                numberOfRecordsToBeReturned = FORCE_MAX_PAGE_SIZE,
-                numberOfRecordsToBeRequested = FORCE_MAX_PAGE_SIZE,
-                pageSizeRequested = MORE_THAN_FORCE_MAX_PAGE_SIZE
-            )
-
-        @Test
-        fun `should request and return the page size requested proxy vote applications`() =
-            validateFetchProxyVoteApplications(
-                numberOfRecordsToBeReturned = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
-                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
-                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
-            )
-
-        @Test
-        fun `system does not have requested number of records in the DB`() =
-            validateFetchProxyVoteApplications(
-                numberOfRecordsToBeReturned = 10,
-                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
-                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
-            )
-
-        @Test
-        fun `system does not have any records`() =
-            validateFetchProxyVoteApplications(
-                numberOfRecordsToBeReturned = 0,
-                numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
-                pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
-            )
     }
 
     private fun validateFetchProxyVoteApplications(
@@ -192,6 +263,13 @@ internal class ProxyVoteApplicationServiceTest {
 
     @Nested
     inner class ConfirmedReceipt {
+        @BeforeEach
+        fun beforeEach() {
+            given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
+                GSS_CODES
+            )
+        }
+
         @Test
         fun `should update the record status to be DELETED and send SUCCESS confirmation message`() {
             // Given

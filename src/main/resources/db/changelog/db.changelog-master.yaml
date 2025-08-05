@@ -67,3 +67,5 @@ databaseChangeLog:
       file: /db/changelog/create/0032_EIP1-12568_add_gss_code_match_result_sent_at_index_to_register_check.xml
   - include:
       file: /db/changelog/create/0033_EIP1-12569_remove_correlation_id_index_from_register_check.xml
+  - include:
+      file: /db/changelog/create/0034_EIP1-12901_add_ero_absent_vote_hold_table.xml
