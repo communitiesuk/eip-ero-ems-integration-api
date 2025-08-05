@@ -72,8 +72,6 @@ class ProxyVoteApplication(
     )
     var welshRejectedReasonItems: Set<RejectedReasonItem>? = mutableSetOf(),
 
-    var isFromApplicationsApi: Boolean?,
-
     @Version
     var version: Long? = null,
 ) {

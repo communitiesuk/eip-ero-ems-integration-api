@@ -32,7 +32,6 @@ class ProxyVoteApplicationMessageMapper(
                 englishRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.englishReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
                 welshRejectionNotes = it.proxyVoteDetails.rejectedReasons?.welshReason?.notes,
                 welshRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.welshReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
-                isFromApplicationsApi = it.isFromApplicationsApi,
             )
         }
 }

@@ -29,8 +29,6 @@ dluhc:
 sqs:
   proxy-application-queue-name: ${SQS_PROXY_APPLICATION_QUEUE_NAME}
   postal-application-queue-name: ${SQS_POSTAL_APPLICATION_QUEUE_NAME}
-  deleted-proxy-application-queue-name: ${SQS_DELETED_PROXY_APPLICATION_QUEUE_NAME}
-  deleted-postal-application-queue-name: ${SQS_DELETED_POSTAL_APPLICATION_QUEUE_NAME}
   remove-application-ems-integration-data-queue-name: ${SQS_REMOVE_APPLICATION_EMS_INTEGRATION_DATA_QUEUE_NAME}
   ems-application-processed-queue-name: ${SQS_EMS_APPLICATION_PROCESSED_QUEUE_NAME}
   initiate-applicant-register-check-queue-name: ${SQS_INITIATE_REGISTER_CHECK_QUEUE_NAME}

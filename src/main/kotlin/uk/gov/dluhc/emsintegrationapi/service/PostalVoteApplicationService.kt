@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
-import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
@@ -26,7 +25,6 @@ class PostalVoteApplicationService(
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
     private val retrieveGssCodeService: RetrieveGssCodeService,
 ) : AbstractApplicationService(
-    QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE,
     retrieveGssCodeService,
     messageSender,
 ) {
@@ -96,7 +94,7 @@ class PostalVoteApplicationService(
             doConfirmedReceiptApplicationStatus(request, postalVoteApplication.applicationDetails)
         }
 
-        sendMessage(request, postalVoteApplication.applicationId, postalVoteApplication.isFromApplicationsApi)
+        sendMessage(request, postalVoteApplication.applicationId)
 
         logger.info {
             "Confirmation ${request.status} message sent to the postal vote application for ${postalVoteApplication.applicationId}"
