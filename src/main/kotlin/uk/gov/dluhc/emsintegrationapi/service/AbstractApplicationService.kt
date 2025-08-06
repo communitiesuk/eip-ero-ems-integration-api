@@ -30,9 +30,11 @@ abstract class AbstractApplicationService(
         certificateSerialNumber: String,
     ): Boolean {
         logger.info { "Determining if applications should be held, due to convergence, for ERO with certificate serial number $certificateSerialNumber" }
-        val holdEnabled = retreiveIsHoldEnabledForEroService.getIsHoldEnabled(certificateSerialNumber)
         val thresholdDate = apiProperties.holdingPoolThresholdDate
-        return holdEnabled && Instant.now(clock).isAfter(thresholdDate)
+        if (Instant.now(clock).isBefore(thresholdDate)) {
+            return false
+        }
+        return retreiveIsHoldEnabledForEroService.getIsHoldEnabled(certificateSerialNumber)
     }
 
     protected fun doConfirmedReceiptApplicationStatus(
