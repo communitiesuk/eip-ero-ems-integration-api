@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity
 
-import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
+import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus.PENDING
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
@@ -23,7 +23,7 @@ fun buildRegisterCheck(
     matchResultSentAt: Instant? = null,
     registerCheckMatches: MutableList<RegisterCheckMatch> = mutableListOf(),
     personalDetail: PersonalDetail = buildPersonalDetail(),
-    emsElectorId: String = randomAlphanumeric(30),
+    emsElectorId: String = RandomStringUtils.secure().nextAlphanumeric(30),
     historicalSearch: Boolean = false,
     historicalSearchEarliestDate: Instant? = Instant.now(),
     createdBy: String = "system",

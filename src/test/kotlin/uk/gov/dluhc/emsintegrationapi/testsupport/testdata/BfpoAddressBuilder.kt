@@ -8,7 +8,7 @@ import java.time.Instant
 import uk.gov.dluhc.emsintegrationapi.messaging.models.BfpoAddress as BfpoAddressMessageDto
 
 fun buildBfpoAddressEntity(
-    bfpoNumber: String = RandomStringUtils.randomNumeric(7),
+    bfpoNumber: String = RandomStringUtils.secure().nextNumeric(7),
     addressLine1: String = faker.address().streetName(),
     addressLine2: String = faker.address().postcode(),
     addressLine3: String = faker.address().buildingNumber(),
@@ -28,7 +28,7 @@ fun buildBfpoAddressEntity(
 )
 
 fun buildBfpoAddressMessageDto(
-    bfpoNumebr: String = RandomStringUtils.randomNumeric(7),
+    bfpoNumebr: String = RandomStringUtils.secure().nextNumeric(7),
     addressLine1: String = faker.address().streetName(),
     addressLine2: String = faker.address().postcode(),
     addressLine3: String = faker.address().buildingNumber(),
