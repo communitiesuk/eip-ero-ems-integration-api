@@ -17,7 +17,7 @@ fun buildInitiateRegisterCheckMessage(
     requestedBy: String = "system",
     gssCode: String = "E123456789",
     personalDetail: RegisterCheckPersonalDetail = buildRegisterCheckPersonalDetail(),
-    emsElectorId: String = RandomStringUtils.randomAlphanumeric(30),
+    emsElectorId: String = RandomStringUtils.secure().nextAlphanumeric(30),
     historicalSearch: Boolean = false,
 ) = InitiateRegisterCheckMessage(
     sourceType = sourceType,
@@ -56,7 +56,7 @@ private fun buildRegisterCheckAddress(
     town: String? = fakeAddress.city(),
     area: String? = fakeAddress.state(),
     postcode: String = fakeAddress.postcode(),
-    uprn: String? = RandomStringUtils.randomNumeric(12),
+    uprn: String? = RandomStringUtils.secure().nextNumeric(12),
 ) = RegisterCheckAddress(
     property = property,
     street = street,

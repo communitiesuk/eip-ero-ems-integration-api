@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport
 
-import org.apache.commons.lang3.RandomStringUtils.randomNumeric
+import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker.Companion.faker
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.replaceSpacesWith
 
@@ -24,4 +24,4 @@ fun getDifferentRandomEroId(refEroId: String): String {
     return differentEroId
 }
 
-fun getRandomGssCode() = "E${randomNumeric(8)}"
+fun getRandomGssCode() = "E${RandomStringUtils.secure().nextNumeric(8)}"
