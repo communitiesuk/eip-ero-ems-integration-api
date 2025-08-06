@@ -4,6 +4,31 @@ on:
   - pull_request
 
 jobs:
+  check-db-migration-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # First check DB migrations are unique and have been added to the changelog master file before any slow actions
+      - name: Check DB migration numbers are unique
+        run: |
+          EXIT_CODE=0
+          NON_UNIQUE=$(ls src/main/resources/db/changelog/create/ | awk -F_ '{print $1}' | uniq -cd)
+          if [[ ${#NON_UNIQUE} != 25 ]]; then # there were already a few duplicates before this check was added which is why the check is not for an empty list
+            echo -e "::error::A migration number was found multiple times, see duplicates in 'count duplicate_prefix' pairs: \n$NON_UNIQUE"
+            EXIT_CODE=1
+          fi
+          for MIGRATION in src/main/resources/db/changelog/create/*; do
+            # The file below wasn't added in before this check and was missed 
+            [[ "$MIGRATION" == "src/main/resources/db/changelog/create/0007_EIP1-6517_add_ballotBfpoAddress_table.xml" ]] && continue
+            if [[ $(grep -c `basename "$MIGRATION"` src/main/resources/db/changelog/db.changelog-master.yaml) == 0 ]]; then
+              echo "Migration: $MIGRATION has not been added to src/main/resources/db/changelog/db.changelog-master.yaml"
+              EXIT_CODE=1
+            fi
+          done
+          exit $EXIT_CODE
+
   build-and-test-api:
     uses: communitiesuk/eip-ero-shared-workflows/.github/workflows/build-and-test.yml@main
     secrets: inherit
