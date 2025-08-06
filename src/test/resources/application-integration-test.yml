@@ -53,7 +53,6 @@ sqs:
   proxy-vote-confirm-applicant-register-check-result-queue-name: proxy-vote-confirm-applicant-register-check-result
   overseas-vote-confirm-applicant-register-check-result-queue-name: overseas-vote-confirm-applicant-register-check-result
   register-check-result-response-queue-name: register-check-result-response-queue-name
-  pending-register-check-archive-queue-name: pending-register-check-archive-queue-name
 
 api:
   ero-management:
@@ -88,6 +87,3 @@ email:
     subject: "Register Check Monitoring"
     email-body-template: email-templates/pending-register-checks.html
     recipients: recipient1@domain.com,recipient2@domain.com
-
-feature-toggles:
-  suppress-ems-archive-register-check-not-found-errors: false

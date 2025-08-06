@@ -99,7 +99,6 @@ class LocalStackContainerConfiguration {
         @Value("\${sqs.overseas-vote-confirm-applicant-register-check-result-queue-name}") overseasVoteConfirmRegisterCheckResultMessageQueueName: String,
         @Value("\${sqs.register-check-result-response-queue-name}") registerCheckResultResponseQueueName: String,
         @Value("\${sqs.remove-applicant-register-check-data-queue-name}") removeRegisterCheckDataMessageQueueName: String,
-        @Value("\${sqs.pending-register-check-archive-queue-name}") pendingRegisterCheckArchiveQueueName: String,
         objectMapper: ObjectMapper,
     ): LocalStackContainerSettings {
         val queueUrlInitiateApplicantRegisterCheck = localStackContainer.createSqsQueue(initiateApplicantRegisterCheckQueueName, objectMapper)
@@ -109,7 +108,6 @@ class LocalStackContainerConfiguration {
         val queueUrlOverseasVoteConfirmRegisterCheckResult = localStackContainer.createSqsQueue(overseasVoteConfirmRegisterCheckResultMessageQueueName, objectMapper)
         val queueUrlRegisterCheckResultResponse = localStackContainer.createSqsQueue(registerCheckResultResponseQueueName, objectMapper)
         val queueUrlRemoveRegisterCheckData = localStackContainer.createSqsQueue(removeRegisterCheckDataMessageQueueName, objectMapper)
-        val queueUrlPendingRegisterCheckArchive = localStackContainer.createSqsQueue(pendingRegisterCheckArchiveQueueName, objectMapper)
 
         val apiUrl = "http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}"
 
@@ -124,7 +122,6 @@ class LocalStackContainerConfiguration {
             queueUrlOverseasVoteConfirmRegisterCheckResult = queueUrlOverseasVoteConfirmRegisterCheckResult,
             queueUrlRemoveRegisterCheckData = queueUrlRemoveRegisterCheckData,
             queueUrlRegisterCheckResultResponse = queueUrlRegisterCheckResultResponse,
-            queueUrlPendingRegisterCheckArchive = queueUrlPendingRegisterCheckArchive,
         )
     }
 
