@@ -52,25 +52,25 @@ internal class RetrieveIsHoldEnabledForEroServiceTest {
         @Test
         fun `should return false if hold is not enabled for ERO`() {
             // Given
-            given(eroAbsentVoteHoldRepository.findById(ERO_ID)).willReturn(Optional.of(EroAbsentVoteHold(ERO_ID, true)))
+            given(eroAbsentVoteHoldRepository.findById(ERO_ID)).willReturn(Optional.of(EroAbsentVoteHold(ERO_ID, false)))
 
             // When
             val isHoldEnabled = isHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)
 
             // Then
-            assertThat(isHoldEnabled).isEqualTo(true)
+            assertThat(isHoldEnabled).isEqualTo(false)
         }
 
         @Test
         fun `should return false if no row found for ERO`() {
             // Given
-            given(eroAbsentVoteHoldRepository.findById(ERO_ID)).willReturn(Optional.of(EroAbsentVoteHold(ERO_ID, true)))
+            given(eroAbsentVoteHoldRepository.findById(ERO_ID)).willReturn(Optional.empty())
 
             // When
             val isHoldEnabled = isHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)
 
             // Then
-            assertThat(isHoldEnabled).isEqualTo(true)
+            assertThat(isHoldEnabled).isEqualTo(false)
         }
     }
 }
