@@ -11,6 +11,9 @@ abstract class IerApiException(message: String) : RuntimeException(message)
 class IerEroNotFoundException(certificateSerial: String) :
     IerApiException("EROCertificateMapping for certificateSerial=[$certificateSerial] not found")
 
+class IerTooManyErosFoundException(certificateSerial: String) :
+    IerApiException("Multiple EROs found for certificateSerial=[$certificateSerial]")
+
 class EroIdNotFoundException(eroId: String) :
     IerApiException("ERO with eroId=[$eroId] not found")
 

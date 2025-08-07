@@ -10,6 +10,8 @@ import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.ERO_CERTIFICATE_MAPPING_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
+import uk.gov.dluhc.emsintegrationapi.config.TestClockConfiguration
+import uk.gov.dluhc.emsintegrationapi.database.repository.EroAbsentVoteHoldRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
@@ -18,6 +20,8 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFI
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.ProxyIntegrationTestHelpers
 import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
+import java.time.Clock
+import java.time.ZoneOffset
 
 internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
@@ -29,6 +33,12 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
     private lateinit var proxyVoteApplicationRepository: ProxyVoteApplicationRepository
 
+    @Autowired
+    private lateinit var clock: TestClockConfiguration.FlexibleClock
+
+    @Autowired
+    private lateinit var eroAbsentVoteHoldRepository: EroAbsentVoteHoldRepository
+
     private var apiClient: ApiClient? = null
 
     private var fixtures: ProxyIntegrationTestHelpers? = null
@@ -39,6 +49,7 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     fun setup() {
         cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
+        eroAbsentVoteHoldRepository.deleteAll()
         ClearDownUtils.clearDownRecords(
             proxyRepository = proxyVoteApplicationRepository,
             registerCheckResultDataRepository = registerCheckResultDataRepository
@@ -49,8 +60,11 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
                 wiremockService = wireMockService,
                 proxyVoteApplicationRepository = proxyVoteApplicationRepository,
                 queueMessagingTemplate = sqsMessagingTemplate,
+                eroAbsentVoteHoldRepository = eroAbsentVoteHoldRepository
             )
         fixtures!!.givenEroIdAndGssCodesMapped()
+        val timeBeforeThreshold = apiProperties.holdingPoolThresholdDate.minusSeconds(3600)
+        clock.setClock(Clock.fixed(timeBeforeThreshold, ZoneOffset.UTC))
     }
 
     @Test
@@ -291,6 +305,92 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
             proxyVoteApplicationsMap = proxyVoteApplicationMap,
             hasSignature = false,
             expectedPageSize = 20,
+            responseSpec = responseSpec,
+        )
+    }
+
+    @Test
+    fun `System does not return proxy vote applications if hold is enabled and threshold date has passed`() {
+        // Given
+        val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.plusSeconds(3600)
+        clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
+
+        fixtures!!.givenEroIdAndGssCodesMapped()
+        fixtures!!.createEroAbsentVoteHold(eroId = "camden-city-council", holdEnabled = true)
+
+        fixtures!!.buildProxyVoteApplications(
+            numberOfRecords = 10,
+            recordStatus = "RECEIVED",
+            gssCodes = arrayOf("E12345678"),
+        )
+
+        // When
+        val responseSpec =
+            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, CERTIFICATE_SERIAL_NUM_1)
+
+        // Then
+        fixtures!!.validateProxyResponse(
+            proxyVoteApplicationsMap = mapOf(),
+            hasSignature = true,
+            expectedPageSize = 0,
+            responseSpec = responseSpec,
+        )
+    }
+
+    @Test
+    fun `System returns proxy vote applications if hold not enabled and threshold date has passed`() {
+        // Given
+        val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.plusSeconds(3600)
+        clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
+
+        fixtures!!.givenEroIdAndGssCodesMapped()
+        fixtures!!.createEroAbsentVoteHold(eroId = "camden-city-council", holdEnabled = false)
+
+        val proxyVoteApplicationMap =
+            fixtures!!.buildProxyVoteApplications(
+                numberOfRecords = 1,
+                recordStatus = "RECEIVED",
+                gssCodes = arrayOf("E12345678"),
+            )
+
+        // When
+        val responseSpec =
+            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, CERTIFICATE_SERIAL_NUM_1)
+
+        // Then
+        fixtures!!.validateProxyResponse(
+            proxyVoteApplicationsMap = proxyVoteApplicationMap,
+            hasSignature = true,
+            expectedPageSize = 1,
+            responseSpec = responseSpec,
+        )
+    }
+
+    @Test
+    fun `System returns proxy vote applications if hold enabled and threshold date has not passed`() {
+        // Given
+        val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.minusSeconds(3600)
+        clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
+
+        fixtures!!.givenEroIdAndGssCodesMapped()
+        fixtures!!.createEroAbsentVoteHold(eroId = "camden-city-council", holdEnabled = true)
+
+        val proxyVoteApplicationMap =
+            fixtures!!.buildProxyVoteApplications(
+                numberOfRecords = 1,
+                recordStatus = "RECEIVED",
+                gssCodes = arrayOf("E12345678"),
+            )
+
+        // When
+        val responseSpec =
+            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, CERTIFICATE_SERIAL_NUM_1)
+
+        // Then
+        fixtures!!.validateProxyResponse(
+            proxyVoteApplicationsMap = proxyVoteApplicationMap,
+            hasSignature = true,
+            expectedPageSize = 1,
             responseSpec = responseSpec,
         )
     }

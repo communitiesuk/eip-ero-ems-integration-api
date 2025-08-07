@@ -10,8 +10,10 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
+import uk.gov.dluhc.emsintegrationapi.database.entity.EroAbsentVoteHold
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.database.repository.EroAbsentVoteHoldRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants
 import uk.gov.dluhc.emsintegrationapi.mapper.PostalVoteApplicationMessageMapper
@@ -44,6 +46,7 @@ class PostalIntegrationTestHelpers(
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository? = null,
     private val queueMessagingTemplate: SqsTemplate,
     private val messageSenderPostal: MessageSender<PostalVoteApplicationMessage>? = null,
+    private val eroAbsentVoteHoldRepository: EroAbsentVoteHoldRepository? = null,
 ) {
     private val logger = KLogging().logger
 
@@ -338,4 +341,13 @@ class PostalIntegrationTestHelpers(
                 Assertions.assertThat(postalVoteApplicationRepository?.findById(applicationId)).isPresent
             }
         }
+
+    fun createEroAbsentVoteHold(eroId: String, holdEnabled: Boolean) {
+        eroAbsentVoteHoldRepository?.save(
+            EroAbsentVoteHold(
+                eroId = eroId,
+                holdEnabled = holdEnabled
+            )
+        )
+    }
 }
