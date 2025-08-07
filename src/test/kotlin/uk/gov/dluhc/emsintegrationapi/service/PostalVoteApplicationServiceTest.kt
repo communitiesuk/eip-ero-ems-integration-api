@@ -80,8 +80,7 @@ internal class PostalVoteApplicationServiceTest {
         @BeforeEach
         public fun setup() {
             val now = Instant.now()
-            given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(false)
-            given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
+            given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
         }
 
         @Nested
@@ -199,10 +198,9 @@ internal class PostalVoteApplicationServiceTest {
             }
 
             @Test
-            fun `should return postal applications if before threshold date and hold enabled`() {
+            fun `should return postal applications if before threshold date`() {
                 val now = Instant.now()
                 given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
-                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(true)
                 given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
                 given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
                     GSS_CODES

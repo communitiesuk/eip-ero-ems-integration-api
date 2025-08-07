@@ -77,8 +77,7 @@ internal class ProxyVoteApplicationServiceTest {
         @BeforeEach
         public fun setup() {
             val now = Instant.now()
-            given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(false)
-            given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
+            given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
         }
 
         @Nested
@@ -192,9 +191,8 @@ internal class ProxyVoteApplicationServiceTest {
             }
 
             @Test
-            fun `should return proxy applications if before threshold date and hold enabled`() {
+            fun `should return proxy applications if before threshold date`() {
                 val now = Instant.now()
-                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(true)
                 given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
                 given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
                     GSS_CODES
