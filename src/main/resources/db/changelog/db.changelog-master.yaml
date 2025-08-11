@@ -67,3 +67,7 @@ databaseChangeLog:
       file: /db/changelog/create/0032_EIP1-12568_add_gss_code_match_result_sent_at_index_to_register_check.xml
   - include:
       file: /db/changelog/create/0033_EIP1-12569_remove_correlation_id_index_from_register_check.xml
+  - include:
+      file: /db/changelog/create/0034_EIP1-11301_remove_is_from_applications_api_column.xml
+  - include:
+      file: /db/changelog/create/0035_EIP1-11301_remove_source_type_column.xml

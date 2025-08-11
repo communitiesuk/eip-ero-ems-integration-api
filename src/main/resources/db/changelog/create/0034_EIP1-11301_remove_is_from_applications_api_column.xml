@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
-    <changeSet author="kelly.fragkogianni@softwire.com" id="034_EIP1-11301_remove_is_from_applications_api_column_from_postal" context="ddl">
+    <changeSet author="kelly.fragkogianni@softwire.com" id="0034_EIP1-11301_remove_is_from_applications_api_column_from_postal" context="ddl">
         <dropColumn tableName="postal_vote_application" columnName="is_from_applications_api" />
 
         <rollback>
@@ -15,7 +15,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet author="kelly.fragkogianni@softwire.com" id="034_EIP1-11301_remove_is_from_applications_api_column_from_proxy" context="ddl">
+    <changeSet author="kelly.fragkogianni@softwire.com" id="0034_EIP1-11301_remove_is_from_applications_api_column_from_proxy" context="ddl">
         <dropColumn tableName="proxy_vote_application" columnName="is_from_applications_api" />
 
         <rollback>
