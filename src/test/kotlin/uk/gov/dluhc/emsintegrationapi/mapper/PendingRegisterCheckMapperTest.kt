@@ -22,8 +22,6 @@ import uk.gov.dluhc.registercheckerapi.models.PendingRegisterCheck
 import uk.gov.dluhc.registercheckerapi.models.SourceSystem
 import java.time.Instant
 import java.time.ZoneOffset
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType as EntitySourceType
-import uk.gov.dluhc.emsintegrationapi.dto.SourceType as DtoSourceType
 
 @ExtendWith(MockitoExtension::class)
 internal class PendingRegisterCheckMapperTest {
@@ -34,9 +32,6 @@ internal class PendingRegisterCheckMapperTest {
     @Mock
     private lateinit var personalDetailMapper: PersonalDetailMapper
 
-    @Mock
-    private lateinit var sourceTypeMapper: SourceTypeMapper
-
     @InjectMocks
     private val mapper = PendingRegisterCheckMapperImpl()
 
@@ -45,13 +40,10 @@ internal class PendingRegisterCheckMapperTest {
         // Given
         val pendingRegisterCheckDto = buildPendingRegisterCheckDto()
         val expectedPersonalDetailEntity = buildPersonalDetail()
-        val expectedSourceType = EntitySourceType.VOTER_CARD
         given(personalDetailMapper.personalDetailDtoToPersonalDetailEntity(any())).willReturn(expectedPersonalDetailEntity)
-        given(sourceTypeMapper.fromDtoToEntityEnum(any())).willReturn(expectedSourceType)
 
         val expected = RegisterCheck(
             correlationId = pendingRegisterCheckDto.correlationId,
-            sourceType = expectedSourceType,
             sourceReference = pendingRegisterCheckDto.sourceReference,
             sourceCorrelationId = pendingRegisterCheckDto.sourceCorrelationId,
             createdBy = pendingRegisterCheckDto.createdBy,
@@ -71,7 +63,6 @@ internal class PendingRegisterCheckMapperTest {
         assertThat(actual.status).isEqualTo(CheckStatus.PENDING)
         assertThat(actual.dateCreated).isNull()
         verify(personalDetailMapper).personalDetailDtoToPersonalDetailEntity(pendingRegisterCheckDto.personalDetail)
-        verify(sourceTypeMapper).fromDtoToEntityEnum(DtoSourceType.VOTER_CARD)
         verifyNoMoreInteractions(personalDetailMapper)
         verifyNoInteractions(instantMapper)
     }
@@ -82,11 +73,9 @@ internal class PendingRegisterCheckMapperTest {
         val registerCheckEntity = buildRegisterCheck()
         val expectedPersonalDetailDto = buildPersonalDetailDto()
         given(personalDetailMapper.personalDetailEntityToPersonalDetailDto(any())).willReturn(expectedPersonalDetailDto)
-        given(sourceTypeMapper.fromEntityToDtoEnum(any())).willReturn(DtoSourceType.VOTER_CARD)
 
         val expected = PendingRegisterCheckDto(
             correlationId = registerCheckEntity.correlationId,
-            sourceType = DtoSourceType.VOTER_CARD,
             sourceReference = registerCheckEntity.sourceReference,
             sourceCorrelationId = registerCheckEntity.sourceCorrelationId,
             createdBy = registerCheckEntity.createdBy,
@@ -103,8 +92,7 @@ internal class PendingRegisterCheckMapperTest {
         // Then
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected)
         verify(personalDetailMapper).personalDetailEntityToPersonalDetailDto(registerCheckEntity.personalDetail)
-        verify(sourceTypeMapper).fromEntityToDtoEnum(EntitySourceType.VOTER_CARD)
-        verifyNoMoreInteractions(personalDetailMapper, sourceTypeMapper)
+        verifyNoMoreInteractions(personalDetailMapper)
         verifyNoInteractions(instantMapper)
     }
 
@@ -114,7 +102,6 @@ internal class PendingRegisterCheckMapperTest {
         val createdAt = Instant.now()
         val pendingRegisterCheckDto = buildPendingRegisterCheckDto(createdAt = createdAt)
         given(instantMapper.toOffsetDateTime(any())).willReturn(createdAt.atOffset(ZoneOffset.UTC))
-        given(sourceTypeMapper.sourceTypeDtoToSourceSystem(any())).willReturn(SourceSystem.EROP)
 
         val expected = PendingRegisterCheck(
             requestid = pendingRegisterCheckDto.correlationId,
@@ -145,7 +132,6 @@ internal class PendingRegisterCheckMapperTest {
         // Then
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected)
         verify(instantMapper).toOffsetDateTime(createdAt)
-        verify(sourceTypeMapper).sourceTypeDtoToSourceSystem(DtoSourceType.VOTER_CARD)
         verifyNoInteractions(personalDetailMapper)
     }
 
@@ -158,7 +144,6 @@ internal class PendingRegisterCheckMapperTest {
             createdBy = "joe.bloggs@gmail.com"
         )
         given(instantMapper.toOffsetDateTime(any())).willReturn(createdAt.atOffset(ZoneOffset.UTC))
-        given(sourceTypeMapper.sourceTypeDtoToSourceSystem(any())).willReturn(SourceSystem.EROP)
 
         val expected = PendingRegisterCheck(
             requestid = pendingRegisterCheckDto.correlationId,
@@ -189,7 +174,6 @@ internal class PendingRegisterCheckMapperTest {
         // Then
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected)
         verify(instantMapper).toOffsetDateTime(createdAt)
-        verify(sourceTypeMapper).sourceTypeDtoToSourceSystem(DtoSourceType.VOTER_CARD)
         verifyNoInteractions(personalDetailMapper)
     }
 }

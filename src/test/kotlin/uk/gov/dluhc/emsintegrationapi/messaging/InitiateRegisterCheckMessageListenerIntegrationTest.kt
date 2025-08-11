@@ -6,47 +6,31 @@ import jakarta.persistence.criteria.Root
 import mu.KotlinLogging
 import org.apache.commons.lang3.time.StopWatch
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.api.Test
 import org.testcontainers.shaded.org.awaitility.Awaitility.await
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.entity.RegisterCheckAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildInitiateRegisterCheckMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType as SourceTypeModel
 
 private val logger = KotlinLogging.logger {}
 
 internal class InitiateRegisterCheckMessageListenerIntegrationTest : IntegrationTest() {
 
-    @ParameterizedTest
-    @CsvSource(
-        value = [
-            "VOTER_MINUS_CARD, VOTER_CARD",
-//            "POSTAL_MINUS_VOTE, POSTAL_VOTE",
-//            "PROXY_MINUS_VOTE, PROXY_VOTE",
-//            "OVERSEAS_MINUS_VOTE, OVERSEAS_VOTE",
-//            "APPLICATIONS_MINUS_API, APPLICATIONS_API",
-        ]
-    )
-    fun `should process message received on queue for all services`(
-        sourceTypeMessage: SourceTypeModel,
-        expectedSourceType: SourceType
-    ) {
+    @Test
+    fun `should process message received on queue`() {
         // Given
-        val message = buildInitiateRegisterCheckMessage(sourceType = sourceTypeMessage)
+        val message = buildInitiateRegisterCheckMessage()
         val earliestDateCreated = Instant.now()
         val expected = RegisterCheck(
             correlationId = UUID.randomUUID(),
-            sourceType = expectedSourceType,
             sourceReference = message.sourceReference,
             sourceCorrelationId = message.sourceCorrelationId,
             createdBy = message.requestedBy,

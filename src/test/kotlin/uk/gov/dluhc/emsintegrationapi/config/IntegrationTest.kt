@@ -16,7 +16,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckResultDataRepository
-import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.emails.EmailMessagesSentClient
@@ -63,9 +62,6 @@ internal abstract class IntegrationTest {
 
     @Autowired
     protected lateinit var cacheManager: CacheManager
-
-    @Autowired
-    protected lateinit var sourceTypeMapper: SourceTypeMapper
 
     @MockitoSpyBean(name = "readWriteDataSource")
     protected lateinit var readWriteDataSource: HikariDataSource

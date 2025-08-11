@@ -37,7 +37,6 @@ import uk.gov.dluhc.emsintegrationapi.exception.RegisterCheckUnexpectedStatusExc
 import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.PendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.RegisterCheckResultMapper
-import uk.gov.dluhc.emsintegrationapi.messaging.MessageQueueResolver
 import uk.gov.dluhc.emsintegrationapi.messaging.mapper.RegisterCheckResultMessageMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildAdminPendingRegisterCheckDto
@@ -51,12 +50,10 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildVcaReg
 import uk.gov.dluhc.messagingsupport.MessageQueue
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.UUID
 import java.util.UUID.randomUUID
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType as SourceTypeEntity
 
 @ExtendWith(MockitoExtension::class)
 internal class RegisterCheckServiceTest {
@@ -84,9 +81,6 @@ internal class RegisterCheckServiceTest {
 
     @Mock
     private lateinit var confirmRegisterCheckResultMessageQueue: MessageQueue<RegisterCheckResultMessage>
-
-    @Mock
-    private lateinit var messageQueueResolver: MessageQueueResolver
 
     @Mock
     private lateinit var matchStatusResolver: MatchStatusResolver
@@ -292,12 +286,10 @@ internal class RegisterCheckServiceTest {
 
             val matchedRegisterCheckEntity = buildRegisterCheck(
                 gssCode = gssCodeFromEroApi,
-                sourceType = uk.gov.dluhc.emsintegrationapi.database.entity.SourceType.VOTER_CARD,
                 status = PENDING
             )
             val expectedRegisterCheckDto = buildAdminPendingRegisterCheckDto(
                 sourceReference = matchedRegisterCheckEntity.sourceReference,
-                sourceType = uk.gov.dluhc.emsintegrationapi.dto.SourceType.VOTER_CARD,
                 gssCode = gssCodeFromEroApi
             )
 
@@ -333,33 +325,27 @@ internal class RegisterCheckServiceTest {
 
             val firstRegisterCheckEntity = buildRegisterCheck(
                 gssCode = firstGssCodeFromEroApi,
-                sourceType = uk.gov.dluhc.emsintegrationapi.database.entity.SourceType.POSTAL_VOTE,
                 status = PENDING
             )
             val secondRegisterCheckEntity = buildRegisterCheck(
                 gssCode = firstGssCodeFromEroApi,
-                sourceType = uk.gov.dluhc.emsintegrationapi.database.entity.SourceType.PROXY_VOTE,
                 status = PENDING
             )
             val thirdRegisterCheckEntity = buildRegisterCheck(
                 gssCode = secondGssCodeFromEroApi,
-                sourceType = uk.gov.dluhc.emsintegrationapi.database.entity.SourceType.OVERSEAS_VOTE,
                 status = PENDING
             )
 
             val firstRegisterCheckDto = buildAdminPendingRegisterCheckDto(
                 gssCode = firstRegisterCheckEntity.gssCode,
-                sourceType = uk.gov.dluhc.emsintegrationapi.dto.SourceType.POSTAL_VOTE,
                 sourceReference = firstRegisterCheckEntity.sourceReference
             )
             val secondRegisterCheckDto = buildAdminPendingRegisterCheckDto(
                 gssCode = firstGssCodeFromEroApi,
-                sourceType = uk.gov.dluhc.emsintegrationapi.dto.SourceType.PROXY_VOTE,
                 sourceReference = secondRegisterCheckEntity.sourceReference
             )
             val thirdRegisterCheckDto = buildAdminPendingRegisterCheckDto(
                 gssCode = secondGssCodeFromEroApi,
-                sourceType = uk.gov.dluhc.emsintegrationapi.dto.SourceType.OVERSEAS_VOTE,
                 sourceReference = thirdRegisterCheckEntity.sourceReference
             )
 
@@ -431,20 +417,8 @@ internal class RegisterCheckServiceTest {
     @Nested
     inner class SendConfirmRegisterCheckResultMessage {
 
-        @ParameterizedTest
-        @CsvSource(
-            value = [
-                "VOTER_CARD, VOTER_MINUS_CARD",
-                "POSTAL_VOTE, POSTAL_MINUS_VOTE",
-                "PROXY_VOTE, PROXY_MINUS_VOTE",
-                "OVERSEAS_VOTE, OVERSEAS_MINUS_VOTE",
-                "APPLICATIONS_API, APPLICATIONS_MINUS_API"
-            ]
-        )
-        fun `should submit a ConfirmRegisterCheckResult Message for all services`(
-            sourceTypeDto: SourceTypeEntity,
-            sourceType: SourceType
-        ) {
+        @Test
+        fun `should submit a ConfirmRegisterCheckResult Message`() {
             // Given
             val requestId = randomUUID()
             val historicalSearchEarliestDate = Instant.now()
@@ -456,10 +430,8 @@ internal class RegisterCheckServiceTest {
                 status = EXACT_MATCH,
                 registerCheckMatches = registerCheckMatchList,
                 historicalSearchEarliestDate = historicalSearchEarliestDate,
-                sourceType = sourceTypeDto
             )
             val expectedMessage = buildRegisterCheckResultMessage(
-                sourceType = SourceType.VOTER_MINUS_CARD,
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
                 registerCheckResult = RegisterCheckResult.EXACT_MINUS_MATCH,
@@ -468,7 +440,6 @@ internal class RegisterCheckServiceTest {
             )
 
             given(registerCheckResultMessageMapper.fromRegisterCheckEntityToRegisterCheckResultMessage(any())).willReturn(expectedMessage)
-            given(messageQueueResolver.getTargetQueueForSourceType(any())).willReturn(confirmRegisterCheckResultMessageQueue)
 
             // When
             registerCheckService.sendConfirmRegisterCheckResultMessage(savedPendingRegisterCheckEntity)

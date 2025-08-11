@@ -30,7 +30,6 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildRegisterC
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildRegisterCheckResultRequest
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
 import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import java.time.OffsetDateTime
@@ -39,7 +38,6 @@ import java.time.temporal.ChronoUnit
 import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType as SourceTypeEntity
 
 private const val REQUEST_HEADER_NAME = "client-cert-serial"
 const val CERT_SERIAL_NUMBER_VALUE = "543219999"
@@ -470,7 +468,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         assertRequestIsAudited(requestId)
         assertMessageNotSubmittedToSqs(
-            queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
+            queueUrl = localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse,
             sourceReferenceNotExpected = savedPendingRegisterCheckEntity.sourceReference,
         )
     }
@@ -537,7 +535,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasError("Conflict")
             .hasMessage("Register check with requestid:[14f66386-a86e-4dbc-af52-3327834f33d1] has an optimistic locking failure")
 
-        assertExactlyOneMessageSentToSqs(localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult)
+        assertExactlyOneMessageSentToSqs(localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse)
     }
 
     @Test
@@ -573,7 +571,6 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             )
         val expectedMessageContent =
             RegisterCheckResultMessage(
-                sourceType = SourceType.VOTER_MINUS_CARD,
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
                 registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
@@ -626,7 +623,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .isEqualTo(requestBody)
 
         assertMessageSubmittedToSqs(
-            queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
+            queueUrl = localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse,
             expectedMessageContent,
         )
     }
@@ -693,7 +690,6 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             )
         val expectedMessageContentSentToVca =
             buildRegisterCheckResultMessage(
-                sourceType = SourceType.VOTER_MINUS_CARD,
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
                 registerCheckResult = expectedRegisterCheckResult,
@@ -741,7 +737,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         assertRequestIsAudited(actualRegisterResultData, requestId, createdAtFromRequest, gssCode, matchCount)
 
         assertMessageSubmittedToSqs(
-            queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
+            queueUrl = localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse,
             expectedMessageContentSentToVca,
         )
     }
@@ -815,7 +811,6 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         val expectedMessageContentSentToVca =
             RegisterCheckResultMessage(
-                sourceType = SourceType.VOTER_MINUS_CARD,
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
                 registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
@@ -859,7 +854,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         assertRequestIsAudited(actualRegisterResultData, requestId, createdAtFromRequest, gssCode, matchCount)
 
         assertMessageSubmittedToSqs(
-            queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
+            queueUrl = localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse,
             expectedMessageContentSentToVca,
         )
     }
@@ -887,7 +882,6 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         val expectedMessageContentSentToVca =
             RegisterCheckResultMessage(
-                sourceType = SourceType.VOTER_MINUS_CARD,
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
                 registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
@@ -930,25 +924,13 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         assertRequestIsAudited(actualRegisterResultData, requestId, createdAtFromRequest, gssCode, matchCount)
 
         assertMessageSubmittedToSqs(
-            queueUrl = localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult,
+            queueUrl = localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse,
             expectedMessageContentSentToVca,
         )
     }
 
-    @ParameterizedTest
-    @CsvSource(
-        value = [
-            "VOTER_CARD, VOTER_MINUS_CARD,",
-            "POSTAL_VOTE, POSTAL_MINUS_VOTE,",
-            "PROXY_VOTE, PROXY_MINUS_VOTE,",
-            "OVERSEAS_VOTE, OVERSEAS_MINUS_VOTE,",
-            "APPLICATIONS_API, APPLICATIONS_MINUS_API",
-        ],
-    )
-    fun `should submit the different service result messages to the correct queues`(
-        sourceTypeEntity: SourceTypeEntity,
-        sourceType: SourceType,
-    ) {
+    @Test
+    fun `should submit the different service result messages to the correct queues`() {
         // Given
         val requestId = UUID.randomUUID()
         val eroId = "camden-city-council"
@@ -962,7 +944,6 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val savedPendingRegisterCheckEntity =
             registerCheckRepository.save(
                 buildRegisterCheck(
-                    sourceType = sourceTypeEntity,
                     correlationId = requestId,
                     gssCode = gssCode,
                     status = CheckStatus.PENDING,
@@ -977,7 +958,6 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
 
         val expectedMessageContent =
             RegisterCheckResultMessage(
-                sourceType = sourceType,
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
                 registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
@@ -1008,9 +988,8 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .isCreated
 
         // Then
-        val queueUrlForSourceType = getQueueUrlForSourceType(sourceType)
         assertMessageSubmittedToSqs(
-            queueUrl = queueUrlForSourceType,
+            queueUrl = localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse,
             expectedMessageContent = expectedMessageContent,
         )
     }
@@ -1136,13 +1115,4 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         """.trimIndent()
 
     private fun buildUri(requestId: UUID = UUID.randomUUID()) = "/registerchecks/$requestId"
-
-    private fun getQueueUrlForSourceType(sourceType: SourceType): String =
-        when (sourceType) {
-            SourceType.APPLICATIONS_MINUS_API -> localStackContainerSettings.mappedQueueUrlRegisterCheckResultResponse
-            SourceType.VOTER_MINUS_CARD -> localStackContainerSettings.mappedQueueUrlConfirmRegisterCheckResult
-            SourceType.PROXY_MINUS_VOTE -> localStackContainerSettings.mappedQueueUrlProxyVoteConfirmRegisterCheckResult
-            SourceType.POSTAL_MINUS_VOTE -> localStackContainerSettings.mappedQueueUrlPostalVoteConfirmRegisterCheckResult
-            SourceType.OVERSEAS_MINUS_VOTE -> localStackContainerSettings.mappedQueueUrlOverseasVoteConfirmRegisterCheckResult
-        }
 }
