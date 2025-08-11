@@ -14,7 +14,6 @@ import uk.gov.dluhc.registercheckerapi.models.PendingRegisterCheck
     uses = [
         InstantMapper::class,
         PersonalDetailMapper::class,
-        SourceTypeMapper::class,
         AddressMapper::class
     ]
 )
@@ -28,7 +27,7 @@ abstract class PendingRegisterCheckMapper {
     abstract fun registerCheckEntityToPendingRegisterCheckDto(registerCheck: RegisterCheck): PendingRegisterCheckDto
 
     @Mapping(target = "requestid", source = "correlationId")
-    @Mapping(target = "source", source = "sourceType")
+    @Mapping(target = "source", constant = "EROP")
     @Mapping(target = "gssCode", source = "gssCode")
     @Mapping(target = "actingStaffId", source = "createdBy", qualifiedByName = ["createdByToActingStaffId"])
     @Mapping(target = "fn", source = "personalDetail.firstName")

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Register Checker SQS Message Types
-  version: '1.3.2'
+  version: '1.4.2'
   description: |-
     Register Checker SQS Message Types
     
@@ -60,14 +60,11 @@ components:
       type: object
       description: Base SQS Message for an applicant's register check.
       properties:
-        sourceType:
-          $ref: '#/components/schemas/SourceType'
         sourceReference:
           type: string
           description: Reference of the application in the corresponding source system that the message relates to. e.g. `VoterCardApplication.applicationId`
           example: 1f0f76a9a66f438b9bb33070
       required:
-        - sourceType
         - sourceReference
 
     InitiateRegisterCheckMessage:
@@ -125,8 +122,6 @@ components:
       type: object
       description: SQS Message containing an applicant's register check result outcome.
       properties:
-        sourceType:
-          $ref: '#/components/schemas/SourceType'
         sourceReference:
           type: string
           description: Reference of the application in the corresponding source system that the message relates to. e.g. `VoterCardApplication.applicationId`
@@ -156,7 +151,6 @@ components:
           example: 1996-09-07
 
       required:
-        - sourceType
         - sourceReference
         - sourceCorrelationId
         - registerCheckResult
@@ -314,16 +308,6 @@ components:
       required:
         - street
         - postcode
-
-    SourceType:
-      title: SourceType
-      type: string
-      enum:
-        - voter-card
-        - postal-vote
-        - proxy-vote
-        - overseas-vote
-        - applications-api
 
   #
   # Response Body Definitions

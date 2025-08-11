@@ -14,36 +14,8 @@ import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessa
 @Configuration
 class MessagingConfiguration {
 
-    @Value("\${sqs.confirm-applicant-register-check-result-queue-name}")
-    private lateinit var pendingRegisterCheckResultQueueName: String
-
-    @Value("\${sqs.postal-vote-confirm-applicant-register-check-result-queue-name}")
-    private lateinit var postalVoteConfirmRegisterCheckResultQueueName: String
-
-    @Value("\${sqs.proxy-vote-confirm-applicant-register-check-result-queue-name}")
-    private lateinit var proxyVoteConfirmRegisterCheckResultQueueName: String
-
-    @Value("\${sqs.overseas-vote-confirm-applicant-register-check-result-queue-name}")
-    private lateinit var overseasVoteConfirmRegisterCheckResultQueueName: String
-
     @Value("\${sqs.register-check-result-response-queue-name}")
     private lateinit var registerCheckResultResponseQueueName: String
-
-    @Bean(name = ["confirmRegisterCheckResultQueue"])
-    fun confirmRegisterCheckResultQueue(sqsTemplate: SqsTemplate) =
-        MessageQueue<RegisterCheckResultMessage>(pendingRegisterCheckResultQueueName, sqsTemplate)
-
-    @Bean(name = ["postalVoteConfirmRegisterCheckResultQueue"])
-    fun postalVoteConfirmRegisterCheckResultQueue(sqsTemplate: SqsTemplate) =
-        MessageQueue<RegisterCheckResultMessage>(postalVoteConfirmRegisterCheckResultQueueName, sqsTemplate)
-
-    @Bean(name = ["proxyVoteConfirmRegisterCheckResultQueue"])
-    fun proxyVoteConfirmRegisterCheckResultQueue(sqsTemplate: SqsTemplate) =
-        MessageQueue<RegisterCheckResultMessage>(proxyVoteConfirmRegisterCheckResultQueueName, sqsTemplate)
-
-    @Bean(name = ["overseasVoteConfirmRegisterCheckResultQueue"])
-    fun overseasVoteConfirmRegisterCheckResultQueue(sqsTemplate: SqsTemplate) =
-        MessageQueue<RegisterCheckResultMessage>(overseasVoteConfirmRegisterCheckResultQueueName, sqsTemplate)
 
     @Bean(name = ["registerCheckResultResponseQueue"])
     fun registerCheckResultResponseQueue(sqsTemplate: SqsTemplate) =

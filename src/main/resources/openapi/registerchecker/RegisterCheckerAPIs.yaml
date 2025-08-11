@@ -566,8 +566,6 @@ components:
           pattern: '^[a-zA-Z]\d{8}$'
           description: The Local Authority GSS Code that manages the Electoral Register.
           example: E06000001
-        sourceType:
-          $ref: '#/components/schemas/SourceType'
         createdAt:
           type: string
           description: The date and time this request to check the Electoral Register was generated
@@ -583,7 +581,6 @@ components:
       required:
         - applicationId
         - gssCode
-        - sourceType
         - createdAt
 
     SourceSystem:
@@ -591,16 +588,6 @@ components:
       description: The source system of the Application
       enum:
         - EROP
-
-    SourceType:
-      title: SourceType
-      description: The source type of the Application
-      enum:
-        - VOTER_CARD
-        - POSTAL_VOTE
-        - PROXY_VOTE
-        - OVERSEAS_VOTE
-        - APPLICATIONS_API
 
     RegisterCheckResultRequest:
       title: RegisterCheckResultRequest

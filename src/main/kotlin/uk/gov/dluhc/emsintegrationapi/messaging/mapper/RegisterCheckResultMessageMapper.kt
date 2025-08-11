@@ -7,7 +7,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckMatch
 import uk.gov.dluhc.emsintegrationapi.mapper.CheckStatusMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.InstantMapper
-import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckPersonalDetail
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckMatch as RegisterCheckMatchSqsModel
@@ -19,12 +18,10 @@ import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckMatch as Re
     uses = [
         InstantMapper::class,
         CheckStatusMapper::class,
-        SourceTypeMapper::class,
     ]
 )
 abstract class RegisterCheckResultMessageMapper {
 
-    @Mapping(target = "sourceType", source = "sourceType")
     @Mapping(target = "sourceReference", source = "sourceReference")
     @Mapping(target = "sourceCorrelationId", source = "sourceCorrelationId")
     @Mapping(target = "registerCheckResult", source = "status")

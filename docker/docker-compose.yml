@@ -39,7 +39,6 @@ services:
       SQS_PROXY_APPLICATION_QUEUE_NAME: ems-proxy-application
       SQS_POSTAL_APPLICATION_QUEUE_NAME: ems-postal-application
       SQS_EMS_APPLICATION_PROCESSED_QUEUE_NAME: ems-application-processed
-      SQS_CONFIRM_APPLICANT_REGISTER_CHECK_RESULT_QUEUE_NAME: confirm-applicant-register-check-result
       REQUEST_HEADER_CLIENT_CERT_SERIAL: client-cert-serial
       API_ERO_MANAGEMENT_URL: http://wiremock:8080/ero-management-api
       API_IER_BASE_URL: http://wiremock:8080/ier-ero
