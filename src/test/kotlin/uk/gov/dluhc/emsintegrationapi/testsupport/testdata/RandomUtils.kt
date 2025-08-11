@@ -27,7 +27,7 @@ fun getPastDateTime(days: Int = MIN_LENGTH): Instant =
         .toInstant()
         .truncatedTo(SECONDS)
 
-fun getRandomGssCode() = "E${RandomStringUtils.randomNumeric(8)}"
+fun getRandomGssCode() = "E${RandomStringUtils.secure().nextNumeric(8)}"
 
 fun getRandomEroId(): String = "${faker.address().city().lowercase()}-city-council"
 
@@ -40,9 +40,9 @@ fun getRandomDOB(): LocalDate =
         .toLocalDateTime()
         .toLocalDate()
 
-fun getRandomString(length: Int = MIN_LENGTH): String = RandomStringUtils.randomAlphabetic(length)
+fun getRandomString(length: Int = MIN_LENGTH): String = RandomStringUtils.secure().nextAlphabetic(length)
 
-fun getRandomAlphaNumeric(maxLength: Int = MIN_LENGTH): String = RandomStringUtils.randomAlphanumeric(maxLength)
+fun getRandomAlphaNumeric(maxLength: Int = MIN_LENGTH): String = RandomStringUtils.secure().nextAlphanumeric(maxLength)
 
 fun getRandomPastDate(inDays: Int = MIN_LENGTH): LocalDate =
     faker
@@ -54,7 +54,7 @@ fun getRandomPastDate(inDays: Int = MIN_LENGTH): LocalDate =
 fun randomHexadecimalString(size: Int): String {
     var generated = ""
     while (generated.length <= size) {
-        generated += Integer.toHexString(RandomUtils.nextInt())
+        generated += Integer.toHexString(RandomUtils.secure().randomInt())
     }
     return generated.substring(0, size)
 }

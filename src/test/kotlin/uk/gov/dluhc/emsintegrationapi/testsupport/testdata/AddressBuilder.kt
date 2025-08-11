@@ -14,7 +14,7 @@ fun buildAddressEntity(
     locality: String = faker.address().streetName(),
     town: String = faker.address().city(),
     area: String = faker.address().state(),
-    uprn: String = RandomStringUtils.randomNumeric(12),
+    uprn: String = RandomStringUtils.secure().nextNumeric(12),
     dateCreated: Instant = Instant.now(),
     createdBy: SourceSystem? = SourceSystem.EROP
 ) = Address(
@@ -36,7 +36,7 @@ fun buildAddressMessageDto(
     locality: String = faker.address().streetName(),
     town: String = faker.address().city(),
     area: String = faker.address().state(),
-    uprn: String = RandomStringUtils.randomNumeric(12),
+    uprn: String = RandomStringUtils.secure().nextNumeric(12),
 ) = AddressMessageDto(
     street = street,
     postcode = postcode,

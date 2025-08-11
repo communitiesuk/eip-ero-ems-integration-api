@@ -130,7 +130,7 @@ private fun buildVcaRegisterCheckAddressSqs(
     town: String? = fakeAddress.city(),
     area: String? = fakeAddress.state(),
     postcode: String = fakeAddress.postcode(),
-    uprn: String? = RandomStringUtils.randomNumeric(12),
+    uprn: String? = RandomStringUtils.secure().nextNumeric(12),
 ) = RegisterCheckAddress(
     property = property,
     street = street,
