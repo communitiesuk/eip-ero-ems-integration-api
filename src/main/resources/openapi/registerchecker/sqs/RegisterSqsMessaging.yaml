@@ -1,11 +1,13 @@
 openapi: 3.0.0
 info:
   title: Register Checker SQS Message Types
-  version: '1.4.2'
+  version: '1.4.0'
   description: |-
     Register Checker SQS Message Types
     
     This is an openAPI spec, that defines the structure of data passed over SQS messaging.
+    
+    Note that when changes are made to this YAML, they will need to be manually copied over to the APPS API
     
     The `paths` elements are being used to document (at a high level) the SQS queues and the request bodies that are expected
     to be published to them. **There is no intent to generate or implement SQS queues or listener classes from this document.**

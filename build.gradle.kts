@@ -237,7 +237,7 @@ tasks.create("api-generate IERApi model", GenerateTask::class) {
 
 tasks.create("api-generate rca-sqs-messaging model", GenerateTask::class) {
     enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/registerchecker/sqs/rca-sqs-messaging.yaml")
+    inputSpec.set("$projectDir/src/main/resources/openapi/registerchecker/sqs/RegisterSqsMessaging.yaml")
     packageName.set("uk.gov.dluhc.registercheckerapi.messaging")
 }
 

@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 internal class RemoveRegisterCheckDataMessageListenerIntegrationTest : IntegrationTest() {
 
     @Test
-    fun `should process message received on queue for all services`() {
+    fun `should process message received on queue`() {
         // Given
         val sourceReference = "93b62b87-0fa4-4d4a-89bf-4486f03f1000"
         val gssCode = "E09000567"

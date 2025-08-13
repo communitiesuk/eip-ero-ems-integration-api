@@ -930,7 +930,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
     }
 
     @Test
-    fun `should submit the different service result messages to the correct queues`() {
+    fun `should submit the result messages to the correct queue`() {
         // Given
         val requestId = UUID.randomUUID()
         val eroId = "camden-city-council"

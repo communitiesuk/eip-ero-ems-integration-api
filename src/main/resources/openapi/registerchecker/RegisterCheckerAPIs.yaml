@@ -1,9 +1,13 @@
 openapi: 3.0.0
 info:
   title: Register Checker APIs
-  version: '2.1.0'
+  version: '2.2.0'
   description: -|
     Requests checks and responses from EMS systems to validate elector details exists within the EMS.
+    
+    The /registerchecks paths are used by EMSs (i.e. the actual external companies we interact with) and cannot be updated unless co-ordinated with them
+    The /admin endpoints are used by the Admin API and when updated they will need to be manually copied over to the Admin API
+    
     For change history see
     https://github.com/communitiesuk/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml
   contact:
