@@ -25,9 +25,7 @@ class RemoveRegisterCheckDataMessageListener(
     override fun handleMessage(@Valid @Payload payload: RemoveRegisterCheckDataMessage) {
         with(payload) {
             logger.info {
-                "RemoveRegisterCheckDataMessage received with " +
-                    "sourceType: [$sourceType] and " +
-                    "sourceReference: [$sourceReference]"
+                "RemoveRegisterCheckDataMessage received with sourceReference: [$sourceReference]"
             }
             registerCheckRemovalService.removeRegisterCheckData(mapper.toRemovalDto(this))
         }

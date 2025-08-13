@@ -50,11 +50,6 @@ class RegisterCheck(
     var sourceCorrelationId: UUID,
 
     @NotNull
-    @Size(max = 100)
-    @Enumerated(EnumType.STRING)
-    var sourceType: SourceType,
-
-    @NotNull
     @Size(max = 80)
     var gssCode: String,
 
@@ -155,14 +150,6 @@ class RegisterCheck(
         this.registerCheckMatches += registerCheckMatches
         this.historicalSearchEarliestDate = historicalSearchEarliestDate
     }
-}
-
-enum class SourceType {
-    VOTER_CARD,
-    POSTAL_VOTE,
-    PROXY_VOTE,
-    OVERSEAS_VOTE,
-    APPLICATIONS_API
 }
 
 enum class CheckStatus {

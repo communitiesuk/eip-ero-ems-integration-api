@@ -18,7 +18,6 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.data.domain.Pageable
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
-import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.DELETED_POSTAL_APPLICATION_QUEUE
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.EMS_DETAILS_TEXT
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants.Companion.EMS_MESSAGE_TEXT
@@ -200,36 +199,9 @@ internal class PostalVoteApplicationServiceTest {
     @Nested
     inner class ConfirmedReceipt {
         @Test
-        fun `should update the record status to be DELETED and send SUCCESS confirmation message`() {
-            // Given
-            val postalVoteApplication = buildPostalVoteApplication()
-            given(
-                postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
-                    postalVoteApplication.applicationId,
-                    GSS_CODES
-                )
-            ).willReturn(postalVoteApplication)
-            // When
-            postalVoteApplicationService.confirmReceipt(
-                CERTIFICATE_SERIAL_NUMBER,
-                postalVoteApplication.applicationId,
-                requestSuccess
-            )
-
-            // Then
-            verify(messageSender).send(
-                EmsConfirmedReceiptMessage(
-                    postalVoteApplication.applicationId,
-                    EmsConfirmedReceiptMessage.Status.SUCCESS
-                ),
-                DELETED_POSTAL_APPLICATION_QUEUE
-            )
-        }
-
-        @Test
         fun `should send SUCCESS confirmation message to EMS_APPLICATION_PROCESSED_QUEUE`() {
             // Given
-            val postalVoteApplication = buildPostalVoteApplication(isFromApplicationsApi = true)
+            val postalVoteApplication = buildPostalVoteApplication()
             given(
                 postalVoteApplicationRepository.findByApplicationIdAndApplicationDetailsGssCodeIn(
                     postalVoteApplication.applicationId,
@@ -283,7 +255,7 @@ internal class PostalVoteApplicationServiceTest {
                     message = EMS_MESSAGE_TEXT,
                     details = EMS_DETAILS_TEXT
                 ),
-                DELETED_POSTAL_APPLICATION_QUEUE
+                EMS_APPLICATION_PROCESSED_QUEUE
             )
         }
 

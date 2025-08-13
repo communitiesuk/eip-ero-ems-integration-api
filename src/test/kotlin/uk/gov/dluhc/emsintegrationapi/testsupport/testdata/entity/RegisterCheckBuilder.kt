@@ -6,8 +6,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus.PENDING
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckMatch
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType.VOTER_CARD
 import java.time.Instant
 import java.util.UUID
 
@@ -16,7 +14,6 @@ fun buildRegisterCheck(
     correlationId: UUID = UUID.randomUUID(),
     sourceReference: String = UUID.randomUUID().toString(),
     sourceCorrelationId: UUID = UUID.randomUUID(),
-    sourceType: SourceType = VOTER_CARD,
     gssCode: String = "E09000021",
     status: CheckStatus = PENDING,
     matchCount: Int = 0,
@@ -32,7 +29,6 @@ fun buildRegisterCheck(
     correlationId = correlationId,
     sourceReference = sourceReference,
     sourceCorrelationId = sourceCorrelationId,
-    sourceType = sourceType,
     gssCode = gssCode,
     status = status,
     matchCount = matchCount,

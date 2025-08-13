@@ -140,7 +140,7 @@ internal class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
         await
             .pollDelay(2, TimeUnit.SECONDS)
             .untilAsserted {
-                assertThat(testHelpers!!.readMessage("deleted-postal-application"))
+                assertThat(testHelpers!!.readMessage(emsApplicationProcessedQueueName))
                     .isNotNull
                     .isEqualTo(
                         EmsConfirmedReceiptMessage(
@@ -170,7 +170,7 @@ internal class DeletePostalVoteApplicationsIntegrationTest : IntegrationTest() {
         await
             .pollDelay(2, TimeUnit.SECONDS)
             .timeout(20, TimeUnit.SECONDS)
-            .untilAsserted { assertThat(testHelpers!!.readMessage("deleted-postal-application")).isNull() }
+            .untilAsserted { assertThat(testHelpers!!.readMessage(emsApplicationProcessedQueueName)).isNull() }
 
         // And I received the http status 204
         responseSpec.expectStatus().isNoContent

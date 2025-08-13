@@ -48,7 +48,7 @@ internal class PutPostalVoteApplicationsIntegrationTest : IntegrationTest() {
                 postalRepository = postalVoteApplicationRepository,
                 registerCheckResultDataRepository = registerCheckResultDataRepository,
                 sqsAsyncClient = sqsAsyncClient,
-                queueName = "deleted-postal-application",
+                queueName = emsApplicationProcessedQueueName,
             )
         apiClient = ApiClient(webClient, apiProperties)
         testHelpers =
@@ -132,7 +132,7 @@ internal class PutPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
         // And the "deleted-postal-application" queue has a SUCCESS confirmation message for the application id APPLICATION_ID_1
         testHelpers!!.checkQueueHasMessage(
-            "deleted-postal-application",
+            emsApplicationProcessedQueueName,
             EmsConfirmedReceiptMessage(
                 APPLICATION_ID_1,
                 EmsConfirmedReceiptMessage.Status.SUCCESS,
@@ -163,7 +163,7 @@ internal class PutPostalVoteApplicationsIntegrationTest : IntegrationTest() {
 
         // And the "deleted-postal-application" queue has a FAILURE confirmation message for the application id APPLICATION_ID_1
         testHelpers!!.checkQueueHasMessage(
-            "deleted-postal-application",
+            emsApplicationProcessedQueueName,
             EmsConfirmedReceiptMessage(
                 APPLICATION_ID_1,
                 EmsConfirmedReceiptMessage.Status.FAILURE,
@@ -191,7 +191,7 @@ internal class PutPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         await
             .pollDelay(2, TimeUnit.SECONDS)
             .timeout(20L, TimeUnit.SECONDS)
-            .untilAsserted { assertThat(testHelpers!!.readMessage("deleted-postal-application")).isNull() }
+            .untilAsserted { assertThat(testHelpers!!.readMessage(emsApplicationProcessedQueueName)).isNull() }
 
         // And I received the http status 204
         responseSpec.expectStatus().isNoContent

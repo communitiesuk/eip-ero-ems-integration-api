@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Approved/Rejected Postal Application SQS Message
-  version: 1.2.3
+  version: 1.3.0
   description: |-
     Approved/Rejected Postal application API SQS Message Types for EROP
 
@@ -218,7 +218,6 @@ components:
               uprn: '098766'
             ballotAddressReason: I am away from home for work
             voteUntilFurtherNotice: true
-          isFromApplicationsApi: false
       properties:
         applicationDetails:
           $ref: './Models/ApplicationDetails.yaml'
@@ -228,9 +227,6 @@ components:
           $ref: '#/components/schemas/PostalVoteDetails'
         primaryElectorDetails:
           $ref: '#/components/schemas/PrimaryElectorDetails'
-        isFromApplicationsApi:
-          type: boolean
-          description: It indicates that the message comes from Applications Api or not
       required:
         - applicationDetails
         - applicantDetails

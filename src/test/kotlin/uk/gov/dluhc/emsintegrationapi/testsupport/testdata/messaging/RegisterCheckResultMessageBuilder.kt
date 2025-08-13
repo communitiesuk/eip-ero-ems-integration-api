@@ -11,21 +11,18 @@ import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckMatch
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckPersonalDetail
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import uk.gov.dluhc.registercheckerapi.messaging.models.VotingArrangement
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
 fun buildRegisterCheckResultMessage(
-    sourceType: SourceType = SourceType.VOTER_MINUS_CARD,
     sourceReference: String = "VPIOKNHPBP",
     sourceCorrelationId: UUID = UUID.randomUUID(),
     registerCheckResult: RegisterCheckResult = RegisterCheckResult.EXACT_MINUS_MATCH,
     matches: List<RegisterCheckMatch> = listOf(buildVcaRegisterCheckMatch()),
     historicalSearchEarliestDate: OffsetDateTime? = OffsetDateTime.now()
 ) = RegisterCheckResultMessage(
-    sourceType = sourceType,
     sourceReference = sourceReference,
     sourceCorrelationId = sourceCorrelationId,
     registerCheckResult = registerCheckResult,

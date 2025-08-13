@@ -6,12 +6,10 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckAddress
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckPersonalDetail
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import java.time.LocalDate
 import java.util.UUID
 
 fun buildInitiateRegisterCheckMessage(
-    sourceType: SourceType = SourceType.VOTER_MINUS_CARD,
     sourceReference: String = "VPIOKNHPBP",
     sourceCorrelationId: UUID = UUID.randomUUID(),
     requestedBy: String = "system",
@@ -20,7 +18,6 @@ fun buildInitiateRegisterCheckMessage(
     emsElectorId: String = RandomStringUtils.secure().nextAlphanumeric(30),
     historicalSearch: Boolean = false,
 ) = InitiateRegisterCheckMessage(
-    sourceType = sourceType,
     sourceReference = sourceReference,
     sourceCorrelationId = sourceCorrelationId,
     requestedBy = requestedBy,

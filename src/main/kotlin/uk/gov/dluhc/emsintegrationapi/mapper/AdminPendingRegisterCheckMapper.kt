@@ -12,7 +12,6 @@ import uk.gov.dluhc.registercheckerapi.models.AdminPendingRegisterCheck
 @Mapper(
     uses = [
         InstantMapper::class,
-        SourceTypeMapper::class,
     ]
 )
 abstract class AdminPendingRegisterCheckMapper {
