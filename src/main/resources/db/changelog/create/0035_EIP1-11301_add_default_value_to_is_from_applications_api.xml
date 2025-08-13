@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
-    <changeSet author="kelly.fragkogianni@softwire.com" id="0034_EIP1-11301_add_default_value_to_is_from_applications_api_for_postal" context="ddl">
+    <changeSet author="kelly.fragkogianni@softwire.com" id="0035_EIP1-11301_add_default_value_to_is_from_applications_api_for_postal" context="ddl">
         <addDefaultValue tableName="postal_vote_application" columnName="is_from_applications_api" defaultValueBoolean="true"/>
 
         <rollback>
@@ -13,7 +13,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet author="kelly.fragkogianni@softwire.com" id="0034_EIP1-11301_add_default_value_to_is_from_applications_api_for_proxy" context="ddl">
+    <changeSet author="kelly.fragkogianni@softwire.com" id="0035_EIP1-11301_add_default_value_to_is_from_applications_api_for_proxy" context="ddl">
         <addDefaultValue tableName="proxy_vote_application" columnName="is_from_applications_api" defaultValueBoolean="true"/>
 
         <rollback>

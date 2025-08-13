@@ -70,6 +70,6 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0034_EIP1-12835_alter_reg_check_status_gss_code_idx.xml
   - include:
-      file: db/changelog/create/0034_EIP1-11301_add_default_value_to_is_from_applications_api.xml
+      file: db/changelog/create/0035_EIP1-11301_add_default_value_to_is_from_applications_api.xml
   - include:
-      file: db/changelog/create/0035_EIP1-11301_add_default_value_to_source_type.xml
+      file: db/changelog/create/0036_EIP1-11301_add_default_value_to_source_type.xml
