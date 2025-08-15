@@ -6,10 +6,12 @@
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
     <changeSet author="kelly.fragkogianni@softwire.com" id="0036_EIP1-11301_add_default_value_to_source_type" context="ddl">
-        <addDefaultValue tableName="register_check" columnName="source_type" defaultValueBoolean="APPLICATIONS_API"/>
+        <addDefaultValue tableName="register_check" columnName="source_type" defaultValue="APPLICATIONS_API"/>
+        <dropNotNullConstraint tableName="register_check" columnName="source_type" columnDataType="varchar(100)"/>
 
         <rollback>
             <dropDefaultValue tableName="register_check" columnName="source_type"/>
+            <addNotNullConstraint tableName="register_check" columnName="source_type" columnDataType="varchar(100)"/>
         </rollback>
     </changeSet>
 
