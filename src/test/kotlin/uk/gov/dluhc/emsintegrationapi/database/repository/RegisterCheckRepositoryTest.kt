@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.ValueSource
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckMatch
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType.VOTER_CARD
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheckMatch
@@ -117,7 +116,6 @@ internal class RegisterCheckRepositoryTest : IntegrationTest() {
                 assertThat(it.id).isNotNull
                 assertThat(it.dateCreated).isNotNull
                 assertThat(it.sourceReference).isNotNull
-                assertThat(it.sourceType).isNotNull
             }
         }
     }
@@ -277,10 +275,10 @@ internal class RegisterCheckRepositoryTest : IntegrationTest() {
     }
 
     @Nested
-    inner class FindBySourceReferenceAndSourceType {
+    inner class FindBySourceReference {
 
         @Test
-        fun `should get register check by sourceReference and sourceType`() {
+        fun `should get register check by sourceReference`() {
             // Given
             val sourceReference = randomUUID().toString()
             val otherSourceReference = randomUUID().toString()
@@ -300,7 +298,7 @@ internal class RegisterCheckRepositoryTest : IntegrationTest() {
             ).let(registerCheckRepository::saveAll)
 
             // When
-            val actual = registerCheckRepository.findBySourceReferenceAndSourceType(sourceReference, VOTER_CARD)
+            val actual = registerCheckRepository.findBySourceReference(sourceReference)
 
             // Then
             assertThat(actual)
@@ -313,7 +311,7 @@ internal class RegisterCheckRepositoryTest : IntegrationTest() {
         }
 
         @Test
-        fun `should not get register check for an unknown sourceReference and sourceType`() {
+        fun `should not get register check for an unknown sourceReference`() {
             // Given
             val sourceReference = randomUUID().toString()
             val anotherSourceReference = randomUUID().toString()
@@ -322,7 +320,7 @@ internal class RegisterCheckRepositoryTest : IntegrationTest() {
             registerCheckRepository.saveAll(listOf(unmatchedRegisterCheck1, unmatchedRegisterCheck2))
 
             // When
-            val actual = registerCheckRepository.findBySourceReferenceAndSourceType(sourceReference, VOTER_CARD)
+            val actual = registerCheckRepository.findBySourceReference(sourceReference)
 
             // Then
             assertThat(actual).isNotNull.isEmpty()

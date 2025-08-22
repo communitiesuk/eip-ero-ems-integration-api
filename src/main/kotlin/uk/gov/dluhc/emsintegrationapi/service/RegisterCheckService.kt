@@ -23,8 +23,9 @@ import uk.gov.dluhc.emsintegrationapi.exception.RegisterCheckUnexpectedStatusExc
 import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.PendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.RegisterCheckResultMapper
-import uk.gov.dluhc.emsintegrationapi.messaging.MessageQueueResolver
 import uk.gov.dluhc.emsintegrationapi.messaging.mapper.RegisterCheckResultMessageMapper
+import uk.gov.dluhc.messagingsupport.MessageQueue
+import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResultMessage
 import java.util.UUID
 
 private val logger = KotlinLogging.logger {}
@@ -38,8 +39,8 @@ class RegisterCheckService(
     private val adminPendingRegisterCheckMapper: AdminPendingRegisterCheckMapper,
     private val registerCheckResultMapper: RegisterCheckResultMapper,
     private val registerCheckResultMessageMapper: RegisterCheckResultMessageMapper,
-    private val messageQueueResolver: MessageQueueResolver,
     private val matchStatusResolver: MatchStatusResolver,
+    private val registerCheckResultResponseQueue: MessageQueue<RegisterCheckResultMessage>
 ) {
     @Transactional(readOnly = true)
     fun getPendingRegisterChecks(
@@ -102,10 +103,10 @@ class RegisterCheckService(
     fun sendConfirmRegisterCheckResultMessage(registerCheck: RegisterCheck) {
         with(registerCheckResultMessageMapper.fromRegisterCheckEntityToRegisterCheckResultMessage(registerCheck)) {
             logger.info {
-                "Publishing ConfirmRegisterCheckResultMessage with sourceType:[$sourceType], sourceReferenceApplicationId:[$sourceReference], " +
+                "Publishing ConfirmRegisterCheckResultMessage with sourceReferenceApplicationId:[$sourceReference], " +
                     "sourceCorrelationId:[$sourceCorrelationId] for correlationId:[${registerCheck.correlationId}]"
             }
-            messageQueueResolver.getTargetQueueForSourceType(sourceType).submit(this)
+            registerCheckResultResponseQueue.submit(this)
         }
     }
 

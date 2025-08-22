@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.CollectionUtils
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckResultDataRepository
-import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.dto.RegisterCheckRemovalDto
 import java.util.UUID
 
@@ -16,7 +15,6 @@ private val logger = KotlinLogging.logger {}
 class RegisterCheckRemovalService(
     private val registerCheckRepository: RegisterCheckRepository,
     private val registerCheckResultDataRepository: RegisterCheckResultDataRepository,
-    private val sourceTypeMapper: SourceTypeMapper,
 ) {
 
     @Transactional
@@ -27,15 +25,14 @@ class RegisterCheckRemovalService(
 
     private fun removeRegisterCheck(dto: RegisterCheckRemovalDto): Set<UUID> {
         with(dto) {
-            logger.info("Finding RegisterCheck for removal for sourceType: [$sourceType], sourceReference: [$sourceReference]")
-            val matchingRecords = registerCheckRepository.findBySourceReferenceAndSourceType(
+            logger.info("Finding RegisterCheck for removal by sourceReference: [$sourceReference]")
+            val matchingRecords = registerCheckRepository.findBySourceReference(
                 sourceReference = sourceReference,
-                sourceType = sourceTypeMapper.fromDtoToEntityEnum(sourceType),
             )
             if (CollectionUtils.isEmpty(matchingRecords)) {
-                logger.info("Found no matching RegisterCheck to delete for sourceType: [$sourceType], sourceReference: [$sourceReference]")
+                logger.info("Found no matching RegisterCheck to delete for sourceReference: [$sourceReference]")
             } else {
-                logger.info("Deleting [${matchingRecords.size}] RegisterCheck record(s) for sourceType: [$sourceType], sourceReference: [$sourceReference]")
+                logger.info("Deleting [${matchingRecords.size}] RegisterCheck record(s) for sourceReference: [$sourceReference]")
                 registerCheckRepository.deleteAll(matchingRecords)
             }
             return matchingRecords.map { it.correlationId }.toSet()

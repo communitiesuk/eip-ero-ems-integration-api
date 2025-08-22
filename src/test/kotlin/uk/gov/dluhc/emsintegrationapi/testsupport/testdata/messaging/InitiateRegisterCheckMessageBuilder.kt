@@ -6,21 +6,18 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckAddress
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckPersonalDetail
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import java.time.LocalDate
 import java.util.UUID
 
 fun buildInitiateRegisterCheckMessage(
-    sourceType: SourceType = SourceType.VOTER_MINUS_CARD,
     sourceReference: String = "VPIOKNHPBP",
     sourceCorrelationId: UUID = UUID.randomUUID(),
     requestedBy: String = "system",
     gssCode: String = "E123456789",
     personalDetail: RegisterCheckPersonalDetail = buildRegisterCheckPersonalDetail(),
-    emsElectorId: String = RandomStringUtils.randomAlphanumeric(30),
+    emsElectorId: String = RandomStringUtils.secure().nextAlphanumeric(30),
     historicalSearch: Boolean = false,
 ) = InitiateRegisterCheckMessage(
-    sourceType = sourceType,
     sourceReference = sourceReference,
     sourceCorrelationId = sourceCorrelationId,
     requestedBy = requestedBy,
@@ -56,7 +53,7 @@ private fun buildRegisterCheckAddress(
     town: String? = fakeAddress.city(),
     area: String? = fakeAddress.state(),
     postcode: String = fakeAddress.postcode(),
-    uprn: String? = RandomStringUtils.randomNumeric(12),
+    uprn: String? = RandomStringUtils.secure().nextNumeric(12),
 ) = RegisterCheckAddress(
     property = property,
     street = street,

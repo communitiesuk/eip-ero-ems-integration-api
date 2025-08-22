@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckMatchResultSentAtByGssCode
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckSummaryByGssCode
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType
 import java.time.Instant
 import java.util.UUID
 
@@ -19,7 +18,7 @@ interface RegisterCheckRepository :
 
     fun findByCorrelationId(correlationId: UUID): RegisterCheck?
 
-    fun findBySourceReferenceAndSourceType(sourceReference: String, sourceType: SourceType): List<RegisterCheck>
+    fun findBySourceReference(sourceReference: String): List<RegisterCheck>
 
     @Query(
         """

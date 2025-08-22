@@ -34,36 +34,6 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
     }
 
     @Test
-    fun `should save a postal vote application when isFromApplicationsApi is false`() {
-        // Given
-        val postalVoteApplication = buildPostalVoteApplication(isFromApplicationsApi = false)
-
-        // When
-        postalVoteApplicationRepository.saveAndFlush(postalVoteApplication)
-
-        // Then
-        val savedApplication =
-            postalVoteApplicationRepository.findById(postalVoteApplication.applicationId).get()
-
-        assertThat(savedApplication).usingRecursiveComparison().isEqualTo(postalVoteApplication)
-    }
-
-    @Test
-    fun `should save a postal vote application when isFromApplicationsApi is true`() {
-        // Given
-        val postalVoteApplication = buildPostalVoteApplication(isFromApplicationsApi = true)
-
-        // When
-        postalVoteApplicationRepository.saveAndFlush(postalVoteApplication)
-
-        // Then
-        val savedApplication =
-            postalVoteApplicationRepository.findById(postalVoteApplication.applicationId).get()
-
-        assertThat(savedApplication).usingRecursiveComparison().isEqualTo(postalVoteApplication)
-    }
-
-    @Test
     fun `should return records by gss codes and record status order by created date using two step process`() {
         // Given
         val listOfApplications =

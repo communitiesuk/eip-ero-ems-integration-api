@@ -16,7 +16,7 @@ fun buildAddress(
     town: String? = faker.address().city(),
     area: String? = faker.address().state(),
     postcode: String = faker.address().postcode(),
-    uprn: String? = RandomStringUtils.randomNumeric(12),
+    uprn: String? = RandomStringUtils.secure().nextNumeric(12),
     dateCreated: Instant? = Instant.now(),
     createdBy: SourceSystem? = null
 ) = Address(

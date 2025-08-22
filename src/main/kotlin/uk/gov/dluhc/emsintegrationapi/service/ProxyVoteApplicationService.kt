@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
-import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
@@ -32,7 +31,6 @@ class ProxyVoteApplicationService(
     private val retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService
 ) : AbstractApplicationService(
     clock,
-    QueueConfiguration.QueueName.DELETED_PROXY_APPLICATION_QUEUE,
     apiProperties,
     retrieveGssCodeService,
     retrieveIsHoldEnabledForEroService,
@@ -109,7 +107,7 @@ class ProxyVoteApplicationService(
             doConfirmedReceiptApplicationStatus(request, proxyVoteApplication.applicationDetails)
         }
 
-        sendMessage(request, proxyVoteApplication.applicationId, proxyVoteApplication.isFromApplicationsApi)
+        sendMessage(request, proxyVoteApplication.applicationId)
 
         logger.info {
             "Confirmation ${request.status} message sent to the proxy vote application for ${proxyVoteApplication.applicationId}"

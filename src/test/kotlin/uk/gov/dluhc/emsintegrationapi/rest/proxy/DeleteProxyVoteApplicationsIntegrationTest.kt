@@ -136,7 +136,7 @@ internal class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         await
             .pollDelay(2, TimeUnit.SECONDS)
             .untilAsserted {
-                assertThat(fixtures!!.readMessage("deleted-proxy-application"))
+                assertThat(fixtures!!.readMessage(emsApplicationProcessedQueueName))
                     .isNotNull
                     .isEqualTo(
                         EmsConfirmedReceiptMessage(
@@ -166,7 +166,7 @@ internal class DeleteProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         await
             .pollDelay(2, TimeUnit.SECONDS)
             .timeout(20L, TimeUnit.SECONDS)
-            .untilAsserted { assertThat(fixtures!!.readMessage("deleted-proxy-application")).isNull() }
+            .untilAsserted { assertThat(fixtures!!.readMessage(emsApplicationProcessedQueueName)).isNull() }
 
         // And I received the http status 204
         responseSpec.expectStatus().isNoContent

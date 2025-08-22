@@ -12,12 +12,9 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
-import uk.gov.dluhc.emsintegrationapi.database.entity.SourceType
 import uk.gov.dluhc.emsintegrationapi.mapper.CheckStatusMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.InstantMapper
-import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildPersonalDetailWithOptionalFieldsAsNull
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheckMatch
@@ -29,7 +26,6 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildVcaReg
 import uk.gov.dluhc.registercheckerapi.messaging.models.RegisterCheckResult
 import java.time.Instant
 import java.time.ZoneOffset
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType as SourceTypeSqsEnum
 
 @ExtendWith(MockitoExtension::class)
 internal class RegisterCheckResultMessageMapperTest {
@@ -39,9 +35,6 @@ internal class RegisterCheckResultMessageMapperTest {
 
     @Mock
     private lateinit var checkStatusMapper: CheckStatusMapper
-
-    @Mock
-    private lateinit var sourceTypeMapper: SourceTypeMapper
 
     @InjectMocks
     private val mapper = RegisterCheckResultMessageMapperImpl()
@@ -74,11 +67,9 @@ internal class RegisterCheckResultMessageMapperTest {
             )
 
             given(checkStatusMapper.toRegisterCheckResultEnum(any())).willReturn(expectedStatus)
-            given(sourceTypeMapper.fromEntityToVcaSqsEnum(any())).willReturn(SourceTypeSqsEnum.VOTER_MINUS_CARD)
             given(instantMapper.toOffsetDateTime(any())).willReturn(historicalSearchEarliestDateOffset)
 
             val expectedMessage = buildRegisterCheckResultMessage(
-                sourceType = SourceTypeSqsEnum.VOTER_MINUS_CARD,
                 sourceReference = registerCheckEntity.sourceReference,
                 sourceCorrelationId = registerCheckEntity.sourceCorrelationId,
                 registerCheckResult = expectedStatus,
@@ -109,8 +100,6 @@ internal class RegisterCheckResultMessageMapperTest {
             assertThat(actual).usingRecursiveComparison().isEqualTo(expectedMessage)
             verify(checkStatusMapper).toRegisterCheckResultEnum(initialStatus)
             verify(instantMapper).toOffsetDateTime(historicalSearchEarliestDateInstant)
-            verify(sourceTypeMapper).fromEntityToVcaSqsEnum(SourceType.VOTER_CARD)
-            verifyNoMoreInteractions(sourceTypeMapper)
         }
 
         @Test
@@ -125,11 +114,9 @@ internal class RegisterCheckResultMessageMapperTest {
             )
 
             given(checkStatusMapper.toRegisterCheckResultEnum(any())).willReturn(RegisterCheckResult.NO_MINUS_MATCH)
-            given(sourceTypeMapper.fromEntityToVcaSqsEnum(any())).willReturn(SourceTypeSqsEnum.VOTER_MINUS_CARD)
             given(instantMapper.toOffsetDateTime(any())).willReturn(historicalSearchEarliestDateOffset)
 
             val expected = buildRegisterCheckResultMessage(
-                sourceType = SourceTypeSqsEnum.VOTER_MINUS_CARD,
                 sourceReference = registerCheck.sourceReference,
                 sourceCorrelationId = registerCheck.sourceCorrelationId,
                 registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
@@ -146,8 +133,6 @@ internal class RegisterCheckResultMessageMapperTest {
             assertThat(actual.matches).isEmpty()
             verify(checkStatusMapper).toRegisterCheckResultEnum(CheckStatus.NO_MATCH)
             verify(instantMapper).toOffsetDateTime(historicalSearchEarliestDateInstant)
-            verify(sourceTypeMapper).fromEntityToVcaSqsEnum(SourceType.VOTER_CARD)
-            verifyNoMoreInteractions(sourceTypeMapper)
         }
 
         @Test
@@ -163,10 +148,8 @@ internal class RegisterCheckResultMessageMapperTest {
             )
 
             given(checkStatusMapper.toRegisterCheckResultEnum(any())).willReturn(RegisterCheckResult.MULTIPLE_MINUS_MATCH)
-            given(sourceTypeMapper.fromEntityToVcaSqsEnum(any())).willReturn(SourceTypeSqsEnum.VOTER_MINUS_CARD)
 
             val expected = buildRegisterCheckResultMessage(
-                sourceType = SourceTypeSqsEnum.VOTER_MINUS_CARD,
                 sourceReference = registerCheck.sourceReference,
                 sourceCorrelationId = registerCheck.sourceCorrelationId,
                 registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
@@ -193,9 +176,7 @@ internal class RegisterCheckResultMessageMapperTest {
             assertThat(actual).usingRecursiveComparison().isEqualTo(expected)
             assertThat(actual.matches).hasSize(2)
             verify(checkStatusMapper).toRegisterCheckResultEnum(CheckStatus.MULTIPLE_MATCH)
-            verify(sourceTypeMapper).fromEntityToVcaSqsEnum(SourceType.VOTER_CARD)
             verify(instantMapper).toOffsetDateTime(null)
-            verifyNoMoreInteractions(sourceTypeMapper)
         }
     }
 }

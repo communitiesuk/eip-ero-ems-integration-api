@@ -1,9 +1,13 @@
 openapi: 3.0.0
 info:
   title: Register Checker APIs
-  version: '2.1.0'
+  version: '2.2.0'
   description: -|
     Requests checks and responses from EMS systems to validate elector details exists within the EMS.
+    
+    The /registerchecks paths are used by EMSs (i.e. the actual external companies we interact with) and cannot be updated unless co-ordinated with them
+    The /admin endpoints are used by the Admin API and when updated they will need to be manually copied over to the Admin API
+    
     For change history see
     https://github.com/communitiesuk/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml
   contact:
@@ -566,8 +570,6 @@ components:
           pattern: '^[a-zA-Z]\d{8}$'
           description: The Local Authority GSS Code that manages the Electoral Register.
           example: E06000001
-        sourceType:
-          $ref: '#/components/schemas/SourceType'
         createdAt:
           type: string
           description: The date and time this request to check the Electoral Register was generated
@@ -583,7 +585,6 @@ components:
       required:
         - applicationId
         - gssCode
-        - sourceType
         - createdAt
 
     SourceSystem:
@@ -591,16 +592,6 @@ components:
       description: The source system of the Application
       enum:
         - EROP
-
-    SourceType:
-      title: SourceType
-      description: The source type of the Application
-      enum:
-        - VOTER_CARD
-        - POSTAL_VOTE
-        - PROXY_VOTE
-        - OVERSEAS_VOTE
-        - APPLICATIONS_API
 
     RegisterCheckResultRequest:
       title: RegisterCheckResultRequest

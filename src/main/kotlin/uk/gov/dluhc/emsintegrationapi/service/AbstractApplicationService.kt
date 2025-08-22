@@ -15,7 +15,6 @@ private val logger = KotlinLogging.logger { }
 
 abstract class AbstractApplicationService(
     private val clock: Clock,
-    private val queueName: QueueConfiguration.QueueName,
     private val apiProperties: ApiProperties,
     private val retrieveGssCodeService: RetrieveGssCodeService,
     private val retreiveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService,
@@ -55,10 +54,7 @@ abstract class AbstractApplicationService(
     protected fun sendMessage(
         request: EMSApplicationResponse,
         applicationId: String,
-        isFromApplicationsApi: Boolean? = null,
     ) {
-        val targetQueueName =
-            if (isFromApplicationsApi == true) QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE else queueName
         messageSender.send(
             EmsConfirmedReceiptMessage(
                 id = applicationId,
@@ -70,7 +66,7 @@ abstract class AbstractApplicationService(
                 message = request.message,
                 details = request.details,
             ),
-            targetQueueName,
+            QueueConfiguration.QueueName.EMS_APPLICATION_PROCESSED_QUEUE,
         )
     }
 }

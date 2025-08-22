@@ -68,4 +68,14 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0033_EIP1-12569_remove_correlation_id_index_from_register_check.xml
   - include:
-      file: /db/changelog/create/0034_EIP1-12901_add_ero_absent_vote_hold_table.xml
+      file: /db/changelog/create/0034_EIP1-12835_alter_reg_check_status_gss_code_idx.xml
+  - include:
+      file: db/changelog/create/0035_EIP1-11301_add_default_value_to_is_from_applications_api.xml
+  - include:
+      file: db/changelog/create/0036_EIP1-11301_add_default_value_to_source_type.xml
+  - include:
+      file: /db/changelog/create/0037_EIP1-11301_remove_is_from_applications_api_column.xml
+  - include:
+      file: /db/changelog/create/0038_EIP1-11301_remove_source_type_column.xml
+  - include:
+      file: /db/changelog/create/0039_EIP1-12901_add_ero_absent_vote_hold_table.xml

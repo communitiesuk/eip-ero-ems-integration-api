@@ -4,26 +4,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
-import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
-import org.mockito.kotlin.given
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.emsintegrationapi.dto.AddressDto
 import uk.gov.dluhc.emsintegrationapi.dto.PendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.dto.PersonalDetailDto
-import uk.gov.dluhc.emsintegrationapi.mapper.SourceTypeMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildInitiateRegisterCheckMessage
-import uk.gov.dluhc.registercheckerapi.messaging.models.SourceType
 import java.util.UUID
-import uk.gov.dluhc.emsintegrationapi.dto.SourceType as DtoSourceType
 
 @ExtendWith(MockitoExtension::class)
 internal class InitiateRegisterCheckMapperTest {
-
-    @Mock
-    private lateinit var sourceTypeMapper: SourceTypeMapper
 
     @InjectMocks
     private val mapper = InitiateRegisterCheckMapperImpl()
@@ -32,11 +21,9 @@ internal class InitiateRegisterCheckMapperTest {
     fun `should map model to dto`() {
         // Given
         val message = buildInitiateRegisterCheckMessage()
-        given(sourceTypeMapper.fromSqsToDtoEnum(any())).willReturn(DtoSourceType.VOTER_CARD)
 
         val expected = PendingRegisterCheckDto(
             correlationId = UUID.randomUUID(),
-            sourceType = DtoSourceType.VOTER_CARD,
             sourceReference = message.sourceReference,
             sourceCorrelationId = message.sourceCorrelationId,
             createdBy = message.requestedBy,
@@ -75,7 +62,5 @@ internal class InitiateRegisterCheckMapperTest {
             .isEqualTo(expected)
         assertThat(actual.correlationId).isNotNull
         assertThat(actual.createdAt).isNull()
-        verify(sourceTypeMapper).fromSqsToDtoEnum(SourceType.VOTER_MINUS_CARD)
-        verifyNoMoreInteractions(sourceTypeMapper)
     }
 }
