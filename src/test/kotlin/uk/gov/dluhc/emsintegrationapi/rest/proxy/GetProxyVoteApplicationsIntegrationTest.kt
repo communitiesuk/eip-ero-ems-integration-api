@@ -14,9 +14,12 @@ import uk.gov.dluhc.emsintegrationapi.config.TestClockConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.repository.EroAbsentVoteHoldRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_99
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_INVALID
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_CERTIFICATE_SERIAL
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_GSS_CODE_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_GSS_CODE_2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.ProxyIntegrationTestHelpers
 import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
@@ -62,6 +65,7 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
                 queueMessagingTemplate = sqsMessagingTemplate,
                 eroAbsentVoteHoldRepository = eroAbsentVoteHoldRepository
             )
+        // Map ERO_ID_1_CERTIFICATE_SERIAL to ERO_ID_1 with gss codes ERO_ID_1_GSS_CODE_1 and ERO_ID_1_GSS_CODE_2
         fixtures!!.givenEroIdAndGssCodesMapped()
         val timeBeforeThreshold = apiProperties.holdingPoolThresholdDate.minusSeconds(3600)
         clock.setClock(Clock.fixed(timeBeforeThreshold, ZoneOffset.UTC))
@@ -78,12 +82,12 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System rejects the request with status code 400 if the page size is greater than the configured page size 50`() {
-        // When I send a get proxy vote applications request with the page size 51 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        // When I send a get proxy vote applications request with the page size 51 and the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL
         val responseSpec =
             fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                CERTIFICATE_SERIAL_NUM_1,
+                ERO_ID_1_CERTIFICATE_SERIAL,
                 51,
             )
 
@@ -99,12 +103,12 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System does not have any proxy vote applications`() {
-        // When I send a get proxy vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        // When I send a get proxy vote applications request with the page size 10 and the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL
         val responseSpec =
             fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                CERTIFICATE_SERIAL_NUM_1,
+                ERO_ID_1_CERTIFICATE_SERIAL,
                 10,
             )
 
@@ -172,12 +176,12 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         // Given the ERO Id "camden-city-council" does not exist in ERO
         wireMockService.stubIerApiGetNoEros()
 
-        // When I send a get proxy vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        // When I send a get proxy vote applications request with the page size 10 and the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL
         val responseSpec =
             fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                CERTIFICATE_SERIAL_NUM_1,
+                ERO_ID_1_CERTIFICATE_SERIAL,
                 10,
             )
 
@@ -194,12 +198,12 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         // Given the ERO could not process the get gss codes request for "camden-city-council"
         wireMockService.stubIerInternalServerError()
 
-        // When I send a get proxy vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        // When I send a get proxy vote applications request with the page size 10 and the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL
         val responseSpec =
             fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                CERTIFICATE_SERIAL_NUM_1,
+                ERO_ID_1_CERTIFICATE_SERIAL,
                 10,
             )
 
@@ -213,15 +217,15 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns proxy vote applications of a given page size`() {
-        // Given there are 20 proxy vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
-        val proxyVoteApplicationMap = fixtures!!.buildProxyVoteApplications(20, "RECEIVED", "E12345678", "E12345679")
+        // Given there are 20 proxy vote applications exist with the signature, status "RECEIVED" and GSS Codes ERO_ID_1_GSS_CODE_1, ERO_ID_1_GSS_CODE_2
+        val proxyVoteApplicationMap = fixtures!!.buildProxyVoteApplications(20, "RECEIVED", ERO_ID_1_GSS_CODE_1, ERO_ID_1_GSS_CODE_2)
 
-        // When I send a get proxy vote applications request with the page size 10 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        // When I send a get proxy vote applications request with the page size 10 and the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL
         val responseSpec =
             fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                CERTIFICATE_SERIAL_NUM_1,
+                ERO_ID_1_CERTIFICATE_SERIAL,
                 10,
             )
 
@@ -236,15 +240,15 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System does not have requested number of proxy applications`() {
-        // Given there are 2 proxy vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
-        val proxyVoteApplicationMap = fixtures!!.buildProxyVoteApplications(2, "RECEIVED", "E12345678", "E12345679")
+        // Given there are 2 proxy vote applications exist with the signature, status "RECEIVED" and GSS Codes ERO_ID_1_GSS_CODE_1, ERO_ID_1_GSS_CODE_2
+        val proxyVoteApplicationMap = fixtures!!.buildProxyVoteApplications(2, "RECEIVED", ERO_ID_1_GSS_CODE_1, ERO_ID_1_GSS_CODE_2)
 
-        // When I send a get proxy vote applications request with the page size 3 and the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        // When I send a get proxy vote applications request with the page size 3 and the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL
         val responseSpec =
             fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                CERTIFICATE_SERIAL_NUM_1,
+                ERO_ID_1_CERTIFICATE_SERIAL,
                 3,
             )
 
@@ -259,15 +263,15 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns default number of records if page size is not specified`() {
-        // Given there are 21 proxy vote applications exist with the signature, status "RECEIVED" and GSS Codes "E12345678","E12345679"
-        val proxyVoteApplicationMap = fixtures!!.buildProxyVoteApplications(21, "RECEIVED", "E12345678", "E12345679")
+        // Given there are 21 proxy vote applications exist with the signature, status "RECEIVED" and GSS Codes ERO_ID_1_GSS_CODE_1, ERO_ID_1_GSS_CODE_2
+        val proxyVoteApplicationMap = fixtures!!.buildProxyVoteApplications(21, "RECEIVED", ERO_ID_1_GSS_CODE_1, ERO_ID_1_GSS_CODE_2)
 
-        // When I send a get proxy vote request without the page size and with the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        // When I send a get proxy vote request without the page size and with the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL
         val responseSpec =
             fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                CERTIFICATE_SERIAL_NUM_1,
+                ERO_ID_1_CERTIFICATE_SERIAL,
             )
 
         // Then I received a response with 20 proxy vote applications with signature
@@ -281,23 +285,23 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns proxy vote applications with signature waiver reason`() {
-        // Given there are 21 proxy vote applications without signature exist with the status "RECEIVED" and GSS Codes "E12345678","E12345679"
+        // Given there are 21 proxy vote applications without signature exist with the status "RECEIVED" and GSS Codes ERO_ID_1_GSS_CODE_1,ERO_ID_1_GSS_CODE_2
         val proxyVoteApplicationMap =
             fixtures!!.buildProxyVoteApplications(
                 numberOfRecords = 21,
                 recordStatus = "RECEIVED",
-                gssCodes = arrayOf("E12345678", "E12345679"),
+                gssCodes = arrayOf(ERO_ID_1_GSS_CODE_1, ERO_ID_1_GSS_CODE_2),
                 signatureBase64 = null,
                 signatureWaived = true,
                 signatureWaiverReason = SIGNATURE_WAIVER_REASON,
             )
 
-        // When I send a get proxy vote request without the page size and with the certificate serial number CERTIFICATE_SERIAL_NUM_1
+        // When I send a get proxy vote request without the page size and with the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL
         val responseSpec =
             fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(
                 apiClient!!,
                 acceptedPath,
-                CERTIFICATE_SERIAL_NUM_1,
+                ERO_ID_1_CERTIFICATE_SERIAL,
             )
 
         // Then I received a response with 20 proxy vote applications with signature waiver
@@ -315,18 +319,17 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.plusSeconds(3600)
         clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
 
-        fixtures!!.givenEroIdAndGssCodesMapped()
-        fixtures!!.createEroAbsentVoteHold(eroId = "camden-city-council", holdEnabled = true)
+        fixtures!!.createEroAbsentVoteHold(eroId = ERO_ID_1, holdEnabled = true)
 
         fixtures!!.buildProxyVoteApplications(
             numberOfRecords = 10,
             recordStatus = "RECEIVED",
-            gssCodes = arrayOf("E12345678"),
+            gssCodes = arrayOf(ERO_ID_1_GSS_CODE_1),
         )
 
         // When
         val responseSpec =
-            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, CERTIFICATE_SERIAL_NUM_1)
+            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, ERO_ID_1_CERTIFICATE_SERIAL)
 
         // Then
         fixtures!!.validateProxyResponse(
@@ -343,19 +346,18 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.plusSeconds(3600)
         clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
 
-        fixtures!!.givenEroIdAndGssCodesMapped()
-        fixtures!!.createEroAbsentVoteHold(eroId = "camden-city-council", holdEnabled = false)
+        fixtures!!.createEroAbsentVoteHold(eroId = ERO_ID_1, holdEnabled = false)
 
         val proxyVoteApplicationMap =
             fixtures!!.buildProxyVoteApplications(
                 numberOfRecords = 1,
                 recordStatus = "RECEIVED",
-                gssCodes = arrayOf("E12345678"),
+                gssCodes = arrayOf(ERO_ID_1_GSS_CODE_1),
             )
 
         // When
         val responseSpec =
-            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, CERTIFICATE_SERIAL_NUM_1)
+            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, ERO_ID_1_CERTIFICATE_SERIAL)
 
         // Then
         fixtures!!.validateProxyResponse(
@@ -372,19 +374,18 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
         val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.minusSeconds(3600)
         clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
 
-        fixtures!!.givenEroIdAndGssCodesMapped()
         fixtures!!.createEroAbsentVoteHold(eroId = "camden-city-council", holdEnabled = true)
 
         val proxyVoteApplicationMap =
             fixtures!!.buildProxyVoteApplications(
                 numberOfRecords = 1,
                 recordStatus = "RECEIVED",
-                gssCodes = arrayOf("E12345678"),
+                gssCodes = arrayOf(ERO_ID_1_GSS_CODE_1),
             )
 
         // When
         val responseSpec =
-            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, CERTIFICATE_SERIAL_NUM_1)
+            fixtures!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, ERO_ID_1_CERTIFICATE_SERIAL)
 
         // Then
         fixtures!!.validateProxyResponse(
