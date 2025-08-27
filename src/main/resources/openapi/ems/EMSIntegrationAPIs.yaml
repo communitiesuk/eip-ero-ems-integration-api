@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
-  version: 1.2.5
+  version: 1.2.6
   description: |
     This specification is for an API hosted by EROP for EMS clients to fetch
     details of Postal Vote and Proxy Vote applications made by the public.
@@ -750,7 +750,9 @@ components:
               type: string
               maxLength: 500
               description: |
-                (optional) the family relationship (if any) of the chosen proxy. The question to users is “What is your proxy’s relationship to you?”
+                (optional) the close family relationship (if any) of the chosen proxy.
+                Only populated for Scottish and Welsh applications and if a close family relationship is given.
+                Formatted as user facing string e.g. "Spouse or civil partner".
             proxyAddress:
               $ref: '#/components/schemas/Address'
             proxyproperty:
