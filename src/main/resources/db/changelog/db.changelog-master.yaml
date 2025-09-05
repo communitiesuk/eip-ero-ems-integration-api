@@ -77,3 +77,5 @@ databaseChangeLog:
       file: /db/changelog/create/0037_EIP1-11301_remove_is_from_applications_api_column.xml
   - include:
       file: /db/changelog/create/0038_EIP1-11301_remove_source_type_column.xml
+  - include:
+      file: /db/changelog/create/0039_EIP1-12901_add_ero_absent_vote_hold_table.xml
