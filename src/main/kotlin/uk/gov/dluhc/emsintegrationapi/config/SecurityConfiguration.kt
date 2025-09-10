@@ -35,8 +35,10 @@ class SecurityConfiguration(
             .authorizeHttpRequests {
                 it.requestMatchers(OPTIONS).permitAll()
                 it.requestMatchers("/actuator/**").permitAll()
+
                 // These requests are authenticated through the API gateway using IAM
                 it.requestMatchers("/admin/pending-checks/**").permitAll()
+
                 it.anyRequest().authenticated()
             }
             .addFilter(RegisterCheckerHeaderAuthenticationFilter(requestHeaderName, BYPASS_URLS_FOR_REQUEST_HEADER_AUTHENTICATION))

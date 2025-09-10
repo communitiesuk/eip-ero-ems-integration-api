@@ -19,7 +19,6 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
-import uk.gov.dluhc.emsintegrationapi.client.EroIdNotFoundException
 import uk.gov.dluhc.emsintegrationapi.client.IerEroNotFoundException
 import uk.gov.dluhc.emsintegrationapi.client.IerGeneralException
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
@@ -34,12 +33,10 @@ import uk.gov.dluhc.emsintegrationapi.dto.RegisterCheckStatus
 import uk.gov.dluhc.emsintegrationapi.exception.GssCodeMismatchException
 import uk.gov.dluhc.emsintegrationapi.exception.PendingRegisterCheckNotFoundException
 import uk.gov.dluhc.emsintegrationapi.exception.RegisterCheckUnexpectedStatusException
-import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.PendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.RegisterCheckResultMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.mapper.RegisterCheckResultMessageMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildAdminPendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildPendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildRegisterCheckMatchDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildRegisterCheckResultDto
@@ -69,9 +66,6 @@ internal class RegisterCheckServiceTest {
 
     @Mock
     private lateinit var pendingRegisterCheckMapper: PendingRegisterCheckMapper
-
-    @Mock
-    private lateinit var adminPendingRegisterCheckMapper: AdminPendingRegisterCheckMapper
 
     @Mock
     private lateinit var registerCheckResultMapper: RegisterCheckResultMapper
@@ -251,166 +245,6 @@ internal class RegisterCheckServiceTest {
             assertThat(ex).isEqualTo(expected)
             verify(retrieveGssCodeService).getGssCodesFromCertificateSerial(certificateSerial)
             verifyNoInteractions(registerCheckRepository, pendingRegisterCheckMapper)
-        }
-    }
-
-    @Nested
-    inner class AdminGetPendingRegisterChecks {
-
-        @Test
-        fun `should get empty pending register check records for a given ERO ID given IER returns valid values`() {
-            // Given
-            val eroId = "south-testington"
-            val gssCodeFromEroApi = getRandomGssCode()
-
-            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(listOf(gssCodeFromEroApi))
-            given(registerCheckRepository.adminFindPendingEntriesByGssCodes(eq(listOf(gssCodeFromEroApi)), any())).willReturn(emptyList())
-
-            // When
-            val actualPendingRegisterChecks = registerCheckService.adminGetPendingRegisterChecks(eroId)
-
-            // Then
-            assertThat(actualPendingRegisterChecks).isNotNull
-            assertThat(actualPendingRegisterChecks).isEmpty()
-            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(registerCheckRepository).adminFindPendingEntriesByGssCodes(listOf(gssCodeFromEroApi))
-            verifyNoInteractions(adminPendingRegisterCheckMapper)
-        }
-
-        @Test
-        fun `should get one pending register check record for a given ERO ID given IER returns valid values`() {
-            // Given
-            val eroId = "south-testington"
-            val gssCodeFromEroApi = getRandomGssCode()
-            val expectedRecordCount = 1
-
-            val matchedRegisterCheckEntity = buildRegisterCheck(
-                gssCode = gssCodeFromEroApi,
-                status = PENDING
-            )
-            val expectedRegisterCheckDto = buildAdminPendingRegisterCheckDto(
-                sourceReference = matchedRegisterCheckEntity.sourceReference,
-                gssCode = gssCodeFromEroApi
-            )
-
-            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(listOf(gssCodeFromEroApi))
-            given(registerCheckRepository.adminFindPendingEntriesByGssCodes(eq(listOf(gssCodeFromEroApi)), any())).willReturn(listOf(matchedRegisterCheckEntity))
-            given(adminPendingRegisterCheckMapper.registerCheckEntityToAdminPendingRegisterCheckDto(matchedRegisterCheckEntity)).willReturn(expectedRegisterCheckDto)
-
-            val expectedPendingRegisterChecks = listOf(expectedRegisterCheckDto)
-
-            // When
-            val actualPendingRegisterChecks = registerCheckService.adminGetPendingRegisterChecks(eroId)
-
-            // Then
-            assertThat(actualPendingRegisterChecks).hasSize(expectedRecordCount)
-            assertThat(actualPendingRegisterChecks)
-                .isEqualTo(expectedPendingRegisterChecks)
-                .usingRecursiveComparison()
-                .ignoringCollectionOrder()
-            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(registerCheckRepository).adminFindPendingEntriesByGssCodes(listOf(gssCodeFromEroApi))
-            verify(adminPendingRegisterCheckMapper).registerCheckEntityToAdminPendingRegisterCheckDto(matchedRegisterCheckEntity)
-            verifyNoMoreInteractions(registerCheckRepository, adminPendingRegisterCheckMapper)
-        }
-
-        @Test
-        fun `should get multiple pending register check records for a given ERO ID`() {
-            // Given
-            val eroId = "south-testington"
-            val firstGssCodeFromEroApi = "E1234561"
-            val secondGssCodeFromEroApi = "E567892"
-            val anotherGssCodeFromEroApi = "E9876543" // No records will be matched for this gssCode
-            val expectedRecordCount = 3
-
-            val firstRegisterCheckEntity = buildRegisterCheck(
-                gssCode = firstGssCodeFromEroApi,
-                status = PENDING
-            )
-            val secondRegisterCheckEntity = buildRegisterCheck(
-                gssCode = firstGssCodeFromEroApi,
-                status = PENDING
-            )
-            val thirdRegisterCheckEntity = buildRegisterCheck(
-                gssCode = secondGssCodeFromEroApi,
-                status = PENDING
-            )
-
-            val firstRegisterCheckDto = buildAdminPendingRegisterCheckDto(
-                gssCode = firstRegisterCheckEntity.gssCode,
-                sourceReference = firstRegisterCheckEntity.sourceReference
-            )
-            val secondRegisterCheckDto = buildAdminPendingRegisterCheckDto(
-                gssCode = firstGssCodeFromEroApi,
-                sourceReference = secondRegisterCheckEntity.sourceReference
-            )
-            val thirdRegisterCheckDto = buildAdminPendingRegisterCheckDto(
-                gssCode = secondGssCodeFromEroApi,
-                sourceReference = thirdRegisterCheckEntity.sourceReference
-            )
-
-            val expectedGssCodes = listOf(firstGssCodeFromEroApi, secondGssCodeFromEroApi, anotherGssCodeFromEroApi)
-            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(expectedGssCodes)
-            given(registerCheckRepository.adminFindPendingEntriesByGssCodes(eq(expectedGssCodes), any())).willReturn(listOf(firstRegisterCheckEntity, secondRegisterCheckEntity, thirdRegisterCheckEntity))
-            given(adminPendingRegisterCheckMapper.registerCheckEntityToAdminPendingRegisterCheckDto(eq(firstRegisterCheckEntity))).willReturn(firstRegisterCheckDto)
-            given(adminPendingRegisterCheckMapper.registerCheckEntityToAdminPendingRegisterCheckDto(eq(secondRegisterCheckEntity))).willReturn(secondRegisterCheckDto)
-            given(adminPendingRegisterCheckMapper.registerCheckEntityToAdminPendingRegisterCheckDto(eq(thirdRegisterCheckEntity))).willReturn(thirdRegisterCheckDto)
-
-            val expectedPendingRegisterChecks = listOf(firstRegisterCheckDto, secondRegisterCheckDto, thirdRegisterCheckDto)
-
-            // When
-            val actualPendingRegisterChecks = registerCheckService.adminGetPendingRegisterChecks(eroId)
-
-            // Then
-            assertThat(actualPendingRegisterChecks).hasSize(expectedRecordCount)
-            assertThat(actualPendingRegisterChecks)
-                .isEqualTo(expectedPendingRegisterChecks)
-                .usingRecursiveComparison()
-                .ignoringCollectionOrder()
-            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(registerCheckRepository).adminFindPendingEntriesByGssCodes(listOf(firstGssCodeFromEroApi, secondGssCodeFromEroApi, anotherGssCodeFromEroApi))
-            verify(adminPendingRegisterCheckMapper).registerCheckEntityToAdminPendingRegisterCheckDto(firstRegisterCheckEntity)
-            verify(adminPendingRegisterCheckMapper).registerCheckEntityToAdminPendingRegisterCheckDto(secondRegisterCheckEntity)
-            verify(adminPendingRegisterCheckMapper).registerCheckEntityToAdminPendingRegisterCheckDto(thirdRegisterCheckEntity)
-            verifyNoMoreInteractions(registerCheckRepository, adminPendingRegisterCheckMapper)
-        }
-
-        @Test
-        fun `should throw IER not found exception given IER API client throws IER not found exception`() {
-            // Given
-            val eroId = "south-testington"
-
-            val expected = EroIdNotFoundException(eroId)
-            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willThrow(expected)
-
-            // When
-            val ex = catchThrowableOfType(EroIdNotFoundException::class.java) {
-                registerCheckService.adminGetPendingRegisterChecks(eroId)
-            }
-
-            // Then
-            assertThat(ex).isEqualTo(expected)
-            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verifyNoInteractions(registerCheckRepository, adminPendingRegisterCheckMapper)
-        }
-
-        @Test
-        fun `should throw general IER exception given IER API client throws general exception`() {
-            // Given
-            val eroId = "south-testington"
-
-            val expected = IerGeneralException("Error retrieving EROs from IER API")
-            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willThrow(expected)
-
-            // When
-            val ex = catchThrowableOfType(IerGeneralException::class.java) {
-                registerCheckService.adminGetPendingRegisterChecks(eroId)
-            }
-
-            // Then
-            assertThat(ex).isEqualTo(expected)
-            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verifyNoInteractions(registerCheckRepository, adminPendingRegisterCheckMapper)
         }
     }
 
