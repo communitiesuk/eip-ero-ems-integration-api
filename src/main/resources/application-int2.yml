@@ -3,3 +3,6 @@ jobs:
     send-email: false
   register-check-monitoring:
     send-email: false
+
+dluhc:
+  holding-pool-threshold-date: 2025-09-01T00:00:00Z
