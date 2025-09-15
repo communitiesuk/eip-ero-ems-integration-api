@@ -10,8 +10,10 @@ import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.constants.ApplicationConstants
+import uk.gov.dluhc.emsintegrationapi.database.entity.EroAbsentVoteHold
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
+import uk.gov.dluhc.emsintegrationapi.database.repository.EroAbsentVoteHoldRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.Constants
 import uk.gov.dluhc.emsintegrationapi.mapper.ProxyVoteApplicationMessageMapper
@@ -23,6 +25,10 @@ import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.ProxyVoteAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_CERTIFICATE_SERIAL
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_GSS_CODE_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_GSS_CODE_2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_BASE64_STRING
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetailsMessageDto
@@ -44,23 +50,24 @@ class ProxyIntegrationTestHelpers(
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository? = null,
     private val queueMessagingTemplate: SqsTemplate,
     private val messageSenderProxy: MessageSender<ProxyVoteApplicationMessage>? = null,
+    private val eroAbsentVoteHoldRepository: EroAbsentVoteHoldRepository? = null,
 ) {
     val logger = KLogging().logger
 
     fun givenEroIdAndGssCodesMapped() {
-        // Given the certificate serial number "1234567891" mapped to the ERO Id "camden-city-council"
-        // And the gss codes "E12345678" and "E12345679" mapped to the ERO Id
+        // Given the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL mapped to the ERO_ID_1
+        // And the gss codes ERO_ID_1_GSS_CODE_1 and ERO_ID_1_GSS_CODE_2 mapped to the ERO_ID_1
         wiremockService.stubIerApiGetEros(
             listOf(
                 buildIerEroDetails(
-                    eroIdentifier = "camden-city-council",
+                    eroIdentifier = ERO_ID_1,
                     name = "Camden City Council",
                     localAuthorities =
                     listOf(
-                        buildIerLocalAuthorityDetails(gssCode = "E12345678"),
-                        buildIerLocalAuthorityDetails(gssCode = "E12345679"),
+                        buildIerLocalAuthorityDetails(gssCode = ERO_ID_1_GSS_CODE_1),
+                        buildIerLocalAuthorityDetails(gssCode = ERO_ID_1_GSS_CODE_2),
                     ),
-                    activeClientCertificateSerials = listOf("1234567891"),
+                    activeClientCertificateSerials = listOf(ERO_ID_1_CERTIFICATE_SERIAL),
                 ),
             ),
         )
@@ -332,4 +339,13 @@ class ProxyIntegrationTestHelpers(
                 Assertions.assertThat(proxyVoteApplicationRepository?.findById(applicationId)).isPresent
             }
         }
+
+    fun createEroAbsentVoteHold(eroId: String, holdEnabled: Boolean) {
+        eroAbsentVoteHoldRepository?.save(
+            EroAbsentVoteHold(
+                eroId = eroId,
+                holdEnabled = holdEnabled
+            )
+        )
+    }
 }
