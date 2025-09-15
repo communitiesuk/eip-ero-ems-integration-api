@@ -6,7 +6,6 @@ info:
     Requests checks and responses from EMS systems to validate elector details exists within the EMS.
     
     The /registerchecks paths are used by EMSs (i.e. the actual external companies we interact with) and cannot be updated unless co-ordinated with them
-    The /admin endpoints are used by the Admin API and when updated they will need to be manually copied over to the Admin API
     
     For change history see
     https://github.com/communitiesuk/eip-ero-register-checker-api/blob/main/src/main/resources/openapi/RegisterCheckerAPIs.yaml
@@ -137,112 +136,6 @@ paths:
         uri: ${base_uri}/registerchecks
         requestParameters:
           integration.request.header.client-cert-serial: "context.authorizer.client-cert-serial"
-          integration.request.header.x-request-id: context.requestId
-        connectionType: VPC_LINK
-        connectionId: ${vpc_connection_id}
-        httpMethod: GET
-
-  #
-  # Admin Register Checks
-  # --------------------------------------------------------------------------------
-  /admin/pending-checks/{eroId}:
-    parameters:
-      - name: eroId
-        description: The ID of the Electoral Registration Office whose checks to query
-        schema:
-          type: string
-        example: 100
-        in: path
-        required: true
-    options:
-      summary: CORS support
-      description: |
-        Enable CORS by returning correct headers
-      tags:
-        - Register Checks
-      responses:
-        200:
-          description: Default response for CORS method
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-            Access-Control-Allow-Methods:
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
-          content: { }
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          default:
-            statusCode: "200"
-            responseParameters:
-              method.response.header.Access-Control-Allow-Headers: '''Content-Type,X-Amz-Date,Authorization,X-Api-Key'''
-              method.response.header.Access-Control-Allow-Methods: '''*'''
-              method.response.header.Access-Control-Allow-Origin: '''*'''
-            responseTemplates:
-              application/json: |
-                {}
-    get:
-      summary: Admin Get Pending Register Checks
-      description: Retrieve list of pending register check requests for a particular ERO.
-      operationId: admin-get-pending-register-checks
-      tags:
-        - Register Checks
-      responses:
-        '200':
-          $ref: '#/components/responses/AdminPendingRegisterChecks'
-        '404':
-          description: Error response describing the resource not found.
-          headers:
-            Access-Control-Allow-Origin:
-              schema:
-                type: string
-            Access-Control-Allow-Methods:
-              schema:
-                type: string
-            Access-Control-Allow-Headers:
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                properties:
-                  timestamp:
-                    type: string
-                    format: date-time
-                    example: '2022-09-28T18:01:42.105Z'
-                  status:
-                    type: integer
-                    example: 404
-                  error:
-                    type: string
-                    example: 'Not Found'
-                    maxLength: 500
-                  message:
-                    type: string
-                    example: 'ERO ero-id not found'
-                    maxLength: 500
-                required:
-                  - timestamp
-                  - status
-                  - error
-                  - message
-      security:
-        - awsIamAuthorizer: [ ]
-      x-amazon-apigateway-integration:
-        type: HTTP_PROXY
-        uri: ${base_uri}/admin/pending-checks/{eroId}
-        requestParameters:
-          integration.request.path.eroId: method.request.path.eroId
           integration.request.header.x-request-id: context.requestId
         connectionType: VPC_LINK
         connectionId: ${vpc_connection_id}
@@ -946,8 +839,3 @@ components:
         authorizerCredentials: '${ems_certificate_authorizer_role}'
         authorizerPayloadFormatVersion: '1.0'
         authorizerResultTtlInSeconds: 0
-    awsIamAuthorizer:
-      type: apiKey
-      name: Authorization
-      in: header
-      x-amazon-apigateway-authtype: awsSigv4
