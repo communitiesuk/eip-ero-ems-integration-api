@@ -23,6 +23,7 @@ internal class PageSizeValidatorTest {
             defaultPageSize = 10,
             maxPageSize = 20,
             forceMaxPageSize = 20,
+            holdingPoolThresholdDate = java.time.Instant.parse("2025-12-01T00:00:00Z")
         )
 
     private val validationErrorMessage =
@@ -36,6 +37,7 @@ internal class PageSizeValidatorTest {
                 defaultPageSize = 10,
                 maxPageSize = 20,
                 forceMaxPageSize = 20,
+                holdingPoolThresholdDate = java.time.Instant.parse("2025-12-01T00:00:00Z")
             ),
         )
 

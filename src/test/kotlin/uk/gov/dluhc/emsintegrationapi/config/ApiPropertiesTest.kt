@@ -17,7 +17,8 @@ internal class ApiPropertiesTest {
                 requestHeaderName = "something",
                 defaultPageSize = 10,
                 maxPageSize = 50,
-                forceMaxPageSize = 50
+                forceMaxPageSize = 50,
+                holdingPoolThresholdDate = java.time.Instant.parse("2025-12-01T00:00:00Z")
             ).validate()
         }
     }
@@ -29,7 +30,8 @@ internal class ApiPropertiesTest {
                 requestHeaderName = "something",
                 defaultPageSize = 1,
                 maxPageSize = 50,
-                forceMaxPageSize = 50
+                forceMaxPageSize = 50,
+                holdingPoolThresholdDate = java.time.Instant.parse("2025-12-01T00:00:00Z")
             ).validate()
         }
         assertThat(configurationException.message).isEqualTo("The $DEFAULT_PAGE_SIZE value must be greater than or equal to $DEFAULT_PAGE_SIZE_MIN_VALUE")
@@ -42,7 +44,8 @@ internal class ApiPropertiesTest {
                 requestHeaderName = "something",
                 defaultPageSize = 10,
                 maxPageSize = 1,
-                forceMaxPageSize = 1
+                forceMaxPageSize = 1,
+                holdingPoolThresholdDate = java.time.Instant.parse("2025-12-01T00:00:00Z")
             ).validate()
         }
         assertThat(applicationConfigurationException.message).isEqualTo("The $MAX_PAGE_SIZE value must be greater than or equal to $MAX_PAGE_SIZE_MIN_VALUE")
@@ -55,7 +58,8 @@ internal class ApiPropertiesTest {
                 requestHeaderName = "something",
                 defaultPageSize = 51,
                 maxPageSize = 50,
-                forceMaxPageSize = 50
+                forceMaxPageSize = 50,
+                holdingPoolThresholdDate = java.time.Instant.parse("2025-12-01T00:00:00Z")
             ).validate()
         }
         assertThat(applicationConfigurationException.message).isEqualTo("The $DEFAULT_PAGE_SIZE value (51) must be less than $MAX_PAGE_SIZE value (50)")

@@ -21,7 +21,9 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.APPLICATION_ID_3
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_CERTIFICATE_SERIAL
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_GSS_CODE_1
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.OTHER_ERO_GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.ProxyIntegrationTestHelpers
 import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
 import java.util.concurrent.TimeUnit
@@ -55,6 +57,7 @@ internal class PostProxyVoteApplicationsIntegrationTest : IntegrationTest() {
                 proxyVoteApplicationRepository = proxyApplicationRepository,
                 queueMessagingTemplate = sqsMessagingTemplate,
             )
+        // Map ERO_ID_1_CERTIFICATE_SERIAL to ERO_ID_1 with gss codes ERO_ID_1_GSS_CODE_1 and ERO_ID_1_GSS_CODE_2
         fixtures!!.givenEroIdAndGssCodesMapped()
     }
 
@@ -71,7 +74,7 @@ internal class PostProxyVoteApplicationsIntegrationTest : IntegrationTest() {
     @Test
     fun `System rejects the request with status code 400 if the application id format is invalid`() {
         // When the EMS sends a post request to "/proxyvotes" with an application id "123"
-        val responseSpec = apiClient!!.postEmsApplication("/proxyvotes/123", serialNumber = CERTIFICATE_SERIAL_NUM_1)
+        val responseSpec = apiClient!!.postEmsApplication("/proxyvotes/123", serialNumber = ERO_ID_1_CERTIFICATE_SERIAL)
 
         // Then I received the http status 400
         responseSpec.expectStatus().isBadRequest
@@ -85,9 +88,9 @@ internal class PostProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 404 if a given application does not exist`() {
-        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_3 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and SUCCESS status
+        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_3 and certificate serial number ERO_ID_1_CERTIFICATE_SERIAL and SUCCESS status
         val responseSpec =
-            apiClient!!.postEmsApplication("/proxyvotes/$APPLICATION_ID_3", serialNumber = CERTIFICATE_SERIAL_NUM_1)
+            apiClient!!.postEmsApplication("/proxyvotes/$APPLICATION_ID_3", serialNumber = ERO_ID_1_CERTIFICATE_SERIAL)
 
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
@@ -99,12 +102,12 @@ internal class PostProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 404 if the gss codes retrieved from ERO and the application gss code are different`() {
-        // Given a proxy vote application with the application id APPLICATION_ID_2, status "RECEIVED" and GSS Code "E12345699" exists
-        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_2, "E12345699", "RECEIVED")
+        // Given a proxy vote application with the application id APPLICATION_ID_2, status "RECEIVED" and GSS Code OTHER_ERO_GSS_CODE exists
+        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_2, OTHER_ERO_GSS_CODE, "RECEIVED")
 
-        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_2 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and SUCCESS status
+        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_2 and certificate serial number ERO_ID_1_CERTIFICATE_SERIAL and SUCCESS status
         val responseSpec =
-            apiClient!!.postEmsApplication("/proxyvotes/$APPLICATION_ID_2", serialNumber = CERTIFICATE_SERIAL_NUM_1)
+            apiClient!!.postEmsApplication("/proxyvotes/$APPLICATION_ID_2", serialNumber = ERO_ID_1_CERTIFICATE_SERIAL)
 
         // Then I received the http status 404
         responseSpec.expectStatus().isNotFound
@@ -116,12 +119,12 @@ internal class PostProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 204 on successful deletion of a success status`() {
-        // Given a proxy vote application with the application id APPLICATION_ID_1, status "RECEIVED" and GSS Code "E12345678" exists
-        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_1, "E12345678", "RECEIVED")
+        // Given a proxy vote application with the application id APPLICATION_ID_1, status "RECEIVED" and GSS Code ERO_ID_1_GSS_CODE_1 exists
+        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_1, ERO_ID_1_GSS_CODE_1, "RECEIVED")
 
-        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_1 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and SUCCESS status
+        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_1 and certificate serial number ERO_ID_1_CERTIFICATE_SERIAL and SUCCESS status
         val responseSpec =
-            apiClient!!.postEmsApplication("/proxyvotes/$APPLICATION_ID_1", serialNumber = CERTIFICATE_SERIAL_NUM_1)
+            apiClient!!.postEmsApplication("/proxyvotes/$APPLICATION_ID_1", serialNumber = ERO_ID_1_CERTIFICATE_SERIAL)
 
         // Then the system updated the proxy application with the id APPLICATION_ID_1 status as "DELETED"
         val proxyVoteApplication = proxyApplicationRepository.findById(APPLICATION_ID_1).get()
@@ -143,14 +146,14 @@ internal class PostProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System returns http status 204 on successful deletion of a failure status`() {
-        // Given a proxy vote application with the application id APPLICATION_ID_1, status "RECEIVED" and GSS Code "E12345678" exists
-        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_1, "E12345678", "RECEIVED")
+        // Given a proxy vote application with the application id APPLICATION_ID_1, status "RECEIVED" and GSS Code ERO_ID_1_GSS_CODE_1 exists
+        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_1, ERO_ID_1_GSS_CODE_1, "RECEIVED")
 
-        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_1 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and FAILURE status
+        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_1 and certificate serial number ERO_ID_1_CERTIFICATE_SERIAL and FAILURE status
         val responseSpec =
             apiClient!!.postEmsApplication(
                 "/proxyvotes/$APPLICATION_ID_1",
-                serialNumber = CERTIFICATE_SERIAL_NUM_1,
+                serialNumber = ERO_ID_1_CERTIFICATE_SERIAL,
                 request = EMSApplicationResponse(status = EMSApplicationStatus.FAILURE),
             )
 
@@ -174,12 +177,12 @@ internal class PostProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System ignores the request if proxy vote application is already DELETED and no message will be place on queue`() {
-        // Given a proxy vote application with the application id APPLICATION_ID_1, status "DELETED" and GSS Code "E12345678" exists
-        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_1, "E12345678", "DELETED")
+        // Given a proxy vote application with the application id APPLICATION_ID_1, status "DELETED" and GSS Code ERO_ID_1_GSS_CODE_1 exists
+        fixtures!!.createProxyApplicationWithApplicationId(APPLICATION_ID_1, ERO_ID_1_GSS_CODE_1, "DELETED")
 
-        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_1 and certificate serial number CERTIFICATE_SERIAL_NUM_1 and SUCCESS status
+        // When the EMS sends a post request to "/proxyvotes" with an application id APPLICATION_ID_1 and certificate serial number ERO_ID_1_CERTIFICATE_SERIAL and SUCCESS status
         val responseSpec =
-            apiClient!!.postEmsApplication("/proxyvotes/$APPLICATION_ID_1", serialNumber = CERTIFICATE_SERIAL_NUM_1)
+            apiClient!!.postEmsApplication("/proxyvotes/$APPLICATION_ID_1", serialNumber = ERO_ID_1_CERTIFICATE_SERIAL)
 
         // Then the system ignores request and did not update the proxy application with the id APPLICATION_ID_1
         val applicationFromDB = proxyApplicationRepository.findById(APPLICATION_ID_1).get()
