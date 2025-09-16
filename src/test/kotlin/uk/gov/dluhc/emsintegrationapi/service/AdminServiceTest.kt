@@ -17,11 +17,15 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import uk.gov.dluhc.emsintegrationapi.client.EroIdNotFoundException
 import uk.gov.dluhc.emsintegrationapi.client.IerGeneralException
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus.PENDING
+import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
+import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildAdminPendingEmsDownload
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildAdminPendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
+import java.time.Instant
 
 @ExtendWith(MockitoExtension::class)
 internal class AdminServiceTest {
@@ -31,6 +35,12 @@ internal class AdminServiceTest {
 
     @Mock
     private lateinit var registerCheckRepository: RegisterCheckRepository
+
+    @Mock
+    private lateinit var postalVoteApplicationRepository: PostalVoteApplicationRepository
+
+    @Mock
+    private lateinit var proxyVoteApplicationRepository: ProxyVoteApplicationRepository
 
     @Mock
     private lateinit var adminPendingRegisterCheckMapper: AdminPendingRegisterCheckMapper
@@ -238,6 +248,187 @@ internal class AdminServiceTest {
             // When
             val ex = catchThrowableOfType(IerGeneralException::class.java) {
                 adminService.adminGetPendingRegisterChecks(eroId)
+            }
+
+            // Then
+            assertThat(ex).isEqualTo(expected)
+            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
+            verifyNoInteractions(registerCheckRepository, adminPendingRegisterCheckMapper)
+        }
+    }
+
+    @Nested
+    inner class GetPendingEmsDownloads {
+
+        @Test
+        fun `should get empty EMS download records for a given ERO ID given IER returns valid values`() {
+            // Given
+            val eroId = "south-testington"
+            val gssCodeFromEroApi = getRandomGssCode()
+
+            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(listOf(gssCodeFromEroApi))
+            given(
+                postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(emptyList())
+            given(
+                proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(emptyList())
+
+            // When
+            val actualPendingEmsDownloads = adminService.adminGetPendingEmsDownloads(eroId)
+
+            // Then
+            assertThat(actualPendingEmsDownloads).isNotNull
+            assertThat(actualPendingEmsDownloads).isEmpty()
+            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+        }
+
+        @Test
+        fun `should get a pending postal EMS download for a given ERO ID given IER returns valid values`() {
+            // Given
+            val eroId = "south-testington"
+            val gssCodeFromEroApi = getRandomGssCode()
+            val matchedPendingDownloadEntity = buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi)
+            val expectedPendingDownloads = listOf(matchedPendingDownloadEntity)
+
+            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(listOf(gssCodeFromEroApi))
+            given(
+                postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(listOf(matchedPendingDownloadEntity))
+            given(
+                proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(emptyList())
+
+            // When
+            val actualPendingEmsDownloads = adminService.adminGetPendingEmsDownloads(eroId)
+
+            // Then
+            assertThat(actualPendingEmsDownloads).hasSize(expectedPendingDownloads.size)
+            assertThat(actualPendingEmsDownloads)
+                .isEqualTo(expectedPendingDownloads)
+                .usingRecursiveComparison()
+            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+        }
+
+        @Test
+        fun `should get a pending proxy EMS download for a given ERO ID given IER returns valid values`() {
+            // Given
+            val eroId = "south-testington"
+            val gssCodeFromEroApi = getRandomGssCode()
+            val matchedPendingDownloadEntity = buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi)
+            val expectedPendingDownloads = listOf(matchedPendingDownloadEntity)
+
+            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(listOf(gssCodeFromEroApi))
+            given(
+                postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(emptyList())
+            given(
+                proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(listOf(matchedPendingDownloadEntity))
+
+            // When
+            val actualPendingEmsDownloads = adminService.adminGetPendingEmsDownloads(eroId)
+
+            // Then
+            assertThat(actualPendingEmsDownloads).hasSize(expectedPendingDownloads.size)
+            assertThat(actualPendingEmsDownloads)
+                .isEqualTo(expectedPendingDownloads)
+                .usingRecursiveComparison()
+            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+        }
+
+        @Test
+        fun `should merge pending postal and proxy EMS downloads sorted by time for a given ERO ID given IER returns valid values`() {
+            // Given
+            val eroId = "south-testington"
+            val gssCodeFromEroApi = getRandomGssCode()
+            val matchedPendingDownloadEntity1 = buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = Instant.now().plusSeconds(1))
+            val matchedPendingDownloadEntity2 = buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = Instant.now().plusSeconds(2))
+            val matchedPendingDownloadEntity3 = buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = Instant.now().plusSeconds(3))
+            val matchedPendingDownloadEntity4 = buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = Instant.now().plusSeconds(4))
+            val expectedPendingDownloads = listOf(matchedPendingDownloadEntity1, matchedPendingDownloadEntity2, matchedPendingDownloadEntity3, matchedPendingDownloadEntity4)
+
+            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(listOf(gssCodeFromEroApi))
+            given(
+                postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(listOf(matchedPendingDownloadEntity1, matchedPendingDownloadEntity4))
+            given(
+                proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(listOf(matchedPendingDownloadEntity2, matchedPendingDownloadEntity3))
+
+            // When
+            val actualPendingEmsDownloads = adminService.adminGetPendingEmsDownloads(eroId)
+
+            // Then
+            assertThat(actualPendingEmsDownloads).hasSize(expectedPendingDownloads.size)
+            assertThat(actualPendingEmsDownloads)
+                .isEqualTo(expectedPendingDownloads)
+                .usingRecursiveComparison()
+            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+        }
+
+        @Test
+        fun `should throw IER not found exception given IER API client throws IER not found exception`() {
+            // Given
+            val eroId = "south-testington"
+
+            val expected = EroIdNotFoundException(eroId)
+            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willThrow(expected)
+
+            // When
+            val ex = catchThrowableOfType(EroIdNotFoundException::class.java) {
+                adminService.adminGetPendingEmsDownloads(eroId)
+            }
+
+            // Then
+            assertThat(ex).isEqualTo(expected)
+            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
+            verifyNoInteractions(registerCheckRepository, adminPendingRegisterCheckMapper)
+        }
+
+        @Test
+        fun `should throw general IER exception given IER API client throws general exception`() {
+            // Given
+            val eroId = "south-testington"
+
+            val expected = IerGeneralException("Error retrieving EROs from IER API")
+            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willThrow(expected)
+
+            // When
+            val ex = catchThrowableOfType(IerGeneralException::class.java) {
+                adminService.adminGetPendingEmsDownloads(eroId)
             }
 
             // Then

@@ -1067,6 +1067,43 @@ components:
       enum:
         - success
         - failure
+    AdminPendingEmsDownload:
+      title: AdminPendingEmsDownload
+      type: object
+      description: |-
+        An object describing an application pending download by an EMS.
+        Intended for viewing by EROP admins, and does not include personal information.
+      properties:
+        applicationId:
+          type: string
+          description: The ID of the application.
+          format: string
+          example: 1f0f76a9a66f438b9bb33070
+        gssCode:
+          type: string
+          pattern: '^[a-zA-Z]\d{8}$'
+          description: The Local Authority GSS Code for the application in question.
+          example: E06000001
+        createdAt:
+          type: string
+          description: The date and time this application was made available to the EMS for download.
+          format: date-time
+          example: 2022-09-07T14:14:55.123Z
+      required:
+        - applicationId
+        - gssCode
+        - createdAt
+    AdminPendingEmsDownloadsResponse:
+      title: AdminPendingEmsDownloadsResponse
+      description: Response containing pending EMS Downloads for a particular ERO.
+      properties:
+        pendingEmsDownloads:
+          description: The list of Pending EMS Downloads
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPendingEmsDownload'
+      required:
+        - pendingEmsDownloads
   responses:
     PostalVoteApplications:
       description: Determined Postal Vote applications

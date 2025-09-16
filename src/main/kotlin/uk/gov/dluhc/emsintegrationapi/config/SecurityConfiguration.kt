@@ -38,6 +38,7 @@ class SecurityConfiguration(
 
                 // These requests are authenticated through the API gateway using IAM
                 it.requestMatchers("/admin/pending-checks/**").permitAll()
+                it.requestMatchers("/admin/pending-downloads/**").permitAll()
 
                 it.anyRequest().authenticated()
             }
