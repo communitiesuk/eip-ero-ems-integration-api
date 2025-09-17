@@ -13,5 +13,3 @@ Delete those which aren't relevant and tick those which are done
 - [ ] I have added tests to new code and updated existing tests where needed
 - [ ] I have documented any release dependencies (e.g. service release order or incompatible versions) in the [Release notes](https://softwiretech.atlassian.net/wiki/spaces/EIP/pages/21254340716/Release+-+EROP+Version+-+Date+TBC)
     - Can leave tags as tbd until merged
-
-## Additional notes
