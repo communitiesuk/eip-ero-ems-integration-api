@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.dluhc.emsintegrationapi.exception.OptimisticLockingFailureException
-import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.PendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.RegisterCheckResultMapper
 import uk.gov.dluhc.emsintegrationapi.service.RegisterCheckService
 import uk.gov.dluhc.emsintegrationapi.validator.RegisterCheckRequestValidator
-import uk.gov.dluhc.registercheckerapi.models.AdminPendingRegisterChecksResponse
 import uk.gov.dluhc.registercheckerapi.models.PendingRegisterChecksResponse
 import uk.gov.dluhc.registercheckerapi.models.RegisterCheckResultRequest
 import java.util.UUID
@@ -36,7 +34,6 @@ class RegisterCheckerController(
     private val registerCheckService: RegisterCheckService,
     private val registerCheckRequestValidator: RegisterCheckRequestValidator,
     private val pendingRegisterCheckMapper: PendingRegisterCheckMapper,
-    private val adminPendingRegisterCheckMapper: AdminPendingRegisterCheckMapper,
     private val registerCheckResultMapper: RegisterCheckResultMapper,
     private val objectMapper: ObjectMapper
 ) {
@@ -58,18 +55,6 @@ class RegisterCheckerController(
                     registerCheckRequests = pendingRegisterChecks.map(pendingRegisterCheckMapper::pendingRegisterCheckDtoToPendingRegisterCheckModel)
                 )
             }
-    }
-
-    @GetMapping("/admin/pending-checks/{eroId}")
-    fun adminGetPendingRegisterChecks(
-        @PathVariable eroId: String
-    ): AdminPendingRegisterChecksResponse {
-        logger.info("Getting admin pending register checks for eroId=[$eroId]")
-        return AdminPendingRegisterChecksResponse(
-            pendingRegisterChecks = registerCheckService.adminGetPendingRegisterChecks(eroId).map(
-                adminPendingRegisterCheckMapper::adminPendingRegisterCheckDtoToAdminPendingRegisterCheckModel
-            )
-        )
     }
 
     @PostMapping("/registerchecks/{requestId}")

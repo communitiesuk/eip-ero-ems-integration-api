@@ -13,14 +13,12 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckResultData
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckResultDataRepository
-import uk.gov.dluhc.emsintegrationapi.dto.AdminPendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.dto.PendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.dto.RegisterCheckResultDto
 import uk.gov.dluhc.emsintegrationapi.dto.RegisterCheckStatus
 import uk.gov.dluhc.emsintegrationapi.exception.GssCodeMismatchException
 import uk.gov.dluhc.emsintegrationapi.exception.PendingRegisterCheckNotFoundException
 import uk.gov.dluhc.emsintegrationapi.exception.RegisterCheckUnexpectedStatusException
-import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.PendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.RegisterCheckResultMapper
 import uk.gov.dluhc.emsintegrationapi.messaging.mapper.RegisterCheckResultMessageMapper
@@ -36,7 +34,6 @@ class RegisterCheckService(
     private val registerCheckRepository: RegisterCheckRepository,
     private val registerCheckResultDataRepository: RegisterCheckResultDataRepository,
     private val pendingRegisterCheckMapper: PendingRegisterCheckMapper,
-    private val adminPendingRegisterCheckMapper: AdminPendingRegisterCheckMapper,
     private val registerCheckResultMapper: RegisterCheckResultMapper,
     private val registerCheckResultMessageMapper: RegisterCheckResultMessageMapper,
     private val matchStatusResolver: MatchStatusResolver,
@@ -51,13 +48,6 @@ class RegisterCheckService(
         return registerCheckRepository
             .findPendingEntriesByGssCodes(gssCodes, pageSize)
             .map(pendingRegisterCheckMapper::registerCheckEntityToPendingRegisterCheckDto)
-    }
-
-    @Transactional(readOnly = true)
-    fun adminGetPendingRegisterChecks(eroId: String): List<AdminPendingRegisterCheckDto> {
-        val gssCodes = retrieveGssCodeService.getGssCodesFromEroId(eroId)
-        return registerCheckRepository.adminFindPendingEntriesByGssCodes(gssCodes)
-            .map(adminPendingRegisterCheckMapper::registerCheckEntityToAdminPendingRegisterCheckDto)
     }
 
     @Transactional
