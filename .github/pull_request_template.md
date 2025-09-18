@@ -5,12 +5,11 @@
 https://mhclgdigital.atlassian.net/browse/EIP1-
 
 ## Checklist before requesting a review
+Delete those which aren't relevant and tick those which are done
 
 - [ ] I double checked that ACs on the ticket are met by this code update
 - [ ] I have checked any risky steps with my TL ([cheat sheet for safe release here](https://softwiretech.atlassian.net/wiki/spaces/EIP/pages/20960542739/Safe+Release+Cheat+Sheet))
-- [ ] I have added testing steps to the ticket
 - [ ] I have updated the relevant yml versions
-- [ ] I have formatted the code
 - [ ] I have added tests to new code and updated existing tests where needed
-
-## Additional notes
+- [ ] I have documented any release dependencies (e.g. service release order or incompatible versions) in the [Release notes](https://softwiretech.atlassian.net/wiki/spaces/EIP/pages/21254340716/Release+-+EROP+Version+-+Date+TBC)
+    - Can leave tags as tbd until merged
