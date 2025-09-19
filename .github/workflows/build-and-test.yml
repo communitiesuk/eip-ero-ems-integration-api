@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       # First check DB migrations are unique and have been added to the changelog master file before any slow actions
       - name: Check DB migration numbers are unique
