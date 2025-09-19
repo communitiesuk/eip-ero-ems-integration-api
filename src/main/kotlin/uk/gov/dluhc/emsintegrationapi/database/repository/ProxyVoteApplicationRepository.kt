@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import uk.gov.dluhc.emsintegrationapi.database.entity.AdminPendingEmsDownload
 import uk.gov.dluhc.emsintegrationapi.database.entity.PendingDownloadsSummaryByGssCode
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
@@ -47,4 +48,18 @@ interface ProxyVoteApplicationRepository :
         """
     )
     fun summarisePendingProxyVotesByGssCode(createdBefore: Instant): List<PendingDownloadsSummaryByGssCode>
+
+    @Query(
+        """SELECT 
+            app.applicationId AS applicationId,
+            app.applicationDetails.gssCode AS gssCode,
+            app.dateCreated AS createdAt
+        FROM ProxyVoteApplication app
+        WHERE app.status = 'RECEIVED'
+        AND app.applicationDetails.gssCode IN (:gssCodes)
+        ORDER BY app.dateCreated
+        LIMIT :limit
+        """
+    )
+    fun adminFindPendingProxyVoteDownloadsByGssCodes(gssCodes: List<String>, limit: Int = 1000): List<AdminPendingEmsDownload>
 }
