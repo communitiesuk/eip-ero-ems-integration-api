@@ -89,7 +89,7 @@ components:
             # TODO EROPSPT-566: Make application reference non-optional
             applicationReference:
               type: string
-              description: The application reference as known by the citizen. Not guaranteed to be unique.
+              description: The reference number for the application
               example: PN22Y5QZ9S
             requestedBy:
               type: string
