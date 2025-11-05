@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Register Checker SQS Message Types
-  version: '1.4.0'
+  version: '1.5.0'
   description: |-
     Register Checker SQS Message Types
     
@@ -86,6 +86,10 @@ components:
               format: uuid
               description: The id to allow the response from rca to be associated with the correct register status e.g. `VoterCardApplicationRegisterStatus.id`
               example: c73bcdcc-2669-4bf6-81d3-e4ae73fb11fd
+            applicationReference:
+              type: string
+              description: The application reference as known by the citizen. Not guaranteed to be unique.
+              example: PN22Y5QZ9S
             requestedBy:
               type: string
               description: Identifier of the user that requested the check or `system` if the check was automatically requested.
