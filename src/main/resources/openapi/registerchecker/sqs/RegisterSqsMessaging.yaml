@@ -86,6 +86,7 @@ components:
               format: uuid
               description: The id to allow the response from rca to be associated with the correct register status e.g. `VoterCardApplicationRegisterStatus.id`
               example: c73bcdcc-2669-4bf6-81d3-e4ae73fb11fd
+            # TODO EROPSPT-566: Make application reference non-optional
             applicationReference:
               type: string
               description: The application reference as known by the citizen. Not guaranteed to be unique.

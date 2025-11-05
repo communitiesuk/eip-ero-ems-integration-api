@@ -50,6 +50,7 @@ internal class InitiateRegisterCheckMapperTest {
             },
             emsElectorId = message.emsElectorId,
             historicalSearch = message.historicalSearch,
+            applicationReference = message.applicationReference,
         )
 
         // When
