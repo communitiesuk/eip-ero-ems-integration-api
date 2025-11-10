@@ -41,9 +41,14 @@ class RegisterCheck(
     @JdbcTypeCode(Types.CHAR)
     var correlationId: UUID,
 
+    // This corresponds to the external ID in the Applications API
     @NotNull
     @Size(max = 36)
     var sourceReference: String,
+
+    // This corresponds to the application reference in the Applications API
+    @Size(max = 10)
+    var applicationReference: String? = null,
 
     @NotNull
     @JdbcTypeCode(Types.CHAR)
