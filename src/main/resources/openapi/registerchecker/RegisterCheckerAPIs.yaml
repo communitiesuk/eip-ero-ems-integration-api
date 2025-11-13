@@ -458,6 +458,10 @@ components:
           description: The ID of the application that this check has been created for.
           format: string
           example: 1f0f76a9a66f438b9bb33070
+        applicationReference:
+          type: string
+          description: The reference number for the application.
+          example: PN22Y5QZ9S
         gssCode:
           type: string
           pattern: '^[a-zA-Z]\d{8}$'

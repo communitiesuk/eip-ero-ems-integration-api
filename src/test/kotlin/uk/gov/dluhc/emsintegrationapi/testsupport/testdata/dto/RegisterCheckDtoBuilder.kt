@@ -8,6 +8,7 @@ import java.util.UUID
 fun buildPendingRegisterCheckDto(
     correlationId: UUID = UUID.randomUUID(),
     sourceReference: String = UUID.randomUUID().toString(),
+    applicationReference: String? = "P123412345",
     sourceCorrelationId: UUID = UUID.randomUUID(),
     gssCode: String = "E09000021",
     personalDetail: PersonalDetailDto = buildPersonalDetailDto(),
@@ -17,6 +18,7 @@ fun buildPendingRegisterCheckDto(
     correlationId = correlationId,
     sourceReference = sourceReference,
     sourceCorrelationId = sourceCorrelationId,
+    applicationReference = applicationReference,
     gssCode = gssCode,
     personalDetail = personalDetail,
     createdBy = createdBy,

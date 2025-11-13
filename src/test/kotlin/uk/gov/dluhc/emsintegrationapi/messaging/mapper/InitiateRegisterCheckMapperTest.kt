@@ -25,6 +25,7 @@ internal class InitiateRegisterCheckMapperTest {
         val expected = PendingRegisterCheckDto(
             correlationId = UUID.randomUUID(),
             sourceReference = message.sourceReference,
+            applicationReference = message.applicationReference,
             sourceCorrelationId = message.sourceCorrelationId,
             createdBy = message.requestedBy,
             gssCode = message.gssCode,

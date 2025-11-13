@@ -32,6 +32,7 @@ internal class InitiateRegisterCheckMessageListenerIntegrationTest : Integration
         val expected = RegisterCheck(
             correlationId = UUID.randomUUID(),
             sourceReference = message.sourceReference,
+            applicationReference = message.applicationReference,
             sourceCorrelationId = message.sourceCorrelationId,
             createdBy = message.requestedBy,
             gssCode = message.gssCode,

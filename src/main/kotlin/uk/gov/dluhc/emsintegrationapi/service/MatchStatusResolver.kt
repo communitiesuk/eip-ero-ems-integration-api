@@ -16,6 +16,12 @@ import java.time.LocalDate
  * Determines the status for a match result by checking if it is pending/not started or expired. Also checks if
  * specific personal details (e.g. surname, postcode) that are provided by the EMS match those on our system for the
  * application concerned.
+ *
+ * ⚠️ The logic and standardisation used here to determine if a match is partial or exact is also used for application
+ * linking in the applications API, and it's important that these two implementations are kept in sync. If making changes
+ * here, then changes should also be made as appropriate to `ElectorDetailsStandardisationUtils` and `StandardisedElectorDetailsRepository`
+ * in the applications API. This would also require back populating the saved standardised details and recalculating links,
+ * so should be very carefully considered.
  */
 @Component
 class MatchStatusResolver {

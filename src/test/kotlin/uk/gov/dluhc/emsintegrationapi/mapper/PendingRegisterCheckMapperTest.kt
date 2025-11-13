@@ -45,11 +45,12 @@ internal class PendingRegisterCheckMapperTest {
         val expected = RegisterCheck(
             correlationId = pendingRegisterCheckDto.correlationId,
             sourceReference = pendingRegisterCheckDto.sourceReference,
+            applicationReference = pendingRegisterCheckDto.applicationReference,
             sourceCorrelationId = pendingRegisterCheckDto.sourceCorrelationId,
             createdBy = pendingRegisterCheckDto.createdBy,
             gssCode = pendingRegisterCheckDto.gssCode,
             status = CheckStatus.PENDING,
-            personalDetail = expectedPersonalDetailEntity
+            personalDetail = expectedPersonalDetailEntity,
         )
 
         // When
@@ -77,6 +78,7 @@ internal class PendingRegisterCheckMapperTest {
         val expected = PendingRegisterCheckDto(
             correlationId = registerCheckEntity.correlationId,
             sourceReference = registerCheckEntity.sourceReference,
+            applicationReference = registerCheckEntity.applicationReference,
             sourceCorrelationId = registerCheckEntity.sourceCorrelationId,
             createdBy = registerCheckEntity.createdBy,
             gssCode = registerCheckEntity.gssCode,
