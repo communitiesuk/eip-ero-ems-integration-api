@@ -37,8 +37,6 @@ sqs:
   remove-applicant-register-check-data-queue-name: ${SQS_REMOVE_APPLICANT_REGISTER_CHECK_DATA_QUEUE_NAME}
 
 api:
-  ero-management:
-    url: ${API_ERO_MANAGEMENT_URL}
   ier:
     base.url: ${API_IER_BASE_URL}
     sts.assume.role: ${API_IER_STS_ASSUME_ROLE}
