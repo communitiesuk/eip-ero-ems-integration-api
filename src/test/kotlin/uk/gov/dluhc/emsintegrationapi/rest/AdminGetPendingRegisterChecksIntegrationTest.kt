@@ -1,11 +1,13 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.ErrorResponseAssert.Companion.assertThat
+import uk.gov.dluhc.emsintegrationapi.testsupport.bearerToken
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
 import uk.gov.dluhc.registercheckerapi.models.AdminPendingRegisterChecksResponse
@@ -15,6 +17,11 @@ internal class AdminGetPendingRegisterChecksIntegrationTest : IntegrationTest() 
 
     companion object {
         private const val ADMIN_GET_PENDING_REGISTER_CHECKS_ENDPOINT = "/admin/pending-checks/"
+    }
+
+    @BeforeEach
+    fun setup() {
+        wireMockService.stubCognitoAdminJwtIssuerResponse()
     }
 
     @Test
@@ -28,6 +35,7 @@ internal class AdminGetPendingRegisterChecksIntegrationTest : IntegrationTest() 
         // When
         val response = webTestClient.get()
             .uri(buildUri(eroId))
+            .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
             .returnResult(AdminPendingRegisterChecksResponse::class.java)
@@ -59,6 +67,7 @@ internal class AdminGetPendingRegisterChecksIntegrationTest : IntegrationTest() 
         // When
         val response = webTestClient.get()
             .uri(buildUri(eroId))
+            .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
             .returnResult(AdminPendingRegisterChecksResponse::class.java)
@@ -82,6 +91,7 @@ internal class AdminGetPendingRegisterChecksIntegrationTest : IntegrationTest() 
         // When
         val response = webTestClient.get()
             .uri(buildUri(eroId))
+            .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().is4xxClientError
             .returnResult(ErrorResponse::class.java)
@@ -102,6 +112,7 @@ internal class AdminGetPendingRegisterChecksIntegrationTest : IntegrationTest() 
         // When
         val response = webTestClient.get()
             .uri(buildUri("west-testington"))
+            .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().is5xxServerError
             .returnResult(ErrorResponse::class.java)

@@ -19,6 +19,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckResultDat
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.emails.EmailMessagesSentClient
+import uk.gov.dluhc.emsintegrationapi.testsupport.getBearerToken
 import java.time.Duration
 import javax.sql.DataSource
 
@@ -84,6 +85,9 @@ internal abstract class IntegrationTest {
     @Value("\${caching.time-to-live}")
     protected lateinit var timeToLive: Duration
 
+    @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer}")
+    protected lateinit var adminJwtIssuer: String
+
     companion object {
         @JvmStatic
         @BeforeAll
@@ -91,6 +95,13 @@ internal abstract class IntegrationTest {
             MySQLContainerConfiguration.getInstance()
         }
     }
+
+    protected fun getBearerToken(
+        email: String = "an-admin-user@gov.uk",
+    ) = getBearerToken(
+        email = email,
+        issuer = adminJwtIssuer,
+    )
 
     @BeforeEach
     fun resetWireMock() {

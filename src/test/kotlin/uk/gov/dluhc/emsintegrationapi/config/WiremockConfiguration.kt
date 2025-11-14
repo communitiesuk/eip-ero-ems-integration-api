@@ -51,6 +51,8 @@ class WiremockConfiguration {
             TestPropertyValues.of(
                 "api.ier.base.url=$ierBaseUrl",
                 "api.ero-management.url=$eroManagementUrl",
+                "spring.security.oauth2.resourceserver.jwt.admin-issuer=http://localhost:${this.port()}/cognito/admin",
+                "spring.security.oauth2.resourceserver.jwt.admin-issuer-uri=http://localhost:${this.port()}/cognito/admin/.well-known/jwks.json",
             ).applyTo(applicationContext)
         }
 

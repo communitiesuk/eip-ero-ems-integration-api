@@ -14,6 +14,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingEmsDownloadsResponse
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.ErrorResponseAssert.Companion.assertThat
+import uk.gov.dluhc.emsintegrationapi.testsupport.bearerToken
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
@@ -40,6 +41,7 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
             postalRepository = postalVoteApplicationRepository,
             proxyRepository = proxyVoteApplicationRepository
         )
+        wireMockService.stubCognitoAdminJwtIssuerResponse()
     }
 
     @Test
@@ -53,6 +55,7 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
         // When
         val response = webTestClient.get()
             .uri(buildUri(eroId))
+            .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
             .returnResult(AdminPendingEmsDownloadsResponse::class.java)
@@ -141,6 +144,7 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
         // When
         val response = webTestClient.get()
             .uri(buildUri(eroId))
+            .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
             .returnResult(AdminPendingEmsDownloadsResponse::class.java)
@@ -161,6 +165,7 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
         // When
         val response = webTestClient.get()
             .uri(buildUri(eroId))
+            .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isNotFound
             .returnResult(ErrorResponse::class.java)
@@ -181,6 +186,7 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
         // When
         val response = webTestClient.get()
             .uri(buildUri("south-testington"))
+            .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().is5xxServerError
             .returnResult(ErrorResponse::class.java)
