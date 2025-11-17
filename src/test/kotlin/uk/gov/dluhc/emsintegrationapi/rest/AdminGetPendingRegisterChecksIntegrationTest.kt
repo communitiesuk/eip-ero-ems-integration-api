@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
+import uk.gov.dluhc.emsintegrationapi.testsupport.UNAUTHORIZED_BEARER_TOKEN
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.ErrorResponseAssert.Companion.assertThat
 import uk.gov.dluhc.emsintegrationapi.testsupport.bearerToken
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
@@ -123,6 +124,17 @@ internal class AdminGetPendingRegisterChecksIntegrationTest : IntegrationTest() 
             .hasStatus(500)
             .hasError("Internal Server Error")
             .hasMessage("Error retrieving EROs from IER API")
+    }
+
+    @Test
+    fun `should return unauthorized given bearer token is invalid`() {
+        // When, Then
+        webTestClient.get()
+            .uri(buildUri("west-testington"))
+            .bearerToken(UNAUTHORIZED_BEARER_TOKEN)
+            .exchange()
+            .expectStatus().isUnauthorized
+            .returnResult(ErrorResponse::class.java)
     }
 
     private fun buildUri(eroId: String) =

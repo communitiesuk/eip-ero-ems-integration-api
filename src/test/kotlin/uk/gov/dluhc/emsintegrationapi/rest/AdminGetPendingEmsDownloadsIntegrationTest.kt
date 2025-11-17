@@ -13,8 +13,10 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationR
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingEmsDownloadsResponse
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
+import uk.gov.dluhc.emsintegrationapi.testsupport.UNAUTHORIZED_BEARER_TOKEN
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.ErrorResponseAssert.Companion.assertThat
 import uk.gov.dluhc.emsintegrationapi.testsupport.bearerToken
+import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomEroId
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
@@ -197,6 +199,17 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
             .hasStatus(500)
             .hasError("Internal Server Error")
             .hasMessage("Error retrieving EROs from IER API")
+    }
+
+    @Test
+    fun `should return unauthorized given authentication token is invalid`() {
+        // When, Then
+        webTestClient.get()
+            .uri(buildUri("south-testington"))
+            .bearerToken(UNAUTHORIZED_BEARER_TOKEN)
+            .exchange()
+            .expectStatus().isUnauthorized
+            .returnResult(ErrorResponse::class.java)
     }
 
     private fun buildUri(eroId: String) =

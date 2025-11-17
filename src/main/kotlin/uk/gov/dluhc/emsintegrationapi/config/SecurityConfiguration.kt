@@ -29,7 +29,6 @@ class SecurityConfiguration(
 
     @Bean
     @Order(1)
-    // The pending downloads endpoint needs both id token and register checker header authentication
     fun adminPendingDownloadsFilterChain(
         http: HttpSecurity,
         @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer}") adminIssuer: String,
@@ -45,7 +44,6 @@ class SecurityConfiguration(
 
     @Bean
     @Order(2)
-    // The pending checks endpoint only needs id token authentication
     fun adminPendingChecksFilterChain(
         http: HttpSecurity,
         @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer}") adminIssuer: String,
@@ -60,7 +58,6 @@ class SecurityConfiguration(
 
     @Bean
     @Order(3)
-    // All other endpoints use register checker header authentication
     fun defaultFilterChain(http: HttpSecurity): SecurityFilterChain =
         baseSecurityFilterChain(http, "/**")
             .authorizeHttpRequests {
