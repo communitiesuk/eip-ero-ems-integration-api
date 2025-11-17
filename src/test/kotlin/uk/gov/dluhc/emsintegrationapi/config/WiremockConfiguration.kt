@@ -47,14 +47,10 @@ class WiremockConfiguration {
             }
             start()
             val ierBaseUrl = getIerEroBaseUrl(wireMockServerPort = port())
-            val eroManagementUrl = getEroManagementUrl(wireMockServerPort = port())
             TestPropertyValues.of(
                 "api.ier.base.url=$ierBaseUrl",
-                "api.ero-management.url=$eroManagementUrl",
             ).applyTo(applicationContext)
         }
 
     private fun getIerEroBaseUrl(wireMockServerPort: Int) = "http://localhost:$wireMockServerPort/ier-ero"
-
-    private fun getEroManagementUrl(wireMockServerPort: Int) = "http://localhost:$wireMockServerPort/ero-management-api"
 }

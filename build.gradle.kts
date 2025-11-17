@@ -274,12 +274,6 @@ tasks.create("api-generate IERApi model for EMS", GenerateTask::class) {
     packageName.set("uk.gov.dluhc.external.ier.ems")
 }
 
-tasks.create("api-generate EROManagementApi model", GenerateTask::class) {
-    enabled = true
-    inputSpec.set("$projectDir/src/main/resources/openapi/external/EROManagementAPIs.yaml")
-    packageName.set("uk.gov.dluhc.eromanagementapi")
-}
-
 tasks.create(
     "generate-models-from-remove-application-ems-integration-data-sqs-messaging.yaml",
     GenerateTask::class

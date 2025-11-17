@@ -50,8 +50,6 @@ sqs:
   register-check-result-response-queue-name: register-check-result-response-queue-name
 
 api:
-  ero-management:
-    url: http://replaced-by-wireMockServer-bean
   ier:
     base.url: http://replaced-by-wireMockServer-bean
     sts.assume.role: arn:aws:iam::123456789098:role/grant-me-access-to-ier
