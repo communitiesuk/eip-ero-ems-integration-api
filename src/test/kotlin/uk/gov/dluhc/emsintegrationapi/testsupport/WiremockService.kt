@@ -3,6 +3,7 @@ package uk.gov.dluhc.emsintegrationapi.testsupport
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder.responseDefinition
+import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
@@ -206,6 +207,23 @@ class WiremockService(
                     activeClientCertificateSerials = listOf(certificateSerialNumber),
                 ),
             ),
+        )
+    }
+
+    private val cognitoRsaJwkKeyPair = RsaKeyPair.jwk.toJSONString()
+
+    fun stubCognitoAdminJwtIssuerResponse() {
+        wireMockServer.stubFor(
+            get(urlPathMatching("/cognito/admin/.well-known/jwks.json"))
+                .willReturn(
+                    WireMock.ok().withBody(
+                        """
+                        {
+                           "keys":[$cognitoRsaJwkKeyPair]
+                        }
+                        """.trimIndent()
+                    )
+                )
         )
     }
 

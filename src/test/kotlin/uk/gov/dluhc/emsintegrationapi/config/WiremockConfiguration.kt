@@ -49,6 +49,8 @@ class WiremockConfiguration {
             val ierBaseUrl = getIerEroBaseUrl(wireMockServerPort = port())
             TestPropertyValues.of(
                 "api.ier.base.url=$ierBaseUrl",
+                "spring.security.oauth2.resourceserver.jwt.admin-issuer=http://localhost:${this.port()}/cognito/admin",
+                "spring.security.oauth2.resourceserver.jwt.admin-issuer-uri=http://localhost:${this.port()}/cognito/admin/.well-known/jwks.json",
             ).applyTo(applicationContext)
         }
 
