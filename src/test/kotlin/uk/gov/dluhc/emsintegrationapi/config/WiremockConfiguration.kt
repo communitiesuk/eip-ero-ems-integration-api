@@ -47,16 +47,12 @@ class WiremockConfiguration {
             }
             start()
             val ierBaseUrl = getIerEroBaseUrl(wireMockServerPort = port())
-            val eroManagementUrl = getEroManagementUrl(wireMockServerPort = port())
             TestPropertyValues.of(
                 "api.ier.base.url=$ierBaseUrl",
-                "api.ero-management.url=$eroManagementUrl",
                 "spring.security.oauth2.resourceserver.jwt.admin-issuer=http://localhost:${this.port()}/cognito/admin",
                 "spring.security.oauth2.resourceserver.jwt.admin-issuer-uri=http://localhost:${this.port()}/cognito/admin/.well-known/jwks.json",
             ).applyTo(applicationContext)
         }
 
     private fun getIerEroBaseUrl(wireMockServerPort: Int) = "http://localhost:$wireMockServerPort/ier-ero"
-
-    private fun getEroManagementUrl(wireMockServerPort: Int) = "http://localhost:$wireMockServerPort/ero-management-api"
 }
