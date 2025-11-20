@@ -24,7 +24,7 @@ class SecurityConfiguration(
 ) {
 
     companion object {
-        private val BYPASS_URLS_FOR_REQUEST_HEADER_AUTHENTICATION = listOf("/actuator/", "/admin/pending-checks/**")
+        private val BYPASS_URLS_FOR_REQUEST_HEADER_AUTHENTICATION = listOf("/actuator/")
     }
 
     @Bean
