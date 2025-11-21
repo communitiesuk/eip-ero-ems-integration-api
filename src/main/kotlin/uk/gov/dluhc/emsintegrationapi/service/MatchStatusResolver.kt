@@ -1,6 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
-import org.apache.commons.lang3.Strings
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
@@ -48,7 +47,7 @@ class MatchStatusResolver {
         isHistoricalSearch: Boolean = false,
     ): RegisterCheckStatus =
         with(registerCheckMatchDto) {
-            return if (Strings.CI.equals(franchiseCode.trim(), "PENDING")) {
+            return if (franchiseCode.uppercase().trim() == "PENDING") {
                 RegisterCheckStatus.PENDING_DETERMINATION
             } else {
                 val now = LocalDate.now()
@@ -72,35 +71,34 @@ class MatchStatusResolver {
         personalDetailDto: PersonalDetailDto,
         personalDetailEntity: PersonalDetail
     ): Boolean =
-        trimAndEqualsIgnoreCase(personalDetailDto.firstName, personalDetailEntity.firstName) &&
-            Strings.CS.equals(
-                sanitizeSurname(personalDetailDto.surname),
-                sanitizeSurname(personalDetailEntity.surname)
-            ) &&
+        personalDetailDto.firstName.standardised() == personalDetailEntity.firstName.standardised() &&
+            getStandardisedSurname(personalDetailDto.surname) == getStandardisedSurname(personalDetailEntity.surname) &&
             personalDetailDto.dateOfBirth == personalDetailEntity.dateOfBirth
 
     private fun keyAddressDetailsMatch(addressDto: AddressDto, addressEntity: Address): Boolean =
-        if (addressDto.uprn != null && uprnsAreEqual(addressDto.uprn, addressEntity.uprn)) {
+        if (addressDto.uprn != null && getStandardisedUprn(addressDto.uprn) == getStandardisedUprn(addressEntity.uprn)) {
             true
         } else {
-            trimAndEqualsIgnoreCase(addressDto.property, addressEntity.property) &&
-                trimAndEqualsIgnoreCase(addressDto.street, addressEntity.street) &&
-                Strings.CS.equals(sanitizePostcode(addressDto.postcode), sanitizePostcode(addressEntity.postcode))
+            addressDto.property?.standardised() == addressEntity.property?.standardised() &&
+                addressDto.street.standardised() == addressEntity.street.standardised() &&
+                getStandardisedPostcode(addressDto.postcode) == getStandardisedPostcode(addressEntity.postcode)
         }
 
-    private fun trimAndEqualsIgnoreCase(str1: String?, str2: String?) =
-        Strings.CI.equals(str1?.trim(), str2?.trim())
-
-    private fun uprnsAreEqual(uprn1: String?, uprn2: String?) =
-        Strings.CI.equals(uprn1?.trim()?.trimStart('0'), uprn2?.trim()?.trimStart('0'))
-
-    private fun sanitizeSurname(surname: String): String =
-        surname.uppercase()
+    private fun getStandardisedSurname(surname: String) =
+        surname
             .replace(Regex("-"), " ")
             .replace(Regex("'"), "")
-            .replace(Regex(" {2,}"), " ")
-            .trim()
+            .standardised()
 
-    private fun sanitizePostcode(postcode: String): String =
-        postcode.uppercase().replace(Regex(" +"), "").trim()
+    private fun getStandardisedPostcode(postcode: String) =
+        postcode
+            .replace(Regex("\\s+"), "")
+            .standardised()
+
+    private fun getStandardisedUprn(uprn: String?) = uprn?.trim()?.trimStart('0')
+
+    private fun String.standardised() =
+        replace(Regex("\\s+"), " ")
+            .uppercase()
+            .trim()
 }
