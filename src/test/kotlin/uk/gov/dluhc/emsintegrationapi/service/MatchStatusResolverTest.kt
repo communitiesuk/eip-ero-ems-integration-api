@@ -199,7 +199,7 @@ internal class MatchStatusResolverTest {
 
     @ParameterizedTest
     @MethodSource("standardisedFields")
-    fun `should resolve status as expected given field standardisation`(
+    fun `should resolve status as EXACT_MATCH given field standardisation`(
         matchFirstName: String,
         applicationFirstName: String,
         matchSurname: String,
@@ -212,7 +212,6 @@ internal class MatchStatusResolverTest {
         applicationPostcode: String,
         matchUprn: String?,
         applicationUprn: String?,
-        expectedStatus: RegisterCheckStatus
     ) {
         // Given
         val addressDto = buildAddressDto(
@@ -251,7 +250,7 @@ internal class MatchStatusResolverTest {
         val status = matchStatusResolver.resolveStatus(registerCheckResultDto, registerCheckEntity)
 
         // Then
-        assertThat(status).isEqualTo(expectedStatus)
+        assertThat(status).isEqualTo(EXACT_MATCH)
     }
 
     companion object {
@@ -323,7 +322,6 @@ internal class MatchStatusResolverTest {
                     "  sTreeT  NAme  ", "  stREET    Name",
                     "  nW5  1Tl  ", "NW51TL",
                     null, null,
-                    EXACT_MATCH,
                 ),
                 Arguments.of(
                     "  fIrSt   NaMe  ", " FIrST NaME ",
@@ -332,7 +330,6 @@ internal class MatchStatusResolverTest {
                     "  sTreeT  NAme  ", "  stREET    Name",
                     "  nW5  1Tl  ", "NW51TL",
                     null, null,
-                    EXACT_MATCH,
                 ),
                 Arguments.of(
                     "  fIrSt   NaMe  ", " FIrST NaME ",
@@ -341,7 +338,6 @@ internal class MatchStatusResolverTest {
                     "SOMETHING", "DIFFERENT",
                     "NW5 1TL", "NW5 3LA",
                     "  0012345  ", "12345",
-                    EXACT_MATCH,
                 ),
             )
         }
