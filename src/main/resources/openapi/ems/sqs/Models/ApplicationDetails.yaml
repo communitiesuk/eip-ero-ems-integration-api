@@ -19,6 +19,11 @@ properties:
     description: the IER ID of the absent vote application
     pattern: '^[a-fA-F\d]{24}$'
     example: 502cf250036469154b4f85fc
+  applicationReference:
+    type: string
+    maxLength: 10
+    description: the application reference number for the absent vote application
+    example: P3HQ9LKI0W
   createdAt:
     type: string
     format: date-time

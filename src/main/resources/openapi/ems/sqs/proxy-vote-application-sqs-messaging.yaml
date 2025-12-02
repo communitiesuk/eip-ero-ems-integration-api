@@ -119,6 +119,7 @@ components:
         Example 1:
           applicationDetails:
             id: 502cf250036469154b4f85fc
+            applicationReference: R3HQ9LKI0W
             createdAt: 2022-08-01T14:14:55Z
             gssCode: T12345678
             source: web
