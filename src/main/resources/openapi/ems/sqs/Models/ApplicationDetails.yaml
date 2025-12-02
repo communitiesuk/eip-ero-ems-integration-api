@@ -19,6 +19,7 @@ properties:
     description: the IER ID of the absent vote application
     pattern: '^[a-fA-F\d]{24}$'
     example: 502cf250036469154b4f85fc
+  # TODO EROPSPT-566: Make the application reference field non-optional
   applicationReference:
     type: string
     maxLength: 10
