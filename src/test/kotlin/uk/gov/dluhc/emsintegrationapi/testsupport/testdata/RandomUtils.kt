@@ -66,3 +66,5 @@ fun getRandomLocalAuthorityName() = "${faker.address().city()} City Council"
 fun getRandomPhoneNumber(): String = faker.phoneNumber().cellPhone()
 
 fun getRandomWebsiteAddress(): String = "https://www.${getRandomEroId().replaceSpacesWith("-")}.gov.uk"
+
+fun getApplicationReference(): String = "P" + getRandomAlphaNumeric(9)
