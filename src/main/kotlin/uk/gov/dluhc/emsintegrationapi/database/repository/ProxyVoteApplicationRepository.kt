@@ -52,6 +52,7 @@ interface ProxyVoteApplicationRepository :
     @Query(
         """SELECT 
             app.applicationId AS applicationId,
+            app.applicationDetails.applicationReference AS applicationReference,
             app.applicationDetails.gssCode AS gssCode,
             app.dateCreated AS createdAt
         FROM ProxyVoteApplication app
