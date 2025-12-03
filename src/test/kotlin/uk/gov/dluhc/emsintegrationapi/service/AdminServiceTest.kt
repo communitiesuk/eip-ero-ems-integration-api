@@ -401,6 +401,55 @@ internal class AdminServiceTest {
         }
 
         @Test
+        fun `should return only the oldest 10000 pending EMS downloads when combined total exceeds 10000`() {
+            // Given
+            val eroId = "south-testington"
+            val gssCodeFromEroApi = getRandomGssCode()
+            val baseTime = Instant.now()
+            
+            val applications1to5000 = (1..5000).map { 
+                buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
+            }
+            val applications5001to10000 = (5001..10000).map { 
+                buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
+            }
+            val applications10001to12000 = (10001..12000).map { 
+                buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
+            }
+            val applications12001to14000 = (12001..14000).map { 
+                buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
+            }
+            
+            val postalDownloads = applications1to5000 + applications10001to12000
+            val proxyDownloads = applications5001to10000 + applications12001to14000
+            val expectedPendingDownloads = applications1to5000 + applications5001to10000
+
+            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(listOf(gssCodeFromEroApi))
+            given(
+                postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(postalDownloads)
+            given(
+                proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(proxyDownloads)
+
+            // When
+            val actualPendingEmsDownloads = adminService.adminGetPendingEmsDownloads(eroId)
+
+            // Then
+            assertThat(actualPendingEmsDownloads).hasSize(10000)
+            assertThat(actualPendingEmsDownloads).isEqualTo(expectedPendingDownloads)
+            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
+        }
+
+        @Test
         fun `should throw IER not found exception given IER API client throws IER not found exception`() {
             // Given
             val eroId = "south-testington"
