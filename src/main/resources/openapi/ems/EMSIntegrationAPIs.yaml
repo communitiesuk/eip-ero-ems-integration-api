@@ -1079,6 +1079,11 @@ components:
           description: The ID of the application.
           format: string
           example: 1f0f76a9a66f438b9bb33070
+        applicationReference:
+          type: string
+          description: The reference number for the application.
+          maxLength: 10
+          example: P3HQ9LKI0W
         gssCode:
           type: string
           pattern: '^[a-zA-Z]\d{8}$'
