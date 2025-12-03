@@ -62,5 +62,5 @@ interface PostalVoteApplicationRepository :
         LIMIT :limit
         """
     )
-    fun adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes: List<String>, limit: Int = 1000): List<AdminPendingEmsDownload>
+    fun adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes: List<String>, limit: Int = 10000): List<AdminPendingEmsDownload>
 }

@@ -62,5 +62,5 @@ interface ProxyVoteApplicationRepository :
         LIMIT :limit
         """
     )
-    fun adminFindPendingProxyVoteDownloadsByGssCodes(gssCodes: List<String>, limit: Int = 1000): List<AdminPendingEmsDownload>
+    fun adminFindPendingProxyVoteDownloadsByGssCodes(gssCodes: List<String>, limit: Int = 10000): List<AdminPendingEmsDownload>
 }

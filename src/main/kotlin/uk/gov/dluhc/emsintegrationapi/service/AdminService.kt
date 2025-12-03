@@ -30,6 +30,6 @@ class AdminService(
         val pendingPostalDownloads = postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes)
         val pendingProxyDownloads = proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(gssCodes)
 
-        return pendingPostalDownloads.plus(pendingProxyDownloads).sortedBy { it.createdAt }
+        return pendingPostalDownloads.plus(pendingProxyDownloads).sortedBy { it.createdAt }.take(10000)
     }
 }
