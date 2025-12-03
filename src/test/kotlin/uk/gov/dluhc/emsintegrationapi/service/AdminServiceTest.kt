@@ -406,20 +406,20 @@ internal class AdminServiceTest {
             val eroId = "south-testington"
             val gssCodeFromEroApi = getRandomGssCode()
             val baseTime = Instant.now()
-            
-            val applications1to5000 = (1..5000).map { 
+
+            val applications1to5000 = (1..5000).map {
                 buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
             }
-            val applications5001to10000 = (5001..10000).map { 
+            val applications5001to10000 = (5001..10000).map {
                 buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
             }
-            val applications10001to12000 = (10001..12000).map { 
+            val applications10001to12000 = (10001..12000).map {
                 buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
             }
-            val applications12001to14000 = (12001..14000).map { 
+            val applications12001to14000 = (12001..14000).map {
                 buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
             }
-            
+
             val postalDownloads = applications1to5000 + applications10001to12000
             val proxyDownloads = applications5001to10000 + applications12001to14000
             val expectedPendingDownloads = applications1to5000 + applications5001to10000
