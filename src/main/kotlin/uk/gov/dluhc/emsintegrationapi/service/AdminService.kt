@@ -20,15 +20,15 @@ class AdminService(
     @Transactional(readOnly = true)
     fun adminGetPendingRegisterChecks(eroId: String): List<AdminPendingRegisterCheckDto> {
         val gssCodes = retrieveGssCodeService.getGssCodesFromEroId(eroId)
-        return registerCheckRepository.adminFindPendingEntriesByGssCodes(gssCodes)
+        return registerCheckRepository.adminFindPendingEntriesByGssCodes(gssCodes, 10000)
             .map(adminPendingRegisterCheckMapper::registerCheckEntityToAdminPendingRegisterCheckDto)
     }
 
     @Transactional(readOnly = true)
     fun adminGetPendingEmsDownloads(eroId: String): List<AdminPendingEmsDownload> {
         val gssCodes = retrieveGssCodeService.getGssCodesFromEroId(eroId)
-        val pendingPostalDownloads = postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes)
-        val pendingProxyDownloads = proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(gssCodes)
+        val pendingPostalDownloads = postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes, 10000)
+        val pendingProxyDownloads = proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(gssCodes, 10000)
 
         return pendingPostalDownloads.plus(pendingProxyDownloads).sortedBy { it.createdAt }.take(10000)
     }

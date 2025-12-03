@@ -6,5 +6,5 @@ interface CustomRegisterCheckRepository {
 
     fun findPendingEntriesByGssCodes(gssCodes: List<String>, limit: Int = 100): List<RegisterCheck>
 
-    fun adminFindPendingEntriesByGssCodes(gssCodes: List<String>, limit: Int = 10000): List<RegisterCheck>
+    fun adminFindPendingEntriesByGssCodes(gssCodes: List<String>, limit: Int): List<RegisterCheck>
 }
