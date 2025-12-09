@@ -12,7 +12,7 @@ data class AdminPendingEmsDownloadBuilder(
 
 fun buildAdminPendingEmsDownload(
     applicationId: String = getIerDsApplicationId(),
-    applicationReference: String? = getApplicationReference(),
+    applicationReference: String? = getRandomApplicationReference(),
     gssCode: String = getRandomGssCode(),
     createdAt: Instant = Instant.now(),
 ): AdminPendingEmsDownload = AdminPendingEmsDownloadBuilder(applicationId, applicationReference, gssCode, createdAt)

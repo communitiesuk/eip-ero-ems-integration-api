@@ -13,7 +13,7 @@ const val SIGNATURE_BASE64_STRING =
 
 fun buildApplicationDetailsEntity(
     createdAt: Instant = getPastDateTime(),
-    applicationReference: String? = getApplicationReference(),
+    applicationReference: String? = getRandomApplicationReference(),
     gssCode: String = getRandomGssCode(),
     authorisedAt: Instant = getPastDateTime(5),
     authorisingStaffId: String = getRandomEmailAddress(),
@@ -41,7 +41,7 @@ fun buildApplicationDetailsEntity(
 fun buildApplicationDetailsMessageDto(
     applicationId: String = getIerDsApplicationId(),
     createdAt: Instant = getPastDateTime(),
-    applicationReference: String? = getApplicationReference(),
+    applicationReference: String? = getRandomApplicationReference(),
     gssCode: String = getRandomGssCode(),
     authorisedAt: Instant = getPastDateTime(5),
     authorisingStaffId: String = getRandomEmailAddress(),
