@@ -81,3 +81,5 @@ databaseChangeLog:
       file: /db/changelog/create/0039_EIP1-12901_add_ero_absent_vote_hold_table.xml
   - include:
       file: /db/changelog/create/0040_EROPSPT-538_add_application_reference_to_register_check_table.xml
+  - include:
+      file: /db/changelog/create/0041_EROPSPT-566_add_application_reference_to_vote_application_tables.xml
