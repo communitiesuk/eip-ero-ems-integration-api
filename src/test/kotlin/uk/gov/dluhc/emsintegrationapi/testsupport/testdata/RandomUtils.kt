@@ -67,4 +67,4 @@ fun getRandomPhoneNumber(): String = faker.phoneNumber().cellPhone()
 
 fun getRandomWebsiteAddress(): String = "https://www.${getRandomEroId().replaceSpacesWith("-")}.gov.uk"
 
-fun getApplicationReference(): String = "P" + getRandomAlphaNumeric(9)
+fun getRandomApplicationReference(): String = "P" + getRandomAlphaNumeric(9)
