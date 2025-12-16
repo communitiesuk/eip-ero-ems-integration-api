@@ -52,6 +52,7 @@ interface PostalVoteApplicationRepository :
     @Query(
         """SELECT 
             app.applicationId AS applicationId,
+            app.applicationDetails.applicationReference AS applicationReference,
             app.applicationDetails.gssCode AS gssCode,
             app.dateCreated AS createdAt
         FROM PostalVoteApplication app
@@ -61,5 +62,5 @@ interface PostalVoteApplicationRepository :
         LIMIT :limit
         """
     )
-    fun adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes: List<String>, limit: Int = 1000): List<AdminPendingEmsDownload>
+    fun adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes: List<String>, limit: Int): List<AdminPendingEmsDownload>
 }

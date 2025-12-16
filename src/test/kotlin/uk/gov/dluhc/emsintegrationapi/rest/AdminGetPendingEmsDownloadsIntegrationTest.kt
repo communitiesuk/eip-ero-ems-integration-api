@@ -135,11 +135,17 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
         println(pendingDownload3.dateCreated)
         println(pendingDownload4.dateCreated)
 
-        val expectedPendingDownloads = listOf(
+        val expectedPendingDownloadIds = listOf(
             pendingDownload1.applicationId,
             pendingDownload2.applicationId,
             pendingDownload3.applicationId,
-            pendingDownload4.applicationId
+            pendingDownload4.applicationId,
+        )
+        val expectedPendingDownloadReferences = listOf(
+            pendingDownload1.applicationDetails.applicationReference,
+            pendingDownload2.applicationDetails.applicationReference,
+            pendingDownload3.applicationDetails.applicationReference,
+            pendingDownload4.applicationDetails.applicationReference,
         )
 
         // When
@@ -153,8 +159,9 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
         // Then
         val actual = response.responseBody.blockFirst()
         assertThat(actual).isNotNull
-        assertThat(actual!!.pendingEmsDownloads).hasSize(expectedPendingDownloads.size)
-        assertThat(actual.pendingEmsDownloads.map { it.applicationId }).isEqualTo(expectedPendingDownloads)
+        assertThat(actual!!.pendingEmsDownloads).hasSize(expectedPendingDownloadIds.size)
+        assertThat(actual.pendingEmsDownloads.map { it.applicationId }).isEqualTo(expectedPendingDownloadIds)
+        assertThat(actual.pendingEmsDownloads.map { it.applicationReference }).isEqualTo(expectedPendingDownloadReferences)
     }
 
     @Test
