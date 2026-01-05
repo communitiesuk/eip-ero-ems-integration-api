@@ -7,17 +7,17 @@ import java.lang.ProcessBuilder.Redirect
 
 plugins {
     id("org.springframework.boot") version "3.5.7"
-    id("io.spring.dependency-management") version "1.1.3"
+    id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "1.9.25"
     kotlin("kapt") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("plugin.allopen") version "1.9.25"
-    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
-    id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
-    id("org.openapi.generator") version "7.0.1"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    id("org.jlleitschuh.gradle.ktlint-idea") version "11.6.1"
+    id("org.openapi.generator") version "7.18.0"
     id("org.owasp.dependencycheck") version "12.1.9"
-    id("org.liquibase.gradle") version "2.0.4"
+    id("org.liquibase.gradle") version "3.1.0"
 }
 
 group = "uk.gov.dluhc"
