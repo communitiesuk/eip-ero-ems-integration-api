@@ -107,7 +107,7 @@ internal class RegisterCheckRepositoryTest : IntegrationTest() {
             ).let(registerCheckRepository::saveAll)
 
             // When
-            val actual = registerCheckRepository.adminFindPendingEntriesByGssCodes(listOf("E09000020", "E09000022"))
+            val actual = registerCheckRepository.adminFindPendingEntriesByGssCodes(listOf("E09000020", "E09000022"), 10000)
 
             // Then
             assertThat(actual).isNotNull

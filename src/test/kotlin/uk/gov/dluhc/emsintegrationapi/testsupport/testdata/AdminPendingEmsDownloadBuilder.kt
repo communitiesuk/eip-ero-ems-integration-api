@@ -5,12 +5,14 @@ import java.time.Instant
 
 data class AdminPendingEmsDownloadBuilder(
     override val applicationId: String,
+    override val applicationReference: String?,
     override val gssCode: String,
-    override val createdAt: Instant
+    override val createdAt: Instant,
 ) : AdminPendingEmsDownload
 
 fun buildAdminPendingEmsDownload(
     applicationId: String = getIerDsApplicationId(),
+    applicationReference: String? = getRandomApplicationReference(),
     gssCode: String = getRandomGssCode(),
-    createdAt: Instant = Instant.now()
-): AdminPendingEmsDownload = AdminPendingEmsDownloadBuilder(applicationId, gssCode, createdAt)
+    createdAt: Instant = Instant.now(),
+): AdminPendingEmsDownload = AdminPendingEmsDownloadBuilder(applicationId, applicationReference, gssCode, createdAt)

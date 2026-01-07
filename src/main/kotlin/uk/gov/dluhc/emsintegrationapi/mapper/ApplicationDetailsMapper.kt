@@ -10,6 +10,7 @@ class ApplicationDetailsMapper(private val instantMapper: InstantMapper) {
     fun mapToApplicationDetails(applicationDetails: ApplicationDetails) = applicationDetails.let {
         ApprovalDetailsEntity(
             createdAt = instantMapper.toInstant(it.createdAt),
+            applicationReference = it.applicationReference,
             authorisingStaffId = it.authorisingStaffId,
             authorisedAt = instantMapper.toInstant(it.authorisedAt),
             source = it.source,

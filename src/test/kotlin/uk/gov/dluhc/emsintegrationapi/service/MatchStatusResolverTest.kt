@@ -198,19 +198,30 @@ internal class MatchStatusResolverTest {
     }
 
     @ParameterizedTest
-    @MethodSource("sanitizedFields")
-    fun `should map api to dto given 1 match and partially matching sanitized fields`(
+    @MethodSource("standardisedFields")
+    fun `should resolve status as EXACT_MATCH given field standardisation`(
+        matchFirstName: String,
+        applicationFirstName: String,
         matchSurname: String,
         applicationSurname: String,
+        matchProperty: String?,
+        applicationProperty: String?,
+        matchStreet: String,
+        applicationStreet: String,
         matchPostcode: String,
         applicationPostcode: String,
-        expectedStatus: RegisterCheckStatus
+        matchUprn: String?,
+        applicationUprn: String?,
     ) {
         // Given
         val addressDto = buildAddressDto(
-            postcode = matchPostcode
+            property = matchProperty,
+            street = matchStreet,
+            postcode = matchPostcode,
+            uprn = matchUprn,
         )
         val personalDetailDto = buildPersonalDetailDto(
+            firstName = matchFirstName,
             surname = matchSurname,
             address = addressDto
         )
@@ -223,14 +234,14 @@ internal class MatchStatusResolverTest {
         val registerCheckEntity = buildRegisterCheck(
             // use matching personal details (focussing on address in this test)
             personalDetail = buildPersonalDetail(
-                firstName = personalDetailDto.firstName,
+                firstName = applicationFirstName,
                 surname = applicationSurname,
                 dateOfBirth = personalDetailDto.dateOfBirth,
                 address = buildAddress(
-                    uprn = addressDto.uprn,
-                    property = addressDto.property,
-                    street = addressDto.street,
-                    postcode = applicationPostcode
+                    uprn = applicationUprn,
+                    property = applicationProperty,
+                    street = applicationStreet,
+                    postcode = applicationPostcode,
                 )
             )
         )
@@ -239,7 +250,7 @@ internal class MatchStatusResolverTest {
         val status = matchStatusResolver.resolveStatus(registerCheckResultDto, registerCheckEntity)
 
         // Then
-        assertThat(status).isEqualTo(expectedStatus)
+        assertThat(status).isEqualTo(EXACT_MATCH)
     }
 
     companion object {
@@ -302,15 +313,32 @@ internal class MatchStatusResolverTest {
         }
 
         @JvmStatic
-        private fun sanitizedFields(): Stream<Arguments> {
-            val surname = "O'Brien"
-            val postcode = "L1 1AB"
+        private fun standardisedFields(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(surname, surname.uppercase(), postcode, postcode, EXACT_MATCH),
-                Arguments.of(surname, "OBRIEN", postcode, postcode, EXACT_MATCH),
-                Arguments.of("Jones-Smith", "JONES SMITH", postcode, postcode, EXACT_MATCH),
-                Arguments.of(surname, surname, postcode, postcode.lowercase(), EXACT_MATCH),
-                Arguments.of(surname, surname, postcode, "l11ab", EXACT_MATCH)
+                Arguments.of(
+                    "  fIrSt   NaMe  ", " FIrST NaME ",
+                    "  lAs''t --  Na'Me", "  ''last - name''  ",
+                    "   pRoPeRtY  NAMe  ", "  PROpERTY     NAmE  ",
+                    "  sTreeT  NAme  ", "  stREET    Name",
+                    "  nW5  1Tl  ", "NW51TL",
+                    null, null,
+                ),
+                Arguments.of(
+                    "  fIrSt   NaMe  ", " FIrST NaME ",
+                    "  lAs''t --  Na'Me", "  ''last - name''  ",
+                    null, null,
+                    "  sTreeT  NAme  ", "  stREET    Name",
+                    "  nW5  1Tl  ", "NW51TL",
+                    null, null,
+                ),
+                Arguments.of(
+                    "  fIrSt   NaMe  ", " FIrST NaME ",
+                    "  lAs''t --  Na'Me", "  ''last - name''  ",
+                    null, null,
+                    "SOMETHING", "DIFFERENT",
+                    "NW5 1TL", "NW5 3LA",
+                    "  0012345  ", "12345",
+                ),
             )
         }
     }

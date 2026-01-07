@@ -1,7 +1,7 @@
 title: Application Details
 description: Application Details
 type: object
-version: 1.0.0
+version: 1.1.0
 x-examples:
   Minimum data:
     id: 502cf250036469154b4f85fc
@@ -19,6 +19,12 @@ properties:
     description: the IER ID of the absent vote application
     pattern: '^[a-fA-F\d]{24}$'
     example: 502cf250036469154b4f85fc
+  # TODO EROPSPT-566: Make the application reference field non-optional
+  applicationReference:
+    type: string
+    maxLength: 10
+    description: the application reference number for the absent vote application
+    example: P3HQ9LKI0W
   createdAt:
     type: string
     format: date-time

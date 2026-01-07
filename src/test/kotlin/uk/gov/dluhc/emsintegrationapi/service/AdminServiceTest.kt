@@ -72,7 +72,7 @@ internal class AdminServiceTest {
             assertThat(actualPendingRegisterChecks).isNotNull
             assertThat(actualPendingRegisterChecks).isEmpty()
             verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(registerCheckRepository).adminFindPendingEntriesByGssCodes(listOf(gssCodeFromEroApi))
+            verify(registerCheckRepository).adminFindPendingEntriesByGssCodes(listOf(gssCodeFromEroApi), 10000)
             verifyNoInteractions(adminPendingRegisterCheckMapper)
         }
 
@@ -117,7 +117,7 @@ internal class AdminServiceTest {
                 .usingRecursiveComparison()
                 .ignoringCollectionOrder()
             verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(registerCheckRepository).adminFindPendingEntriesByGssCodes(listOf(gssCodeFromEroApi))
+            verify(registerCheckRepository).adminFindPendingEntriesByGssCodes(listOf(gssCodeFromEroApi), 10000)
             verify(adminPendingRegisterCheckMapper).registerCheckEntityToAdminPendingRegisterCheckDto(
                 matchedRegisterCheckEntity
             )
@@ -204,7 +204,8 @@ internal class AdminServiceTest {
                     firstGssCodeFromEroApi,
                     secondGssCodeFromEroApi,
                     anotherGssCodeFromEroApi
-                )
+                ),
+                10000
             )
             verify(adminPendingRegisterCheckMapper).registerCheckEntityToAdminPendingRegisterCheckDto(
                 firstRegisterCheckEntity
@@ -287,8 +288,8 @@ internal class AdminServiceTest {
             assertThat(actualPendingEmsDownloads).isNotNull
             assertThat(actualPendingEmsDownloads).isEmpty()
             verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
-            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
         }
 
         @Test
@@ -322,8 +323,8 @@ internal class AdminServiceTest {
                 .isEqualTo(expectedPendingDownloads)
                 .usingRecursiveComparison()
             verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
-            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
         }
 
         @Test
@@ -357,8 +358,8 @@ internal class AdminServiceTest {
                 .isEqualTo(expectedPendingDownloads)
                 .usingRecursiveComparison()
             verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
-            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
         }
 
         @Test
@@ -395,8 +396,57 @@ internal class AdminServiceTest {
                 .isEqualTo(expectedPendingDownloads)
                 .usingRecursiveComparison()
             verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
-            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
-            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi))
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
+        }
+
+        @Test
+        fun `should return only the oldest 10000 pending EMS downloads when combined total exceeds 10000`() {
+            // Given
+            val eroId = "south-testington"
+            val gssCodeFromEroApi = getRandomGssCode()
+            val baseTime = Instant.now()
+
+            val applications1to5000 = (1..5000).map {
+                buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
+            }
+            val applications5001to10000 = (5001..10000).map {
+                buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
+            }
+            val applications10001to12000 = (10001..12000).map {
+                buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
+            }
+            val applications12001to14000 = (12001..14000).map {
+                buildAdminPendingEmsDownload(gssCode = gssCodeFromEroApi, createdAt = baseTime.plusSeconds(it.toLong()))
+            }
+
+            val postalDownloads = applications1to5000 + applications10001to12000
+            val proxyDownloads = applications5001to10000 + applications12001to14000
+            val expectedPendingDownloads = applications1to5000 + applications5001to10000
+
+            given(retrieveGssCodeService.getGssCodesFromEroId(eq(eroId))).willReturn(listOf(gssCodeFromEroApi))
+            given(
+                postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(postalDownloads)
+            given(
+                proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(
+                    eq(listOf(gssCodeFromEroApi)),
+                    any()
+                )
+            ).willReturn(proxyDownloads)
+
+            // When
+            val actualPendingEmsDownloads = adminService.adminGetPendingEmsDownloads(eroId)
+
+            // Then
+            assertThat(actualPendingEmsDownloads).hasSize(10000)
+            assertThat(actualPendingEmsDownloads).isEqualTo(expectedPendingDownloads)
+            verify(retrieveGssCodeService).getGssCodesFromEroId(eroId)
+            verify(postalVoteApplicationRepository).adminFindPendingPostalVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
+            verify(proxyVoteApplicationRepository).adminFindPendingProxyVoteDownloadsByGssCodes(listOf(gssCodeFromEroApi), 10000)
         }
 
         @Test

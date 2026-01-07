@@ -17,19 +17,23 @@ class AdminService(
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository,
     private val adminPendingRegisterCheckMapper: AdminPendingRegisterCheckMapper,
 ) {
+    companion object {
+        private const val MAX_RESULTS = 10000
+    }
+
     @Transactional(readOnly = true)
     fun adminGetPendingRegisterChecks(eroId: String): List<AdminPendingRegisterCheckDto> {
         val gssCodes = retrieveGssCodeService.getGssCodesFromEroId(eroId)
-        return registerCheckRepository.adminFindPendingEntriesByGssCodes(gssCodes)
+        return registerCheckRepository.adminFindPendingEntriesByGssCodes(gssCodes, MAX_RESULTS)
             .map(adminPendingRegisterCheckMapper::registerCheckEntityToAdminPendingRegisterCheckDto)
     }
 
     @Transactional(readOnly = true)
     fun adminGetPendingEmsDownloads(eroId: String): List<AdminPendingEmsDownload> {
         val gssCodes = retrieveGssCodeService.getGssCodesFromEroId(eroId)
-        val pendingPostalDownloads = postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes)
-        val pendingProxyDownloads = proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(gssCodes)
+        val pendingPostalDownloads = postalVoteApplicationRepository.adminFindPendingPostalVoteDownloadsByGssCodes(gssCodes, MAX_RESULTS)
+        val pendingProxyDownloads = proxyVoteApplicationRepository.adminFindPendingProxyVoteDownloadsByGssCodes(gssCodes, MAX_RESULTS)
 
-        return pendingPostalDownloads.plus(pendingProxyDownloads).sortedBy { it.createdAt }
+        return pendingPostalDownloads.plus(pendingProxyDownloads).sortedBy { it.createdAt }.take(MAX_RESULTS)
     }
 }

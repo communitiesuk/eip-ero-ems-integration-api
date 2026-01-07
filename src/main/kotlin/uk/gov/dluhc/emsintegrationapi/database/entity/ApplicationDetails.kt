@@ -12,6 +12,9 @@ import java.time.Instant
 class ApplicationDetails(
     val createdAt: Instant?,
 
+    @field:Size(max = 10)
+    val applicationReference: String?,
+
     @field:Size(max = 9)
     val gssCode: String,
 
