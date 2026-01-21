@@ -35,7 +35,7 @@
     <!--
     Logging configuration for when the application is not run with a profile `jsonLogging`, resulting in log messages
     being written in a standard string format.
-    Typically used when the application is being run locally / docker-compose
+    Typically used when the application is being run locally
     This uses the standard Spring Boot logback configuration, including console appender and pattern.
 
     Unit and integration tests use the logging configuration `logback-test.xml` in the test resources.
