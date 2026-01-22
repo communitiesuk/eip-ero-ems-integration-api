@@ -86,9 +86,7 @@ This will build a docker image for the Spring Boot application.
 
 ## Running the application
 
-See [docker/README.md](docker/README.md)
-
-Alternatively, either `./gradlew bootRun` or run the class `EmsIntegrationApiApplication`
+Either `./gradlew bootRun` or run the class `EmsIntegrationApiApplication`
 
 ### TODO: establish what env vars are actually needed...
 
