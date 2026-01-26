@@ -7,7 +7,6 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
-import org.springframework.web.client.RestTemplate
 import uk.gov.dluhc.emsintegrationapi.config.IER_ELECTORAL_REGISTRATION_OFFICES_CACHE
 import uk.gov.dluhc.external.ier.models.ERODetails
 import uk.gov.dluhc.external.ier.models.ErosGet200Response
@@ -17,7 +16,6 @@ private val logger = KotlinLogging.logger {}
 @Component
 class IerApiClient(
     private val ierRestClient: RestClient,
-    private val ierRestTemplate: RestTemplate,
 ) {
     companion object {
         private const val GET_EROS_URI = "/eros"
@@ -29,7 +27,7 @@ class IerApiClient(
      * @return a list of [ERODetails]
      * @throws [IerApiException] concrete implementation if the API returns an error
      */
-    @Cacheable(cacheNames = [IER_ELECTORAL_REGISTRATION_OFFICES_CACHE])
+    @Cacheable(cacheNames = [IER_ELECTORAL_REGISTRATION_OFFICES_CACHE], sync = true)
     fun getEros(): List<ERODetails> {
         logger.info { "Get EROs from IER" }
         return try {

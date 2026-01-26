@@ -58,7 +58,7 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
         assertThat(actual).isNotNull
         assertThat(actual!!.pageSize).isZero
         PendingRegisterCheckAssert.assertThat(actual.registerCheckRequests).hasEmptyPendingRegisterChecks()
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
     }
 
     @Test
@@ -140,7 +140,7 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
                 ),
             )
 
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
     }
 
     @Test
@@ -172,7 +172,7 @@ internal class GetPendingRegisterChecksIntegrationTest : IntegrationTest() {
             .hasStatus(404)
             .hasError("Not Found")
             .hasMessage("EROCertificateMapping for certificateSerial=[543219999] not found")
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
     }
 
     private fun buildUriStringWithQueryParam(pageSize: Int) =

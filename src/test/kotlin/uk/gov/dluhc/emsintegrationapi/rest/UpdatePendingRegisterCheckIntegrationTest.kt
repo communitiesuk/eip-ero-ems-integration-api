@@ -134,7 +134,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasStatus(404)
             .hasError("Not Found")
             .hasMessage("EROCertificateMapping for certificateSerial=[543219999] not found")
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
         assertRequestIsAudited(requestId)
     }
 
@@ -174,7 +174,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasError("Not Found")
             .hasMessage("Pending register check for requestid:[322ff65f-a0a1-497d-a224-04800711a1fb] not found")
             .hasNoValidationErrors()
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
         assertRequestIsAudited(requestId)
     }
 
@@ -258,7 +258,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasStatus(403)
             .hasError("Forbidden")
             .hasMessage("Request gssCode:[E10101010] does not match with gssCode for certificateSerial:[543219999]")
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
         assertRequestIsAudited(requestId)
     }
 
@@ -292,7 +292,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasStatus(500)
             .hasError("Internal Server Error")
             .hasMessage("Error retrieving EROs from IER API")
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
         assertRequestIsAudited(requestId)
     }
 
@@ -464,7 +464,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasError("Conflict")
             .hasMessage("Register check with requestid:[14f66386-a86e-4dbc-af52-3327834f33d1] has an unexpected status:[NO_MATCH]")
             .hasNoValidationErrors()
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
 
         assertRequestIsAudited(requestId)
         assertMessageNotSubmittedToSqs(
@@ -611,7 +611,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasMatchCount(matchCount)
             .hasRegisterCheckMatches(expectedRegisterCheckMatchEntityList)
 
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
 
         val actualRegisterResultData = registerCheckResultDataRepository.findByCorrelationIdIn(setOf(requestId))[0]
         assertRequestIsAudited(actualRegisterResultData, requestId, matchResultSentAt.toString(), gssCode, matchCount)
@@ -731,7 +731,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasMatchCount(matchCount)
             .hasRegisterCheckMatches(expectedRegisterCheckMatchEntityList)
 
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
 
         val actualRegisterResultData = registerCheckResultDataRepository.findByCorrelationIdIn(setOf((requestId)))[0]
         assertRequestIsAudited(actualRegisterResultData, requestId, createdAtFromRequest, gssCode, matchCount)
@@ -848,7 +848,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasMatchResultSentAt(matchResultSentAt.toInstant())
             .hasMatchCount(matchCount)
 
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
 
         val actualRegisterResultData = registerCheckResultDataRepository.findByCorrelationIdIn(setOf(requestId))[0]
         assertRequestIsAudited(actualRegisterResultData, requestId, createdAtFromRequest, gssCode, matchCount)
@@ -918,7 +918,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             .hasMatchResultSentAt(matchResultSentAt.toInstant())
             .hasMatchCount(matchCount)
 
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
 
         val actualRegisterResultData = registerCheckResultDataRepository.findByCorrelationIdIn(setOf(requestId))[0]
         assertRequestIsAudited(actualRegisterResultData, requestId, createdAtFromRequest, gssCode, matchCount)

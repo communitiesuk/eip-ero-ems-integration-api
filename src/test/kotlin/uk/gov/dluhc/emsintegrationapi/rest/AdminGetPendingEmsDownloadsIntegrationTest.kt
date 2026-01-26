@@ -65,7 +65,7 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
         val actual = response.responseBody.blockFirst()
         assertThat(actual).isNotNull
         assertThat(actual!!.pendingEmsDownloads).isEmpty()
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
     }
 
     @Test
