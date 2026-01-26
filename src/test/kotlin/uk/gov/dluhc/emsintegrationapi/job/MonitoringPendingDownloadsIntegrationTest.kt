@@ -8,7 +8,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import uk.gov.dluhc.emsintegrationapi.config.ERO_CERTIFICATE_MAPPING_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
@@ -44,7 +43,6 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
     @BeforeEach
     fun setUp() {
         TestLogAppender.reset()
-        cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         ClearDownUtils.clearDownRecords(
             proxyRepository = proxyVoteApplicationRepository,
@@ -56,7 +54,6 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
     @AfterEach
     fun reset() {
         TestLogAppender.reset()
-        cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
         ClearDownUtils.clearDownRecords(
             proxyRepository = proxyVoteApplicationRepository,
