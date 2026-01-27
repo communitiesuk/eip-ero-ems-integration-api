@@ -15,6 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import uk.gov.dluhc.emsintegrationapi.config.CORRELATION_ID_HEADER
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.TEST_CERTIFICATE_SERIAL_NUMBER
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.TEST_ERO_ID
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.TEST_GSS_CODE
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.TEST_OTHER_GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerLocalAuthorityDetails
 import uk.gov.dluhc.external.ier.models.ERODetails
@@ -34,18 +38,11 @@ class WiremockService(
         wireMockServer.resetAll()
     }
 
-    fun verifyIerGetEroIdentifierCalledOnce() {
-        verifyIerGetEroIdentifierCalled(1)
-    }
-
-    fun verifyIerGetEroIdentifierCalled(count: Int) {
-        wireMockServer.verify(count, getRequestedFor(urlPathMatching(IER_ERO_GET_URL)))
-    }
-
     fun stubIerApiGetEros(
-        certificateSerial: String,
-        eroId: String,
-        gssCodes: List<String>,
+        certificateSerial: String = TEST_CERTIFICATE_SERIAL_NUMBER,
+        eroId: String = TEST_ERO_ID,
+        gssCodes: List<String> = listOf(TEST_GSS_CODE, TEST_OTHER_GSS_CODE),
+        responseTimeoutInSeconds: Int = 0,
     ) {
         val erosResponse =
             ErosGet200Response(
@@ -66,7 +63,8 @@ class WiremockService(
                     responseDefinition()
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(objectMapper.writeValueAsString(erosResponse)),
+                        .withBody(objectMapper.writeValueAsString(erosResponse))
+                        .withFixedDelay(responseTimeoutInSeconds * 1000)
                 ),
         )
     }
@@ -111,22 +109,6 @@ class WiremockService(
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                         .withBody(objectMapper.writeValueAsString(erosResponse)),
                 ),
-        )
-    }
-
-    fun stubIerApiGetEroIdentifier(
-        certificateSerial: String,
-        eroId: String,
-    ) {
-        stubIerApiGetEros(
-            listOf(
-                buildIerEroDetails(
-                    eroIdentifier = eroId,
-                    name = "Camden City Council",
-                    gssCode = "E12345678",
-                    activeClientCertificateSerials = listOf(certificateSerial),
-                ),
-            ),
         )
     }
 
@@ -175,10 +157,6 @@ class WiremockService(
         wireMockServer.verify(count, getRequestedFor(urlPathMatching(IER_EROS_GET_URL)))
     }
 
-    fun verifyIerGetErosCalledOnce() {
-        verifyIerGetErosCalled(1)
-    }
-
     fun givenEroIdAndGssCodesMappedToCertificate(
         certificateSerialNumber: String,
         eroId: String,
@@ -224,17 +202,6 @@ class WiremockService(
                         """.trimIndent()
                     )
                 )
-        )
-    }
-
-    private fun stubIerApiGetEroIdentifierThrowsException(httpStatusCode: Int) {
-        wireMockServer.stubFor(
-            get(urlEqualTo(IER_EROS_GET_URL))
-                .withHeader("Authorization", matchingAwsSignedAuthHeader())
-                .willReturn(
-                    responseDefinition()
-                        .withStatus(httpStatusCode),
-                ),
         )
     }
 

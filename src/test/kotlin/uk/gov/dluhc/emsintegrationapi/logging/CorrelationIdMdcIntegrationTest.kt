@@ -14,7 +14,6 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.CORRELATION_ID
 import uk.gov.dluhc.emsintegrationapi.config.CORRELATION_ID_HEADER
-import uk.gov.dluhc.emsintegrationapi.config.ERO_CERTIFICATE_MAPPING_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.config.MESSAGE_ID
@@ -56,7 +55,6 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
     @AfterEach
     fun tearDown() {
         TestLogAppender.reset()
-        cacheManager.getCache(ERO_CERTIFICATE_MAPPING_CACHE)?.clear()
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
     }
 

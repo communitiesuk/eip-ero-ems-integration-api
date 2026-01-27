@@ -45,7 +45,7 @@ internal class AdminGetPendingRegisterChecksIntegrationTest : IntegrationTest() 
         val actual = response.responseBody.blockFirst()
         assertThat(actual).isNotNull
         assertThat(actual!!.pendingRegisterChecks).isEmpty()
-        wireMockService.verifyIerGetErosCalledOnce()
+        wireMockService.verifyIerGetErosCalled(1)
     }
 
     @Test
