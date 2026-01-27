@@ -1,6 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.client
 
-import mu.KotlinLogging
 import org.awaitility.kotlin.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -12,8 +11,6 @@ import uk.gov.dluhc.emsintegrationapi.service.RetrieveGssCodeService
 import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-
-private val logger = KotlinLogging.logger { }
 
 internal class IerApiClientIntegrationTest : IntegrationTest() {
 
@@ -37,7 +34,7 @@ internal class IerApiClientIntegrationTest : IntegrationTest() {
         wireMockService.stubIerApiGetEros()
 
         // When
-        val eros = ierApiClient.getEros()
+        ierApiClient.getEros()
 
         // Then
         wireMockService.verifyIerGetErosCalled(1)
