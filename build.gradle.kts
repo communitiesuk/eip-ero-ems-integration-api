@@ -8,12 +8,12 @@ import java.lang.ProcessBuilder.Redirect
 plugins {
     id("org.springframework.boot") version "3.5.11"
     id("io.spring.dependency-management") version "1.1.3"
-    kotlin("jvm") version "2.3.10"
-    kotlin("kapt") version "2.3.10"
-    kotlin("plugin.spring") version "2.3.10"
-    kotlin("plugin.jpa") version "2.3.10"
-    kotlin("plugin.allopen") version "2.3.10"
-    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
+    kotlin("jvm") version "2.3.20"
+    kotlin("kapt") version "2.3.20"
+    kotlin("plugin.spring") version "2.3.20"
+    kotlin("plugin.jpa") version "2.3.20"
+    kotlin("plugin.allopen") version "2.3.20"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
     id("org.openapi.generator") version "7.0.1"
     id("org.owasp.dependencycheck") version "12.2.0"
@@ -181,12 +181,15 @@ dependencyManagement {
     }
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = jvmTarget
+    }
+}
+
 tasks.withType<KotlinCompile> {
     dependsOn(tasks.withType<GenerateTask>())
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
-    }
 }
 
 tasks.withType<Test> {
