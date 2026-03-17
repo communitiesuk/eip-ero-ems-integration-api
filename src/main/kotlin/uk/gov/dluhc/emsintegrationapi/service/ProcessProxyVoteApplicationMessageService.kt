@@ -16,7 +16,6 @@ class ProcessProxyVoteApplicationMessageService(
 ) {
     @Transactional
     fun process(proxyVoteApplicationMessage: ProxyVoteApplicationMessage) {
-
         with(proxyVoteApplicationMessage) {
             logger.info { "Processing proxy vote application with id = ${applicationDetails.id}" }
             val proxyVoteApplicationEntity =

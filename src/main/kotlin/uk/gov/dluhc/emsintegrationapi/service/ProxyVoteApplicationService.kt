@@ -30,12 +30,12 @@ class ProxyVoteApplicationService(
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
     private val retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService
 ) : AbstractApplicationService(
-    clock,
-    apiProperties,
-    retrieveGssCodeService,
-    retrieveIsHoldEnabledForEroService,
-    messageSender
-) {
+        clock,
+        apiProperties,
+        retrieveGssCodeService,
+        retrieveIsHoldEnabledForEroService,
+        messageSender
+    ) {
     @Transactional(readOnly = true)
     fun getProxyVoteApplications(
         certificateSerialNumber: String,

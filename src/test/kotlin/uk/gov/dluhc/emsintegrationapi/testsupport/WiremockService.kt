@@ -47,13 +47,13 @@ class WiremockService(
         val erosResponse =
             ErosGet200Response(
                 eros =
-                listOf(
-                    buildIerEroDetails(
-                        eroIdentifier = eroId,
-                        activeClientCertificateSerials = listOf(certificateSerial),
-                        localAuthorities = gssCodes.map { buildIerLocalAuthorityDetails(gssCode = it) },
+                    listOf(
+                        buildIerEroDetails(
+                            eroIdentifier = eroId,
+                            activeClientCertificateSerials = listOf(certificateSerial),
+                            localAuthorities = gssCodes.map { buildIerLocalAuthorityDetails(gssCode = it) },
+                        ),
                     ),
-                ),
             )
 
         wireMockServer.stubFor(
@@ -179,9 +179,9 @@ class WiremockService(
                 buildIerEroDetails(
                     eroIdentifier = eroId,
                     localAuthorities =
-                    gssCodes.map { gssCode ->
-                        buildIerLocalAuthorityDetails(gssCode = gssCode)
-                    },
+                        gssCodes.map { gssCode ->
+                            buildIerLocalAuthorityDetails(gssCode = gssCode)
+                        },
                     activeClientCertificateSerials = listOf(certificateSerialNumber),
                 ),
             ),

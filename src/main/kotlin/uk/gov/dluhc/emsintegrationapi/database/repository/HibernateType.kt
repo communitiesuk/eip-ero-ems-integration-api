@@ -1,3 +1,3 @@
 package uk.gov.dluhc.emsintegrationapi.database.repository
 
-const val UUIDCharType: String = "org.hibernate.type.UUIDCharType"
+const val UUID_CHAR_TYPE: String = "org.hibernate.type.UUIDCharType"

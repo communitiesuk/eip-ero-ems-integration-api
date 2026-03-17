@@ -30,6 +30,7 @@ class TransactionRoutingDataSource(readWriteDataSource: DataSource, readOnlyData
     override fun determineCurrentLookupKey(): Any? = currentDataSource.get()
 
     private enum class DataSourceType {
-        READ_ONLY, READ_WRITE
+        READ_ONLY,
+        READ_WRITE
     }
 }

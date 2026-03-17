@@ -11,7 +11,6 @@ internal class ObjectMapperTest {
 
     @Test
     fun `should map times without offset information to OffsetDateTime`() {
-
         // Given
         val dateTime = "2023-10-28T20:50:07"
         val input = "{\"offsetDateTime\": \"$dateTime\"}"
@@ -25,7 +24,6 @@ internal class ObjectMapperTest {
 
     @Test
     fun `should map times with default offset information to OffsetDateTime`() {
-
         // Given
         val dateTime = "2023-10-28T20:50:07Z"
         val input = "{\"offsetDateTime\": \"$dateTime\"}"
@@ -39,7 +37,6 @@ internal class ObjectMapperTest {
 
     @Test
     fun `should map times with explicit offset information to OffsetDateTime`() {
-
         // Given
         val dateTime = "2023-10-28T21:50:07+01:00"
         val input = "{\"offsetDateTime\": \"$dateTime\"}"

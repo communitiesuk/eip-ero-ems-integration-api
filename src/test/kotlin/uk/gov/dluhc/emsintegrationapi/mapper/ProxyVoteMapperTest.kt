@@ -74,12 +74,14 @@ internal class ProxyVoteMapperTest {
                 .hasCorrectFieldsFromProxyApplication(proxyVoteApplications[index])
         }
     }
+
     @Test
     fun `should map from an application contains proxy vote dates but no rejection reason`() {
         val proxyVoteApplication = buildProxyVoteApplication()
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote).hasNoRejectedReasons()
     }
+
     @Test
     fun `should map from a proxy vote application entity with signature waiver`() {
         val proxyVoteApplication =
