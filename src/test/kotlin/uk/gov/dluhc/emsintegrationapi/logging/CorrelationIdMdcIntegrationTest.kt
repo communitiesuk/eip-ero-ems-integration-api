@@ -61,26 +61,26 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
     @Nested
     inner class PostalVoteApplicationRequest {
 
-        private val PATH = "/postalvotes"
-        private val CERTIFICATE_SERIAL_NUMBER = "543219999"
-        private val ERO_ID = "test-ero"
+        private val path = "/postalvotes"
+        private val certificateSerialNumber = "543219999"
+        private val eroId = "test-ero"
 
         @BeforeEach
         fun setupWiremockStubs() {
-            wireMockService.stubIerApiGetEros(CERTIFICATE_SERIAL_NUMBER, ERO_ID, listOf(getRandomGssCode()))
+            wireMockService.stubIerApiGetEros(certificateSerialNumber, eroId, listOf(getRandomGssCode()))
         }
 
         @Test
         fun `should service REST API call given no correlation-id header`() {
             // When
-            webClient.get().uri(PATH)
-                .header(apiProperties.requestHeaderName, CERTIFICATE_SERIAL_NUMBER)
+            webClient.get().uri(path)
+                .header(apiProperties.requestHeaderName, certificateSerialNumber)
                 .exchange()
 
             // Then
             await.atMost(3, TimeUnit.SECONDS).untilAsserted {
                 val firstReliableMessage = TestLogAppender.getLogEventMatchingRegex(
-                    "Processing a get postal vote applications request with page size =null and certificate serial no =$CERTIFICATE_SERIAL_NUMBER",
+                    "Processing a get postal vote applications request with page size =null and certificate serial no =$certificateSerialNumber",
                     Level.INFO
                 )
                 assertThat(firstReliableMessage).hasAnyCorrelationId()
@@ -101,8 +101,8 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         fun `should service REST API call given correlation-id header`() {
             // When
             val expectedCorrelationId = randomUUID().toString().replace("-", "")
-            webClient.get().uri(PATH)
-                .header(apiProperties.requestHeaderName, CERTIFICATE_SERIAL_NUMBER)
+            webClient.get().uri(path)
+                .header(apiProperties.requestHeaderName, certificateSerialNumber)
                 .header(CORRELATION_ID_HEADER, expectedCorrelationId)
                 .exchange()
 
@@ -110,7 +110,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
             await.atMost(3, TimeUnit.SECONDS).untilAsserted {
                 assertThat(
                     TestLogAppender.getLogEventMatchingRegex(
-                        "Processing a get postal vote applications request with page size =null and certificate serial no =$CERTIFICATE_SERIAL_NUMBER",
+                        "Processing a get postal vote applications request with page size =null and certificate serial no =$certificateSerialNumber",
                         Level.INFO
                     )
                 ).hasCorrelationId(expectedCorrelationId)
@@ -129,14 +129,14 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         @Test
         fun `should service REST API call given no request id header`() {
             // When
-            webClient.get().uri(PATH)
-                .header(apiProperties.requestHeaderName, CERTIFICATE_SERIAL_NUMBER)
+            webClient.get().uri(path)
+                .header(apiProperties.requestHeaderName, certificateSerialNumber)
                 .exchange()
 
             // Then
             await.atMost(3, TimeUnit.SECONDS).untilAsserted {
                 val firstReliableMessage = TestLogAppender.getLogEventMatchingRegex(
-                    "Processing a get postal vote applications request with page size =null and certificate serial no =$CERTIFICATE_SERIAL_NUMBER",
+                    "Processing a get postal vote applications request with page size =null and certificate serial no =$certificateSerialNumber",
                     Level.INFO
                 )
                 assertThat(firstReliableMessage).hasNoRequestId()
@@ -155,8 +155,8 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
         fun `should service REST API call given request id header`() {
             // When
             val expectedRequestId = randomUUID().toString()
-            webClient.get().uri(PATH)
-                .header(apiProperties.requestHeaderName, CERTIFICATE_SERIAL_NUMBER)
+            webClient.get().uri(path)
+                .header(apiProperties.requestHeaderName, certificateSerialNumber)
                 .header(REQUEST_ID_HEADER, expectedRequestId)
                 .exchange()
 
@@ -164,7 +164,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
             await.atMost(3, TimeUnit.SECONDS).untilAsserted {
                 assertThat(
                     TestLogAppender.getLogEventMatchingRegex(
-                        "Processing a get postal vote applications request with page size =null and certificate serial no =$CERTIFICATE_SERIAL_NUMBER",
+                        "Processing a get postal vote applications request with page size =null and certificate serial no =$certificateSerialNumber",
                         Level.INFO
                     )
                 ).hasRequestId(expectedRequestId)

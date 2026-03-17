@@ -76,5 +76,6 @@ class ProxyVoteApplication(
     var version: Long? = null,
 ) {
     override fun equals(other: Any?) = areEqual(this, other, ProxyVoteApplication::applicationId)
+
     override fun hashCode() = applicationId.hashCode()
 }

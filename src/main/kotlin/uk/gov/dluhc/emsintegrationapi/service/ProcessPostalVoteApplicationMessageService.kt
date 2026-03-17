@@ -16,7 +16,6 @@ class ProcessPostalVoteApplicationMessageService(
 ) {
     @Transactional
     fun process(postalVoteApplicationMessage: PostalVoteApplicationMessage) {
-
         with(postalVoteApplicationMessage) {
             logger.info { "Processing postal vote application with id = ${applicationDetails.id}" }
             val postalVoteApplicationEntity =

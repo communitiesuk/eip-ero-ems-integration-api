@@ -39,7 +39,6 @@ class ProcessIntegrationDataRemovalMessageService(
                         postalVoteApplicationRepository.delete(it)
                     }
                 }.or {
-
                     logger.warn {
                         "ApplicationId $applicationId of type ${ApplicationType.POSTAL} was not found to delete"
                     }
@@ -59,7 +58,6 @@ class ProcessIntegrationDataRemovalMessageService(
                         proxyVoteApplicationRepository.delete(it)
                     }
                 }.or {
-
                     logger.warn {
                         "ApplicationId $applicationId of type ${ApplicationType.PROXY} was not found to delete"
                     }

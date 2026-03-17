@@ -331,7 +331,7 @@ fun String.runCommand(): String {
     return process.inputStream.bufferedReader().readText().trim()
 }
 
-/* Configuration for the OWASP dependency check */
+// Configuration for the OWASP dependency check
 dependencyCheck {
     autoUpdate = true
     failOnError = true

@@ -54,5 +54,6 @@ internal class EntityHelperKtTest {
     }
 
     internal open class Dummy1(open var id: String?)
+
     internal class Dummy2(override var id: String?, val name: String) : Dummy1(id)
 }

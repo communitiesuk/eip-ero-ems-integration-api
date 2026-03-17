@@ -119,6 +119,7 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
         // That
         assertThat(proxyVoteApplication).isNull()
     }
+
     @Test
     fun `should return record by application id and gss codes`() {
         // Given
