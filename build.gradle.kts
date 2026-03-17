@@ -14,7 +14,6 @@ plugins {
     kotlin("plugin.jpa") version "2.3.20"
     kotlin("plugin.allopen") version "2.3.20"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
     id("org.openapi.generator") version "7.0.1"
     id("org.owasp.dependencycheck") version "12.2.0"
     id("org.liquibase.gradle") version "2.0.4"
