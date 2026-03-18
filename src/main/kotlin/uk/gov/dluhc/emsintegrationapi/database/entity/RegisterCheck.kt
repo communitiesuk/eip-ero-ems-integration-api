@@ -59,7 +59,7 @@ class RegisterCheck(
     var gssCode: String,
 
     @NotNull
-    @Size(max = 100)
+    @Column(length = 100)
     @Enumerated(EnumType.STRING)
     var status: CheckStatus,
 
