@@ -26,9 +26,9 @@ fun buildProxyVoteApplication(
     updatedBy: SourceSystem? = null,
     recordStatus: RecordStatus = RecordStatus.RECEIVED,
     englishRejectionNotes: String? = null,
-    englishRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
+    englishRejectedReasonItems: MutableSet<RejectedReasonItem> = mutableSetOf(),
     welshRejectionNotes: String? = null,
-    welshRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
+    welshRejectedReasonItems: MutableSet<RejectedReasonItem> = mutableSetOf(),
 ) = ProxyVoteApplication(
     applicationId = applicationId,
     applicationDetails = applicationDetails,

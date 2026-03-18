@@ -22,9 +22,9 @@ internal class ProxyVoteMapperTest {
             buildProxyVoteApplication(
                 applicationDetails = buildApplicationDetailsEntity(signatureBase64 = SIGNATURE_BASE64_STRING),
                 englishRejectionNotes = "enNotes",
-                englishRejectedReasonItems = setOf(RejectedReasonItem("enReason1", "OTHER_REJECT_REASON", false), RejectedReasonItem("enReason2", "OTHER_REJECT_REASON", false)),
+                englishRejectedReasonItems = mutableSetOf(RejectedReasonItem("enReason1", "OTHER_REJECT_REASON", false), RejectedReasonItem("enReason2", "OTHER_REJECT_REASON", false)),
                 welshRejectionNotes = "cyNotes",
-                welshRejectedReasonItems = setOf(RejectedReasonItem("cyReason1", "OTHER_REJECT_REASON", false), RejectedReasonItem("cyReason2", "OTHER_REJECT_REASON", false)),
+                welshRejectedReasonItems = mutableSetOf(RejectedReasonItem("cyReason1", "OTHER_REJECT_REASON", false), RejectedReasonItem("cyReason2", "OTHER_REJECT_REASON", false)),
             )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote)
@@ -45,9 +45,9 @@ internal class ProxyVoteMapperTest {
                 proxyMiddleNames = null,
             ),
             englishRejectionNotes = null,
-            englishRejectedReasonItems = null,
+            englishRejectedReasonItems = mutableSetOf(),
             welshRejectionNotes = null,
-            welshRejectedReasonItems = null
+            welshRejectedReasonItems = mutableSetOf()
         )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)

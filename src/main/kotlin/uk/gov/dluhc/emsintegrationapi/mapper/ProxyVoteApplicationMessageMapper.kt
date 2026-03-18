@@ -29,9 +29,15 @@ class ProxyVoteApplicationMessageMapper(
                 retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED,
                 englishRejectionNotes = it.proxyVoteDetails.rejectedReasons?.englishReason?.notes,
-                englishRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.englishReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
+                englishRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.englishReason?.reasonList
+                    ?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }
+                    ?.toMutableSet()
+                    ?: mutableSetOf(),
                 welshRejectionNotes = it.proxyVoteDetails.rejectedReasons?.welshReason?.notes,
-                welshRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.welshReason?.reasonList?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }?.toSet(),
+                welshRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.welshReason?.reasonList
+                    ?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }
+                    ?.toMutableSet()
+                    ?: mutableSetOf(),
             )
         }
 }
