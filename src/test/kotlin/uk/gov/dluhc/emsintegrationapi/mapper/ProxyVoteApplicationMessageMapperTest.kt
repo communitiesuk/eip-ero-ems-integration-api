@@ -36,9 +36,9 @@ internal class ProxyVoteApplicationMessageMapperTest {
                 assertThat(it.output.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.PROXY)
                 assertThat(it.output.proxyVoteDetails.proxyAddress?.createdBy).isEqualTo(SourceSystem.PROXY)
                 assertThat(it.output.englishRejectionNotes).isNotNull()
-                assertThat(it.output.englishRejectedReasonItems?.isNotEmpty())
+                assertThat(it.output.englishRejectedReasonItems.isNotEmpty())
                 assertThat(it.output.welshRejectionNotes).isNotNull()
-                assertThat(it.output.welshRejectedReasonItems?.isNotEmpty())
+                assertThat(it.output.welshRejectedReasonItems.isNotEmpty())
             }
         }
     }
@@ -58,8 +58,8 @@ internal class ProxyVoteApplicationMessageMapperTest {
         val proxyVoteApplication: ProxyVoteApplication = proxyVoteApplicationMessageMapper.mapToEntity(applicationMessage)
         assertThat(proxyVoteApplication.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.PROXY)
         assertThat(proxyVoteApplication.englishRejectionNotes).isNull()
-        assertThat(proxyVoteApplication.englishRejectedReasonItems?.isNotEmpty())
+        assertThat(proxyVoteApplication.englishRejectedReasonItems).isEmpty()
         assertThat(proxyVoteApplication.welshRejectionNotes).isNull()
-        assertThat(proxyVoteApplication.welshRejectedReasonItems).isNull()
+        assertThat(proxyVoteApplication.welshRejectedReasonItems).isEmpty()
     }
 }
