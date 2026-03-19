@@ -31,7 +31,6 @@ internal class PostalVoteApplicationMessageMapperTest {
     inner class FromPostalVoteMessageDtoToEntity {
         @Test
         fun `should convert postal vote application message to entity`() {
-
             validateMappedObject(
                 { buildPostalVoteApplicationMessage(primaryElectorDetails = buildPrimaryElectorDetailsMessageDto()) },
                 postalVoteApplicationMessageMapper::mapToEntity,
@@ -43,15 +42,14 @@ internal class PostalVoteApplicationMessageMapperTest {
                 assertThat(it.output.postalVoteDetails!!.ballotBfpoAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.primaryElectorDetails!!.address.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.englishRejectionNotes).isNotNull()
-                assertThat(it.output.englishRejectedReasonItems?.isNotEmpty())
+                assertThat(it.output.englishRejectedReasonItems.isNotEmpty())
                 assertThat(it.output.welshRejectionNotes).isNotNull()
-                assertThat(it.output.welshRejectedReasonItems?.isNotEmpty())
+                assertThat(it.output.welshRejectedReasonItems.isNotEmpty())
             }
         }
 
         @Test
         fun `should convert postal vote application message to entity without ballot addresses`() {
-
             val applicationMessage: PostalVoteApplicationMessage =
                 buildPostalVoteApplicationMessage(
                     postalVoteDetails = buildPostalVoteDetailsMessageDto(
@@ -70,7 +68,6 @@ internal class PostalVoteApplicationMessageMapperTest {
 
     @Test
     fun `should convert postal vote application message to entity without rejected english notes and welsh rejected reasons`() {
-
         val applicationMessage: PostalVoteApplicationMessage =
             buildPostalVoteApplicationMessage(
                 postalVoteDetails = buildPostalVoteDetailsMessageDto(
@@ -84,8 +81,8 @@ internal class PostalVoteApplicationMessageMapperTest {
         val postalVoteApplication: PostalVoteApplication = postalVoteApplicationMessageMapper.mapToEntity(applicationMessage)
         assertThat(postalVoteApplication.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
         assertThat(postalVoteApplication.englishRejectionNotes).isNull()
-        assertThat(postalVoteApplication.englishRejectedReasonItems?.isNotEmpty())
+        assertThat(postalVoteApplication.englishRejectedReasonItems).isEmpty()
         assertThat(postalVoteApplication.welshRejectionNotes).isNull()
-        assertThat(postalVoteApplication.welshRejectedReasonItems).isNull()
+        assertThat(postalVoteApplication.welshRejectedReasonItems).isEmpty()
     }
 }

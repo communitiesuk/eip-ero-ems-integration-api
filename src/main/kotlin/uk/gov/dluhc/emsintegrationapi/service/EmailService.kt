@@ -101,6 +101,6 @@ private fun generatePendingDownloadsHtml(pendingDownloadSummaries: List<PendingD
                     <td>${summary.pendingDownloadCount}</td>
                     <td>${summary.pendingDownloadsWithEmsElectorId}</td>
                 </tr>
-            """.trimMargin()
+        """.trimMargin()
     }
 }

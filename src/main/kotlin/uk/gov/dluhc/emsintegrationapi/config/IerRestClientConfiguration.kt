@@ -21,6 +21,7 @@ import software.amazon.awssdk.services.sts.StsClient
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest
 import uk.gov.dluhc.logging.rest.CorrelationIdRestTemplateClientHttpRequestInterceptor
+import java.util.function.Supplier
 
 /**
  * Configuration class exposing a configured [RestTemplate] suitable for calling IER REST APIs.
@@ -60,7 +61,7 @@ class IerRestClientConfiguration(
     @Bean
     fun ierRestTemplate(ierClientHttpRequestFactory: ClientHttpRequestFactory): RestTemplate {
         return RestTemplateBuilder()
-            .requestFactory { -> ierClientHttpRequestFactory }
+            .requestFactory(Supplier { ierClientHttpRequestFactory })
             .rootUri(ierApiBaseUrl)
             .interceptors(correlationIdRestTemplateClientHttpRequestInterceptor)
             .build()

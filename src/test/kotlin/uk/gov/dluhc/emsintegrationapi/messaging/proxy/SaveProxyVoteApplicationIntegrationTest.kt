@@ -103,11 +103,11 @@ internal class SaveProxyVoteApplicationIntegrationTest : IntegrationTest() {
         val proxyVoteApplicationMessage =
             buildProxyVoteApplicationMessageDto(
                 applicationDetails =
-                buildApplicationDetailsMessageDto(
-                    applicationId = proxyApplicationId,
-                    signatureWaived = true,
-                    signatureWaivedReason = waiverReason,
-                ),
+                    buildApplicationDetailsMessageDto(
+                        applicationId = proxyApplicationId,
+                        signatureWaived = true,
+                        signatureWaivedReason = waiverReason,
+                    ),
             )
 
         // When I send an sqs message to the proxy application queue

@@ -110,7 +110,6 @@ internal class EntityValidationTest {
 
         @Test
         fun `should throw constraint violation if an applicant object is invalid`() {
-
             val applicantDetails = buildApplicantDetailsEntity(
                 firstName = getRandomString(36),
                 surname = getRandomString(36),

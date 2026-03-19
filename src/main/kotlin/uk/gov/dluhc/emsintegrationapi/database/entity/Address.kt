@@ -25,7 +25,7 @@ class Address(
     var id: UUID? = null,
 
     @field:Size(max = 255)
-    val street: String,
+    var street: String,
 
     @field:Size(max = 255)
     var property: String? = null,
@@ -40,7 +40,7 @@ class Address(
     var area: String? = null,
 
     @field:Size(max = 10)
-    val postcode: String,
+    var postcode: String,
 
     @field:Size(max = 12)
     var uprn: String? = null,

@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
@@ -8,13 +9,12 @@ import java.lang.ProcessBuilder.Redirect
 plugins {
     id("org.springframework.boot") version "3.5.11"
     id("io.spring.dependency-management") version "1.1.3"
-    kotlin("jvm") version "1.9.25"
-    kotlin("kapt") version "1.9.25"
-    kotlin("plugin.spring") version "1.9.25"
-    kotlin("plugin.jpa") version "1.9.25"
-    kotlin("plugin.allopen") version "1.9.25"
-    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
-    id("org.jlleitschuh.gradle.ktlint-idea") version "11.0.0"
+    kotlin("jvm") version "2.3.20"
+    kotlin("kapt") version "2.3.20"
+    kotlin("plugin.spring") version "2.3.20"
+    kotlin("plugin.jpa") version "2.3.20"
+    kotlin("plugin.allopen") version "2.3.20"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("org.openapi.generator") version "7.0.1"
     id("org.owasp.dependencycheck") version "12.2.0"
     id("org.liquibase.gradle") version "2.0.4"
@@ -181,12 +181,15 @@ dependencyManagement {
     }
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+        jvmTarget = JvmTarget.JVM_17
+    }
+}
+
 tasks.withType<KotlinCompile> {
     dependsOn(tasks.withType<GenerateTask>())
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
-    }
 }
 
 tasks.withType<Test> {
@@ -328,7 +331,7 @@ fun String.runCommand(): String {
     return process.inputStream.bufferedReader().readText().trim()
 }
 
-/* Configuration for the OWASP dependency check */
+// Configuration for the OWASP dependency check
 dependencyCheck {
     autoUpdate = true
     failOnError = true
