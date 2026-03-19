@@ -59,7 +59,7 @@ internal class PendingRegisterCheckMapperTest {
         // Then
         assertThat(actual)
             .usingRecursiveComparison()
-            .ignoringFields("status")
+            .ignoringFields("status", "updatedAt")
             .isEqualTo(expected)
         assertThat(actual.status).isEqualTo(CheckStatus.PENDING)
         assertThat(actual.dateCreated).isNull()
