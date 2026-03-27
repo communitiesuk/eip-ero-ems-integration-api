@@ -34,7 +34,9 @@ allOpen {
 }
 
 val awsProfile = System.getenv("AWS_PROFILE_ARG") ?: "--profile code-artifact"
-val codeArtifactToken = "aws codeartifact get-authorization-token --domain erop-artifacts --domain-owner 063998039290 --query authorizationToken --output text $awsProfile".runCommand()
+val codeArtifactToken =
+    "aws codeartifact get-authorization-token --domain erop-artifacts --domain-owner 063998039290 --query authorizationToken --output text $awsProfile"
+        .runCommand()
 
 repositories {
     mavenCentral()
@@ -74,9 +76,9 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     // internal libs
-    implementation("uk.gov.dluhc:logging-library:3.0.3")
-    implementation("uk.gov.dluhc:messaging-support-library:2.2.0")
-    implementation("uk.gov.dluhc:email-client:1.0.0")
+    implementation("uk.gov.dluhc:logging-library:3.0.5")
+    implementation("uk.gov.dluhc:messaging-support-library:2.3.3")
+    implementation("uk.gov.dluhc:email-client:1.0.2")
 
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -207,7 +209,7 @@ tasks.withType<GenerateTask> {
             "apis" to "false",
             "invokers" to "false",
             "models" to "",
-        )
+        ),
     )
     configOptions.set(
         mapOf(
@@ -216,7 +218,7 @@ tasks.withType<GenerateTask> {
             "enumPropertyNaming" to "UPPERCASE",
             "useBeanValidation" to "true",
             "useSpringBoot3" to "true",
-        )
+        ),
     )
 }
 
@@ -251,7 +253,7 @@ tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", Ge
 // Postal SQS Message
 tasks.create(
     "generate-models-from-openapi-document-postal-vote-application-sqs-messaging.yaml",
-    GenerateTask::class
+    GenerateTask::class,
 ) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/ems/sqs/postal-vote-application-sqs-messaging.yaml")
@@ -260,7 +262,7 @@ tasks.create(
 
 tasks.create(
     "generate-models-from-openapi-document-proxy-vote-application-sqs-messaging.yaml",
-    GenerateTask::class
+    GenerateTask::class,
 ) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/ems/sqs/proxy-vote-application-sqs-messaging.yaml")
@@ -276,7 +278,7 @@ tasks.create("api-generate IERApi model for EMS", GenerateTask::class) {
 
 tasks.create(
     "generate-models-from-remove-application-ems-integration-data-sqs-messaging.yaml",
-    GenerateTask::class
+    GenerateTask::class,
 ) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/ems/sqs/remove-application-ems-integration-data-sqs-messaging.yaml")
@@ -300,14 +302,20 @@ tasks.withType<BootBuildImage> {
         listOf(
             "urn:cnb:builder:paketo-buildpacks/java",
             "docker.io/paketobuildpacks/health-checker",
-        )
+        ),
     )
 }
 
 // Exclude generated code from linting
 ktlint {
     filter {
-        exclude { projectDir.toURI().relativize(it.file.toURI()).path.contains("/generated/") }
+        exclude {
+            projectDir
+                .toURI()
+                .relativize(it.file.toURI())
+                .path
+                .contains("/generated/")
+        }
     }
 }
 
@@ -321,14 +329,18 @@ kapt {
 
 fun String.runCommand(): String {
     val parts = this.split("\\s".toRegex())
-    val process = ProcessBuilder(*parts.toTypedArray())
-        .redirectOutput(Redirect.PIPE)
-        .start()
+    val process =
+        ProcessBuilder(*parts.toTypedArray())
+            .redirectOutput(Redirect.PIPE)
+            .start()
     process.waitFor()
-    return process.inputStream.bufferedReader().readText().trim()
+    return process.inputStream
+        .bufferedReader()
+        .readText()
+        .trim()
 }
 
-/* Configuration for the OWASP dependency check */
+// Configuration for the OWASP dependency check
 dependencyCheck {
     autoUpdate = true
     failOnError = true
