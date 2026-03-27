@@ -33,21 +33,23 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                     postalVoteDetails?.ballotAddress == null &&
                     postalVoteDetails?.ballotBfpoAddress == null &&
                     postalVoteDetails?.ballotOverseasAddress == null
-                )
+                ) {
                     applicantDetails.registeredAddress
-                else
+                } else {
                     postalVoteDetails?.ballotAddress
+                }
 
             val postalProxy =
-                if (isPostalProxyApplication)
+                if (isPostalProxyApplication) {
                     PostalVoteDetailPostalProxy(
                         fn = applicantDetails.firstName,
                         mn = applicantDetails.middleNames,
                         ln = applicantDetails.surname,
                         dob = applicantDetails.dob,
                     )
-                else
+                } else {
                     null
+                }
             PostalVote(
                 detail = PostalVoteDetail(
                     refNum = applicantDetails.referenceNumber,
@@ -136,13 +138,13 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
             RejectedReasons(
                 englishReason = RejectedReason(
                     notes = englishRejectionNotes,
-                    reasons = englishRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
-                    reasonList = englishRejectedReasonItems?.toList()?.map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
+                    reasons = englishRejectedReasonItems.toList().mapNotNull { it.electorReason },
+                    reasonList = englishRejectedReasonItems.toList().map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
                 ),
                 welshReason = RejectedReason(
                     notes = welshRejectionNotes,
-                    reasons = welshRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
-                    reasonList = welshRejectedReasonItems?.toList()?.map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
+                    reasons = welshRejectedReasonItems.toList().mapNotNull { it.electorReason },
+                    reasonList = welshRejectedReasonItems.toList().map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
                 )
             )
         }

@@ -117,6 +117,7 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
         // That
         assertThat(postalVoteApplication).isNull()
     }
+
     @Test
     fun `should return record by application id and gss codes`() {
         // Given

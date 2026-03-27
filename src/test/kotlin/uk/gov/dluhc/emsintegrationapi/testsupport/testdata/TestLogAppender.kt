@@ -38,7 +38,7 @@ class TestLogAppender : AppenderBase<ILoggingEvent>() {
             return (
                 message == event.formattedMessage ||
                     (throwableProxy != null && throwableProxy.message != null && message == throwableProxy.message)
-                ) &&
+            ) &&
                 event.level == level
         }
 
@@ -51,7 +51,7 @@ class TestLogAppender : AppenderBase<ILoggingEvent>() {
             return (
                 regex.matches(event.formattedMessage) ||
                     (throwableProxy != null && regex.matches(throwableProxy.message))
-                ) &&
+            ) &&
                 event.level == level
         }
 

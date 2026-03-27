@@ -75,13 +75,13 @@ fun buildProxyRejectedReasonsDto(
     welshReason: Set<String>? = setOf(),
 ) = RejectedReasonsDto(
     englishReason =
-    RejectedReasonDto(
-        notes = englishNotes,
-        reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON", false) },
-    ),
+        RejectedReasonDto(
+            notes = englishNotes,
+            reasonList = englishReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON", false) },
+        ),
     welshReason =
-    RejectedReasonDto(
-        notes = welshNotes,
-        reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON", false) },
-    ),
+        RejectedReasonDto(
+            notes = welshNotes,
+            reasonList = welshReason?.map { reason -> RejectedReasonItem(reason, "OTHER_REJECT_REASON", false) },
+        ),
 )

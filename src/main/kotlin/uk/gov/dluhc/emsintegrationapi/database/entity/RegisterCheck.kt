@@ -59,7 +59,7 @@ class RegisterCheck(
     var gssCode: String,
 
     @NotNull
-    @Size(max = 100)
+    @Column(length = 100)
     @Enumerated(EnumType.STRING)
     var status: CheckStatus,
 
@@ -95,9 +95,8 @@ class RegisterCheck(
     @CreationTimestamp
     var dateCreated: Instant? = null,
 
-    @NotNull
     @UpdateTimestamp
-    var updatedAt: Instant? = null,
+    var updatedAt: Instant = Instant.EPOCH,
 
     @Version
     var version: Long = 0L,

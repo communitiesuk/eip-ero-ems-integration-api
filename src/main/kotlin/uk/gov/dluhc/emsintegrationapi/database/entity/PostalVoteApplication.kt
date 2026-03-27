@@ -66,7 +66,7 @@ class PostalVoteApplication(
         name = "postal_vote_application_english_rejection_reasons",
         joinColumns = [JoinColumn(name = "application_id")]
     )
-    var englishRejectedReasonItems: Set<RejectedReasonItem>? = mutableSetOf(),
+    var englishRejectedReasonItems: MutableSet<RejectedReasonItem> = mutableSetOf(),
 
     var welshRejectionNotes: String? = null,
 
@@ -84,11 +84,12 @@ class PostalVoteApplication(
         name = "postal_vote_application_welsh_rejection_reasons",
         joinColumns = [JoinColumn(name = "application_id")]
     )
-    var welshRejectedReasonItems: Set<RejectedReasonItem>? = mutableSetOf(),
+    var welshRejectedReasonItems: MutableSet<RejectedReasonItem> = mutableSetOf(),
 
     @Version
     var version: Long? = null,
 ) {
     override fun equals(other: Any?) = areEqual(this, other, PostalVoteApplication::applicationId)
+
     override fun hashCode() = applicationId.hashCode()
 }

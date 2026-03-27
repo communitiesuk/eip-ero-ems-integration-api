@@ -8,6 +8,6 @@ class IntegrationDataRemovalFailedException(
     val source: Source,
 ) :
     EMSIntegrationException(
-        "The ems status of $source application with id `$applicationId` " +
-            "was not found so it could not be processed"
-    )
+            "The ems status of $source application with id `$applicationId` " +
+                "was not found so it could not be processed"
+        )

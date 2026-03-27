@@ -30,12 +30,12 @@ class PostalVoteApplicationService(
     private val retrieveGssCodeService: RetrieveGssCodeService,
     private val retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService,
 ) : AbstractApplicationService(
-    clock,
-    apiProperties,
-    retrieveGssCodeService,
-    retrieveIsHoldEnabledForEroService,
-    messageSender,
-) {
+        clock,
+        apiProperties,
+        retrieveGssCodeService,
+        retrieveIsHoldEnabledForEroService,
+        messageSender,
+    ) {
     @Transactional(readOnly = true)
     fun getPostalVoteApplications(
         certificateSerialNumber: String,
