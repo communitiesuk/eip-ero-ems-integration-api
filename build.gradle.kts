@@ -76,9 +76,9 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     // internal libs
-    implementation("uk.gov.dluhc:logging-library:3.0.5")
-    implementation("uk.gov.dluhc:messaging-support-library:2.3.3")
-    implementation("uk.gov.dluhc:email-client:1.0.2")
+    implementation("uk.gov.dluhc:logging-library:3.1.0")
+    implementation("uk.gov.dluhc:messaging-support-library:2.4.0")
+    implementation("uk.gov.dluhc:email-client:1.1.0")
 
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -185,8 +185,8 @@ dependencyManagement {
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xannotation-default-target=param-property")
-        jvmTarget = JvmTarget.JVM_17
+        freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
