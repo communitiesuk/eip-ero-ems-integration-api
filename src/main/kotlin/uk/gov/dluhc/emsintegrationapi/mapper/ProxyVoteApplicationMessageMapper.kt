@@ -31,13 +31,11 @@ class ProxyVoteApplicationMessageMapper(
                 englishRejectionNotes = it.proxyVoteDetails.rejectedReasons?.englishReason?.notes,
                 englishRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.englishReason?.reasonList
                     ?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }
-                    ?.toMutableSet()
-                    ?: mutableSetOf(),
+                    ?.toMutableSet(),
                 welshRejectionNotes = it.proxyVoteDetails.rejectedReasons?.welshReason?.notes,
                 welshRejectedReasonItems = it.proxyVoteDetails.rejectedReasons?.welshReason?.reasonList
                     ?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }
-                    ?.toMutableSet()
-                    ?: mutableSetOf(),
+                    ?.toMutableSet(),
             )
         }
 }

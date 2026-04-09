@@ -45,9 +45,9 @@ internal class ProxyVoteMapperTest {
                 proxyMiddleNames = null,
             ),
             englishRejectionNotes = null,
-            englishRejectedReasonItems = mutableSetOf(),
+            englishRejectedReasonItems = null,
             welshRejectionNotes = null,
-            welshRejectedReasonItems = mutableSetOf()
+            welshRejectedReasonItems = null
         )
         val proxyVote = proxyVoteMapper.mapFromEntity(proxyVoteApplication)
         ProxyVoteAssert.assertThat(proxyVote).hasCorrectFieldsFromProxyApplication(proxyVoteApplication)

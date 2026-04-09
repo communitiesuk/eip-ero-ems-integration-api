@@ -10,6 +10,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteApplicationMessage
 import java.time.Instant
+import java.util.Collections.emptySet
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicantDetails as ApplicantDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicationDetails as ApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteDetails as ProxyVoteDetailsMessageDto
@@ -26,9 +27,9 @@ fun buildProxyVoteApplication(
     updatedBy: SourceSystem? = null,
     recordStatus: RecordStatus = RecordStatus.RECEIVED,
     englishRejectionNotes: String? = null,
-    englishRejectedReasonItems: MutableSet<RejectedReasonItem> = mutableSetOf(),
+    englishRejectedReasonItems: MutableSet<RejectedReasonItem>? = emptySet(),
     welshRejectionNotes: String? = null,
-    welshRejectedReasonItems: MutableSet<RejectedReasonItem> = mutableSetOf(),
+    welshRejectedReasonItems: MutableSet<RejectedReasonItem>? = emptySet(),
 ) = ProxyVoteApplication(
     applicationId = applicationId,
     applicationDetails = applicationDetails,

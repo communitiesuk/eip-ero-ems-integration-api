@@ -36,13 +36,11 @@ class PostalVoteApplicationMessageMapper(
                 englishRejectionNotes = it.postalVoteDetails?.rejectedReasons?.englishReason?.notes,
                 englishRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.englishReason?.reasonList
                     ?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }
-                    ?.toMutableSet()
-                    ?: mutableSetOf(),
+                    ?.toMutableSet(),
                 welshRejectionNotes = it.postalVoteDetails?.rejectedReasons?.welshReason?.notes,
                 welshRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.welshReason?.reasonList
                     ?.map { RejectedReasonItemEntity(it.electorReason, it.type, it.includeInComms) }
-                    ?.toMutableSet()
-                    ?: mutableSetOf(),
+                    ?.toMutableSet(),
             )
         }
 }

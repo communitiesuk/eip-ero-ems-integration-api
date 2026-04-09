@@ -81,8 +81,8 @@ internal class PostalVoteApplicationMessageMapperTest {
         val postalVoteApplication: PostalVoteApplication = postalVoteApplicationMessageMapper.mapToEntity(applicationMessage)
         assertThat(postalVoteApplication.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.POSTAL)
         assertThat(postalVoteApplication.englishRejectionNotes).isNull()
-        assertThat(postalVoteApplication.englishRejectedReasonItems).isEmpty()
+        assertThat(postalVoteApplication.englishRejectedReasonItems?.isNotEmpty())
         assertThat(postalVoteApplication.welshRejectionNotes).isNull()
-        assertThat(postalVoteApplication.welshRejectedReasonItems).isEmpty()
+        assertThat(postalVoteApplication.welshRejectedReasonItems).isNull()
     }
 }

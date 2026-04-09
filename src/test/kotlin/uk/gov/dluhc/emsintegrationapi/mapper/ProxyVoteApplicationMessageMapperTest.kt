@@ -58,8 +58,8 @@ internal class ProxyVoteApplicationMessageMapperTest {
         val proxyVoteApplication: ProxyVoteApplication = proxyVoteApplicationMessageMapper.mapToEntity(applicationMessage)
         assertThat(proxyVoteApplication.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.PROXY)
         assertThat(proxyVoteApplication.englishRejectionNotes).isNull()
-        assertThat(proxyVoteApplication.englishRejectedReasonItems).isEmpty()
+        assertThat(proxyVoteApplication.englishRejectedReasonItems?.isNotEmpty())
         assertThat(proxyVoteApplication.welshRejectionNotes).isNull()
-        assertThat(proxyVoteApplication.welshRejectedReasonItems).isEmpty()
+        assertThat(proxyVoteApplication.welshRejectedReasonItems).isNull()
     }
 }
