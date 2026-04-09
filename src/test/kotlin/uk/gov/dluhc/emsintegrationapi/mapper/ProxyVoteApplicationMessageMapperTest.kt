@@ -36,9 +36,9 @@ internal class ProxyVoteApplicationMessageMapperTest {
                 assertThat(it.output.applicantDetails.registeredAddress.createdBy).isEqualTo(SourceSystem.PROXY)
                 assertThat(it.output.proxyVoteDetails.proxyAddress?.createdBy).isEqualTo(SourceSystem.PROXY)
                 assertThat(it.output.englishRejectionNotes).isNotNull()
-                assertThat(it.output.englishRejectedReasonItems.isNotEmpty())
+                assertThat(it.output.englishRejectedReasonItems?.isNotEmpty())
                 assertThat(it.output.welshRejectionNotes).isNotNull()
-                assertThat(it.output.welshRejectedReasonItems.isNotEmpty())
+                assertThat(it.output.welshRejectedReasonItems?.isNotEmpty())
             }
         }
     }

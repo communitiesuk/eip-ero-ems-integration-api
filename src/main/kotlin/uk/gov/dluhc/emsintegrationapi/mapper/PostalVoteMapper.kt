@@ -138,13 +138,13 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
             RejectedReasons(
                 englishReason = RejectedReason(
                     notes = englishRejectionNotes,
-                    reasons = englishRejectedReasonItems.toList().mapNotNull { it.electorReason },
-                    reasonList = englishRejectedReasonItems.toList().map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
+                    reasons = englishRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
+                    reasonList = englishRejectedReasonItems?.toList()?.map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
                 ),
                 welshReason = RejectedReason(
                     notes = welshRejectionNotes,
-                    reasons = welshRejectedReasonItems.toList().mapNotNull { it.electorReason },
-                    reasonList = welshRejectedReasonItems.toList().map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
+                    reasons = welshRejectedReasonItems?.toList()?.mapNotNull { it.electorReason },
+                    reasonList = welshRejectedReasonItems?.toList()?.map { RejectedReasonItem(it.electorReason, it.type, it.includeInComms) }
                 )
             )
         }

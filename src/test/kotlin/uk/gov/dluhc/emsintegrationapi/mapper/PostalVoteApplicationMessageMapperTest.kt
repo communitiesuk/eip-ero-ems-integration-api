@@ -42,9 +42,9 @@ internal class PostalVoteApplicationMessageMapperTest {
                 assertThat(it.output.postalVoteDetails!!.ballotBfpoAddress!!.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.primaryElectorDetails!!.address.createdBy).isEqualTo(SourceSystem.POSTAL)
                 assertThat(it.output.englishRejectionNotes).isNotNull()
-                assertThat(it.output.englishRejectedReasonItems.isNotEmpty())
+                assertThat(it.output.englishRejectedReasonItems?.isNotEmpty())
                 assertThat(it.output.welshRejectionNotes).isNotNull()
-                assertThat(it.output.welshRejectedReasonItems.isNotEmpty())
+                assertThat(it.output.welshRejectedReasonItems?.isNotEmpty())
             }
         }
 

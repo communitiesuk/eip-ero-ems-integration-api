@@ -61,7 +61,7 @@ class ProxyVoteApplication(
         name = "proxy_vote_application_english_rejection_reasons",
         joinColumns = [JoinColumn(name = "application_id")]
     )
-    var englishRejectedReasonItems: MutableSet<RejectedReasonItem> = mutableSetOf(),
+    var englishRejectedReasonItems: MutableSet<RejectedReasonItem>? = mutableSetOf(),
 
     var welshRejectionNotes: String? = null,
 
@@ -70,7 +70,7 @@ class ProxyVoteApplication(
         name = "proxy_vote_application_welsh_rejection_reasons",
         joinColumns = [JoinColumn(name = "application_id")]
     )
-    var welshRejectedReasonItems: MutableSet<RejectedReasonItem> = mutableSetOf(),
+    var welshRejectedReasonItems: MutableSet<RejectedReasonItem>? = mutableSetOf(),
 
     @Version
     var version: Long? = null,
