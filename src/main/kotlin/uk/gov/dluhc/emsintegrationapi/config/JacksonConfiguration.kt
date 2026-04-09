@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -22,15 +22,15 @@ import java.util.TimeZone
 
 @Configuration
 class JacksonConfiguration {
-
     @Bean
     fun objectMapper(): ObjectMapper =
-        JsonMapper.builder()
+        JsonMapper
+            .builder()
             .addModule(JavaTimeModule().addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer))
             .addModule(KotlinModule.Builder().build())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
-            .serializationInclusion(Include.NON_NULL)
+            .defaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL))
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build()
 
@@ -45,14 +45,20 @@ class JacksonConfiguration {
     // information, and this cannot be parsed into an OffsetDateTime. If we receive such a
     // date-time, then we assume that it refers to a London local time.
     object CustomOffsetDateTimeDeserializer : JsonDeserializer<OffsetDateTime>() {
-        override fun deserialize(p: JsonParser, ctxt: DeserializationContext): OffsetDateTime {
-            return try {
+        override fun deserialize(
+            p: JsonParser,
+            ctxt: DeserializationContext,
+        ): OffsetDateTime =
+            try {
                 InstantDeserializer.OFFSET_DATE_TIME.deserialize(p, ctxt)
             } catch (e: InvalidFormatException) {
                 val localDateTime = LocalDateTimeDeserializer.INSTANCE.deserialize(p, ctxt)
-                val offsetMillis = TimeZone.getTimeZone("Europe/London").getOffset(localDateTime.atOffset(ZoneOffset.UTC).toInstant().toEpochMilli())
+                val offsetMillis =
+                    TimeZone
+                        .getTimeZone(
+                            "Europe/London",
+                        ).getOffset(localDateTime.atOffset(ZoneOffset.UTC).toInstant().toEpochMilli())
                 localDateTime.atOffset(ZoneOffset.ofTotalSeconds(offsetMillis / 1000))
             }
-        }
     }
 }
