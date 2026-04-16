@@ -11,6 +11,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import java.time.Instant
+import java.util.Collections.emptySet
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicantDetails as ApplicantDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ApplicationDetails as ApplicationDetailsMessageDto
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteDetails as PostalVoteDetailsMessageDto
@@ -29,9 +30,9 @@ fun buildPostalVoteApplication(
     updatedBy: SourceSystem? = null,
     recordStatus: RecordStatus = RecordStatus.RECEIVED,
     englishRejectionNotes: String? = null,
-    englishRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
+    englishRejectedReasonItems: MutableSet<RejectedReasonItem>? = emptySet(),
     welshRejectionNotes: String? = null,
-    welshRejectedReasonItems: Set<RejectedReasonItem>? = emptySet(),
+    welshRejectedReasonItems: MutableSet<RejectedReasonItem>? = emptySet(),
 ) = PostalVoteApplication(
     applicationId = applicationId,
     applicationDetails = applicationDetails,

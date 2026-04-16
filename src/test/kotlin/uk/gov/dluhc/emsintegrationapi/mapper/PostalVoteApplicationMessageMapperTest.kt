@@ -31,7 +31,6 @@ internal class PostalVoteApplicationMessageMapperTest {
     inner class FromPostalVoteMessageDtoToEntity {
         @Test
         fun `should convert postal vote application message to entity`() {
-
             validateMappedObject(
                 { buildPostalVoteApplicationMessage(primaryElectorDetails = buildPrimaryElectorDetailsMessageDto()) },
                 postalVoteApplicationMessageMapper::mapToEntity,
@@ -51,7 +50,6 @@ internal class PostalVoteApplicationMessageMapperTest {
 
         @Test
         fun `should convert postal vote application message to entity without ballot addresses`() {
-
             val applicationMessage: PostalVoteApplicationMessage =
                 buildPostalVoteApplicationMessage(
                     postalVoteDetails = buildPostalVoteDetailsMessageDto(
@@ -70,7 +68,6 @@ internal class PostalVoteApplicationMessageMapperTest {
 
     @Test
     fun `should convert postal vote application message to entity without rejected english notes and welsh rejected reasons`() {
-
         val applicationMessage: PostalVoteApplicationMessage =
             buildPostalVoteApplicationMessage(
                 postalVoteDetails = buildPostalVoteDetailsMessageDto(

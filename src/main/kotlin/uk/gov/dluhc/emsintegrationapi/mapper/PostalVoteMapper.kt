@@ -33,21 +33,23 @@ class PostalVoteMapper(private val instantMapper: InstantMapper) {
                     postalVoteDetails?.ballotAddress == null &&
                     postalVoteDetails?.ballotBfpoAddress == null &&
                     postalVoteDetails?.ballotOverseasAddress == null
-                )
+                ) {
                     applicantDetails.registeredAddress
-                else
+                } else {
                     postalVoteDetails?.ballotAddress
+                }
 
             val postalProxy =
-                if (isPostalProxyApplication)
+                if (isPostalProxyApplication) {
                     PostalVoteDetailPostalProxy(
                         fn = applicantDetails.firstName,
                         mn = applicantDetails.middleNames,
                         ln = applicantDetails.surname,
                         dob = applicantDetails.dob,
                     )
-                else
+                } else {
                     null
+                }
             PostalVote(
                 detail = PostalVoteDetail(
                     refNum = applicantDetails.referenceNumber,

@@ -28,7 +28,6 @@ internal class ProxyVoteApplicationMessageMapperTest {
     inner class FromProxyVoteMessageDtoToEntity {
         @Test
         fun `should convert a proxy vote application message to entity`() {
-
             validateMappedObject(
                 ::buildProxyVoteApplicationMessageDto,
                 proxyVoteApplicationMessageMapper::mapToEntity,
@@ -46,7 +45,6 @@ internal class ProxyVoteApplicationMessageMapperTest {
 
     @Test
     fun `should convert proxy vote application message to entity without rejected english notes and welsh rejected reasons`() {
-
         val applicationMessage: ProxyVoteApplicationMessage =
             buildProxyVoteApplicationMessageDto(
                 proxyVoteDetails = buildProxyVoteDetailsMessageDto(

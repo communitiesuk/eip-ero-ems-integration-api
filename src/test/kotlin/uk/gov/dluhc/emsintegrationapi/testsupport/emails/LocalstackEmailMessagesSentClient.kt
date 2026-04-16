@@ -16,7 +16,7 @@ private val logger = KotlinLogging.logger {}
  * This class allows access to Localstack's list of sent emails.
  */
 @Component
-class EmailMessagesSentClient(
+class LocalstackEmailMessagesSentClient(
     private val objectMapper: ObjectMapper
 ) {
 

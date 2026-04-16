@@ -63,10 +63,10 @@ class PostalIntegrationTestHelpers(
                     eroIdentifier = ERO_ID_1,
                     name = "Camden City Council",
                     localAuthorities =
-                    listOf(
-                        buildIerLocalAuthorityDetails(gssCode = ERO_ID_1_GSS_CODE_1),
-                        buildIerLocalAuthorityDetails(gssCode = ERO_ID_1_GSS_CODE_2),
-                    ),
+                        listOf(
+                            buildIerLocalAuthorityDetails(gssCode = ERO_ID_1_GSS_CODE_1),
+                            buildIerLocalAuthorityDetails(gssCode = ERO_ID_1_GSS_CODE_2),
+                        ),
                     activeClientCertificateSerials = listOf(ERO_ID_1_CERTIFICATE_SERIAL),
                 ),
             ),
@@ -161,12 +161,12 @@ class PostalIntegrationTestHelpers(
                 buildPostalVoteApplication(
                     recordStatus = RecordStatus.valueOf(recordStatus),
                     applicationDetails =
-                    buildApplicationDetailsEntity(
-                        gssCode = DataFaker.faker.options().option(*gssCodes),
-                        signatureBase64 = signatureBase64,
-                        signatureWaived = signatureWaived,
-                        signatureWaivedReason = signatureWaiverReason,
-                    ),
+                        buildApplicationDetailsEntity(
+                            gssCode = DataFaker.faker.options().option(*gssCodes),
+                            signatureBase64 = signatureBase64,
+                            signatureWaived = signatureWaived,
+                            signatureWaivedReason = signatureWaiverReason,
+                        ),
                 )
             }
         // Let us create a map out of it so it will be easy for the validation
@@ -180,14 +180,14 @@ class PostalIntegrationTestHelpers(
     ): PostalVoteApplicationMessage =
         buildPostalVoteApplicationMessage(
             applicationDetails =
-            buildApplicationDetailsMessageDto(
-                applicationStatus =
-                ApplicationDetails.ApplicationStatus.valueOf(
-                    applicationStatus,
+                buildApplicationDetailsMessageDto(
+                    applicationStatus =
+                        ApplicationDetails.ApplicationStatus.valueOf(
+                            applicationStatus,
+                        ),
+                    applicationId = applicationId,
+                    signatureBase64 = SIGNATURE_BASE64_STRING,
                 ),
-                applicationId = applicationId,
-                signatureBase64 = SIGNATURE_BASE64_STRING,
-            ),
             applicantDetails = buildApplicantDetailsMessageDto(emsElectorId = emsElectorId),
         )
 
@@ -196,9 +196,9 @@ class PostalIntegrationTestHelpers(
         emsElectorId: String,
     ) = buildPostalVoteApplicationMessage(
         applicationDetails =
-        buildApplicationDetailsMessageDto(
-            applicationId = applicationId,
-        ),
+            buildApplicationDetailsMessageDto(
+                applicationId = applicationId,
+            ),
         applicantDetails = buildApplicantDetailsMessageDto(emsElectorId = emsElectorId),
     )
 

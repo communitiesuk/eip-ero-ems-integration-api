@@ -27,8 +27,11 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
         attachSerialNumber: Boolean = true,
         serialNumber: String = DEFAULT_SERIAL_NUMBER,
     ): WebTestClient.ResponseSpec {
-        val requestHeadersSpec = if (attachSerialNumber) withSerialNumber(webClient.get().uri(uri), serialNumber)
-        else webClient.get().uri(uri)
+        val requestHeadersSpec = if (attachSerialNumber) {
+            withSerialNumber(webClient.get().uri(uri), serialNumber)
+        } else {
+            webClient.get().uri(uri)
+        }
         return requestHeadersSpec
             .exchange()
     }
@@ -49,8 +52,11 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
         serialNumber: String = DEFAULT_SERIAL_NUMBER
     ): WebTestClient.ResponseSpec {
         val emsURI = webClient.delete().uri(uri)
-        val requestHeadersSpec = if (attachSerialNumber) withSerialNumber(emsURI, serialNumber)
-        else emsURI
+        val requestHeadersSpec = if (attachSerialNumber) {
+            withSerialNumber(emsURI, serialNumber)
+        } else {
+            emsURI
+        }
         return requestHeadersSpec
             .exchange()
     }
@@ -62,8 +68,11 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
         request: EMSApplicationResponse = EMSApplicationResponse()
     ): WebTestClient.ResponseSpec {
         val emsURI = webClient.post().uri(uri).contentType(MediaType.APPLICATION_JSON).bodyValue(request)
-        val requestHeadersSpec = if (attachSerialNumber) withSerialNumber(emsURI, serialNumber)
-        else emsURI
+        val requestHeadersSpec = if (attachSerialNumber) {
+            withSerialNumber(emsURI, serialNumber)
+        } else {
+            emsURI
+        }
         return requestHeadersSpec.exchange()
     }
 
@@ -74,8 +83,11 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
         request: EMSApplicationResponse = EMSApplicationResponse()
     ): WebTestClient.ResponseSpec {
         val emsURI = webClient.put().uri(uri).contentType(MediaType.APPLICATION_JSON).bodyValue(request)
-        val requestHeadersSpec = if (attachSerialNumber) withSerialNumber(emsURI, serialNumber)
-        else emsURI
+        val requestHeadersSpec = if (attachSerialNumber) {
+            withSerialNumber(emsURI, serialNumber)
+        } else {
+            emsURI
+        }
         return requestHeadersSpec.exchange()
     }
 

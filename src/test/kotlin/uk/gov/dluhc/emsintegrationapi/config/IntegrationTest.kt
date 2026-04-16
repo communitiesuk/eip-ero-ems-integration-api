@@ -18,7 +18,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepositor
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckResultDataRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
-import uk.gov.dluhc.emsintegrationapi.testsupport.emails.EmailMessagesSentClient
+import uk.gov.dluhc.emsintegrationapi.testsupport.emails.LocalstackEmailMessagesSentClient
 import uk.gov.dluhc.emsintegrationapi.testsupport.getBearerToken
 import java.time.Duration
 import javax.sql.DataSource
@@ -41,7 +41,7 @@ internal abstract class IntegrationTest {
     protected lateinit var wireMockService: WiremockService
 
     @Autowired
-    protected lateinit var emailMessagesSentClient: EmailMessagesSentClient
+    protected lateinit var emailMessagesSentClient: LocalstackEmailMessagesSentClient
 
     @Autowired
     protected lateinit var registerCheckRepository: RegisterCheckRepository

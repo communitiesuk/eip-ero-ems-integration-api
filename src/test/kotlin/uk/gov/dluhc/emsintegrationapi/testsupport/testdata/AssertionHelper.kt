@@ -21,6 +21,7 @@ fun <T, R> validateMappedValue(inputObject: T, mapperFunction: (T) -> R, expecte
 }
 
 data class TestResult<T, R>(val input: T, val output: R)
+
 /**
  * a function validates the object returned by the mapper function
  * @param buildInputFunction: a function creates the input object T
@@ -33,7 +34,9 @@ fun <T, R> validateMappedObject(
     buildInputFunction: () -> T,
     mapperFunction: (T) -> R,
     vararg fieldNamesToIgnore: String?,
-    verifications: (TestResult<T, R>) -> Unit = fun(testResult: TestResult<T, R>) { assertThat(testResult.output).isNotNull }
+    verifications: (TestResult<T, R>) -> Unit = fun(testResult: TestResult<T, R>) {
+        assertThat(testResult.output).isNotNull
+    }
 ): TestResult<T, R> {
     val inputObject = buildInputFunction()
     val mappedObject = mapperFunction(inputObject)

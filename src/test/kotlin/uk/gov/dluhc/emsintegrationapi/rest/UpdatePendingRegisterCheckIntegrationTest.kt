@@ -662,9 +662,9 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
                     gssCode = gssCode,
                     status = CheckStatus.PENDING,
                     personalDetail =
-                    buildPersonalDetail(
-                        address = buildAddress(postcode = applicationPostcode),
-                    ),
+                        buildPersonalDetail(
+                            address = buildAddress(postcode = applicationPostcode),
+                        ),
                     historicalSearchEarliestDate = null,
                 ),
             )
