@@ -29,6 +29,12 @@ extra["springCloudVersion"] = "3.2.1"
 extra["springCloudAwsVersion"] = "3.2.1"
 extra["junitJupiterVersion"] = "5.10.5"
 
+// Forcing 4.1.133 version of netty to patch vulnerabilities, under EROPSPT-710.
+// When we upgrade to spring v4 we should check if spring pulls in newer versions of netty.
+// If so, this override should be removed.
+// TODO EROPSPT-603
+extra["netty.version"] = "4.1.133.Final"
+
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
 }
@@ -119,8 +125,6 @@ dependencies {
     implementation(platform("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudAwsVersion")}"))
     implementation("io.awspring.cloud:spring-cloud-aws-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
-    implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
-    implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
 
     implementation("io.github.acm19:aws-request-signing-apache-interceptor:3.0.0")
     implementation("org.apache.httpcomponents.client5:httpclient5")
