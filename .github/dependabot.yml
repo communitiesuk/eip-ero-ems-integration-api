@@ -7,6 +7,8 @@ updates:
       interval: "daily"
     assignees:
       - "aleyipsoftwire"
+    cooldown:
+      default-days: 7
     # Only create PRs for direct dependencies
     allow:
       - dependency-type: "direct"
@@ -39,6 +41,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 7
     assignees:
       - "aleyipsoftwire"
     groups:
