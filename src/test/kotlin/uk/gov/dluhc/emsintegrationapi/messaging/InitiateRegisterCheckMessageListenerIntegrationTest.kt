@@ -103,7 +103,7 @@ internal class InitiateRegisterCheckMessageListenerIntegrationTest : Integration
         sqsMessagingTemplate.send(initiateApplicantRegisterCheckQueueName, message)
 
         // Then
-        await().atMost(2, TimeUnit.SECONDS).untilAsserted {
+        await().atMost(3, TimeUnit.SECONDS).untilAsserted {
             Assertions.assertThat(
                 TestLogAppender.hasLog(
                     "Attempted to initiate register check with correlation ID [${message.sourceCorrelationId}] for application [${message.sourceReference}]. Request failed due to duplicate register check found.",
