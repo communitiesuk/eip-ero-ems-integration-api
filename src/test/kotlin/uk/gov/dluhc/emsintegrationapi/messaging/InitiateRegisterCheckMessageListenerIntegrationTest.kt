@@ -104,10 +104,12 @@ internal class InitiateRegisterCheckMessageListenerIntegrationTest : Integration
 
         // Then
         await().atMost(2, TimeUnit.SECONDS).untilAsserted {
-            Assertions.assertThat(TestLogAppender.hasLog(
-                "Attempted to initiate register check with correlation ID [${message.sourceCorrelationId}] for application [${message.sourceReference}]. Request failed due to duplicate register check found.",
-                Level.WARN,
-            )).isTrue()
+            Assertions.assertThat(
+                TestLogAppender.hasLog(
+                    "Attempted to initiate register check with correlation ID [${message.sourceCorrelationId}] for application [${message.sourceReference}]. Request failed due to duplicate register check found.",
+                    Level.WARN,
+                )
+            ).isTrue()
         }
     }
 
