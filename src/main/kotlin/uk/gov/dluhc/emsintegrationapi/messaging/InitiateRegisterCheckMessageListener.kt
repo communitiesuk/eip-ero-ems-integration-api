@@ -36,9 +36,10 @@ class InitiateRegisterCheckMessageListener(
             try {
                 registerCheckService.save(pendingRegisterCheckDto)
             } catch (ex: DataIntegrityViolationException) {
-                if (ex.message?.contains("register_check.register_check_app_correlation_id_unique_idx") == true) {
+                val registerCheck = registerCheckService.getRegisterCheckOrNull(pendingRegisterCheckDto.sourceCorrelationId)
+                if (registerCheck !== null) {
                     logger.warn(
-                        "Attempted to initiate register check with correlation ID [${pendingRegisterCheckDto.sourceCorrelationId}] for application [${pendingRegisterCheckDto.sourceReference}]. Request failed due to duplicate register check found."
+                        "Attempted to initiate register check with source correlation ID [${pendingRegisterCheckDto.sourceCorrelationId}] for application [${pendingRegisterCheckDto.sourceReference}]. Request failed due to duplicate register check found."
                     )
 
                     return

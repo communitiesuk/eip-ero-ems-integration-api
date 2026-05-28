@@ -90,6 +90,11 @@ class RegisterCheckService(
         }
     }
 
+    @Transactional
+    fun getRegisterCheckOrNull(
+        sourceCorrelationId: UUID,
+    ): RegisterCheck? = registerCheckRepository.findBySourceCorrelationId(sourceCorrelationId)
+
     fun sendConfirmRegisterCheckResultMessage(registerCheck: RegisterCheck) {
         with(registerCheckResultMessageMapper.fromRegisterCheckEntityToRegisterCheckResultMessage(registerCheck)) {
             logger.info {

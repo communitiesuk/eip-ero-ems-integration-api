@@ -20,6 +20,8 @@ interface RegisterCheckRepository :
 
     fun findBySourceReference(sourceReference: String): List<RegisterCheck>
 
+    fun findBySourceCorrelationId(sourceCorrelationId: UUID): RegisterCheck?
+
     @Query(
         """
         SELECT 
