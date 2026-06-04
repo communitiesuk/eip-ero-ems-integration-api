@@ -29,8 +29,8 @@ class InitiateRegisterCheckMessageListener(
         with(payload) {
             logger.info {
                 "New InitiateRegisterCheckMessage received with " +
-                        "sourceReference: $sourceReference and " +
-                        "sourceCorrelationId: $sourceCorrelationId"
+                    "sourceReference: $sourceReference and " +
+                    "sourceCorrelationId: $sourceCorrelationId"
             }
 
             val pendingRegisterCheckDto = mapper.initiateCheckMessageToPendingRegisterCheckDto(this)
