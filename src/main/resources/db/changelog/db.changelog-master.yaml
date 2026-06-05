@@ -85,3 +85,5 @@ databaseChangeLog:
       file: /db/changelog/create/0041_EROPSPT-566_add_application_reference_to_vote_application_tables.xml
   - include:
       file: /db/changelog/create/0042_EROPSPT-717_retention_status_nullable.xml
+  - include:
+      file: /db/changelog/create/0043_EROPSPT-717_remove_unused_columns_from_postal_and_proxy.xml
