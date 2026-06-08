@@ -5,7 +5,15 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
-    <changeSet author="alex.yip@softwire.com" id="0043_EROPSPT-717_remove_unused_columns_from_postal_and_proxy" context="ddl">
+    <changeSet author="alex.yip@softwire.com" id="0043_EROPSPT-717_remove_unused_columns_from_postal_and_proxy"
+               context="ddl">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="postal_vote_application" columnName="retention_status"/>
+            <columnExists tableName="postal_vote_application" columnName="removal_date_time"/>
+            <columnExists tableName="proxy_vote_application" columnName="retention_status"/>
+            <columnExists tableName="proxy_vote_application" columnName="removal_date_time"/>
+        </preConditions>
+
         <dropColumn tableName="postal_vote_application" columnName="retention_status"/>
         <dropColumn tableName="postal_vote_application" columnName="removal_date_time"/>
 
