@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="alex.yip@softwire.com" id="0043_EROPSPT-717_remove_unused_columns_from_postal_and_proxy"
+               context="ddl">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="postal_vote_application" columnName="retention_status"/>
+            <columnExists tableName="postal_vote_application" columnName="removal_date_time"/>
+            <columnExists tableName="proxy_vote_application" columnName="retention_status"/>
+            <columnExists tableName="proxy_vote_application" columnName="removal_date_time"/>
+        </preConditions>
+
+        <dropColumn tableName="postal_vote_application" columnName="retention_status"/>
+        <dropColumn tableName="postal_vote_application" columnName="removal_date_time"/>
+
+        <dropColumn tableName="proxy_vote_application" columnName="retention_status"/>
+        <dropColumn tableName="proxy_vote_application" columnName="removal_date_time"/>
+
+        <rollback>
+            <addColumn tableName="postal_vote_application">
+                <column name="retention_status" type="varchar(20)"/>
+            </addColumn>
+            <addColumn tableName="postal_vote_application">
+                <column name="removal_date_time" type="timestamp"/>
+            </addColumn>
+
+            <addColumn tableName="proxy_vote_application">
+                <column name="retention_status" type="varchar(20)"/>
+            </addColumn>
+            <addColumn tableName="proxy_vote_application">
+                <column name="removal_date_time" type="timestamp"/>
+            </addColumn>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
