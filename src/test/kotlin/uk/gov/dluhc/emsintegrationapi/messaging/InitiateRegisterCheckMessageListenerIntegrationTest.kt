@@ -1,5 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.messaging
 
+import ch.qos.logback.classic.Level
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Root
@@ -13,6 +14,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.Address
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
+import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.entity.RegisterCheckAssert
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildInitiateRegisterCheckMessage
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
@@ -77,6 +79,37 @@ internal class InitiateRegisterCheckMessageListenerIntegrationTest : Integration
 
             stopWatch.stop()
             logger.info("completed assertions in $stopWatch")
+        }
+    }
+
+    @Test
+    fun `should ignore duplicate register check message`() {
+        // Given
+        val message = buildInitiateRegisterCheckMessage()
+
+        // When
+        sqsMessagingTemplate.send(initiateApplicantRegisterCheckQueueName, message)
+
+        val stopWatch = StopWatch.createStarted()
+        await().atMost(5, TimeUnit.SECONDS).untilAsserted {
+            val actualRegisterCheckJpaEntity = getActualRegisterCheckJpaEntity(message)
+            Assertions.assertThat(actualRegisterCheckJpaEntity).hasSize(1)
+
+            Assertions.assertThat(actualRegisterCheckJpaEntity.first().sourceCorrelationId).isEqualTo(message.sourceCorrelationId)
+            stopWatch.stop()
+            logger.info("completed assertions in $stopWatch")
+        }
+
+        sqsMessagingTemplate.send(initiateApplicantRegisterCheckQueueName, message)
+
+        // Then
+        await().atMost(3, TimeUnit.SECONDS).untilAsserted {
+            Assertions.assertThat(
+                TestLogAppender.hasLog(
+                    "Attempted to initiate register check with source correlation ID [${message.sourceCorrelationId}] for application [${message.sourceReference}]. Request failed due to duplicate register check found.",
+                    Level.WARN,
+                )
+            ).isTrue()
         }
     }
 

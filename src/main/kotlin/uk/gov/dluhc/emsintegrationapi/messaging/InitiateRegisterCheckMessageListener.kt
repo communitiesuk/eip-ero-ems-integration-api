@@ -3,8 +3,10 @@ package uk.gov.dluhc.emsintegrationapi.messaging
 import io.awspring.cloud.sqs.annotation.SqsListener
 import jakarta.validation.Valid
 import mu.KotlinLogging
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
+import uk.gov.dluhc.emsintegrationapi.exception.RegisterCheckSaveDataIntegrityException
 import uk.gov.dluhc.emsintegrationapi.messaging.mapper.InitiateRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.service.RegisterCheckService
 import uk.gov.dluhc.messagingsupport.MessageListener
@@ -32,7 +34,21 @@ class InitiateRegisterCheckMessageListener(
             }
 
             val pendingRegisterCheckDto = mapper.initiateCheckMessageToPendingRegisterCheckDto(this)
-            registerCheckService.save(pendingRegisterCheckDto)
+            try {
+                registerCheckService.save(pendingRegisterCheckDto)
+            } catch (ex: DataIntegrityViolationException) {
+                val registerCheck =
+                    registerCheckService.getRegisterCheckOrNull(pendingRegisterCheckDto.sourceCorrelationId)
+                if (registerCheck !== null) {
+                    logger.warn(
+                        "Attempted to initiate register check with source correlation ID [${pendingRegisterCheckDto.sourceCorrelationId}] for application [${pendingRegisterCheckDto.sourceReference}]. Request failed due to duplicate register check found."
+                    )
+
+                    return
+                }
+
+                throw RegisterCheckSaveDataIntegrityException(pendingRegisterCheckDto.sourceCorrelationId).initCause(ex)
+            }
         }
     }
 }

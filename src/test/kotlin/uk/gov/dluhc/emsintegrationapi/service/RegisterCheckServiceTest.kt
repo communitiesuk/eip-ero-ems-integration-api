@@ -108,6 +108,20 @@ internal class RegisterCheckServiceTest {
     }
 
     @Nested
+    inner class GetRegisterCheckOrNull {
+        @Test
+        fun `should get register check ID if one exists with matching source correlation id`() {
+            // Given
+            val uuid = randomUUID()
+            // When
+            registerCheckService.getRegisterCheckOrNull(uuid)
+
+            // Then
+            verify(registerCheckRepository).findBySourceCorrelationId(uuid)
+        }
+    }
+
+    @Nested
     inner class GetPendingRegisterChecks {
 
         @Test
