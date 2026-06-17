@@ -7,7 +7,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplicationPrima
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem
-import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import java.time.Instant
@@ -23,8 +22,6 @@ fun buildPostalVoteApplication(
     applicantDetails: ApplicantDetails = buildApplicantDetailsEntity(),
     postalVoteDetails: PostalVoteDetails? = buildPostalVoteDetailsEntity(),
     primaryElectorDetails: PostalVoteApplicationPrimaryElectorDetails? = null,
-    removalDateTime: Instant? = null,
-    retentionStatus: RetentionStatus = RetentionStatus.RETAIN,
     createdBy: SourceSystem = SourceSystem.POSTAL,
     dateUpdated: Instant? = null,
     updatedBy: SourceSystem? = null,
@@ -39,8 +36,6 @@ fun buildPostalVoteApplication(
     applicantDetails = applicantDetails,
     postalVoteDetails = postalVoteDetails,
     primaryElectorDetails = primaryElectorDetails,
-    removalDateTime = removalDateTime,
-    retentionStatus = retentionStatus,
     createdBy = createdBy,
     dateUpdated = dateUpdated,
     updatedBy = updatedBy,

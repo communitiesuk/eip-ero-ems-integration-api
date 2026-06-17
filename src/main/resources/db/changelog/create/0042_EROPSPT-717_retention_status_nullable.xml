@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="alex.yip@softwire.com" id="0042_EROPSPT-717_retention_status_nullable" context="ddl">
+        <modifyDataType tableName="postal_vote_application" columnName="retention_status" newDataType="varchar(20)"/>
+        <modifyDataType tableName="proxy_vote_application" columnName="retention_status" newDataType="varchar(20)"/>
+
+        <rollback>
+            <modifyDataType tableName="postal_vote_application" columnName="retention_status"
+                            newDataType="varchar(20) NOT NULL"/>
+            <modifyDataType tableName="proxy_vote_application" columnName="retention_status"
+                            newDataType="varchar(20) NOT NULL"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
