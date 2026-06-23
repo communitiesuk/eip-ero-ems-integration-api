@@ -1,21 +1,19 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.messaging.converter.MappingJackson2MessageConverter
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.cfg.DateTimeFeature
+import tools.jackson.databind.exc.InvalidFormatException
+import tools.jackson.databind.ext.javatime.deser.InstantDeserializer
+import tools.jackson.databind.ext.javatime.deser.LocalDateTimeDeserializer
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.databind.module.SimpleModule
+import tools.jackson.module.kotlin.KotlinModule
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.TimeZone
@@ -23,28 +21,21 @@ import java.util.TimeZone
 @Configuration
 class JacksonConfiguration {
     @Bean
-    fun objectMapper(): ObjectMapper =
+    fun jsonMapper(): JsonMapper =
         JsonMapper
             .builder()
-            .addModule(JavaTimeModule().addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer))
+            .addModule(SimpleModule().addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer))
             .addModule(KotlinModule.Builder().build())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
-            .defaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL))
+            .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .disable(DateTimeFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
+            .changeDefaultPropertyInclusion({ incl -> JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL) })
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build()
-
-    @Bean
-    fun jacksonMessageConverter(objectMapper: ObjectMapper): MappingJackson2MessageConverter =
-        MappingJackson2MessageConverter().apply {
-            this.serializedPayloadClass = String::class.java
-            this.objectMapper = objectMapper
-        }
 
     // EROPSPT-190: IDOX were sending applicationCreatedAt as a local time, without timezone
     // information, and this cannot be parsed into an OffsetDateTime. If we receive such a
     // date-time, then we assume that it refers to a London local time.
-    object CustomOffsetDateTimeDeserializer : JsonDeserializer<OffsetDateTime>() {
+    object CustomOffsetDateTimeDeserializer : ValueDeserializer<OffsetDateTime>() {
         override fun deserialize(
             p: JsonParser,
             ctxt: DeserializationContext,

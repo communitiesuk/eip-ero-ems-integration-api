@@ -7,8 +7,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import java.lang.ProcessBuilder.Redirect
 
 plugins {
-    id("org.springframework.boot") version "3.5.15"
-    id("io.spring.dependency-management") version "1.1.3"
+    id("org.springframework.boot") version "4.1.0"
+    id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.3.21"
     kotlin("kapt") version "2.3.21"
     kotlin("plugin.spring") version "2.3.21"
@@ -22,19 +22,16 @@ plugins {
 
 group = "uk.gov.dluhc"
 version = "latest"
-java.sourceCompatibility = JavaVersion.VERSION_17
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 
 extra["awsSdkVersion"] = "2.26.20"
-extra["springCloudVersion"] = "3.2.1"
-extra["springCloudAwsVersion"] = "3.2.1"
+extra["springCloudAwsVersion"] = "4.0.2"
 extra["junitJupiterVersion"] = "5.10.5"
-
-// Forcing 4.1.135 version of netty and 10.1.55 version of tomcat to patch vulnerabilities, under EROPSPT-710.
-// When we upgrade to spring v4 we should check if spring pulls in newer versions of netty and tomcat.
-// If so, this override should be removed.
-// TODO EROPSPT-603
-extra["netty.version"] = "4.1.135.Final"
-extra["tomcat.version"] = "10.1.55"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -75,8 +72,8 @@ dependencies {
     // framework
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("tools.jackson.module:jackson-module-kotlin")
+    implementation("tools.jackson.core:jackson-databind")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("org.apache.commons:commons-lang3:3.18.0")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
@@ -84,7 +81,7 @@ dependencies {
 
     // internal libs
     implementation("uk.gov.dluhc:logging-library:3.1.0")
-    implementation("uk.gov.dluhc:messaging-support-library:2.4.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.0.0")
     implementation("uk.gov.dluhc:email-client:1.1.0")
 
     // api
@@ -95,6 +92,7 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-restclient")
 
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
@@ -144,6 +142,7 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("net.datafaker:datafaker:1.7.0")
     testImplementation("org.springframework.security:spring-security-test")
+    implementation("org.springframework.boot:spring-boot-starter-restclient-test")
 
     testImplementation("org.testcontainers:junit-jupiter:1.19.8")
     testImplementation("org.testcontainers:testcontainers:1.19.8")
@@ -182,7 +181,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudVersion")}")
+        mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudAwsVersion")}")
         mavenBom("software.amazon.awssdk:bom:${property("awsSdkVersion")}")
         mavenBom("org.junit:junit-bom:${property("junitJupiterVersion")}")
     }
