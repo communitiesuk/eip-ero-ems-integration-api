@@ -67,7 +67,7 @@ class RegisterCheckAssert(private val actualJpaEntity: RegisterCheck?) :
             .isAfter(earliestInstant)
 
         Assertions.assertThat(actual!!)
-            .extracting { it.updatedAt!! }
+            .extracting { it.updatedAt }
             .asInstanceOf(InstanceOfAssertFactories.INSTANT)
             .isAfter(earliestInstant)
     }

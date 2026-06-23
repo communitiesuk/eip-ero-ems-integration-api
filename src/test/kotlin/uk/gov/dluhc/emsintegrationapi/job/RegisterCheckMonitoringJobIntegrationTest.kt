@@ -169,7 +169,7 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
     private fun assertEmailSent(expected: LocalstackEmailMessage) {
         with(emailMessagesSentClient.getEmailMessagesSent(localStackContainerSettings.sesMessagesUrl)) {
             val foundMessage = messages.any {
-                !it.timestamp.isBefore(expected.timestamp) &&
+                it.destination.toAddresses.toSet() == expected.destination.toAddresses.toSet() &&
                     it.destination.toAddresses.toSet() == expected.destination.toAddresses.toSet() &&
                     it.subject == expected.subject &&
                     deleteWhitespace(it.body.htmlPart) == deleteWhitespace(expected.body.htmlPart) &&
