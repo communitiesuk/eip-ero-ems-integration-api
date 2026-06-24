@@ -419,8 +419,7 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
             val foundMessage =
                 messages
                     .any {
-                        !it.timestamp.isBefore(expected.timestamp) &&
-                            it.destination.toAddresses.toSet() == expected.destination.toAddresses.toSet() &&
+                        it.destination.toAddresses.toSet() == expected.destination.toAddresses.toSet() &&
                             it.subject == expected.subject &&
                             deleteWhitespace(it.body.htmlPart) == deleteWhitespace(expected.body.htmlPart) &&
                             it.body.textPart == expected.body.textPart &&

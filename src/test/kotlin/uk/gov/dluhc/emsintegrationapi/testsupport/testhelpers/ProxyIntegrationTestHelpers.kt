@@ -300,7 +300,7 @@ class ProxyIntegrationTestHelpers(
             .isEqualTo(SIGNATURE_BASE64_STRING)
     }
 
-    private fun <T> saveRecords(
+    private fun <T : Any> saveRecords(
         repository: CrudRepository<T, *>,
         numberOfRecords: Int,
         buildFunction: () -> T,

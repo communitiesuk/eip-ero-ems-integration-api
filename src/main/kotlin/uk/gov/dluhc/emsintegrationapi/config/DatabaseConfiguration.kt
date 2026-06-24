@@ -4,8 +4,8 @@ import com.zaxxer.hikari.HikariDataSource
 import jakarta.persistence.EntityManagerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
+import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -38,7 +38,11 @@ class DatabaseConfiguration(
 
     @Bean
     @Qualifier("readWriteDataSource")
-    fun readWriteDataSource(): HikariDataSource = createDataSource(dataSourceProperties.url) as HikariDataSource
+    fun readWriteDataSource(): HikariDataSource = createDataSource(
+        requireNotNull(dataSourceProperties.url) {
+            "Database URL must be configured via spring.datasource.url property"
+        }
+    ) as HikariDataSource
 
     @Bean
     @Qualifier("readOnlyDataSource")

@@ -31,7 +31,7 @@ java {
 
 extra["awsSdkVersion"] = "2.26.20"
 extra["springCloudAwsVersion"] = "4.0.2"
-extra["junitJupiterVersion"] = "5.10.5"
+extra["junitJupiterVersion"] = "6.0.3"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -105,7 +105,7 @@ dependencies {
     // jpa/liquibase
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.liquibase:liquibase-core")
+    implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.apache.commons:commons-text:1.12.0")
     implementation("org.hibernate.orm:hibernate-envers")
 
@@ -142,19 +142,17 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("net.datafaker:datafaker:1.7.0")
     testImplementation("org.springframework.security:spring-security-test")
-    implementation("org.springframework.boot:spring-boot-starter-restclient-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-restclient-test")
+    testImplementation("org.springframework.boot:spring-boot-data-jpa-test")
+    testImplementation("org.springframework.boot:spring-boot-webtestclient")
 
-    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
-    testImplementation("org.testcontainers:testcontainers:1.19.8")
-    testImplementation("org.testcontainers:mysql:1.19.8")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
+    testImplementation("org.testcontainers:testcontainers:1.21.4")
+    testImplementation("org.testcontainers:mysql:1.21.4")
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 
-    testImplementation("org.testcontainers:junit-jupiter:1.17.6")
-    testImplementation("org.testcontainers:testcontainers:1.17.6")
-    testImplementation("org.testcontainers:mysql:1.17.6")
-
-    testImplementation("org.wiremock:wiremock-jetty12:3.9.2")
+    testImplementation("org.wiremock.integrations:wiremock-spring-boot-standalone:4.2.1")
     testImplementation("net.datafaker:datafaker:1.6.0")
 
     // caching

@@ -27,12 +27,12 @@ class RegisterCheckerHeaderAuthenticationFilter(
 
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
-        servletRequest: ServletRequest?,
-        servletResponse: ServletResponse?,
-        filterChain: FilterChain?
+        servletRequest: ServletRequest,
+        servletResponse: ServletResponse,
+        filterChain: FilterChain
     ) {
-        val requestHeaderValue = super.getPreAuthenticatedPrincipal(servletRequest as HttpServletRequest?) as String?
-        val currentRequestUri = servletRequest?.requestURI
+        val requestHeaderValue = super.getPreAuthenticatedPrincipal(servletRequest as HttpServletRequest) as String?
+        val currentRequestUri = servletRequest.requestURI
         val bypassAuthentication = bypassRequestHeaderAuthenticationUrls.any { currentRequestUri?.contains(it) ?: false }
 
         if (bypassAuthentication) {
@@ -46,6 +46,6 @@ class RegisterCheckerHeaderAuthenticationFilter(
                 SecurityContextHolder.getContext().authentication = authToken
             }
         }
-        filterChain?.doFilter(servletRequest, servletResponse)
+        filterChain.doFilter(servletRequest, servletResponse)
     }
 }
