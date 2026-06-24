@@ -55,6 +55,10 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
             proxyRepository = proxyVoteApplicationRepository,
             registerCheckResultDataRepository = registerCheckResultDataRepository
         )
+        // Configure larger buffer for large JSON responses - 512KB
+        webClient = webClient.mutate()
+            .codecs { it.defaultCodecs().maxInMemorySize(512 * 1024) }
+            .build()
         apiClient = ApiClient(webClient, apiProperties)
         fixtures =
             ProxyIntegrationTestHelpers(
