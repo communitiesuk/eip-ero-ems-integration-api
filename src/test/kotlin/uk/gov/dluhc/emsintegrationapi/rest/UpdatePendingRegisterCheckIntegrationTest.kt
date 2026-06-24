@@ -616,7 +616,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         val actualRegisterResultData = registerCheckResultDataRepository.findByCorrelationIdIn(setOf(requestId))[0]
         assertRequestIsAudited(actualRegisterResultData, requestId, matchResultSentAt.toString(), gssCode, matchCount)
         val persistedRequest =
-            objectMapper.readValue(actualRegisterResultData.requestBody, RegisterCheckResultRequest::class.java)
+            jsonMapper.readValue(actualRegisterResultData.requestBody, RegisterCheckResultRequest::class.java)
         assertThat(persistedRequest)
             .usingRecursiveComparison()
             .ignoringFields("registerCheckMatches.applicationCreatedAt")
@@ -1022,7 +1022,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
                 val sqsMessages: List<Message> = getLatestSqsMessagesFromQueue(queueUrl)
                 assertThat(sqsMessages).noneMatch {
                     val actualRegisterCheckResultMessage =
-                        objectMapper.readValue(
+                        jsonMapper.readValue(
                             it.body(),
                             RegisterCheckResultMessage::class.java,
                         )
@@ -1054,7 +1054,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         expectedMessage: RegisterCheckResultMessage,
     ): Boolean {
         val actualRegisterCheckResultMessage =
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 actualMessage.body(),
                 RegisterCheckResultMessage::class.java,
             )
@@ -1091,7 +1091,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
         assertThat(actualRegisterResultData.correlationId).isNotNull
         assertThat(actualRegisterResultData.dateCreated).isNotNull
         val persistedRequest =
-            objectMapper.readValue(actualRegisterResultData.requestBody, RegisterCheckResultRequest::class.java)
+            jsonMapper.readValue(actualRegisterResultData.requestBody, RegisterCheckResultRequest::class.java)
         assertThat(persistedRequest.requestid).isEqualTo(expectedRequestId)
         assertThat(persistedRequest.createdAt).isEqualTo(expectedCreatedAt)
         assertThat(persistedRequest.gssCode).isEqualTo(expectedGssCode)

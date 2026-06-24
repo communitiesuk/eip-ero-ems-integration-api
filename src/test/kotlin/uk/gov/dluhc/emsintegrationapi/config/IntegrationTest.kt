@@ -1,19 +1,19 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.zaxxer.hikari.HikariDataSource
 import io.awspring.cloud.sqs.operations.SqsTemplate
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.cache.CacheManager
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckResultDataRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
@@ -59,7 +59,7 @@ internal abstract class IntegrationTest {
     protected lateinit var sqsMessagingTemplate: SqsTemplate
 
     @Autowired
-    protected lateinit var objectMapper: ObjectMapper
+    protected lateinit var jsonMapper: JsonMapper
 
     @Autowired
     protected lateinit var cacheManager: CacheManager

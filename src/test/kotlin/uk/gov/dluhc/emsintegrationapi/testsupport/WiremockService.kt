@@ -1,6 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder.responseDefinition
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -14,6 +13,7 @@ import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.dluhc.emsintegrationapi.config.CORRELATION_ID_HEADER
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.TEST_CERTIFICATE_SERIAL_NUMBER
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.TEST_ERO_ID
@@ -32,7 +32,7 @@ class WiremockService(
     private val wireMockServer: WireMockServer,
 ) {
     @Autowired
-    private lateinit var objectMapper: ObjectMapper
+    private lateinit var jsonMapper: JsonMapper
 
     fun resetAllStubsAndMappings() {
         wireMockServer.resetAll()
@@ -63,7 +63,7 @@ class WiremockService(
                     responseDefinition()
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(objectMapper.writeValueAsString(erosResponse))
+                        .withBody(jsonMapper.writeValueAsString(erosResponse))
                         .withFixedDelay(responseTimeoutInSeconds * 1000)
                 ),
         )
@@ -92,7 +92,7 @@ class WiremockService(
                     responseDefinition()
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(objectMapper.writeValueAsString(erosResponse)),
+                        .withBody(jsonMapper.writeValueAsString(erosResponse)),
                 ),
         )
     }
@@ -107,7 +107,7 @@ class WiremockService(
                     responseDefinition()
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody(objectMapper.writeValueAsString(erosResponse)),
+                        .withBody(jsonMapper.writeValueAsString(erosResponse)),
                 ),
         )
     }
