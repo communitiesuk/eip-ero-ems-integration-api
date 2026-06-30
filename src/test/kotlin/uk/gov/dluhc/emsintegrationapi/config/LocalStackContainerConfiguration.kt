@@ -1,6 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.awspring.cloud.core.region.StaticRegionProvider
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
@@ -18,6 +17,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.regions.providers.AwsRegionProvider
 import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.sts.StsClient
+import tools.jackson.databind.json.JsonMapper
 import java.net.InetAddress
 import java.net.URI
 
@@ -33,7 +33,7 @@ class LocalStackContainerConfiguration {
         const val DEFAULT_PORT = 4566
         const val DEFAULT_ACCESS_KEY_ID = "test"
         const val DEFAULT_SECRET_KEY = "test"
-        val objectMapper = ObjectMapper()
+        val jsonMapper = JsonMapper()
     }
 
     @Bean
@@ -95,11 +95,11 @@ class LocalStackContainerConfiguration {
         @Value("\${sqs.initiate-applicant-register-check-queue-name}") initiateApplicantRegisterCheckQueueName: String,
         @Value("\${sqs.register-check-result-response-queue-name}") registerCheckResultResponseQueueName: String,
         @Value("\${sqs.remove-applicant-register-check-data-queue-name}") removeRegisterCheckDataMessageQueueName: String,
-        objectMapper: ObjectMapper,
+        jsonMapper: JsonMapper,
     ): LocalStackContainerSettings {
-        val queueUrlInitiateApplicantRegisterCheck = localStackContainer.createSqsQueue(initiateApplicantRegisterCheckQueueName, objectMapper)
-        val queueUrlRegisterCheckResultResponse = localStackContainer.createSqsQueue(registerCheckResultResponseQueueName, objectMapper)
-        val queueUrlRemoveRegisterCheckData = localStackContainer.createSqsQueue(removeRegisterCheckDataMessageQueueName, objectMapper)
+        val queueUrlInitiateApplicantRegisterCheck = localStackContainer.createSqsQueue(initiateApplicantRegisterCheckQueueName, jsonMapper)
+        val queueUrlRegisterCheckResultResponse = localStackContainer.createSqsQueue(registerCheckResultResponseQueueName, jsonMapper)
+        val queueUrlRemoveRegisterCheckData = localStackContainer.createSqsQueue(removeRegisterCheckDataMessageQueueName, jsonMapper)
 
         val apiUrl = "http://${localStackContainer.host}:${localStackContainer.getMappedPort(DEFAULT_PORT)}"
 
@@ -113,12 +113,12 @@ class LocalStackContainerConfiguration {
         )
     }
 
-    private fun GenericContainer<*>.createSqsQueue(queueName: String, objectMapper: ObjectMapper): String {
+    private fun GenericContainer<*>.createSqsQueue(queueName: String, jsonMapper: JsonMapper): String {
         val execInContainer = execInContainer(
             "awslocal", "sqs", "create-queue", "--queue-name", queueName, "--attributes", "DelaySeconds=1"
         )
         return execInContainer.stdout.let {
-            objectMapper.readValue(it, Map::class.java)
+            jsonMapper.readValue(it, Map::class.java)
         }.let {
             it["QueueUrl"] as String
         }

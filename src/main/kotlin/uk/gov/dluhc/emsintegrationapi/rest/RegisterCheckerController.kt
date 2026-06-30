@@ -1,6 +1,5 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.validation.Valid
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus.CREATED
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.dluhc.emsintegrationapi.exception.OptimisticLockingFailureException
 import uk.gov.dluhc.emsintegrationapi.mapper.PendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.RegisterCheckResultMapper
@@ -35,7 +35,7 @@ class RegisterCheckerController(
     private val registerCheckRequestValidator: RegisterCheckRequestValidator,
     private val pendingRegisterCheckMapper: PendingRegisterCheckMapper,
     private val registerCheckResultMapper: RegisterCheckResultMapper,
-    private val objectMapper: ObjectMapper
+    private val jsonMapper: JsonMapper
 ) {
 
     @GetMapping("/registerchecks")
@@ -68,7 +68,7 @@ class RegisterCheckerController(
         val certificateSerial = authentication.credentials.toString()
         logger.info("Updating pending register checks for EMS certificateSerial=[$certificateSerial] with requestId=[$requestId]")
 
-        registerCheckService.auditRequestBody(request.requestid, objectMapper.writeValueAsString(request))
+        registerCheckService.auditRequestBody(request.requestid, jsonMapper.writeValueAsString(request))
 
         val registerCheckResultDto = registerCheckResultMapper.fromRegisterCheckResultRequestApiToDto(requestId, request)
         registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)

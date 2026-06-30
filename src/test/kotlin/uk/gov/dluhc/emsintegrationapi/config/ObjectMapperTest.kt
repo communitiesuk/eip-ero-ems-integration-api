@@ -7,7 +7,7 @@ import java.time.OffsetDateTime
 
 internal class ObjectMapperTest {
 
-    private val objectMapper = JacksonConfiguration().objectMapper()
+    private val jsonMapper = JacksonConfiguration().jsonMapper()
 
     @Test
     fun `should map times without offset information to OffsetDateTime`() {
@@ -16,7 +16,7 @@ internal class ObjectMapperTest {
         val input = "{\"offsetDateTime\": \"$dateTime\"}"
 
         // When
-        val output = objectMapper.readValue(input, OffsetDateTimeHolder::class.java)
+        val output = jsonMapper.readValue(input, OffsetDateTimeHolder::class.java)
 
         // Then
         assertThat(output.offsetDateTime.toLocalDateTime()).isEqualTo(LocalDateTime.parse(dateTime))
@@ -29,7 +29,7 @@ internal class ObjectMapperTest {
         val input = "{\"offsetDateTime\": \"$dateTime\"}"
 
         // When
-        val output = objectMapper.readValue(input, OffsetDateTimeHolder::class.java)
+        val output = jsonMapper.readValue(input, OffsetDateTimeHolder::class.java)
 
         // Then
         assertThat(output.offsetDateTime).isEqualTo(OffsetDateTime.parse(dateTime))
@@ -42,7 +42,7 @@ internal class ObjectMapperTest {
         val input = "{\"offsetDateTime\": \"$dateTime\"}"
 
         // When
-        val output = objectMapper.readValue(input, OffsetDateTimeHolder::class.java)
+        val output = jsonMapper.readValue(input, OffsetDateTimeHolder::class.java)
 
         // Then
         assertThat(output.offsetDateTime).isEqualTo(OffsetDateTime.parse(dateTime))

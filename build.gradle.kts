@@ -7,8 +7,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import java.lang.ProcessBuilder.Redirect
 
 plugins {
-    id("org.springframework.boot") version "3.5.15"
-    id("io.spring.dependency-management") version "1.1.3"
+    id("org.springframework.boot") version "4.1.0"
+    id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.3.21"
     kotlin("kapt") version "2.3.21"
     kotlin("plugin.spring") version "2.3.21"
@@ -22,19 +22,16 @@ plugins {
 
 group = "uk.gov.dluhc"
 version = "latest"
-java.sourceCompatibility = JavaVersion.VERSION_17
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 
 extra["awsSdkVersion"] = "2.26.20"
-extra["springCloudVersion"] = "3.2.1"
-extra["springCloudAwsVersion"] = "3.2.1"
-extra["junitJupiterVersion"] = "5.10.5"
-
-// Forcing 4.1.135 version of netty and 10.1.55 version of tomcat to patch vulnerabilities, under EROPSPT-710.
-// When we upgrade to spring v4 we should check if spring pulls in newer versions of netty and tomcat.
-// If so, this override should be removed.
-// TODO EROPSPT-603
-extra["netty.version"] = "4.1.135.Final"
-extra["tomcat.version"] = "10.1.55"
+extra["springCloudAwsVersion"] = "4.0.2"
+extra["junitJupiterVersion"] = "6.0.3"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -75,26 +72,27 @@ dependencies {
     // framework
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("tools.jackson.module:jackson-module-kotlin")
+    implementation("tools.jackson.core:jackson-databind")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("org.apache.commons:commons-lang3:3.18.0")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     // internal libs
-    implementation("uk.gov.dluhc:logging-library:3.1.0")
-    implementation("uk.gov.dluhc:messaging-support-library:2.4.0")
-    implementation("uk.gov.dluhc:email-client:1.1.0")
+    implementation("uk.gov.dluhc:logging-library:4.0.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.0.0")
+    implementation("uk.gov.dluhc:email-client:1.2.0")
 
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
+    implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
     implementation("org.webjars:swagger-ui:4.19.1")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-restclient")
 
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
@@ -107,7 +105,7 @@ dependencies {
     // jpa/liquibase
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.liquibase:liquibase-core")
+    implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.apache.commons:commons-text:1.12.0")
     implementation("org.hibernate.orm:hibernate-envers")
 
@@ -144,18 +142,17 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
     testImplementation("net.datafaker:datafaker:1.7.0")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-restclient-test")
+    testImplementation("org.springframework.boot:spring-boot-data-jpa-test")
+    testImplementation("org.springframework.boot:spring-boot-webtestclient")
 
-    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
-    testImplementation("org.testcontainers:testcontainers:1.19.8")
-    testImplementation("org.testcontainers:mysql:1.19.8")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
+    testImplementation("org.testcontainers:testcontainers:1.21.4")
+    testImplementation("org.testcontainers:mysql:1.21.4")
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 
-    testImplementation("org.testcontainers:junit-jupiter:1.17.6")
-    testImplementation("org.testcontainers:testcontainers:1.17.6")
-    testImplementation("org.testcontainers:mysql:1.17.6")
-
-    testImplementation("org.wiremock:wiremock-jetty12:3.9.2")
+    testImplementation("org.wiremock.integrations:wiremock-spring-boot-standalone:4.2.1")
     testImplementation("net.datafaker:datafaker:1.6.0")
 
     // caching
@@ -182,7 +179,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudVersion")}")
+        mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${property("springCloudAwsVersion")}")
         mavenBom("software.amazon.awssdk:bom:${property("awsSdkVersion")}")
         mavenBom("org.junit:junit-bom:${property("junitJupiterVersion")}")
     }
@@ -232,20 +229,20 @@ tasks.withType<GenerateTask> {
 
 // Register Checker API generations
 
-tasks.create("api-generate RegisterCheckApi model", GenerateTask::class) {
+tasks.register("api-generate RegisterCheckApi model", GenerateTask::class) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/registerchecker/RegisterCheckerAPIs.yaml")
     packageName.set("uk.gov.dluhc.registercheckerapi")
     configOptions.put("documentationProvider", "none")
 }
 
-tasks.create("api-generate IERApi model", GenerateTask::class) {
+tasks.register("api-generate IERApi model", GenerateTask::class) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/external/ier/reference/IER-EROP-APIs.yaml")
     packageName.set("uk.gov.dluhc.external.ier")
 }
 
-tasks.create("api-generate rca-sqs-messaging model", GenerateTask::class) {
+tasks.register("api-generate rca-sqs-messaging model", GenerateTask::class) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/registerchecker/sqs/RegisterSqsMessaging.yaml")
     packageName.set("uk.gov.dluhc.registercheckerapi.messaging")
@@ -253,13 +250,13 @@ tasks.create("api-generate rca-sqs-messaging model", GenerateTask::class) {
 
 // EMS integration API generations
 
-tasks.create("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", GenerateTask::class) {
+tasks.register("generate-models-from-openapi-document-EMSIntegrationAPIs.yaml", GenerateTask::class) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/ems/EMSIntegrationAPIs.yaml")
     packageName.set("uk.gov.dluhc.emsintegrationapi")
 }
 // Postal SQS Message
-tasks.create(
+tasks.register(
     "generate-models-from-openapi-document-postal-vote-application-sqs-messaging.yaml",
     GenerateTask::class,
 ) {
@@ -268,7 +265,7 @@ tasks.create(
     packageName.set("uk.gov.dluhc.emsintegrationapi.messaging")
 }
 
-tasks.create(
+tasks.register(
     "generate-models-from-openapi-document-proxy-vote-application-sqs-messaging.yaml",
     GenerateTask::class,
 ) {
@@ -278,13 +275,13 @@ tasks.create(
 }
 
 // TODO remove this once differences have been reconciled with RC version of dependency
-tasks.create("api-generate IERApi model for EMS", GenerateTask::class) {
+tasks.register("api-generate IERApi model for EMS", GenerateTask::class) {
     enabled = true
     inputSpec.set("$projectDir/src/main/resources/openapi/ems/external/ier/reference/IER-EROP-APIs.yaml")
     packageName.set("uk.gov.dluhc.external.ier.ems")
 }
 
-tasks.create(
+tasks.register(
     "generate-models-from-remove-application-ems-integration-data-sqs-messaging.yaml",
     GenerateTask::class,
 ) {

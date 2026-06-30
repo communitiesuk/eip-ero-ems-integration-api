@@ -306,7 +306,7 @@ class PostalIntegrationTestHelpers(
         Assertions.assertThat(postalVoteApplication.postalVoteDetails?.ballotBfpoAddress).isNotNull
     }
 
-    private fun <T> saveRecords(
+    private fun <T : Any> saveRecords(
         repository: CrudRepository<T, *>,
         numberOfRecords: Int,
         buildFunction: () -> T,

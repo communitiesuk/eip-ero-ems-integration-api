@@ -1,13 +1,13 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.emails
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KotlinLogging
 import org.springframework.http.MediaType
-import org.springframework.http.codec.json.Jackson2JsonDecoder
-import org.springframework.http.codec.json.Jackson2JsonEncoder
+import org.springframework.http.codec.json.JacksonJsonDecoder
+import org.springframework.http.codec.json.JacksonJsonEncoder
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import tools.jackson.databind.json.JsonMapper
 import java.net.URI
 
 private val logger = KotlinLogging.logger {}
@@ -17,14 +17,14 @@ private val logger = KotlinLogging.logger {}
  */
 @Component
 class LocalstackEmailMessagesSentClient(
-    private val objectMapper: ObjectMapper
+    private val jsonMapper: JsonMapper
 ) {
 
     fun getEmailMessagesSent(url: String): LocalstackEmailMessages {
         val webClient = WebClient.builder()
             .codecs { configurer ->
-                configurer.defaultCodecs().jackson2JsonEncoder(Jackson2JsonEncoder(objectMapper, MediaType.APPLICATION_JSON))
-                configurer.defaultCodecs().jackson2JsonDecoder(Jackson2JsonDecoder(objectMapper, MediaType.APPLICATION_JSON))
+                configurer.defaultCodecs().jacksonJsonEncoder(JacksonJsonEncoder(jsonMapper, MediaType.APPLICATION_JSON))
+                configurer.defaultCodecs().jacksonJsonDecoder(JacksonJsonDecoder(jsonMapper, MediaType.APPLICATION_JSON))
             }
             .build()
 
@@ -38,7 +38,7 @@ class LocalstackEmailMessagesSentClient(
         return response!!
     }
 
-    private fun handleException(ex: Throwable, message: String): Mono<out LocalstackEmailMessages>? {
+    private fun handleException(ex: Throwable, message: String): Mono<LocalstackEmailMessages> {
         logger.error(ex) { "Unhandled exception thrown by WebClient" }
         return Mono.error(RuntimeException(message))
     }
