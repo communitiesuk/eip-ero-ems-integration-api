@@ -1,6 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import tools.jackson.core.JsonParser
@@ -28,7 +29,7 @@ class JacksonConfiguration {
             .addModule(KotlinModule.Builder().build())
             .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DateTimeFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
-            .changeDefaultPropertyInclusion({ incl -> JsonInclude.Value.construct(JsonInclude.Include.NON_NULL, JsonInclude.Include.NON_NULL) })
+            .changeDefaultPropertyInclusion { _ -> JsonInclude.Value.construct(Include.NON_NULL, Include.NON_NULL) }
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build()
 
