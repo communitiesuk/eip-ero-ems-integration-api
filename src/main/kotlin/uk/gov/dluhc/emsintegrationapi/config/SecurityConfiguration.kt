@@ -90,7 +90,7 @@ class SecurityConfiguration(
         http.oauth2ResourceServer { oauth2 ->
             oauth2.authenticationManagerResolver(
                 JwtIssuerAuthenticationManagerResolver(
-                    mapOf(adminIssuer to managerFor(adminIssuerUrl))::get
+                    mapOf(adminIssuer to managerFor(adminIssuerUrl))::getValue
                 )
             )
         }

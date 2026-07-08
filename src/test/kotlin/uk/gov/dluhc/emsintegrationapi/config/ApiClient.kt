@@ -14,12 +14,12 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
             .queryParam(PAGE_SIZE_PARAM, pageSize)
             .build().toUriString()
 
-        fun <T> validateStatusAndGetResponse(
+        fun <T : Any> validateStatusAndGetResponse(
             apiResponse: WebTestClient.ResponseSpec,
             expectedHttpStatus: Int,
             type: Class<T>
         ): T? =
-            apiResponse.expectStatus().isEqualTo(expectedHttpStatus).returnResult(type).responseBody.blockFirst()
+            apiResponse.expectStatus().isEqualTo(expectedHttpStatus).returnResult(type).getResponseBody().blockFirst()
     }
 
     fun get(
@@ -36,14 +36,14 @@ class ApiClient(private val webClient: WebTestClient, private val apiProperties:
             .exchange()
     }
 
-    fun <T> get(
+    fun <T : Any> get(
         uri: String,
         responseType: Class<T>,
         attachSerialNumber: Boolean = true,
         serialNumber: String = DEFAULT_SERIAL_NUMBER
     ): T? {
         return get(uri, attachSerialNumber, serialNumber).expectStatus().isOk
-            .returnResult(responseType).responseBody.blockFirst()
+            .returnResult(responseType).getResponseBody().blockFirst()
     }
 
     fun delete(

@@ -1,17 +1,16 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.acm19.aws.interceptor.http.AwsRequestSigningApacheV5Interceptor
 import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.http.converter.HttpMessageConverter
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestTemplate
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
@@ -20,6 +19,7 @@ import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain
 import software.amazon.awssdk.services.sts.StsClient
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.dluhc.logging.rest.CorrelationIdRestTemplateClientHttpRequestInterceptor
 import java.util.function.Supplier
 
@@ -44,14 +44,13 @@ class IerRestClientConfiguration(
     @Bean
     fun ierRestClient(
         ierClientHttpRequestFactory: ClientHttpRequestFactory,
-        httpMessageConverters: List<HttpMessageConverter<*>>,
+        jsonMapper: JsonMapper,
     ): RestClient =
         RestClient.builder()
             .baseUrl(ierApiBaseUrl)
             .requestFactory(ierClientHttpRequestFactory)
-            .messageConverters { converters: MutableList<HttpMessageConverter<*>> ->
-                converters.removeAll { it is MappingJackson2HttpMessageConverter }
-                converters.addAll(httpMessageConverters)
+            .configureMessageConverters { converters ->
+                converters.registerDefaults().withJsonConverter(JacksonJsonHttpMessageConverter(jsonMapper))
             }
             .requestInterceptors { interceptors: MutableList<ClientHttpRequestInterceptor> ->
                 interceptors.add(correlationIdRestTemplateClientHttpRequestInterceptor)
@@ -62,14 +61,14 @@ class IerRestClientConfiguration(
     fun ierRestTemplate(ierClientHttpRequestFactory: ClientHttpRequestFactory): RestTemplate {
         return RestTemplateBuilder()
             .requestFactory(Supplier { ierClientHttpRequestFactory })
-            .rootUri(ierApiBaseUrl)
+            .baseUri(ierApiBaseUrl)
             .interceptors(correlationIdRestTemplateClientHttpRequestInterceptor)
             .build()
     }
 
     @Bean
-    fun httpMessageConverters(objectMapper: ObjectMapper): List<HttpMessageConverter<*>> =
-        listOf(MappingJackson2HttpMessageConverter(objectMapper))
+    fun httpMessageConverters(jsonMapper: JsonMapper): List<HttpMessageConverter<*>> =
+        listOf(JacksonJsonHttpMessageConverter(jsonMapper))
 
     @Bean
     fun ierClientHttpRequestFactory(stsClient: StsClient): ClientHttpRequestFactory {

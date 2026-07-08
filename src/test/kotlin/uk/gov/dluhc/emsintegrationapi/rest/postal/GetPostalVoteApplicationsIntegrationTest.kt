@@ -55,6 +55,10 @@ internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
             postalRepository = postalVoteApplicationRepository,
             registerCheckResultDataRepository = registerCheckResultDataRepository
         )
+        // Configure larger buffer for large JSON responses - 512KB
+        webClient = webClient.mutate()
+            .codecs { it.defaultCodecs().maxInMemorySize(512 * 1024) }
+            .build()
         apiClient = ApiClient(webClient, apiProperties)
         testHelpers =
             PostalIntegrationTestHelpers(
