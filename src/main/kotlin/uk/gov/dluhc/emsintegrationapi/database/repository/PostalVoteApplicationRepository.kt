@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import uk.gov.dluhc.emsintegrationapi.database.entity.AdminPendingEmsDownload
+import uk.gov.dluhc.emsintegrationapi.database.entity.LastSuccessfulEmsDownloadByGssCode
 import uk.gov.dluhc.emsintegrationapi.database.entity.PendingDownloadsSummaryByGssCode
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
@@ -40,7 +41,8 @@ interface PostalVoteApplicationRepository :
         """SELECT
             app.applicationDetails.gssCode AS gssCode,
             count(app.applicationId) as pendingDownloadCount,
-            count(app.applicantDetails.emsElectorId) as pendingDownloadsWithEmsElectorId
+            count(app.applicantDetails.emsElectorId) as pendingDownloadsWithEmsElectorId,
+            min(app.dateCreated) as earliestDateCreated
         FROM PostalVoteApplication app
         WHERE app.status = 'RECEIVED' AND app.dateCreated < :createdBefore
         GROUP BY app.applicationDetails.gssCode
@@ -48,6 +50,18 @@ interface PostalVoteApplicationRepository :
         """
     )
     fun summarisePendingPostalVotesByGssCode(createdBefore: Instant): List<PendingDownloadsSummaryByGssCode>
+
+    @Query(
+        """SELECT
+            app.applicationDetails.gssCode AS gssCode,
+            max(app.dateUpdated) as lastSuccessfulEmsDownload
+        FROM PostalVoteApplication app
+        WHERE app.status = 'DELETED'
+        GROUP BY app.applicationDetails.gssCode
+        ORDER BY app.applicationDetails.gssCode
+        """
+    )
+    fun getLastSuccessfulEmsDownloadByGssCode(): List<LastSuccessfulEmsDownloadByGssCode>
 
     @Query(
         """SELECT 

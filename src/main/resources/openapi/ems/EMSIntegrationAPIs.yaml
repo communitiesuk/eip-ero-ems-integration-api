@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
-  version: 1.4.0
+  version: 1.5.0
   description: |
     This specification is for an API hosted by EROP for EMS clients to fetch
     details of Postal Vote and Proxy Vote applications made by the public.
@@ -84,7 +84,7 @@ paths:
           name: pageSize
           description: 'The maximum number of records to return in the response. Default 100, min 1, max 200'
       security:
-        - emsCertificateLambdaAuthorizer: []
+        - emsCertificateLambdaAuthorizer: [ ]
       x-amazon-apigateway-integration:
         type: HTTP_PROXY
         uri: '${base_uri}/postalvotes'
@@ -186,7 +186,7 @@ paths:
         If the specified ID does not exist, or belongs to a Postal Vote application that is not for the currently connected ERO,
         then the response will be an “HTTP 404 Not Found” response.
       security:
-        - emsCertificateLambdaAuthorizer: []
+        - emsCertificateLambdaAuthorizer: [ ]
       x-amazon-apigateway-integration:
         type: HTTP_PROXY
         uri: '${base_uri}/postalvotes/{id}'
@@ -234,7 +234,7 @@ paths:
         required: true
     put:
       summary:
-        Confirmation from EMSs that the Proxy Vote application has been received and should be 
+        Confirmation from EMSs that the Proxy Vote application has been received and should be
         removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
         details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
       operationId: put-proxy-votes-id
@@ -266,7 +266,7 @@ paths:
     post:
       summary:
         Deprecated - use PUT as operating on an existing resource.
-        Confirmation from EMSs that the Proxy Vote application has been received and should be 
+        Confirmation from EMSs that the Proxy Vote application has been received and should be
         removed from the queue. The EMS can indicate if processing was successful or failed to update the elector's
         details - or any other failure in processing. Error responses will alert the determining ERO officer of the failure.
       operationId: post-proxy-votes-id
@@ -298,8 +298,8 @@ paths:
         httpMethod: POST
     delete:
       summary:
-        Deprecated, please use POST endpoint to return success and failure responses. 
-        Confirmation from EMSs that the Postal Vote application has been received and should be 
+        Deprecated, please use POST endpoint to return success and failure responses.
+        Confirmation from EMSs that the Postal Vote application has been received and should be
         removed from the queue.
       operationId: delete-proxy-votes-id
       deprecated: true
@@ -585,13 +585,13 @@ components:
             postalVoteStartDate:
               type: string
               format: date
-              description:  |
+              description: |
                 If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteEndDate must also be present
                 In ISO8601 date format '2022-08-02'
             postalVoteEndDate:
               type: string
               format: date
-              description:  |
+              description: |
                 If set, the elector wishes to vote by post for the period defined by the two dates. If present, then postalVoteStartDate must also be present
                 In ISO8601 date format '2022-08-02'
       required:
@@ -830,13 +830,13 @@ components:
             proxyVoteStartDate:
               type: string
               format: date
-              description:  |
+              description: |
                 If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteEndDate must also be present
                 In ISO8601 date format '2022-08-02'
             proxyVoteEndDate:
               type: string
               format: date
-              description:  |
+              description: |
                 If set, the elector wishes to vote by proxy for the period defined by the two dates. If present, then proxyVoteStartDate must also be present
                 In ISO8601 date format '2022-08-02'
       required:
@@ -900,7 +900,7 @@ components:
           maxLength: 100
         type:
           type: string
-          description: | 
+          description: |
             A static value that can be used by EMSs to add additional business logic if needed.
             The current values are below but may change overtime, hence this is not an enforced restricted list / enum.
             Should EROP add a new 'type' or revise one, we would not want EMSs to require a deployment.
@@ -1108,6 +1108,102 @@ components:
           items:
             $ref: '#/components/schemas/AdminPendingEmsDownload'
       required:
+        - pendingEmsDownloads
+    AdminPendingRegisterCheckSummary: # TODO
+      title: AdminPendingRegisterCheckSummary
+      type: object
+      description: |-
+        An object summarising the register checks of an ERO.
+        Intended for viewing by EROP admins, and does not include personal information.
+      properties:
+        gssCode:
+          type: string
+          pattern: '^[a-zA-Z]\d{8}$'
+          description: The Local Authority GSS Code
+          example: E06000001
+        registerCheckCount:
+          type: integer
+          description: The number of pending register checks
+          example: 7
+        earliestDateCreated:
+          type: string
+          description: The creation date and time of the oldest pending register check for this ERO.
+          format: date-time
+          example: 2022-09-07T14:14:55.123Z
+        lastSuccessfulRegisterCheck:
+          type: string
+          description: The date and time of the last successful register check by this ERO.
+          format: date-time
+          example: 2022-09-07T14:14:55.123Z
+      #        eroName: # TODO Maybe?
+      #          type: string
+      #          description: The name of the ERO
+      #          example: Camden # TODO
+      #        emsVendor: # TODO Maybe?
+      #          type: string
+      #          description: The EMS vendor of the ERO
+      #          example: Civica
+      required:
+        - gssCode
+        - registerCheckCount
+    AdminPendingEmsDownloadSummary: # TODO
+      title: AdminPendingEmsDownloadSummary
+      type: object
+      description: |-
+        An object summarising the pending EMS downloads of an ERO.
+        Intended for viewing by EROP admins, and does not include personal information.
+      properties:
+        gssCode:
+          type: string
+          pattern: '^[a-zA-Z]\d{8}$'
+          description: The Local Authority GSS Code
+          example: E06000001
+        pendingDownloadCount:
+          type: integer
+          description: The number of pending EMS downloads
+          example: 0
+        pendingDownloadCountWithEmsElectorId:
+          type: integer
+          description: The number of pending EMS downloads with EMS elector ids
+          example: 0
+        earliestDateCreated:
+          type: string
+          description: The creation date and time of the oldest pending EMS download for this ERO.
+          format: date-time
+          example: 2022-09-07T14:14:55.123Z
+        lastSuccessfulEmsDownload:
+          type: string
+          description: The date and time of the last successful EMS download by this ERO.
+          format: date-time
+          example: 2022-09-07T14:14:55.123Z
+      #  eroName: # TODO Maybe?
+      #    type: string
+      #    description: The name of the ERO
+      #    example: Camden # TODO
+      #  emsVendor: # TODO Maybe?
+      #    type: string
+      #    description: The EMS vendor of the ERO
+      #    example: Civica
+      required:
+        - gssCode
+        - pendingDownloadCount
+        - pendingDownloadCountWithEmsElectorId
+    AdminPendingChecksAndDownloadsSummaryResponse:
+      title: AdminPendingChecksAndDownloadsSummaryResponse
+      description: Response containing a summary of pending register checks and pending EMS Downloads for all ERO.
+      properties:
+        pendingRegisterChecks:
+          description: The list of pending register checks summary per ERO
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPendingRegisterCheckSummary'
+        pendingEmsDownloads:
+          description: The list of pending EMS downloads summary per ERO
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPendingEmsDownloadSummary'
+      required:
+        - pendingRegisterChecks
         - pendingEmsDownloads
   responses:
     PostalVoteApplications:
