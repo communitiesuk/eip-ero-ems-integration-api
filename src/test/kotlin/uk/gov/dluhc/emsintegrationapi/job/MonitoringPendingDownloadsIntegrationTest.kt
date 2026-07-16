@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.JdbcTemplate
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
@@ -39,6 +40,9 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
 
     @Autowired
     private lateinit var pendingDownloadsMonitoringJob: PendingDownloadsMonitoringJob
+
+    @Autowired
+    private lateinit var jdbcTemplate: JdbcTemplate
 
     @BeforeEach
     fun setUp() {
@@ -119,13 +123,13 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
         messageIsLogged("A total of 4 postal applications (4 with EMS Elector Ids) have been pending for more than PT120H.")
 
         // And the message "The gss code E00000001 has 3 postal applications (3 with EMS Elector Ids) that have been pending for more than PT120H." is logged
-        messageIsLogged(
-            "The gss code E00000001 has 3 postal applications (3 with EMS Elector Ids) that have been pending for more than PT120H.",
+        messageIsLoggedMatching(
+            """The gss code E00000001 has 3 postal applications \(3 with EMS Elector Ids\) that have been pending for more than PT120H\..*""",
         )
 
         // And the message "The gss code E00000002 has 1 postal applications (1 with EMS Elector Ids) that have been pending for more than PT120H." is logged
-        messageIsLogged(
-            "The gss code E00000002 has 1 postal applications (1 with EMS Elector Ids) that have been pending for more than PT120H.",
+        messageIsLoggedMatching(
+            """The gss code E00000002 has 1 postal applications \(1 with EMS Elector Ids\) that have been pending for more than PT120H\..*""",
         )
     }
 
@@ -170,13 +174,13 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
         messageIsLogged("A total of 4 postal applications (1 with EMS Elector Ids) have been pending for more than PT120H.")
 
         // And the message "The gss code E00000001 has 3 postal applications (1 with EMS Elector Ids) that have been pending for more than PT120H." is logged
-        messageIsLogged(
-            "The gss code E00000001 has 3 postal applications (1 with EMS Elector Ids) that have been pending for more than PT120H.",
+        messageIsLoggedMatching(
+            """The gss code E00000001 has 3 postal applications \(1 with EMS Elector Ids\) that have been pending for more than PT120H\..*""",
         )
 
         // And the message "The gss code E00000002 has 1 postal applications (0 with EMS Elector Ids) that have been pending for more than PT120H." is logged
-        messageIsLogged(
-            "The gss code E00000002 has 1 postal applications (0 with EMS Elector Ids) that have been pending for more than PT120H.",
+        messageIsLoggedMatching(
+            """The gss code E00000002 has 1 postal applications \(0 with EMS Elector Ids\) that have been pending for more than PT120H\..*""",
         )
     }
 
@@ -237,13 +241,13 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
         messageIsLogged("A total of 4 proxy applications (4 with EMS Elector Ids) have been pending for more than PT120H.")
 
         // And the message "The gss code E00000001 has 3 proxy applications (3 with EMS Elector Ids) that have been pending for more than PT120H." is logged
-        messageIsLogged(
-            "The gss code E00000001 has 3 proxy applications (3 with EMS Elector Ids) that have been pending for more than PT120H.",
+        messageIsLoggedMatching(
+            """The gss code E00000001 has 3 proxy applications \(3 with EMS Elector Ids\) that have been pending for more than PT120H\..*""",
         )
 
         // And the message "The gss code E00000002 has 1 proxy applications (1 with EMS Elector Ids) that have been pending for more than PT120H." is logged
-        messageIsLogged(
-            "The gss code E00000002 has 1 proxy applications (1 with EMS Elector Ids) that have been pending for more than PT120H.",
+        messageIsLoggedMatching(
+            """The gss code E00000002 has 1 proxy applications \(1 with EMS Elector Ids\) that have been pending for more than PT120H\..*""",
         )
     }
 
@@ -289,62 +293,83 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
         messageIsLogged("A total of 4 proxy applications (1 with EMS Elector Ids) have been pending for more than PT120H.")
 
         // And the message "The gss code E00000001 has 3 proxy applications (1 with EMS Elector Ids) that have been pending for more than PT120H." is logged
-        messageIsLogged(
-            "The gss code E00000001 has 3 proxy applications (1 with EMS Elector Ids) that have been pending for more than PT120H.",
+        messageIsLoggedMatching(
+            """The gss code E00000001 has 3 proxy applications \(1 with EMS Elector Ids\) that have been pending for more than PT120H\..*""",
         )
 
         // And the message "The gss code E00000002 has 1 proxy applications (0 with EMS Elector Ids) that have been pending for more than PT120H." is logged
-        messageIsLogged(
-            "The gss code E00000002 has 1 proxy applications (0 with EMS Elector Ids) that have been pending for more than PT120H.",
+        messageIsLoggedMatching(
+            """The gss code E00000002 has 1 proxy applications \(0 with EMS Elector Ids\) that have been pending for more than PT120H\..*""",
         )
     }
 
     @Test
     fun `System sends an email reporting postal and proxy pending downloads`() {
-        // Given a postal vote application with gss code "E00000001" with an EMS Elector ID was saved to EMS integration API 6 days ago and has record status "RECEIVED"
-        createPostalApplicationWithEmsElectorId("E00000001", 6, "RECEIVED")
+        // Given a postal vote application with gss code "E00000001" with an EMS Elector ID has been pending since 2025-03-03T10:00:00Z and has record status "RECEIVED"
+        setDateCreatedPostal(
+            buildPostalVoteApplication(
+                recordStatus = RecordStatus.valueOf("RECEIVED"),
+                applicationDetails = buildApplicationDetailsEntity(gssCode = "E00000001"),
+            ),
+            Instant.parse("2025-03-03T10:00:00Z"),
+        )
 
-        // And a postal vote application with gss code "E00000001" without an EMS Elector ID was saved to EMS integration API 7 days ago and has record status "RECEIVED"
-        setDateCreatedToDaysAgoPostal(
+        // And a postal vote application with gss code "E00000001" without an EMS Elector ID has been pending since 2025-03-02T10:00:00Z and has record status "RECEIVED"
+        setDateCreatedPostal(
             buildPostalVoteApplication(
                 recordStatus = RecordStatus.valueOf("RECEIVED"),
                 applicationDetails = buildApplicationDetailsEntity(gssCode = "E00000001"),
                 applicantDetails = buildApplicantDetailsEntity(emsElectorId = null),
             ),
-            7,
+            Instant.parse("2025-03-02T10:00:00Z"),
         )
 
-        // And a postal vote application with gss code "E00000001" without an EMS Elector ID was saved to EMS integration API 8 days ago and has record status "RECEIVED"
-        setDateCreatedToDaysAgoPostal(
+        // And a postal vote application with gss code "E00000001" without an EMS Elector ID has been pending since 2025-03-01T10:00:00Z and has record status "RECEIVED"
+        setDateCreatedPostal(
             buildPostalVoteApplication(
                 recordStatus = RecordStatus.valueOf("RECEIVED"),
                 applicationDetails = buildApplicationDetailsEntity(gssCode = "E00000001"),
                 applicantDetails = buildApplicantDetailsEntity(emsElectorId = null),
             ),
-            8,
+            Instant.parse("2025-03-01T10:00:00Z"),
         )
 
-        // And a postal vote application with gss code "E00000002" without an EMS Elector ID was saved to EMS integration API 6 days ago and has record status "RECEIVED"
-        setDateCreatedToDaysAgoPostal(
+        // And a postal vote application with gss code "E00000002" without an EMS Elector ID has been pending since 2025-03-03T10:00:00Z and has record status "RECEIVED"
+        setDateCreatedPostal(
             buildPostalVoteApplication(
                 recordStatus = RecordStatus.valueOf("RECEIVED"),
                 applicationDetails = buildApplicationDetailsEntity(gssCode = "E00000002"),
                 applicantDetails = buildApplicantDetailsEntity(emsElectorId = null),
             ),
-            6,
+            Instant.parse("2025-03-03T10:00:00Z"),
         )
 
-        // And a proxy vote application with gss code "E00000001" with an EMS Elector ID was saved to EMS integration API 6 days ago and has record status "RECEIVED"
-        createProxyApplicationWithEmsElectorId("E00000001", 6, "RECEIVED")
+        // And a postal vote application with gss code "E00000001" was successfully downloaded by the EMS at 2025-03-05T12:00:00Z
+        val deletedPostalApplication =
+            buildPostalVoteApplication(
+                recordStatus = RecordStatus.valueOf("DELETED"),
+                applicationDetails = buildApplicationDetailsEntity(gssCode = "E00000001"),
+            )
+        setDateCreatedPostal(deletedPostalApplication, Instant.parse("2025-03-04T10:00:00Z"))
+        setDateUpdatedPostal(deletedPostalApplication, "2025-03-05 12:00:00")
 
-        // And a proxy vote application with gss code "E00000001" without an EMS Elector ID was saved to EMS integration API 7 days ago and has record status "RECEIVED"
-        setDateCreatedToDaysAgoProxy(
+        // And a proxy vote application with gss code "E00000001" with an EMS Elector ID has been pending since 2025-03-03T10:00:00Z and has record status "RECEIVED"
+        setDateCreatedProxy(
+            buildProxyVoteApplication(
+                recordStatus = RecordStatus.valueOf("RECEIVED"),
+                applicationDetails = buildApplicationDetailsEntity(gssCode = "E00000001"),
+            ),
+            Instant.parse("2025-03-03T10:00:00Z"),
+        )
+
+        // And a proxy vote application with gss code "E00000001" without an EMS Elector ID has been pending since 2025-03-02T10:00:00Z and has record status "RECEIVED"
+        setDateCreatedProxy(
             buildProxyVoteApplication(
                 recordStatus = RecordStatus.valueOf("RECEIVED"),
                 applicationDetails = buildApplicationDetailsEntity(gssCode = "E00000001"),
                 applicantDetails = buildApplicantDetailsEntity(emsElectorId = null),
             ),
-            7,
+            Instant.parse("2025-03-02T10:00:00Z"),
         )
 
         // When the pending downloads monitoring job runs
@@ -393,25 +418,52 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
     private fun setDateCreatedToDaysAgoPostal(
         application: PostalVoteApplication,
         daysAgo: Int,
-    ) {
-        // Application needs to be saved first to avoid the date created being overwritten
-        postalVoteApplicationRepository.save(application)
-        application.dateCreated = Instant.now().minus(Period.ofDays(daysAgo))
-        postalVoteApplicationRepository.save(application)
-    }
+    ) = setDateCreatedPostal(application, Instant.now().minus(Period.ofDays(daysAgo)))
 
     private fun setDateCreatedToDaysAgoProxy(
         application: ProxyVoteApplication,
         daysAgo: Int,
+    ) = setDateCreatedProxy(application, Instant.now().minus(Period.ofDays(daysAgo)))
+
+    private fun setDateCreatedPostal(
+        application: PostalVoteApplication,
+        dateCreated: Instant,
+    ) {
+        // Application needs to be saved first to avoid the date created being overwritten
+        postalVoteApplicationRepository.save(application)
+        application.dateCreated = dateCreated
+        postalVoteApplicationRepository.save(application)
+    }
+
+    private fun setDateCreatedProxy(
+        application: ProxyVoteApplication,
+        dateCreated: Instant,
     ) {
         // Application needs to be saved first to avoid the date created being overwritten
         proxyVoteApplicationRepository.save(application)
-        application.dateCreated = Instant.now().minus(Period.ofDays(daysAgo))
+        application.dateCreated = dateCreated
         proxyVoteApplicationRepository.save(application)
+    }
+
+    /**
+     * The date_updated field is managed by the auditing entity listener so cannot be set by saving the entity.
+     * We update the field with SQL to bypass this.
+     */
+    private fun setDateUpdatedPostal(
+        application: PostalVoteApplication,
+        dateUpdated: String,
+    ) {
+        jdbcTemplate.execute(
+            "UPDATE postal_vote_application SET date_updated = '$dateUpdated' WHERE application_id = '${application.applicationId}'",
+        )
     }
 
     private fun messageIsLogged(message: String) {
         assertThat(TestLogAppender.hasLog(message, Level.INFO)).isTrue
+    }
+
+    private fun messageIsLoggedMatching(pattern: String) {
+        assertThat(TestLogAppender.getLogEventMatchingRegex(pattern, Level.INFO)).isNotNull
     }
 
     private fun assertEmailSent(expected: LocalstackEmailMessage) {
@@ -448,6 +500,8 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
                   <th>GSS code</th>
                   <th>Pending postal downloads</th>
                   <th>Pending with EMS Elector ID</th>
+                  <th>Date of oldest pending application</th>
+                  <th>Date of most recent successful EMS download</th>
               </tr>
               </thead>
               <tbody>
@@ -455,11 +509,15 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
                       <td>E00000001</td>
                       <td>3</td>
                       <td>1</td>
+                      <td>2025-03-01T10:00:00Z</td>
+                      <td>2025-03-05T12:00:00Z</td>
                   </tr>
                   <tr>
                       <td>E00000002</td>
                       <td>1</td>
                       <td>0</td>
+                      <td>2025-03-03T10:00:00Z</td>
+                      <td>never</td>
                   </tr>
               </tbody>
           </table>
@@ -472,6 +530,8 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
                   <th>GSS code</th>
                   <th>Pending proxy downloads</th>
                   <th>Pending with EMS Elector ID</th>
+                  <th>Date of oldest pending application</th>
+                  <th>Date of most recent successful EMS download</th>
               </tr>
               </thead>
               <tbody>
@@ -479,6 +539,8 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
                       <td>E00000001</td>
                       <td>2</td>
                       <td>1</td>
+                      <td>2025-03-02T10:00:00Z</td>
+                      <td>never</td>
                   </tr>
               </tbody>
           </table>

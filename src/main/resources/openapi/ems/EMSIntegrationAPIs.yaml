@@ -1130,7 +1130,7 @@ components:
           description: The creation date and time of the oldest pending register check for this ERO.
           format: date-time
           example: 2022-09-07T14:14:55.123Z
-        lastSuccessfulRegisterCheck:
+        latestMatchResultSentAt:
           type: string
           description: The date and time of the last successful register check by this ERO.
           format: date-time
@@ -1197,14 +1197,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdminPendingRegisterCheckSummary'
-        pendingEmsDownloads:
-          description: The list of pending EMS downloads summary per ERO
+        pendingPostalDownloads:
+          description: The list of pending postal vote EMS downloads summary per ERO
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminPendingEmsDownloadSummary'
+        pendingProxyDownloads:
+          description: The list of pending proxy vote EMS downloads summary per ERO
           type: array
           items:
             $ref: '#/components/schemas/AdminPendingEmsDownloadSummary'
       required:
         - pendingRegisterChecks
-        - pendingEmsDownloads
+        - pendingPostalDownloads
+        - pendingProxyDownloads
   responses:
     PostalVoteApplications:
       description: Determined Postal Vote applications

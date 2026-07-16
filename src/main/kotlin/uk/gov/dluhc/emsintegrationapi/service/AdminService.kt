@@ -13,6 +13,7 @@ import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingEmsDownloadSummary
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingRegisterCheckSummary
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 @Service
 class AdminService(
@@ -22,6 +23,8 @@ class AdminService(
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository,
     private val adminPendingRegisterCheckMapper: AdminPendingRegisterCheckMapper,
     private val adminPendingEmsDownloadMapper: AdminPendingEmsDownloadMapper,
+    private val pendingRegisterCheckSummaryService: PendingRegisterCheckSummaryService,
+    private val pendingEmsDownloadSummaryService: PendingEmsDownloadSummaryService,
     @Value("\${jobs.register-check-monitoring.excluded-gss-codes}") private val registerCheckExcludedGssCodes: List<String>,
     @Value("\${jobs.pending-downloads-monitoring.excluded-gss-codes}") private val pendingDownloadsExcludedGssCodes: List<String>,
 ) {
@@ -46,42 +49,26 @@ class AdminService(
     }
 
     @Transactional(readOnly = true)
-    fun adminGetPendingRegisterChecksSummary(): List<AdminPendingRegisterCheckSummary> {
-        val pendingSummariesByGssCode = registerCheckRepository.summarisePendingRegisterChecksByGssCode(Instant.now())
-            .filter { !registerCheckExcludedGssCodes.contains(it.gssCode) }
-            .associateBy { it.gssCode }
-        val mostRecentResponsesByGssCode = registerCheckRepository.findMostRecentResponseTimeForEachGssCode()
-            .filter { !registerCheckExcludedGssCodes.contains(it.gssCode) }
-            .associateBy { it.gssCode }
-
-        return (pendingSummariesByGssCode.keys + mostRecentResponsesByGssCode.keys)
-            .sorted()
-            .map { gssCode ->
-                adminPendingRegisterCheckMapper.toAdminPendingRegisterCheckSummaryModel(
-                    gssCode = gssCode,
-                    pendingChecksSummary = pendingSummariesByGssCode[gssCode],
-                    mostRecentResponse = mostRecentResponsesByGssCode[gssCode],
-                )
-            }
+    fun adminGetPendingRegisterChecksSummary(pendingMinAgeInDays: Int): List<AdminPendingRegisterCheckSummary> {
+        val createdBefore = Instant.now().minus(pendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
+        return pendingRegisterCheckSummaryService
+            .summarisePendingRegisterChecks(createdBefore, registerCheckExcludedGssCodes)
+            .map(adminPendingRegisterCheckMapper::pendingRegisterCheckSummaryDtoToAdminPendingRegisterCheckSummaryModel)
     }
 
     @Transactional(readOnly = true)
-    fun adminGetPendingEmsDownloadsSummary(): List<AdminPendingEmsDownloadSummary> {
-        val pendingSummariesByGssCode = postalVoteApplicationRepository.summarisePendingPostalVotesByGssCode(Instant.now())
-            .filter { !pendingDownloadsExcludedGssCodes.contains(it.gssCode) }
-            .associateBy { it.gssCode }
-        val lastSuccessfulDownloadsByGssCode = postalVoteApplicationRepository.getLastSuccessfulEmsDownloadByGssCode()
-            .filter { !pendingDownloadsExcludedGssCodes.contains(it.gssCode) }
-            .associateBy { it.gssCode }
+    fun adminGetPendingPostalDownloadsSummary(pendingMinAgeInDays: Int): List<AdminPendingEmsDownloadSummary> {
+        val createdBefore = Instant.now().minus(pendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
+        return pendingEmsDownloadSummaryService
+            .summarisePendingPostalDownloads(createdBefore, pendingDownloadsExcludedGssCodes)
+            .map(adminPendingEmsDownloadMapper::pendingEmsDownloadSummaryDtoToAdminPendingEmsDownloadSummaryModel)
+    }
 
-        return (pendingSummariesByGssCode.keys + lastSuccessfulDownloadsByGssCode.keys)
-            .sorted()
-            .map { gssCode ->
-                adminPendingEmsDownloadMapper.toAdminPendingEmsDownloadSummaryModel(
-                    gssCode = gssCode,
-                    pendingDownloadsSummary = pendingSummariesByGssCode[gssCode],
-                    lastSuccessfulDownload = lastSuccessfulDownloadsByGssCode[gssCode],
-                )
-            }
+    @Transactional(readOnly = true)
+    fun adminGetPendingProxyDownloadsSummary(pendingMinAgeInDays: Int): List<AdminPendingEmsDownloadSummary> {
+        val createdBefore = Instant.now().minus(pendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
+        return pendingEmsDownloadSummaryService
+            .summarisePendingProxyDownloads(createdBefore, pendingDownloadsExcludedGssCodes)
+            .map(adminPendingEmsDownloadMapper::pendingEmsDownloadSummaryDtoToAdminPendingEmsDownloadSummaryModel)
     }
 }

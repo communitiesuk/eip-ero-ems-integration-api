@@ -4,10 +4,8 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.dluhc.emsintegrationapi.database.entity.PendingDownloadsSummaryByGssCode
-import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
-import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.service.dto.PendingDownloadSummary
+import uk.gov.dluhc.emsintegrationapi.service.dto.PendingEmsDownloadSummary
 import java.time.Duration
 import java.time.Instant
 
@@ -15,8 +13,7 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 class PendingDownloadsMonitoringService(
-    private val postalApplicationsRepository: PostalVoteApplicationRepository,
-    private val proxyApplicationsRepository: ProxyVoteApplicationRepository,
+    private val pendingEmsDownloadSummaryService: PendingEmsDownloadSummaryService,
     private val emailService: EmailService,
     @Value("\${jobs.pending-downloads-monitoring.expected-maximum-pending-period}") private val expectedMaximumPendingPeriod: Duration,
     @Value("\${jobs.pending-downloads-monitoring.excluded-gss-codes}") private val excludedGssCodes: List<String>,
@@ -28,11 +25,11 @@ class PendingDownloadsMonitoringService(
         val createdBefore = Instant.now().minus(expectedMaximumPendingPeriod)
         val expectedMaximumPendingDays = expectedMaximumPendingPeriod.toDays()
 
-        val pendingPostalDownloads = filterAndSummarisePendingDownloads(
-            postalApplicationsRepository.summarisePendingPostalVotesByGssCode(createdBefore)
+        val pendingPostalDownloads = summariseTotals(
+            pendingEmsDownloadSummaryService.summarisePendingPostalDownloads(createdBefore, excludedGssCodes)
         )
-        val pendingProxyDownloads = filterAndSummarisePendingDownloads(
-            proxyApplicationsRepository.summarisePendingProxyVotesByGssCode(createdBefore)
+        val pendingProxyDownloads = summariseTotals(
+            pendingEmsDownloadSummaryService.summarisePendingProxyDownloads(createdBefore, excludedGssCodes)
         )
 
         logPendingDownloads("postal", pendingPostalDownloads)
@@ -47,15 +44,14 @@ class PendingDownloadsMonitoringService(
         }
     }
 
-    private fun filterAndSummarisePendingDownloads(summaries: List<PendingDownloadsSummaryByGssCode>): PendingDownloadSummary {
-        val nonExcludedPendingDownloadSummaries = summaries.filter { !excludedGssCodes.contains(it.gssCode) }
-        val totalPending = nonExcludedPendingDownloadSummaries.sumOf { it.pendingDownloadCount }
-        val totalPendingWithEmsElectorId =
-            nonExcludedPendingDownloadSummaries.sumOf { it.pendingDownloadsWithEmsElectorId }
+    private fun summariseTotals(summaries: List<PendingEmsDownloadSummary>): PendingDownloadSummary {
+        val pendingDownloadSummaries = summaries.filter { it.pendingDownloadCount > 0 }
+        val totalPending = pendingDownloadSummaries.sumOf { it.pendingDownloadCount }
+        val totalPendingWithEmsElectorId = pendingDownloadSummaries.sumOf { it.pendingDownloadCountWithEmsElectorId }
         return PendingDownloadSummary(
             totalPending = totalPending,
             totalPendingWithEmsElectorId = totalPendingWithEmsElectorId,
-            pendingByGssCode = nonExcludedPendingDownloadSummaries,
+            pendingByGssCode = pendingDownloadSummaries,
         )
     }
 
@@ -68,8 +64,10 @@ class PendingDownloadsMonitoringService(
             pendingByGssCode.forEach {
                 logger.info {
                     "The gss code ${it.gssCode} has ${it.pendingDownloadCount} $applicationType applications " +
-                        "(${it.pendingDownloadsWithEmsElectorId} with EMS Elector Ids) " +
-                        "that have been pending for more than $expectedMaximumPendingPeriod."
+                        "(${it.pendingDownloadCountWithEmsElectorId} with EMS Elector Ids) " +
+                        "that have been pending for more than $expectedMaximumPendingPeriod. " +
+                        "The oldest pending application has been pending since ${it.earliestDateCreated}. " +
+                        "The last successful EMS download was at ${it.lastSuccessfulEmsDownload ?: "never"}."
                 }
             }
         }

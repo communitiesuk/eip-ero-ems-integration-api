@@ -2,10 +2,10 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowableOfType
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
@@ -20,6 +20,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus.PENDING
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
+import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingEmsDownloadMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildAdminPendingEmsDownload
@@ -45,8 +46,32 @@ internal class AdminServiceTest {
     @Mock
     private lateinit var adminPendingRegisterCheckMapper: AdminPendingRegisterCheckMapper
 
-    @InjectMocks
+    @Mock
+    private lateinit var adminPendingEmsDownloadMapper: AdminPendingEmsDownloadMapper
+
+    @Mock
+    private lateinit var pendingRegisterCheckSummaryService: PendingRegisterCheckSummaryService
+
+    @Mock
+    private lateinit var pendingEmsDownloadSummaryService: PendingEmsDownloadSummaryService
+
     private lateinit var adminService: AdminService
+
+    @BeforeEach
+    fun setUp() {
+        adminService = AdminService(
+            retrieveGssCodeService = retrieveGssCodeService,
+            registerCheckRepository = registerCheckRepository,
+            postalVoteApplicationRepository = postalVoteApplicationRepository,
+            proxyVoteApplicationRepository = proxyVoteApplicationRepository,
+            adminPendingRegisterCheckMapper = adminPendingRegisterCheckMapper,
+            adminPendingEmsDownloadMapper = adminPendingEmsDownloadMapper,
+            pendingRegisterCheckSummaryService = pendingRegisterCheckSummaryService,
+            pendingEmsDownloadSummaryService = pendingEmsDownloadSummaryService,
+            registerCheckExcludedGssCodes = emptyList(),
+            pendingDownloadsExcludedGssCodes = emptyList(),
+        )
+    }
 
     @Nested
     inner class GetPendingRegisterChecks {
