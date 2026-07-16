@@ -65,8 +65,8 @@ class ProxyVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegrat
             val proxyVoteApplication = applicationsReceived.find { it.applicationId == proxyVoteApplicationId }!!
             assertThat(proxyVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
             if (index > 0) {
-                assertThat(proxyVoteApplication.dateCreated!!.truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
-                    previousApplication!!.dateCreated!!.truncatedTo(
+                assertThat(proxyVoteApplication.dateCreated!!.plusMillis(500).truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
+                    previousApplication!!.dateCreated!!.plusMillis(500).truncatedTo(
                         ChronoUnit.SECONDS
                     )
                 )
