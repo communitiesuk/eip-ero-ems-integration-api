@@ -48,8 +48,8 @@ class AdminController(
 
     @GetMapping("/admin/pending-checks-and-downloads-summary")
     fun adminGetPendingChecksAndDownloadsSummary(
-        @RequestParam(defaultValue = "1") registerChecksPendingMinAgeInDays: Int,
-        @RequestParam(defaultValue = "5") emsDownloadsPendingMinAgeInDays: Int,
+        @RequestParam(defaultValue = "0") registerChecksPendingMinAgeInDays: Int,
+        @RequestParam(defaultValue = "0") emsDownloadsPendingMinAgeInDays: Int,
     ): AdminPendingChecksAndDownloadsSummaryResponse {
         logger.info(
             "Getting admin pending checks and downloads summary with minimum pending ages " +

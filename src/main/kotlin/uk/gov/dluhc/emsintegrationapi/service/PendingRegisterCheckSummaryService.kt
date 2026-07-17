@@ -17,22 +17,18 @@ class PendingRegisterCheckSummaryService(
 ) {
     @Transactional(readOnly = true)
     fun summarisePendingRegisterChecks(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingRegisterCheckSummary> {
-        val pendingSummariesByGssCode = registerCheckRepository.summarisePendingRegisterChecksByGssCode(createdBefore)
-            .filter { !excludedGssCodes.contains(it.gssCode) }
-            .associateBy { it.gssCode }
         val mostRecentResponsesByGssCode = registerCheckRepository.findMostRecentResponseTimeForEachGssCode()
-            .filter { !excludedGssCodes.contains(it.gssCode) }
             .associateBy { it.gssCode }
 
-        return (pendingSummariesByGssCode.keys + mostRecentResponsesByGssCode.keys)
-            .sorted()
-            .map { gssCode ->
-                val pendingSummary = pendingSummariesByGssCode[gssCode]
+        return registerCheckRepository.summarisePendingRegisterChecksByGssCode(createdBefore)
+            .filter { !excludedGssCodes.contains(it.gssCode) }
+            .sortedBy { it.gssCode }
+            .map { pendingSummary ->
                 PendingRegisterCheckSummary(
-                    gssCode = gssCode,
-                    registerCheckCount = pendingSummary?.registerCheckCount ?: 0,
-                    earliestDateCreated = pendingSummary?.earliestDateCreated,
-                    latestMatchResultSentAt = mostRecentResponsesByGssCode[gssCode]?.latestMatchResultSentAt,
+                    gssCode = pendingSummary.gssCode,
+                    registerCheckCount = pendingSummary.registerCheckCount,
+                    earliestDateCreated = pendingSummary.earliestDateCreated,
+                    latestMatchResultSentAt = mostRecentResponsesByGssCode[pendingSummary.gssCode]?.latestMatchResultSentAt,
                 )
             }
     }
