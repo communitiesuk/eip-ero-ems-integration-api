@@ -10,8 +10,7 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepositor
 import uk.gov.dluhc.emsintegrationapi.dto.AdminPendingRegisterCheckDto
 import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingEmsDownloadMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
-import uk.gov.dluhc.emsintegrationapi.models.AdminPendingEmsDownloadSummary
-import uk.gov.dluhc.emsintegrationapi.models.AdminPendingRegisterCheckSummary
+import uk.gov.dluhc.emsintegrationapi.models.AdminPendingChecksAndDownloadsSummaryResponse
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -25,8 +24,9 @@ class AdminService(
     private val adminPendingEmsDownloadMapper: AdminPendingEmsDownloadMapper,
     private val pendingRegisterCheckSummaryService: PendingRegisterCheckSummaryService,
     private val pendingEmsDownloadSummaryService: PendingEmsDownloadSummaryService,
-    @Value("\${jobs.register-check-monitoring.excluded-gss-codes}") private val registerCheckExcludedGssCodes: List<String>,
-    @Value("\${jobs.pending-downloads-monitoring.excluded-gss-codes}") private val pendingDownloadsExcludedGssCodes: List<String>,
+    private val retrieveEroNameService: RetrieveEroNameService,
+    @Value("\${admin.pending-checks-and-downloads-summary.excluded-register-check-gss-codes}") private val registerCheckExcludedGssCodes: List<String>,
+    @Value("\${admin.pending-checks-and-downloads-summary.excluded-ems-download-gss-codes}") private val pendingDownloadsExcludedGssCodes: List<String>,
 ) {
     companion object {
         private const val MAX_RESULTS = 10000
@@ -49,26 +49,24 @@ class AdminService(
     }
 
     @Transactional(readOnly = true)
-    fun adminGetPendingRegisterChecksSummary(pendingMinAgeInDays: Int): List<AdminPendingRegisterCheckSummary> {
-        val createdBefore = Instant.now().minus(pendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
-        return pendingRegisterCheckSummaryService
-            .summarisePendingRegisterChecks(createdBefore, registerCheckExcludedGssCodes)
-            .map(adminPendingRegisterCheckMapper::pendingRegisterCheckSummaryDtoToAdminPendingRegisterCheckSummaryModel)
-    }
-
-    @Transactional(readOnly = true)
-    fun adminGetPendingPostalDownloadsSummary(pendingMinAgeInDays: Int): List<AdminPendingEmsDownloadSummary> {
-        val createdBefore = Instant.now().minus(pendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
-        return pendingEmsDownloadSummaryService
-            .summarisePendingPostalDownloads(createdBefore, pendingDownloadsExcludedGssCodes)
-            .map(adminPendingEmsDownloadMapper::pendingEmsDownloadSummaryDtoToAdminPendingEmsDownloadSummaryModel)
-    }
-
-    @Transactional(readOnly = true)
-    fun adminGetPendingProxyDownloadsSummary(pendingMinAgeInDays: Int): List<AdminPendingEmsDownloadSummary> {
-        val createdBefore = Instant.now().minus(pendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
-        return pendingEmsDownloadSummaryService
-            .summarisePendingProxyDownloads(createdBefore, pendingDownloadsExcludedGssCodes)
-            .map(adminPendingEmsDownloadMapper::pendingEmsDownloadSummaryDtoToAdminPendingEmsDownloadSummaryModel)
+    fun adminGetPendingChecksAndDownloadsSummary(
+        registerChecksPendingMinAgeInDays: Int,
+        emsDownloadsPendingMinAgeInDays: Int,
+    ): AdminPendingChecksAndDownloadsSummaryResponse {
+        val now = Instant.now()
+        val registerChecksCreatedBefore = now.minus(registerChecksPendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
+        val emsDownloadsCreatedBefore = now.minus(emsDownloadsPendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
+        val eroNamesByGssCode = retrieveEroNameService.getEroNamesByGssCode()
+        return AdminPendingChecksAndDownloadsSummaryResponse(
+            pendingRegisterChecks = pendingRegisterCheckSummaryService
+                .summarisePendingRegisterChecks(registerChecksCreatedBefore, registerCheckExcludedGssCodes, eroNamesByGssCode)
+                .map(adminPendingRegisterCheckMapper::pendingRegisterCheckSummaryDtoToAdminPendingRegisterCheckSummaryModel),
+            pendingPostalDownloads = pendingEmsDownloadSummaryService
+                .summarisePendingPostalDownloads(emsDownloadsCreatedBefore, pendingDownloadsExcludedGssCodes, eroNamesByGssCode)
+                .map(adminPendingEmsDownloadMapper::pendingEmsDownloadSummaryDtoToAdminPendingEmsDownloadSummaryModel),
+            pendingProxyDownloads = pendingEmsDownloadSummaryService
+                .summarisePendingProxyDownloads(emsDownloadsCreatedBefore, pendingDownloadsExcludedGssCodes, eroNamesByGssCode)
+                .map(adminPendingEmsDownloadMapper::pendingEmsDownloadSummaryDtoToAdminPendingEmsDownloadSummaryModel),
+        )
     }
 }

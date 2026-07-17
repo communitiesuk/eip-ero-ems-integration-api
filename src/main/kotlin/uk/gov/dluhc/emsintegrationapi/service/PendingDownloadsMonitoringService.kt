@@ -44,16 +44,12 @@ class PendingDownloadsMonitoringService(
         }
     }
 
-    private fun summariseTotals(summaries: List<PendingEmsDownloadSummary>): PendingDownloadSummary {
-        val pendingDownloadSummaries = summaries.filter { it.pendingDownloadCount > 0 }
-        val totalPending = pendingDownloadSummaries.sumOf { it.pendingDownloadCount }
-        val totalPendingWithEmsElectorId = pendingDownloadSummaries.sumOf { it.pendingDownloadCountWithEmsElectorId }
-        return PendingDownloadSummary(
-            totalPending = totalPending,
-            totalPendingWithEmsElectorId = totalPendingWithEmsElectorId,
-            pendingByGssCode = pendingDownloadSummaries,
+    private fun summariseTotals(summaries: List<PendingEmsDownloadSummary>): PendingDownloadSummary =
+        PendingDownloadSummary(
+            totalPending = summaries.sumOf { it.pendingDownloadCount },
+            totalPendingWithEmsElectorId = summaries.sumOf { it.pendingDownloadCountWithEmsElectorId },
+            pendingByGssCode = summaries,
         )
-    }
 
     private fun logPendingDownloads(applicationType: String, summary: PendingDownloadSummary) {
         with(summary) {

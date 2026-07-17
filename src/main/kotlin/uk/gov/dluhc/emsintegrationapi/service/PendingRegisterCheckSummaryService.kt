@@ -17,13 +17,19 @@ class PendingRegisterCheckSummaryService(
     private val retrieveEroNameService: RetrieveEroNameService,
 ) {
     @Transactional(readOnly = true)
-    fun summarisePendingRegisterChecks(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingRegisterCheckSummary> {
+    fun summarisePendingRegisterChecks(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingRegisterCheckSummary> =
+        summarisePendingRegisterChecks(createdBefore, excludedGssCodes, retrieveEroNameService.getEroNamesByGssCode())
+
+    @Transactional(readOnly = true)
+    fun summarisePendingRegisterChecks(
+        createdBefore: Instant,
+        excludedGssCodes: List<String>,
+        eroNamesByGssCode: Map<String, String?>,
+    ): List<PendingRegisterCheckSummary> {
         val mostRecentResponsesByGssCode = registerCheckRepository.findMostRecentResponseTimeForEachGssCode()
             .associateBy { it.gssCode }
-        val eroNamesByGssCode = retrieveEroNameService.getEroNamesByGssCode()
-
         return registerCheckRepository.summarisePendingRegisterChecksByGssCode(createdBefore)
-            .filter { !excludedGssCodes.contains(it.gssCode) }
+            .filter { it.gssCode !in excludedGssCodes }
             .sortedBy { it.gssCode }
             .map { pendingSummary ->
                 PendingRegisterCheckSummary(

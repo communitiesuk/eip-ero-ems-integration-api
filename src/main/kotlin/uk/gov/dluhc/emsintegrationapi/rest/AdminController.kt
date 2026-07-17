@@ -56,10 +56,6 @@ class AdminController(
                 "[registerChecks=$registerChecksPendingMinAgeInDays days, emsDownloads=$emsDownloadsPendingMinAgeInDays days]"
         )
 
-        return AdminPendingChecksAndDownloadsSummaryResponse(
-            pendingRegisterChecks = adminService.adminGetPendingRegisterChecksSummary(registerChecksPendingMinAgeInDays),
-            pendingPostalDownloads = adminService.adminGetPendingPostalDownloadsSummary(emsDownloadsPendingMinAgeInDays),
-            pendingProxyDownloads = adminService.adminGetPendingProxyDownloadsSummary(emsDownloadsPendingMinAgeInDays),
-        )
+        return adminService.adminGetPendingChecksAndDownloadsSummary(registerChecksPendingMinAgeInDays, emsDownloadsPendingMinAgeInDays)
     }
 }

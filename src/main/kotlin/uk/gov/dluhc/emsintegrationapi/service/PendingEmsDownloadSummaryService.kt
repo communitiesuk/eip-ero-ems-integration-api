@@ -22,31 +22,47 @@ class PendingEmsDownloadSummaryService(
 ) {
     @Transactional(readOnly = true)
     fun summarisePendingPostalDownloads(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingEmsDownloadSummary> =
+        summarisePendingPostalDownloads(createdBefore, excludedGssCodes, retrieveEroNameService.getEroNamesByGssCode())
+
+    @Transactional(readOnly = true)
+    fun summarisePendingPostalDownloads(
+        createdBefore: Instant,
+        excludedGssCodes: List<String>,
+        eroNamesByGssCode: Map<String, String?>,
+    ): List<PendingEmsDownloadSummary> =
         summarisePendingDownloads(
             postalVoteApplicationRepository.summarisePendingPostalVotesByGssCode(createdBefore),
             postalVoteApplicationRepository.getLastSuccessfulEmsDownloadByGssCode(),
             excludedGssCodes,
+            eroNamesByGssCode,
         )
 
     @Transactional(readOnly = true)
     fun summarisePendingProxyDownloads(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingEmsDownloadSummary> =
+        summarisePendingProxyDownloads(createdBefore, excludedGssCodes, retrieveEroNameService.getEroNamesByGssCode())
+
+    @Transactional(readOnly = true)
+    fun summarisePendingProxyDownloads(
+        createdBefore: Instant,
+        excludedGssCodes: List<String>,
+        eroNamesByGssCode: Map<String, String?>,
+    ): List<PendingEmsDownloadSummary> =
         summarisePendingDownloads(
             proxyVoteApplicationRepository.summarisePendingProxyVotesByGssCode(createdBefore),
             proxyVoteApplicationRepository.getLastSuccessfulEmsDownloadByGssCode(),
             excludedGssCodes,
+            eroNamesByGssCode,
         )
 
     private fun summarisePendingDownloads(
         pendingSummaries: List<PendingDownloadsSummaryByGssCode>,
         lastSuccessfulDownloads: List<LastSuccessfulEmsDownloadByGssCode>,
         excludedGssCodes: List<String>,
+        eroNamesByGssCode: Map<String, String?>,
     ): List<PendingEmsDownloadSummary> {
-        val lastSuccessfulDownloadsByGssCode = lastSuccessfulDownloads
-            .associateBy { it.gssCode }
-        val eroNamesByGssCode = retrieveEroNameService.getEroNamesByGssCode()
-
+        val lastSuccessfulDownloadsByGssCode = lastSuccessfulDownloads.associateBy { it.gssCode }
         return pendingSummaries
-            .filter { !excludedGssCodes.contains(it.gssCode) }
+            .filter { it.gssCode !in excludedGssCodes }
             .sortedBy { it.gssCode }
             .map { pendingSummary ->
                 PendingEmsDownloadSummary(

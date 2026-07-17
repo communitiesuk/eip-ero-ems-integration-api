@@ -55,6 +55,9 @@ internal class AdminServiceTest {
     @Mock
     private lateinit var pendingEmsDownloadSummaryService: PendingEmsDownloadSummaryService
 
+    @Mock
+    private lateinit var retrieveEroNameService: RetrieveEroNameService
+
     private lateinit var adminService: AdminService
 
     @BeforeEach
@@ -68,6 +71,7 @@ internal class AdminServiceTest {
             adminPendingEmsDownloadMapper = adminPendingEmsDownloadMapper,
             pendingRegisterCheckSummaryService = pendingRegisterCheckSummaryService,
             pendingEmsDownloadSummaryService = pendingEmsDownloadSummaryService,
+            retrieveEroNameService = retrieveEroNameService,
             registerCheckExcludedGssCodes = emptyList(),
             pendingDownloadsExcludedGssCodes = emptyList(),
         )

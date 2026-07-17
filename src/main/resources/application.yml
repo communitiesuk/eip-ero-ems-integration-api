@@ -77,3 +77,8 @@ email:
     recipients: ${REGISTER_CHECK_MONITORING_RECIPIENTS}
 
 caching.time-to-live: PT1H
+
+admin:
+  pending-checks-and-downloads-summary:
+    excluded-register-check-gss-codes: "E99999999"
+    excluded-ems-download-gss-codes: "E99999999"

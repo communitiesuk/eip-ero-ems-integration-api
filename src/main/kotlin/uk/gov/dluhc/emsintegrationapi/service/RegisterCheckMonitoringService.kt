@@ -23,7 +23,6 @@ class RegisterCheckMonitoringService(
         val createdBefore = Instant.now().minus(expectedMaximumPendingPeriod)
         val stuckRegisterCheckSummaries = pendingRegisterCheckSummaryService
             .summarisePendingRegisterChecks(createdBefore, excludedGssCodes)
-            .filter { it.registerCheckCount > 0 }
         val totalStuck = stuckRegisterCheckSummaries.sumOf { it.registerCheckCount }
 
         logger.info { "A total of $totalStuck register checks have been pending for more than $expectedMaximumPendingPeriod." }
