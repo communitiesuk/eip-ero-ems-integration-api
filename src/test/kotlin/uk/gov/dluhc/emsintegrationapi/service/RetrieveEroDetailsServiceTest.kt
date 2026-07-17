@@ -10,20 +10,21 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.verify
 import uk.gov.dluhc.emsintegrationapi.client.IerApiClient
 import uk.gov.dluhc.emsintegrationapi.client.IerGeneralException
+import uk.gov.dluhc.emsintegrationapi.service.dto.EroSummary
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerLocalAuthorityDetails
 
 @ExtendWith(MockitoExtension::class)
-internal class RetrieveEroNameServiceTest {
+internal class RetrieveEroDetailsServiceTest {
 
     @Mock
     private lateinit var ierApiClient: IerApiClient
 
     @InjectMocks
-    private lateinit var retrieveEroNameService: RetrieveEroNameService
+    private lateinit var retrieveEroNameService: RetrieveEroDetailsService
 
     @Test
-    fun `should return ERO names by gss code given EROs with multiple local authorities`() {
+    fun `should return ERO summaries by gss code given EROs with multiple local authorities`() {
         // Given
         given(ierApiClient.getEros()).willReturn(
             listOf(
@@ -44,14 +45,14 @@ internal class RetrieveEroNameServiceTest {
         )
 
         // When
-        val actual = retrieveEroNameService.getEroNamesByGssCode()
+        val actual = retrieveEroNameService.getEroSummaryByGssCode()
 
         // Then
         assertThat(actual).isEqualTo(
             mapOf(
-                "E00000001" to "Camden Council",
-                "E00000002" to "Camden Council",
-                "E00000003" to "Westminster Council",
+                "E00000001" to EroSummary(name = "Camden Council", emsVendor = null),
+                "E00000002" to EroSummary(name = "Camden Council", emsVendor = null),
+                "E00000003" to EroSummary(name = "Westminster Council", emsVendor = null),
             )
         )
         verify(ierApiClient).getEros()
@@ -63,7 +64,7 @@ internal class RetrieveEroNameServiceTest {
         given(ierApiClient.getEros()).willThrow(IerGeneralException("Error getting EROs from IER API"))
 
         // When
-        val actual = retrieveEroNameService.getEroNamesByGssCode()
+        val actual = retrieveEroNameService.getEroSummaryByGssCode()
 
         // Then
         assertThat(actual).isEmpty()

@@ -9,10 +9,12 @@ fun buildPendingRegisterCheckSummary(
     earliestDateCreated: Instant? = null,
     latestMatchResultSentAt: Instant? = null,
     eroName: String? = null,
+    emsVendor: String? = null,
 ) = PendingRegisterCheckSummary(
     gssCode = gssCode,
     registerCheckCount = registerCheckCount,
     earliestDateCreated = earliestDateCreated,
     latestMatchResultSentAt = latestMatchResultSentAt,
     eroName = eroName,
+    emsVendor = emsVendor,
 )

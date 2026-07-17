@@ -8,4 +8,5 @@ data class PendingRegisterCheckSummary(
     val earliestDateCreated: Instant?,
     val latestMatchResultSentAt: Instant?,
     val eroName: String?,
+    val emsVendor: String?,
 )

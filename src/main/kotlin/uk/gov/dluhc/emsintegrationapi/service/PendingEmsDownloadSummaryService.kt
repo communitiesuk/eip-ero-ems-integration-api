@@ -6,6 +6,7 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.LastSuccessfulEmsDownloadB
 import uk.gov.dluhc.emsintegrationapi.database.entity.PendingDownloadsSummaryByGssCode
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
+import uk.gov.dluhc.emsintegrationapi.service.dto.EroSummary
 import uk.gov.dluhc.emsintegrationapi.service.dto.PendingEmsDownloadSummary
 import java.time.Instant
 
@@ -18,60 +19,62 @@ import java.time.Instant
 class PendingEmsDownloadSummaryService(
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository,
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository,
-    private val retrieveEroNameService: RetrieveEroNameService,
+    private val retrieveEroNameService: RetrieveEroDetailsService,
 ) {
     @Transactional(readOnly = true)
     fun summarisePendingPostalDownloads(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingEmsDownloadSummary> =
-        summarisePendingPostalDownloads(createdBefore, excludedGssCodes, retrieveEroNameService.getEroNamesByGssCode())
+        summarisePendingPostalDownloads(createdBefore, excludedGssCodes, retrieveEroNameService.getEroSummaryByGssCode())
 
     @Transactional(readOnly = true)
     fun summarisePendingPostalDownloads(
         createdBefore: Instant,
         excludedGssCodes: List<String>,
-        eroNamesByGssCode: Map<String, String?>,
+        eroSummaryByGssCode: Map<String, EroSummary>,
     ): List<PendingEmsDownloadSummary> =
         summarisePendingDownloads(
             postalVoteApplicationRepository.summarisePendingPostalVotesByGssCode(createdBefore),
             postalVoteApplicationRepository.getLastSuccessfulEmsDownloadByGssCode(),
             excludedGssCodes,
-            eroNamesByGssCode,
+            eroSummaryByGssCode,
         )
 
     @Transactional(readOnly = true)
     fun summarisePendingProxyDownloads(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingEmsDownloadSummary> =
-        summarisePendingProxyDownloads(createdBefore, excludedGssCodes, retrieveEroNameService.getEroNamesByGssCode())
+        summarisePendingProxyDownloads(createdBefore, excludedGssCodes, retrieveEroNameService.getEroSummaryByGssCode())
 
     @Transactional(readOnly = true)
     fun summarisePendingProxyDownloads(
         createdBefore: Instant,
         excludedGssCodes: List<String>,
-        eroNamesByGssCode: Map<String, String?>,
+        eroSummaryByGssCode: Map<String, EroSummary>,
     ): List<PendingEmsDownloadSummary> =
         summarisePendingDownloads(
             proxyVoteApplicationRepository.summarisePendingProxyVotesByGssCode(createdBefore),
             proxyVoteApplicationRepository.getLastSuccessfulEmsDownloadByGssCode(),
             excludedGssCodes,
-            eroNamesByGssCode,
+            eroSummaryByGssCode,
         )
 
     private fun summarisePendingDownloads(
         pendingSummaries: List<PendingDownloadsSummaryByGssCode>,
         lastSuccessfulDownloads: List<LastSuccessfulEmsDownloadByGssCode>,
         excludedGssCodes: List<String>,
-        eroNamesByGssCode: Map<String, String?>,
+        eroSummaryByGssCode: Map<String, EroSummary>,
     ): List<PendingEmsDownloadSummary> {
         val lastSuccessfulDownloadsByGssCode = lastSuccessfulDownloads.associateBy { it.gssCode }
         return pendingSummaries
             .filter { it.gssCode !in excludedGssCodes }
             .sortedBy { it.gssCode }
             .map { pendingSummary ->
+                val eroSummary = eroSummaryByGssCode[pendingSummary.gssCode]
                 PendingEmsDownloadSummary(
                     gssCode = pendingSummary.gssCode,
                     pendingDownloadCount = pendingSummary.pendingDownloadCount,
                     pendingDownloadCountWithEmsElectorId = pendingSummary.pendingDownloadsWithEmsElectorId,
                     earliestDateCreated = pendingSummary.earliestDateCreated,
                     lastSuccessfulEmsDownload = lastSuccessfulDownloadsByGssCode[pendingSummary.gssCode]?.lastSuccessfulEmsDownload,
-                    eroName = eroNamesByGssCode[pendingSummary.gssCode],
+                    eroName = eroSummary?.name,
+                    emsVendor = eroSummary?.emsVendor,
                 )
             }
     }

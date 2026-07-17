@@ -24,7 +24,7 @@ class AdminService(
     private val adminPendingEmsDownloadMapper: AdminPendingEmsDownloadMapper,
     private val pendingRegisterCheckSummaryService: PendingRegisterCheckSummaryService,
     private val pendingEmsDownloadSummaryService: PendingEmsDownloadSummaryService,
-    private val retrieveEroNameService: RetrieveEroNameService,
+    private val retrieveEroNameService: RetrieveEroDetailsService,
     @Value("\${admin.pending-checks-and-downloads-summary.excluded-register-check-gss-codes}") private val registerCheckExcludedGssCodes: List<String>,
     @Value("\${admin.pending-checks-and-downloads-summary.excluded-ems-download-gss-codes}") private val pendingDownloadsExcludedGssCodes: List<String>,
 ) {
@@ -56,16 +56,16 @@ class AdminService(
         val now = Instant.now()
         val registerChecksCreatedBefore = now.minus(registerChecksPendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
         val emsDownloadsCreatedBefore = now.minus(emsDownloadsPendingMinAgeInDays.toLong(), ChronoUnit.DAYS)
-        val eroNamesByGssCode = retrieveEroNameService.getEroNamesByGssCode()
+        val eroSummaryByGssCode = retrieveEroNameService.getEroSummaryByGssCode()
         return AdminPendingChecksAndDownloadsSummaryResponse(
             pendingRegisterChecks = pendingRegisterCheckSummaryService
-                .summarisePendingRegisterChecks(registerChecksCreatedBefore, registerCheckExcludedGssCodes, eroNamesByGssCode)
+                .summarisePendingRegisterChecks(registerChecksCreatedBefore, registerCheckExcludedGssCodes, eroSummaryByGssCode)
                 .map(adminPendingRegisterCheckMapper::pendingRegisterCheckSummaryDtoToAdminPendingRegisterCheckSummaryModel),
             pendingPostalDownloads = pendingEmsDownloadSummaryService
-                .summarisePendingPostalDownloads(emsDownloadsCreatedBefore, pendingDownloadsExcludedGssCodes, eroNamesByGssCode)
+                .summarisePendingPostalDownloads(emsDownloadsCreatedBefore, pendingDownloadsExcludedGssCodes, eroSummaryByGssCode)
                 .map(adminPendingEmsDownloadMapper::pendingEmsDownloadSummaryDtoToAdminPendingEmsDownloadSummaryModel),
             pendingProxyDownloads = pendingEmsDownloadSummaryService
-                .summarisePendingProxyDownloads(emsDownloadsCreatedBefore, pendingDownloadsExcludedGssCodes, eroNamesByGssCode)
+                .summarisePendingProxyDownloads(emsDownloadsCreatedBefore, pendingDownloadsExcludedGssCodes, eroSummaryByGssCode)
                 .map(adminPendingEmsDownloadMapper::pendingEmsDownloadSummaryDtoToAdminPendingEmsDownloadSummaryModel),
         )
     }

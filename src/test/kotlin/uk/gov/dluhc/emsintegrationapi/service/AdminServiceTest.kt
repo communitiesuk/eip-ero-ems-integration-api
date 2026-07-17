@@ -56,7 +56,7 @@ internal class AdminServiceTest {
     private lateinit var pendingEmsDownloadSummaryService: PendingEmsDownloadSummaryService
 
     @Mock
-    private lateinit var retrieveEroNameService: RetrieveEroNameService
+    private lateinit var retrieveEroNameService: RetrieveEroDetailsService
 
     private lateinit var adminService: AdminService
 

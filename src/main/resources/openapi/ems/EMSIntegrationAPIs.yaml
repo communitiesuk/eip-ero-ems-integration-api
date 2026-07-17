@@ -1144,10 +1144,10 @@ components:
           type: string
           description: The name of the ERO managing the Local Authority, as held by IER
           example: Camden London Borough Council
-      #        emsVendor: # TODO Maybe?
-      #          type: string
-      #          description: The EMS vendor of the ERO
-      #          example: Civica
+        emsVendor:
+          type: string
+          description: The EMS vendor used by the ERO, as held by IER
+          example: Civica
       required:
         - gssCode
         - registerCheckCount
@@ -1190,10 +1190,10 @@ components:
           type: string
           description: The name of the ERO managing the Local Authority, as held by IER
           example: Camden London Borough Council
-      #  emsVendor: # TODO Maybe?
-      #    type: string
-      #    description: The EMS vendor of the ERO
-      #    example: Civica
+        emsVendor:
+          type: string
+          description: The EMS vendor used by the ERO, as held by IER
+          example: Civica
       required:
         - gssCode
         - pendingDownloadCount
