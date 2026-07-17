@@ -26,6 +26,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetai
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetails
 import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -48,6 +49,8 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
         private const val EXCLUDED_GSS_CODE = "E99999999"
         private const val GSS_CODE_1 = "E00000001"
         private const val GSS_CODE_2 = "E00000002"
+        private const val ERO_NAME_1 = "Camden Council"
+        private const val ERO_NAME_2 = "Westminster Council"
         private val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC)
     }
 
@@ -81,6 +84,13 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
     @Test
     fun `should return summaries of pending register checks and downloads per gss code`() {
         // Given
+        wireMockService.stubIerApiGetEros(
+            listOf(
+                buildIerEroDetails(gssCode = GSS_CODE_1, name = ERO_NAME_1),
+                buildIerEroDetails(gssCode = GSS_CODE_2, name = ERO_NAME_2),
+            )
+        )
+
         saveRegisterCheckPendingSince(GSS_CODE_1, Instant.parse("2025-03-01T09:00:00Z"))
         saveRegisterCheckPendingSince(GSS_CODE_1, Instant.parse("2025-03-02T09:00:00Z"))
 
@@ -131,6 +141,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                     registerCheckCount = 2,
                     earliestDateCreated = OffsetDateTime.parse("2025-03-01T09:00:00Z"),
                     latestMatchResultSentAt = OffsetDateTime.parse("2025-03-01T08:00:00Z"),
+                    eroName = ERO_NAME_1,
                 ),
             ),
             pendingPostalDownloads = listOf(
@@ -140,6 +151,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                     pendingDownloadCountWithEmsElectorId = 1,
                     earliestDateCreated = OffsetDateTime.parse("2025-03-01T10:00:00Z"),
                     lastSuccessfulEmsDownload = OffsetDateTime.parse("2025-03-05T12:00:00Z"),
+                    eroName = ERO_NAME_1,
                 ),
             ),
             pendingProxyDownloads = listOf(
@@ -149,6 +161,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                     pendingDownloadCountWithEmsElectorId = 1,
                     earliestDateCreated = OffsetDateTime.parse("2025-03-03T10:00:00Z"),
                     lastSuccessfulEmsDownload = null,
+                    eroName = ERO_NAME_2,
                 ),
             ),
         )

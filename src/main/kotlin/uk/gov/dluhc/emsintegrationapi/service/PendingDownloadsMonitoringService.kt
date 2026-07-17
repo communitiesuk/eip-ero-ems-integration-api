@@ -67,7 +67,8 @@ class PendingDownloadsMonitoringService(
                         "(${it.pendingDownloadCountWithEmsElectorId} with EMS Elector Ids) " +
                         "that have been pending for more than $expectedMaximumPendingPeriod. " +
                         "The oldest pending application has been pending since ${it.earliestDateCreated}. " +
-                        "The last successful EMS download was at ${it.lastSuccessfulEmsDownload ?: "never"}."
+                        "The last successful EMS download was at ${it.lastSuccessfulEmsDownload ?: "never"}." +
+                        (it.eroName?.let { eroName -> " The ERO name is $eroName." } ?: "")
                 }
             }
         }

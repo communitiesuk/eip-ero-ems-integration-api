@@ -18,6 +18,7 @@ import java.time.Instant
 class PendingEmsDownloadSummaryService(
     private val postalVoteApplicationRepository: PostalVoteApplicationRepository,
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository,
+    private val retrieveEroNameService: RetrieveEroNameService,
 ) {
     @Transactional(readOnly = true)
     fun summarisePendingPostalDownloads(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingEmsDownloadSummary> =
@@ -42,6 +43,7 @@ class PendingEmsDownloadSummaryService(
     ): List<PendingEmsDownloadSummary> {
         val lastSuccessfulDownloadsByGssCode = lastSuccessfulDownloads
             .associateBy { it.gssCode }
+        val eroNamesByGssCode = retrieveEroNameService.getEroNamesByGssCode()
 
         return pendingSummaries
             .filter { !excludedGssCodes.contains(it.gssCode) }
@@ -53,6 +55,7 @@ class PendingEmsDownloadSummaryService(
                     pendingDownloadCountWithEmsElectorId = pendingSummary.pendingDownloadsWithEmsElectorId,
                     earliestDateCreated = pendingSummary.earliestDateCreated,
                     lastSuccessfulEmsDownload = lastSuccessfulDownloadsByGssCode[pendingSummary.gssCode]?.lastSuccessfulEmsDownload,
+                    eroName = eroNamesByGssCode[pendingSummary.gssCode],
                 )
             }
     }

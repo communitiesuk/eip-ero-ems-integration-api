@@ -9,10 +9,12 @@ fun buildPendingEmsDownloadSummary(
     pendingDownloadCountWithEmsElectorId: Int = 1,
     earliestDateCreated: Instant? = null,
     lastSuccessfulEmsDownload: Instant? = null,
+    eroName: String? = null,
 ) = PendingEmsDownloadSummary(
     gssCode = gssCode,
     pendingDownloadCount = pendingDownloadCount,
     pendingDownloadCountWithEmsElectorId = pendingDownloadCountWithEmsElectorId,
     earliestDateCreated = earliestDateCreated,
     lastSuccessfulEmsDownload = lastSuccessfulEmsDownload,
+    eroName = eroName,
 )
