@@ -7,4 +7,5 @@ data class PendingRegisterCheckSummary(
     val registerCheckCount: Int,
     val earliestDateCreated: Instant?,
     val latestMatchResultSentAt: Instant?,
+    val eroName: String?,
 )

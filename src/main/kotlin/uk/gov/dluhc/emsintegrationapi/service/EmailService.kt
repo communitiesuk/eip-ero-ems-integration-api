@@ -77,6 +77,7 @@ private fun generatePendingRegisterCheckResultsHtml(stuckRegisterCheckSummaries:
             """
                 <tr>
                     <td>${summary.gssCode}</td>
+                    <td>${summary.eroName.orEmpty()}</td>
                     <td>${summary.registerCheckCount}</td>
                     <td>${summary.earliestDateCreated?.truncatedTo(ChronoUnit.SECONDS)}</td>
                     <td>${summary.latestMatchResultSentAt?.truncatedTo(ChronoUnit.SECONDS) ?: "never"}</td>
@@ -90,6 +91,7 @@ private fun generatePendingDownloadsHtml(pendingDownloadSummaries: List<PendingE
         """
                 <tr>
                     <td>${summary.gssCode}</td>
+                    <td>${summary.eroName.orEmpty()}</td>
                     <td>${summary.pendingDownloadCount}</td>
                     <td>${summary.pendingDownloadCountWithEmsElectorId}</td>
                     <td>${summary.earliestDateCreated?.truncatedTo(ChronoUnit.SECONDS)}</td>

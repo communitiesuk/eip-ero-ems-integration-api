@@ -14,11 +14,13 @@ import java.time.Instant
 @Service
 class PendingRegisterCheckSummaryService(
     private val registerCheckRepository: RegisterCheckRepository,
+    private val retrieveEroNameService: RetrieveEroNameService,
 ) {
     @Transactional(readOnly = true)
     fun summarisePendingRegisterChecks(createdBefore: Instant, excludedGssCodes: List<String>): List<PendingRegisterCheckSummary> {
         val mostRecentResponsesByGssCode = registerCheckRepository.findMostRecentResponseTimeForEachGssCode()
             .associateBy { it.gssCode }
+        val eroNamesByGssCode = retrieveEroNameService.getEroNamesByGssCode()
 
         return registerCheckRepository.summarisePendingRegisterChecksByGssCode(createdBefore)
             .filter { !excludedGssCodes.contains(it.gssCode) }
@@ -29,6 +31,7 @@ class PendingRegisterCheckSummaryService(
                     registerCheckCount = pendingSummary.registerCheckCount,
                     earliestDateCreated = pendingSummary.earliestDateCreated,
                     latestMatchResultSentAt = mostRecentResponsesByGssCode[pendingSummary.gssCode]?.latestMatchResultSentAt,
+                    eroName = eroNamesByGssCode[pendingSummary.gssCode],
                 )
             }
     }

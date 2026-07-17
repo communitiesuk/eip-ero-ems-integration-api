@@ -8,4 +8,5 @@ data class PendingEmsDownloadSummary(
     val pendingDownloadCountWithEmsElectorId: Int,
     val earliestDateCreated: Instant?,
     val lastSuccessfulEmsDownload: Instant?,
+    val eroName: String?,
 )

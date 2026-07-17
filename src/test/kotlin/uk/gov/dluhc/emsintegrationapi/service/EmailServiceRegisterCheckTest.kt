@@ -36,18 +36,21 @@ internal class EmailServiceRegisterCheckTest {
         private val DATE_CREATED_2 = LocalDateTime.of(2025, 3, 2, 10, 30).toInstant(ZoneOffset.UTC)
         private val MATCH_RESULT_DATE_1 = LocalDateTime.of(2025, 3, 1, 9, 30).toInstant(ZoneOffset.UTC)
         private val MATCH_RESULT_DATE_2 = LocalDateTime.of(2025, 3, 2, 9, 30).toInstant(ZoneOffset.UTC)
+        private const val ERO_NAME_1 = "Camden Council"
         private val EXPECTED_STUCK_REGISTER_CHECK_SUMMARIES = listOf(
             buildPendingRegisterCheckSummary(
                 gssCode = GSS_CODE_1,
                 registerCheckCount = 2,
                 earliestDateCreated = DATE_CREATED_1,
                 latestMatchResultSentAt = MATCH_RESULT_DATE_1,
+                eroName = ERO_NAME_1,
             ),
             buildPendingRegisterCheckSummary(
                 gssCode = GSS_CODE_2,
                 registerCheckCount = 1,
                 earliestDateCreated = DATE_CREATED_2,
                 latestMatchResultSentAt = MATCH_RESULT_DATE_2,
+                eroName = null,
             ),
         )
     }
@@ -77,6 +80,7 @@ internal class EmailServiceRegisterCheckTest {
                 "        <thead>\n" +
                 "        <tr>\n" +
                 "            <th>GSS code</th>\n" +
+                "            <th>ERO name</th>\n" +
                 "            <th>Register check count</th>\n" +
                 "            <th>Date of oldest pending check</th>\n" +
                 "            <th>Date of most recent successful EMS response</th>\n" +
@@ -85,12 +89,14 @@ internal class EmailServiceRegisterCheckTest {
                 "        <tbody>\n" +
                 "            <tr>\n" +
                 "                <td>$GSS_CODE_1</td>\n" +
+                "                <td>$ERO_NAME_1</td>\n" +
                 "                <td>2</td>\n" +
                 "                <td>2025-03-01T10:30:00Z</td>\n" +
                 "                <td>2025-03-01T09:30:00Z</td>\n" +
                 "            </tr>\n" +
                 "            <tr>\n" +
                 "                <td>$GSS_CODE_2</td>\n" +
+                "                <td></td>\n" +
                 "                <td>1</td>\n" +
                 "                <td>2025-03-02T10:30:00Z</td>\n" +
                 "                <td>2025-03-02T09:30:00Z</td>\n" +

@@ -32,7 +32,8 @@ class RegisterCheckMonitoringService(
                 "The gss code ${it.gssCode} has ${it.registerCheckCount} register checks " +
                     "that have been pending for more than $expectedMaximumPendingPeriod. " +
                     "The oldest pending check has been pending since ${it.earliestDateCreated}. " +
-                    "The last successful EMS response was at ${it.latestMatchResultSentAt ?: "never"}."
+                    "The last successful EMS response was at ${it.latestMatchResultSentAt ?: "never"}." +
+                    (it.eroName?.let { eroName -> " The ERO name is $eroName." } ?: "")
             }
         }
 

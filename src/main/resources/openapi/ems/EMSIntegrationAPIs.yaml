@@ -1109,7 +1109,7 @@ components:
             $ref: '#/components/schemas/AdminPendingEmsDownload'
       required:
         - pendingEmsDownloads
-    AdminPendingRegisterCheckSummary: # TODO
+    AdminPendingRegisterCheckSummary:
       title: AdminPendingRegisterCheckSummary
       type: object
       description: |-
@@ -1140,10 +1140,10 @@ components:
             considering all of its register checks regardless of the request's minimum pending age filter.
           format: date-time
           example: 2022-09-07T14:14:55.123Z
-      #        eroName: # TODO Maybe?
-      #          type: string
-      #          description: The name of the ERO
-      #          example: Camden # TODO
+        eroName:
+          type: string
+          description: The name of the ERO managing the Local Authority, as held by IER
+          example: Camden London Borough Council
       #        emsVendor: # TODO Maybe?
       #          type: string
       #          description: The EMS vendor of the ERO
@@ -1151,7 +1151,7 @@ components:
       required:
         - gssCode
         - registerCheckCount
-    AdminPendingEmsDownloadSummary: # TODO
+    AdminPendingEmsDownloadSummary:
       title: AdminPendingEmsDownloadSummary
       type: object
       description: |-
@@ -1186,10 +1186,10 @@ components:
             considering all of its applications regardless of the request's minimum pending age filter.
           format: date-time
           example: 2022-09-07T14:14:55.123Z
-      #  eroName: # TODO Maybe?
-      #    type: string
-      #    description: The name of the ERO
-      #    example: Camden # TODO
+        eroName:
+          type: string
+          description: The name of the ERO managing the Local Authority, as held by IER
+          example: Camden London Borough Council
       #  emsVendor: # TODO Maybe?
       #    type: string
       #    description: The EMS vendor of the ERO

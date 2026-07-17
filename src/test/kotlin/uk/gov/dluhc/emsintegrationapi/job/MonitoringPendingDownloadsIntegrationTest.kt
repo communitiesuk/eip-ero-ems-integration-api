@@ -24,6 +24,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicantDetails
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildApplicationDetailsEntity
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetails
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.Period
@@ -305,7 +306,15 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
 
     @Test
     fun `System sends an email reporting postal and proxy pending downloads`() {
-        // Given a postal vote application with gss code "E00000001" with an EMS Elector ID has been pending since 2025-03-03T10:00:00Z and has record status "RECEIVED"
+        // Given the gss codes "E00000001" and "E00000002" are managed by the EROs "Camden Council" and "Westminster Council" respectively
+        wireMockService.stubIerApiGetEros(
+            listOf(
+                buildIerEroDetails(gssCode = "E00000001", name = "Camden Council"),
+                buildIerEroDetails(gssCode = "E00000002", name = "Westminster Council"),
+            )
+        )
+
+        // And a postal vote application with gss code "E00000001" with an EMS Elector ID has been pending since 2025-03-03T10:00:00Z and has record status "RECEIVED"
         setDateCreatedPostal(
             buildPostalVoteApplication(
                 recordStatus = RecordStatus.valueOf("RECEIVED"),
@@ -498,6 +507,7 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
               <thead>
               <tr>
                   <th>GSS code</th>
+                  <th>ERO name</th>
                   <th>Pending postal downloads</th>
                   <th>Pending with EMS Elector ID</th>
                   <th>Date of oldest pending application</th>
@@ -507,6 +517,7 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
               <tbody>
                   <tr>
                       <td>E00000001</td>
+                      <td>Camden Council</td>
                       <td>3</td>
                       <td>1</td>
                       <td>2025-03-01T10:00:00Z</td>
@@ -514,6 +525,7 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
                   </tr>
                   <tr>
                       <td>E00000002</td>
+                      <td>Westminster Council</td>
                       <td>1</td>
                       <td>0</td>
                       <td>2025-03-03T10:00:00Z</td>
@@ -528,6 +540,7 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
               <thead>
               <tr>
                   <th>GSS code</th>
+                  <th>ERO name</th>
                   <th>Pending proxy downloads</th>
                   <th>Pending with EMS Elector ID</th>
                   <th>Date of oldest pending application</th>
@@ -537,6 +550,7 @@ internal class MonitoringPendingDownloadsIntegrationTest : IntegrationTest() {
               <tbody>
                   <tr>
                       <td>E00000001</td>
+                      <td>Camden Council</td>
                       <td>2</td>
                       <td>1</td>
                       <td>2025-03-02T10:00:00Z</td>
