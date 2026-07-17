@@ -29,6 +29,7 @@ class JacksonConfiguration {
             .addModule(KotlinModule.Builder().build())
             .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
             .disable(DateTimeFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS)
+            .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
             .changeDefaultPropertyInclusion { _ -> JsonInclude.Value.construct(Include.NON_NULL, Include.NON_NULL) }
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build()
