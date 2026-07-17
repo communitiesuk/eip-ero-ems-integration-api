@@ -40,23 +40,19 @@ class PendingEmsDownloadSummaryService(
         lastSuccessfulDownloads: List<LastSuccessfulEmsDownloadByGssCode>,
         excludedGssCodes: List<String>,
     ): List<PendingEmsDownloadSummary> {
-        val pendingSummariesByGssCode = pendingSummaries
-            .filter { !excludedGssCodes.contains(it.gssCode) }
-            .associateBy { it.gssCode }
         val lastSuccessfulDownloadsByGssCode = lastSuccessfulDownloads
-            .filter { !excludedGssCodes.contains(it.gssCode) }
             .associateBy { it.gssCode }
 
-        return (pendingSummariesByGssCode.keys + lastSuccessfulDownloadsByGssCode.keys)
-            .sorted()
-            .map { gssCode ->
-                val pendingSummary = pendingSummariesByGssCode[gssCode]
+        return pendingSummaries
+            .filter { !excludedGssCodes.contains(it.gssCode) }
+            .sortedBy { it.gssCode }
+            .map { pendingSummary ->
                 PendingEmsDownloadSummary(
-                    gssCode = gssCode,
-                    pendingDownloadCount = pendingSummary?.pendingDownloadCount ?: 0,
-                    pendingDownloadCountWithEmsElectorId = pendingSummary?.pendingDownloadsWithEmsElectorId ?: 0,
-                    earliestDateCreated = pendingSummary?.earliestDateCreated,
-                    lastSuccessfulEmsDownload = lastSuccessfulDownloadsByGssCode[gssCode]?.lastSuccessfulEmsDownload,
+                    gssCode = pendingSummary.gssCode,
+                    pendingDownloadCount = pendingSummary.pendingDownloadCount,
+                    pendingDownloadCountWithEmsElectorId = pendingSummary.pendingDownloadsWithEmsElectorId,
+                    earliestDateCreated = pendingSummary.earliestDateCreated,
+                    lastSuccessfulEmsDownload = lastSuccessfulDownloadsByGssCode[pendingSummary.gssCode]?.lastSuccessfulEmsDownload,
                 )
             }
     }

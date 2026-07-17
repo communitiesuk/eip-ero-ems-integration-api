@@ -29,6 +29,8 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterC
 import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
 import java.time.Instant
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : IntegrationTest() {
 
@@ -46,6 +48,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
         private const val EXCLUDED_GSS_CODE = "E99999999"
         private const val GSS_CODE_1 = "E00000001"
         private const val GSS_CODE_2 = "E00000002"
+        private val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC)
     }
 
     @BeforeEach
@@ -78,8 +81,8 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
     @Test
     fun `should return summaries of pending register checks and downloads per gss code`() {
         // Given
-        saveRegisterCheckPendingSince(GSS_CODE_1, "2025-03-01 09:00:00")
-        saveRegisterCheckPendingSince(GSS_CODE_1, "2025-03-02 09:00:00")
+        saveRegisterCheckPendingSince(GSS_CODE_1, Instant.parse("2025-03-01T09:00:00Z"))
+        saveRegisterCheckPendingSince(GSS_CODE_1, Instant.parse("2025-03-02T09:00:00Z"))
 
         registerCheckRepository.save(
             buildRegisterCheck(
@@ -97,7 +100,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
             )
         )
 
-        saveRegisterCheckPendingSince(EXCLUDED_GSS_CODE, "2025-03-01 09:00:00")
+        saveRegisterCheckPendingSince(EXCLUDED_GSS_CODE, Instant.parse("2025-03-01T09:00:00Z"))
         savePostalApplicationPendingSince(GSS_CODE_1, Instant.parse("2025-03-01T10:00:00Z"))
         savePostalApplicationPendingSince(GSS_CODE_1, Instant.parse("2025-03-02T10:00:00Z"), emsElectorId = null)
         savePostalApplicationPendingSince(GSS_CODE_1, Instant.now())
@@ -108,7 +111,13 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
 
         // When
         val response = webTestClient.get()
-            .uri(ADMIN_GET_PENDING_CHECKS_AND_DOWNLOADS_SUMMARY_ENDPOINT)
+            .uri(
+                UriComponentsBuilder
+                    .fromUriString(ADMIN_GET_PENDING_CHECKS_AND_DOWNLOADS_SUMMARY_ENDPOINT)
+                    .queryParam("registerChecksPendingMinAgeInDays", 1)
+                    .queryParam("emsDownloadsPendingMinAgeInDays", 5)
+                    .build().toUriString()
+            )
             .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
@@ -123,12 +132,6 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                     earliestDateCreated = OffsetDateTime.parse("2025-03-01T09:00:00Z"),
                     latestMatchResultSentAt = OffsetDateTime.parse("2025-03-01T08:00:00Z"),
                 ),
-                AdminPendingRegisterCheckSummary(
-                    gssCode = GSS_CODE_2,
-                    registerCheckCount = 0,
-                    earliestDateCreated = null,
-                    latestMatchResultSentAt = OffsetDateTime.parse("2025-03-02T08:00:00Z"),
-                ),
             ),
             pendingPostalDownloads = listOf(
                 AdminPendingEmsDownloadSummary(
@@ -140,13 +143,6 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                 ),
             ),
             pendingProxyDownloads = listOf(
-                AdminPendingEmsDownloadSummary(
-                    gssCode = GSS_CODE_1,
-                    pendingDownloadCount = 0,
-                    pendingDownloadCountWithEmsElectorId = 0,
-                    earliestDateCreated = null,
-                    lastSuccessfulEmsDownload = OffsetDateTime.parse("2025-03-06T12:00:00Z"),
-                ),
                 AdminPendingEmsDownloadSummary(
                     gssCode = GSS_CODE_2,
                     pendingDownloadCount = 1,
@@ -161,31 +157,18 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
     }
 
     @Test
-    fun `should include recently created pending checks and downloads given minimum age params of zero days`() {
+    fun `should include recently created pending checks and downloads given default minimum age params of zero days`() {
         // Given
-        registerCheckRepository.save(buildRegisterCheck(gssCode = GSS_CODE_1, status = CheckStatus.PENDING))
-        postalVoteApplicationRepository.save(
-            buildPostalVoteApplication(
-                recordStatus = RecordStatus.RECEIVED,
-                applicationDetails = buildApplicationDetailsEntity(gssCode = GSS_CODE_1),
-            )
-        )
-        proxyVoteApplicationRepository.save(
-            buildProxyVoteApplication(
-                recordStatus = RecordStatus.RECEIVED,
-                applicationDetails = buildApplicationDetailsEntity(gssCode = GSS_CODE_2),
-            )
-        )
+        // Data is saved a minute in the past as MySQL rounds date_created to the nearest second,
+        // which could otherwise push rows just past the now() cutoff used by the zero day default.
+        val aMinuteAgo = Instant.now().minusSeconds(60)
+        saveRegisterCheckPendingSince(GSS_CODE_1, aMinuteAgo)
+        savePostalApplicationPendingSince(GSS_CODE_1, aMinuteAgo)
+        saveProxyApplicationPendingSince(GSS_CODE_2, aMinuteAgo)
 
         // When
         val response = webTestClient.get()
-            .uri(
-                UriComponentsBuilder
-                    .fromUriString(ADMIN_GET_PENDING_CHECKS_AND_DOWNLOADS_SUMMARY_ENDPOINT)
-                    .queryParam("registerChecksPendingMinAgeInDays", 0)
-                    .queryParam("emsDownloadsPendingMinAgeInDays", 0)
-                    .build().toUriString()
-            )
+            .uri(ADMIN_GET_PENDING_CHECKS_AND_DOWNLOADS_SUMMARY_ENDPOINT)
             .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
@@ -217,9 +200,10 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
      * The date_created field on the entity has the @CreatedDate annotation so is overwritten when first saved.
      * We update the field with SQL after creating the register check to bypass this.
      */
-    private fun saveRegisterCheckPendingSince(gssCode: String, dateCreated: String): RegisterCheck {
+    private fun saveRegisterCheckPendingSince(gssCode: String, dateCreated: Instant): RegisterCheck {
         val registerCheck = registerCheckRepository.save(buildRegisterCheck(gssCode = gssCode, status = CheckStatus.PENDING))
-        jdbcTemplate.execute("UPDATE register_check SET date_created = '$dateCreated' WHERE id = '${registerCheck.id}'")
+        val formattedDateCreated = DATE_TIME_FORMATTER.format(dateCreated)
+        jdbcTemplate.execute("UPDATE register_check SET date_created = '$formattedDateCreated' WHERE id = '${registerCheck.id}'")
         return registerCheck
     }
 

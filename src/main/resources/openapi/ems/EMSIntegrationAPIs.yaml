@@ -1113,7 +1113,8 @@ components:
       title: AdminPendingRegisterCheckSummary
       type: object
       description: |-
-        An object summarising the register checks of an ERO.
+        An object summarising an ERO's pending register checks that match the request's minimum pending age filter.
+        Only present for EROs with at least one matching pending register check.
         Intended for viewing by EROP admins, and does not include personal information.
       properties:
         gssCode:
@@ -1123,16 +1124,20 @@ components:
           example: E06000001
         registerCheckCount:
           type: integer
-          description: The number of pending register checks
+          description: The number of pending register checks matching the request's minimum pending age filter
           example: 7
         earliestDateCreated:
           type: string
-          description: The creation date and time of the oldest pending register check for this ERO.
+          description: |-
+            The creation date and time of the oldest register check counted in registerCheckCount,
+            i.e. of the pending register checks matching the request's minimum pending age filter.
           format: date-time
           example: 2022-09-07T14:14:55.123Z
         latestMatchResultSentAt:
           type: string
-          description: The date and time of the last successful register check by this ERO.
+          description: |-
+            The date and time of the last successful register check by this ERO,
+            considering all of its register checks regardless of the request's minimum pending age filter.
           format: date-time
           example: 2022-09-07T14:14:55.123Z
       #        eroName: # TODO Maybe?
@@ -1150,7 +1155,8 @@ components:
       title: AdminPendingEmsDownloadSummary
       type: object
       description: |-
-        An object summarising the pending EMS downloads of an ERO.
+        An object summarising an ERO's pending EMS downloads that match the request's minimum pending age filter.
+        Only present for EROs with at least one matching pending EMS download.
         Intended for viewing by EROP admins, and does not include personal information.
       properties:
         gssCode:
@@ -1160,20 +1166,24 @@ components:
           example: E06000001
         pendingDownloadCount:
           type: integer
-          description: The number of pending EMS downloads
-          example: 0
+          description: The number of pending EMS downloads matching the request's minimum pending age filter
+          example: 7
         pendingDownloadCountWithEmsElectorId:
           type: integer
-          description: The number of pending EMS downloads with EMS elector ids
+          description: The number of pending EMS downloads with EMS elector ids matching the request's minimum pending age filter
           example: 0
         earliestDateCreated:
           type: string
-          description: The creation date and time of the oldest pending EMS download for this ERO.
+          description: |-
+            The creation date and time of the oldest EMS download counted in pendingDownloadCount,
+            i.e. of the pending EMS downloads matching the request's minimum pending age filter.
           format: date-time
           example: 2022-09-07T14:14:55.123Z
         lastSuccessfulEmsDownload:
           type: string
-          description: The date and time of the last successful EMS download by this ERO.
+          description: |-
+            The date and time of the last successful EMS download by this ERO,
+            considering all of its applications regardless of the request's minimum pending age filter.
           format: date-time
           example: 2022-09-07T14:14:55.123Z
       #  eroName: # TODO Maybe?
