@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.test.web.reactive.server.returnResult
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
@@ -64,7 +65,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
             .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
-            .returnResult(AdminPendingChecksAndDownloadsSummaryResponse::class.java)
+            .returnResult<AdminPendingChecksAndDownloadsSummaryResponse>()
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -76,11 +77,10 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
 
     @Test
     fun `should return summaries of pending register checks and downloads per gss code`() {
-        // Given two register checks for gss code 1 have been pending since 2025-03-01T09:00:00Z and 2025-03-02T09:00:00Z
+        // Given
         saveRegisterCheckPendingSince(GSS_CODE_1, "2025-03-01 09:00:00")
         saveRegisterCheckPendingSince(GSS_CODE_1, "2025-03-02 09:00:00")
 
-        // And gss code 1 had a successful register check at 2025-03-01T08:00:00Z
         registerCheckRepository.save(
             buildRegisterCheck(
                 gssCode = GSS_CODE_1,
@@ -88,11 +88,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                 matchResultSentAt = Instant.parse("2025-03-01T08:00:00Z"),
             )
         )
-
-        // And a register check for gss code 1 became pending less than a day ago, so is not counted
         registerCheckRepository.save(buildRegisterCheck(gssCode = GSS_CODE_1, status = CheckStatus.PENDING))
-
-        // And gss code 2 has no pending register checks but had a successful register check at 2025-03-02T08:00:00Z
         registerCheckRepository.save(
             buildRegisterCheck(
                 gssCode = GSS_CODE_2,
@@ -101,31 +97,13 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
             )
         )
 
-        // And a register check for an excluded gss code has been pending since 2025-03-01T09:00:00Z, but is not reported
         saveRegisterCheckPendingSince(EXCLUDED_GSS_CODE, "2025-03-01 09:00:00")
-
-        // And two postal applications for gss code 1, one with an EMS elector id, have been pending since 2025-03-01T10:00:00Z and 2025-03-02T10:00:00Z
         savePostalApplicationPendingSince(GSS_CODE_1, Instant.parse("2025-03-01T10:00:00Z"))
         savePostalApplicationPendingSince(GSS_CODE_1, Instant.parse("2025-03-02T10:00:00Z"), emsElectorId = null)
-
-        // And a postal application for gss code 1 became pending less than 5 days ago, so is not counted
-        postalVoteApplicationRepository.save(
-            buildPostalVoteApplication(
-                recordStatus = RecordStatus.RECEIVED,
-                applicationDetails = buildApplicationDetailsEntity(gssCode = GSS_CODE_1),
-            )
-        )
-
-        // And a postal application for gss code 1 was successfully downloaded by the EMS at 2025-03-05T12:00:00Z
+        savePostalApplicationPendingSince(GSS_CODE_1, Instant.now())
         savePostalApplicationDownloadedAt(GSS_CODE_1, "2025-03-05 12:00:00")
-
-        // And a postal application for an excluded gss code has been pending since 2025-03-01T10:00:00Z, but is not reported
         savePostalApplicationPendingSince(EXCLUDED_GSS_CODE, Instant.parse("2025-03-01T10:00:00Z"))
-
-        // And a proxy application for gss code 2 has been pending since 2025-03-03T10:00:00Z
         saveProxyApplicationPendingSince(GSS_CODE_2, Instant.parse("2025-03-03T10:00:00Z"))
-
-        // And gss code 1 has no pending proxy applications but had a successful proxy download at 2025-03-06T12:00:00Z
         saveProxyApplicationDownloadedAt(GSS_CODE_1, "2025-03-06 12:00:00")
 
         // When
@@ -134,7 +112,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
             .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
-            .returnResult(AdminPendingChecksAndDownloadsSummaryResponse::class.java)
+            .returnResult<AdminPendingChecksAndDownloadsSummaryResponse>()
 
         // Then
         val expected = AdminPendingChecksAndDownloadsSummaryResponse(
@@ -184,18 +162,14 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
 
     @Test
     fun `should include recently created pending checks and downloads given minimum age params of zero days`() {
-        // Given a register check for gss code 1 became pending less than a day ago
+        // Given
         registerCheckRepository.save(buildRegisterCheck(gssCode = GSS_CODE_1, status = CheckStatus.PENDING))
-
-        // And a postal application for gss code 1 became pending less than 5 days ago
         postalVoteApplicationRepository.save(
             buildPostalVoteApplication(
                 recordStatus = RecordStatus.RECEIVED,
                 applicationDetails = buildApplicationDetailsEntity(gssCode = GSS_CODE_1),
             )
         )
-
-        // And a proxy application for gss code 2 became pending less than 5 days ago
         proxyVoteApplicationRepository.save(
             buildProxyVoteApplication(
                 recordStatus = RecordStatus.RECEIVED,
@@ -203,7 +177,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
             )
         )
 
-        // When the summary is requested with minimum pending ages of 0 days
+        // When
         val response = webTestClient.get()
             .uri(
                 UriComponentsBuilder
@@ -215,7 +189,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
             .bearerToken(getBearerToken())
             .exchange()
             .expectStatus().isOk
-            .returnResult(AdminPendingChecksAndDownloadsSummaryResponse::class.java)
+            .returnResult<AdminPendingChecksAndDownloadsSummaryResponse>()
 
         // Then
         val actual = response.responseBody.blockFirst()
@@ -230,13 +204,13 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
 
     @Test
     fun `should return unauthorized given authentication token is invalid`() {
-        // When, Then
+        // When & Then
         webTestClient.get()
             .uri(ADMIN_GET_PENDING_CHECKS_AND_DOWNLOADS_SUMMARY_ENDPOINT)
             .bearerToken(UNAUTHORIZED_BEARER_TOKEN)
             .exchange()
             .expectStatus().isUnauthorized
-            .returnResult(ErrorResponse::class.java)
+            .returnResult<ErrorResponse>()
     }
 
     /**
