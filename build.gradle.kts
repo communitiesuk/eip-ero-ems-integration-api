@@ -15,9 +15,9 @@ plugins {
     kotlin("plugin.jpa") version "2.3.21"
     kotlin("plugin.allopen") version "2.3.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("org.openapi.generator") version "7.0.1"
+    id("org.openapi.generator") version "7.23.0"
     id("org.owasp.dependencycheck") version "12.2.2"
-    id("org.liquibase.gradle") version "2.0.4"
+    id("org.liquibase.gradle") version "3.1.0"
 }
 
 group = "uk.gov.dluhc"
@@ -74,10 +74,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("tools.jackson.core:jackson-databind")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
-    implementation("org.apache.commons:commons-lang3:3.18.0")
-    implementation("org.mapstruct:mapstruct:1.5.5.Final")
-    kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    kapt("org.mapstruct:mapstruct-processor:1.6.3")
 
     // internal libs
     implementation("uk.gov.dluhc:logging-library:4.0.0")
@@ -88,30 +88,30 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
-    implementation("org.webjars:swagger-ui:4.19.1")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
+    implementation("org.webjars:swagger-ui:5.32.8")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.52")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
 
     // Logging
-    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
 
     // spring security
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("com.nimbusds:nimbus-jose-jwt:10.0.2")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
 
     // jpa/liquibase
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
-    implementation("org.apache.commons:commons-text:1.12.0")
+    implementation("org.apache.commons:commons-text:1.15.0")
     implementation("org.hibernate.orm:hibernate-envers")
 
     // mysql
     runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.10")
+    runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.15")
     runtimeOnly("software.amazon.awssdk:rds")
 
     // AWS dependencies (that are defined in the BOM "software.amazon.awssdk")
@@ -125,7 +125,7 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-aws-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
 
-    implementation("io.github.acm19:aws-request-signing-apache-interceptor:3.0.0")
+    implementation("io.github.acm19:aws-request-signing-apache-interceptor:4.0.1")
     implementation("org.apache.httpcomponents.client5:httpclient5")
 
     // caching
@@ -133,27 +133,27 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
 
     // Scheduling
-    implementation("net.javacrumbs.shedlock:shedlock-spring:4.43.0")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.43.0")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:7.7.0")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.7.0")
 
     // tests
     testImplementation("software.amazon.awssdk:sqs") // required to send messages to a queue, which we only need to do in test at the moment
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
-    testImplementation("net.datafaker:datafaker:1.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
+    testImplementation("net.datafaker:datafaker:2.7.0")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-restclient-test")
     testImplementation("org.springframework.boot:spring-boot-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-webtestclient")
 
-    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-    testImplementation("org.testcontainers:testcontainers:1.21.4")
-    testImplementation("org.testcontainers:mysql:1.21.4")
-    testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("org.testcontainers:junit-jupiter:2.0.5")
+    testImplementation("org.testcontainers:testcontainers:2.0.5")
+    testImplementation("org.testcontainers:mysql:2.0.5")
+    testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
 
     testImplementation("org.wiremock.integrations:wiremock-spring-boot-standalone:4.2.1")
-    testImplementation("net.datafaker:datafaker:1.6.0")
+    testImplementation("net.datafaker:datafaker:2.7.0")
 
     // caching
     implementation("org.springframework.boot:spring-boot-starter-cache")
@@ -162,19 +162,19 @@ dependencies {
     // AWS library to support tests
     testImplementation("software.amazon.awssdk:auth")
     // Libraries to support creating JWTs in tests
-    testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-    testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    testImplementation("io.jsonwebtoken:jjwt-impl:0.13.0")
+    testImplementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
 
     // Logging
-    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
     // Liquibase plugin for local development
     val liquibaseRuntime by configurations
     liquibaseRuntime("org.liquibase:liquibase-core")
     liquibaseRuntime("mysql:mysql-connector-java")
     liquibaseRuntime("org.springframework.boot:spring-boot")
-    liquibaseRuntime("info.picocli:picocli:4.6.1")
+    liquibaseRuntime("info.picocli:picocli:4.7.7")
     liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-    liquibaseRuntime("org.apache.commons:commons-lang3:3.18.0")
+    liquibaseRuntime("org.apache.commons:commons-lang3:3.20.0")
 }
 
 dependencyManagement {
