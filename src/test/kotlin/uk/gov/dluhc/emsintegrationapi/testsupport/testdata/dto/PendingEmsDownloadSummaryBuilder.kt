@@ -5,6 +5,7 @@ import java.time.Instant
 
 fun buildPendingEmsDownloadSummary(
     gssCode: String = "E09000021",
+    eroId: String? = null,
     pendingDownloadCount: Int = 1,
     pendingDownloadCountWithEmsElectorId: Int = 1,
     earliestDateCreated: Instant? = null,
@@ -13,6 +14,7 @@ fun buildPendingEmsDownloadSummary(
     emsVendor: String? = null,
 ) = PendingEmsDownloadSummary(
     gssCode = gssCode,
+    eroId = eroId,
     pendingDownloadCount = pendingDownloadCount,
     pendingDownloadCountWithEmsElectorId = pendingDownloadCountWithEmsElectorId,
     earliestDateCreated = earliestDateCreated,

@@ -51,6 +51,8 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
         private const val GSS_CODE_2 = "E00000002"
         private const val ERO_NAME_1 = "Camden Council"
         private const val ERO_NAME_2 = "Westminster Council"
+        private const val ERO_ID_1 = "camden-council"
+        private const val ERO_ID_2 = "westminster-council"
         private val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC)
     }
 
@@ -86,8 +88,8 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
         // Given
         wireMockService.stubIerApiGetEros(
             listOf(
-                buildIerEroDetails(gssCode = GSS_CODE_1, name = ERO_NAME_1),
-                buildIerEroDetails(gssCode = GSS_CODE_2, name = ERO_NAME_2),
+                buildIerEroDetails(gssCode = GSS_CODE_1, name = ERO_NAME_1, eroIdentifier = ERO_ID_1),
+                buildIerEroDetails(gssCode = GSS_CODE_2, name = ERO_NAME_2, eroIdentifier = ERO_ID_2),
             )
         )
 
@@ -142,6 +144,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                     earliestDateCreated = OffsetDateTime.parse("2025-03-01T09:00:00Z"),
                     latestMatchResultSentAt = OffsetDateTime.parse("2025-03-01T08:00:00Z"),
                     eroName = ERO_NAME_1,
+                    eroId = ERO_ID_1,
                 ),
             ),
             pendingPostalDownloads = listOf(
@@ -152,6 +155,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                     earliestDateCreated = OffsetDateTime.parse("2025-03-01T10:00:00Z"),
                     lastSuccessfulEmsDownload = OffsetDateTime.parse("2025-03-05T12:00:00Z"),
                     eroName = ERO_NAME_1,
+                    eroId = ERO_ID_1,
                 ),
             ),
             pendingProxyDownloads = listOf(
@@ -162,6 +166,7 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
                     earliestDateCreated = OffsetDateTime.parse("2025-03-03T10:00:00Z"),
                     lastSuccessfulEmsDownload = null,
                     eroName = ERO_NAME_2,
+                    eroId = ERO_ID_2,
                 ),
             ),
         )

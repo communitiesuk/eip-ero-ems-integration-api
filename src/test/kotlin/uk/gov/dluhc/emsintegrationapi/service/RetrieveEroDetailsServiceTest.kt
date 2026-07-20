@@ -21,7 +21,7 @@ internal class RetrieveEroDetailsServiceTest {
     private lateinit var ierApiClient: IerApiClient
 
     @InjectMocks
-    private lateinit var retrieveEroNameService: RetrieveEroDetailsService
+    private lateinit var retrieveEroDetailsService: RetrieveEroDetailsService
 
     @Test
     fun `should return ERO summaries by gss code given EROs with multiple local authorities`() {
@@ -30,6 +30,7 @@ internal class RetrieveEroDetailsServiceTest {
             listOf(
                 buildIerEroDetails(
                     name = "Camden Council",
+                    eroIdentifier = "camden-council",
                     localAuthorities = listOf(
                         buildIerLocalAuthorityDetails(gssCode = "E00000001"),
                         buildIerLocalAuthorityDetails(gssCode = "E00000002"),
@@ -37,6 +38,7 @@ internal class RetrieveEroDetailsServiceTest {
                 ),
                 buildIerEroDetails(
                     name = "Westminster Council",
+                    eroIdentifier = "westminster-council",
                     localAuthorities = listOf(
                         buildIerLocalAuthorityDetails(gssCode = "E00000003"),
                     ),
@@ -45,14 +47,14 @@ internal class RetrieveEroDetailsServiceTest {
         )
 
         // When
-        val actual = retrieveEroNameService.getEroSummaryByGssCode()
+        val actual = retrieveEroDetailsService.getEroSummaryByGssCode()
 
         // Then
         assertThat(actual).isEqualTo(
             mapOf(
-                "E00000001" to EroSummary(name = "Camden Council", emsVendor = null),
-                "E00000002" to EroSummary(name = "Camden Council", emsVendor = null),
-                "E00000003" to EroSummary(name = "Westminster Council", emsVendor = null),
+                "E00000001" to EroSummary(name = "Camden Council", eroId = "camden-council", emsVendor = null),
+                "E00000002" to EroSummary(name = "Camden Council", eroId = "camden-council", emsVendor = null),
+                "E00000003" to EroSummary(name = "Westminster Council", eroId = "westminster-council", emsVendor = null),
             )
         )
         verify(ierApiClient).getEros()
@@ -64,7 +66,7 @@ internal class RetrieveEroDetailsServiceTest {
         given(ierApiClient.getEros()).willThrow(IerGeneralException("Error getting EROs from IER API"))
 
         // When
-        val actual = retrieveEroNameService.getEroSummaryByGssCode()
+        val actual = retrieveEroDetailsService.getEroSummaryByGssCode()
 
         // Then
         assertThat(actual).isEmpty()
