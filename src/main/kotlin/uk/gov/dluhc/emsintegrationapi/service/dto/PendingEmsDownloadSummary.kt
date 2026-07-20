@@ -4,6 +4,7 @@ import java.time.Instant
 
 data class PendingEmsDownloadSummary(
     val gssCode: String,
+    val eroId: String?,
     val pendingDownloadCount: Int,
     val pendingDownloadCountWithEmsElectorId: Int,
     val earliestDateCreated: Instant?,

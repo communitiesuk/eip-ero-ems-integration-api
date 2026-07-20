@@ -1122,6 +1122,12 @@ components:
           pattern: '^[a-zA-Z]\d{8}$'
           description: The Local Authority GSS Code
           example: E06000001
+        eroId:
+          description: >
+            The identifier for the ERO.
+            This is created from the name, e.g. `west-suffolk-council`
+          type: string
+          example: west-suffolk-council
         registerCheckCount:
           type: integer
           description: The number of pending register checks matching the request's minimum pending age filter
@@ -1164,6 +1170,12 @@ components:
           pattern: '^[a-zA-Z]\d{8}$'
           description: The Local Authority GSS Code
           example: E06000001
+        eroId:
+          description: >
+            The identifier for the ERO.
+            This is created from the name, e.g. `west-suffolk-council`
+          type: string
+          example: west-suffolk-council
         pendingDownloadCount:
           type: integer
           description: The number of pending EMS downloads matching the request's minimum pending age filter

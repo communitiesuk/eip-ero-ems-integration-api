@@ -40,6 +40,7 @@ class PendingRegisterCheckSummaryService(
                     earliestDateCreated = pendingSummary.earliestDateCreated,
                     latestMatchResultSentAt = mostRecentResponsesByGssCode[pendingSummary.gssCode]?.latestMatchResultSentAt,
                     eroName = eroSummary?.name,
+                    eroId = eroSummary?.eroId,
                     emsVendor = eroSummary?.emsVendor,
                 )
             }

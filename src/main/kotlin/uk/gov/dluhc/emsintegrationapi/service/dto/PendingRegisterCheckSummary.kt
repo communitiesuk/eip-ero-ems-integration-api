@@ -4,6 +4,7 @@ import java.time.Instant
 
 data class PendingRegisterCheckSummary(
     val gssCode: String,
+    val eroId: String?,
     val registerCheckCount: Int,
     val earliestDateCreated: Instant?,
     val latestMatchResultSentAt: Instant?,

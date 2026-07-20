@@ -74,6 +74,7 @@ class PendingEmsDownloadSummaryService(
                     earliestDateCreated = pendingSummary.earliestDateCreated,
                     lastSuccessfulEmsDownload = lastSuccessfulDownloadsByGssCode[pendingSummary.gssCode]?.lastSuccessfulEmsDownload,
                     eroName = eroSummary?.name,
+                    eroId = eroSummary?.eroId,
                     emsVendor = eroSummary?.emsVendor,
                 )
             }

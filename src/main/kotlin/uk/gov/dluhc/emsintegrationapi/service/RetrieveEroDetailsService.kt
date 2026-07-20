@@ -22,7 +22,7 @@ class RetrieveEroDetailsService(
                 .flatMap { ero ->
                     ero.localAuthorities.map {
                         // TODO EROPSPT-741: Map ero.emsVendor once IER adds it to the /eros endpoint
-                        it.gssCode to EroSummary(name = ero.name, emsVendor = null)
+                        it.gssCode to EroSummary(name = ero.name, eroId = ero.eroIdentifier, emsVendor = null)
                     }
                 }
                 .toMap()
