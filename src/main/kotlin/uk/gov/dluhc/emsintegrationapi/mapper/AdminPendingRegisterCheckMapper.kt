@@ -4,6 +4,8 @@ import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheck
 import uk.gov.dluhc.emsintegrationapi.dto.AdminPendingRegisterCheckDto
+import uk.gov.dluhc.emsintegrationapi.models.AdminPendingRegisterCheckSummary
+import uk.gov.dluhc.emsintegrationapi.service.dto.PendingRegisterCheckSummary
 import uk.gov.dluhc.registercheckerapi.models.AdminPendingRegisterCheck
 
 /**
@@ -21,4 +23,6 @@ abstract class AdminPendingRegisterCheckMapper {
 
     @Mapping(target = "applicationId", source = "sourceReference")
     abstract fun adminPendingRegisterCheckDtoToAdminPendingRegisterCheckModel(pendingRegisterCheckDto: AdminPendingRegisterCheckDto): AdminPendingRegisterCheck
+
+    abstract fun pendingRegisterCheckSummaryDtoToAdminPendingRegisterCheckSummaryModel(pendingRegisterCheckSummary: PendingRegisterCheckSummary): AdminPendingRegisterCheckSummary
 }

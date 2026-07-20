@@ -13,6 +13,7 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.TestLogAppender
 import uk.gov.dluhc.emsintegrationapi.testsupport.emails.LocalstackEmailMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.emails.buildLocalstackEmailMessage
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.models.buildIerEroDetails
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset.UTC
@@ -31,6 +32,8 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
         private const val GSS_CODE_1 = "E00000001"
         private const val GSS_CODE_2 = "E00000002"
         private const val GSS_CODE_3 = "E00000003"
+        private const val ERO_NAME_1 = "Camden Council"
+        private const val ERO_NAME_2 = "Westminster Council"
         private const val EXPECTED_TOTAL_STUCK_APPLICATIONS = "3"
         private const val EXPECTED_MAXIMUM_PENDING_PERIOD = "PT24H"
         private const val EXPECTED_MAXIMUM_PENDING_HOURS = "24"
@@ -56,6 +59,7 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
         <thead>
         <tr>
             <th>GSS code</th>
+            <th>ERO name</th>
             <th>Register check count</th>
             <th>Date of oldest pending check</th>
             <th>Date of most recent successful EMS response</th>
@@ -64,12 +68,14 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
         <tbody>
             <tr>
                 <td>$GSS_CODE_1</td>
+                <td>$ERO_NAME_1</td>
                 <td>2</td>
                 <td>2025-03-01T09:00:00Z</td>
                 <td>2025-03-01T08:00:00Z</td>
             </tr>
             <tr>
                 <td>$GSS_CODE_2</td>
+                <td>$ERO_NAME_2</td>
                 <td>1</td>
                 <td>2025-03-01T09:00:00Z</td>
                 <td>2025-03-01T08:00:00Z</td>
@@ -84,6 +90,7 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
     @Test
     fun `should log register checks that have been in pending status for more than the set time period`() {
         // Given
+        stubIerEroNames()
         registerCheckRepository
             .saveAll(registerChecksOlderThanOneDay)
             .setDateCreatedBeforeOneDayAgo()
@@ -105,7 +112,8 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
             TestLogAppender.hasLog(
                 "The gss code $GSS_CODE_1 has 2 register checks that have been pending for more than $EXPECTED_MAXIMUM_PENDING_PERIOD. " +
                     "The oldest pending check has been pending since 2025-03-01T09:00:00Z. " +
-                    "The last successful EMS response was at 2025-03-01T08:00:00Z.",
+                    "The last successful EMS response was at 2025-03-01T08:00:00Z. " +
+                    "The ERO name is $ERO_NAME_1.",
                 Level.INFO
             )
         ).isTrue
@@ -113,7 +121,8 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
             TestLogAppender.hasLog(
                 "The gss code $GSS_CODE_2 has 1 register checks that have been pending for more than $EXPECTED_MAXIMUM_PENDING_PERIOD. " +
                     "The oldest pending check has been pending since 2025-03-01T09:00:00Z. " +
-                    "The last successful EMS response was at 2025-03-01T08:00:00Z.",
+                    "The last successful EMS response was at 2025-03-01T08:00:00Z. " +
+                    "The ERO name is $ERO_NAME_2.",
                 Level.INFO
             )
         ).isTrue
@@ -134,6 +143,7 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
     @Test
     fun `should call email service to send pending register checks email`() {
         // Given
+        stubIerEroNames()
         registerCheckRepository
             .saveAll(registerChecksOlderThanOneDay)
             .setDateCreatedBeforeOneDayAgo()
@@ -152,6 +162,15 @@ internal class RegisterCheckMonitoringJobIntegrationTest : IntegrationTest() {
         registerCheckMonitoringJob.monitorPendingRegisterChecks()
 
         assertEmailSent(expectedEmailRequest)
+    }
+
+    private fun stubIerEroNames() {
+        wireMockService.stubIerApiGetEros(
+            listOf(
+                buildIerEroDetails(gssCode = GSS_CODE_1, name = ERO_NAME_1),
+                buildIerEroDetails(gssCode = GSS_CODE_2, name = ERO_NAME_2),
+            )
+        )
     }
 
     /**

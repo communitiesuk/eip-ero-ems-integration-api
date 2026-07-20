@@ -4,9 +4,11 @@ import mu.KotlinLogging
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingEmsDownloadMapper
 import uk.gov.dluhc.emsintegrationapi.mapper.AdminPendingRegisterCheckMapper
+import uk.gov.dluhc.emsintegrationapi.models.AdminPendingChecksAndDownloadsSummaryResponse
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingEmsDownloadsResponse
 import uk.gov.dluhc.emsintegrationapi.service.AdminService
 import uk.gov.dluhc.registercheckerapi.models.AdminPendingRegisterChecksResponse
@@ -42,5 +44,18 @@ class AdminController(
                 adminPendingEmsDownloadMapper::adminPendingEmsDownloadEntityToAdminPendingEmsDownloadModel
             )
         )
+    }
+
+    @GetMapping("/admin/pending-checks-and-downloads-summary")
+    fun adminGetPendingChecksAndDownloadsSummary(
+        @RequestParam(defaultValue = "0") registerChecksPendingMinAgeInDays: Int,
+        @RequestParam(defaultValue = "0") emsDownloadsPendingMinAgeInDays: Int,
+    ): AdminPendingChecksAndDownloadsSummaryResponse {
+        logger.info(
+            "Getting admin pending checks and downloads summary with minimum pending ages " +
+                "[registerChecks=$registerChecksPendingMinAgeInDays days, emsDownloads=$emsDownloadsPendingMinAgeInDays days]"
+        )
+
+        return adminService.adminGetPendingChecksAndDownloadsSummary(registerChecksPendingMinAgeInDays, emsDownloadsPendingMinAgeInDays)
     }
 }

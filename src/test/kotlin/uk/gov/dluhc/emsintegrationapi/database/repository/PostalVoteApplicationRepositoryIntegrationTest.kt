@@ -63,8 +63,8 @@ class PostalVoteApplicationRepositoryIntegrationTest : AbstractRepositoryIntegra
             val postalVoteApplication = applicationsReceived.find { it.applicationId == postalVoteApplicationId }!!
             assertThat(postalVoteApplication.status).isEqualTo(RecordStatus.RECEIVED)
             if (index > 0) {
-                assertThat(postalVoteApplication.dateCreated!!.truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
-                    previousApplication!!.dateCreated!!.truncatedTo(
+                assertThat(postalVoteApplication.dateCreated!!.plusMillis(500).truncatedTo(ChronoUnit.SECONDS)).isAfterOrEqualTo(
+                    previousApplication!!.dateCreated!!.plusMillis(500).truncatedTo(
                         ChronoUnit.SECONDS
                     )
                 )

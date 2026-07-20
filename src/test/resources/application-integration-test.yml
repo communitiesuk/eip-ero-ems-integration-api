@@ -57,6 +57,11 @@ api:
 
 caching.time-to-live: PT2S
 
+admin:
+  pending-checks-and-downloads-summary:
+    excluded-register-check-gss-codes: "E99999999"
+    excluded-ems-download-gss-codes: "E99999999"
+
 jobs:
   enabled: false
   pending-downloads-monitoring:

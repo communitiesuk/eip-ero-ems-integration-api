@@ -49,7 +49,7 @@ class SecurityConfiguration(
         @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer}") adminIssuer: String,
         @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer-uri}") adminIssuerUrl: String,
     ): SecurityFilterChain =
-        baseSecurityFilterChain(http, "/admin/pending-checks/**")
+        baseSecurityFilterChain(http, "/admin/pending-checks/**", "/admin/pending-checks-and-downloads-summary")
             .authorizeHttpRequests {
                 it.anyRequest().authenticated()
             }
@@ -68,9 +68,9 @@ class SecurityConfiguration(
             .addFilter(RegisterCheckerHeaderAuthenticationFilter(requestHeaderName, BYPASS_URLS_FOR_REQUEST_HEADER_AUTHENTICATION))
             .build()
 
-    private fun baseSecurityFilterChain(http: HttpSecurity, pattern: String) =
+    private fun baseSecurityFilterChain(http: HttpSecurity, vararg patterns: String) =
         http
-            .securityMatcher(pattern)
+            .securityMatcher(*patterns)
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }

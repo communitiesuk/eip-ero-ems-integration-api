@@ -14,7 +14,9 @@ import uk.gov.dluhc.email.EmailClient
 import uk.gov.dluhc.emsintegrationapi.config.MonitorPendingDownloadsEmailContentConfiguration
 import uk.gov.dluhc.emsintegrationapi.config.PendingRegisterChecksEmailContentConfiguration
 import uk.gov.dluhc.emsintegrationapi.service.dto.PendingDownloadSummary
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPendingDownloadsSummaryByGssCode
+import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.dto.buildPendingEmsDownloadSummary
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @ExtendWith(MockitoExtension::class)
 class EmailServiceEmsTest {
@@ -32,25 +34,39 @@ class EmailServiceEmsTest {
         private const val EXPECTED_MAXIMUM_PENDING_PERIOD = "5 days"
         private const val EXPECTED_TOTAL_POSTAL_PENDING = 3
         private const val EXPECTED_TOTAL_POSTAL_PENDING_WITH_EMS_ELECTOR_ID = 1
+        private val POSTAL_DATE_CREATED_1 = LocalDateTime.of(2025, 3, 1, 10, 30).toInstant(ZoneOffset.UTC)
+        private val POSTAL_DATE_CREATED_2 = LocalDateTime.of(2025, 3, 2, 10, 30).toInstant(ZoneOffset.UTC)
+        private val POSTAL_LAST_SUCCESSFUL_DOWNLOAD_1 = LocalDateTime.of(2025, 3, 5, 9, 30).toInstant(ZoneOffset.UTC)
+        private val PROXY_DATE_CREATED_1 = LocalDateTime.of(2025, 3, 3, 8, 30).toInstant(ZoneOffset.UTC)
+        private const val ERO_NAME_1 = "Camden Council"
         private val EXPECTED_PENDING_POSTAL = listOf(
-            buildPendingDownloadsSummaryByGssCode(
+            buildPendingEmsDownloadSummary(
                 gssCode = GSS_CODE_1,
                 pendingDownloadCount = 2,
-                pendingDownloadsWithEmsElectorId = 1
+                pendingDownloadCountWithEmsElectorId = 1,
+                earliestDateCreated = POSTAL_DATE_CREATED_1,
+                lastSuccessfulEmsDownload = POSTAL_LAST_SUCCESSFUL_DOWNLOAD_1,
+                eroName = ERO_NAME_1,
             ),
-            buildPendingDownloadsSummaryByGssCode(
+            buildPendingEmsDownloadSummary(
                 gssCode = GSS_CODE_2,
                 pendingDownloadCount = 1,
-                pendingDownloadsWithEmsElectorId = 0
+                pendingDownloadCountWithEmsElectorId = 0,
+                earliestDateCreated = POSTAL_DATE_CREATED_2,
+                lastSuccessfulEmsDownload = null,
+                eroName = null,
             ),
         )
         private const val EXPECTED_TOTAL_PROXY_PENDING = 4
         private const val EXPECTED_TOTAL_PROXY_PENDING_WITH_EMS_ELECTOR_ID = 2
         private val EXPECTED_PENDING_PROXY = listOf(
-            buildPendingDownloadsSummaryByGssCode(
+            buildPendingEmsDownloadSummary(
                 gssCode = GSS_CODE_1,
                 pendingDownloadCount = 4,
-                pendingDownloadsWithEmsElectorId = 2
+                pendingDownloadCountWithEmsElectorId = 2,
+                earliestDateCreated = PROXY_DATE_CREATED_1,
+                lastSuccessfulEmsDownload = null,
+                eroName = ERO_NAME_1,
             ),
         )
     }
@@ -82,20 +98,29 @@ class EmailServiceEmsTest {
                         <thead>
                         <tr>
                             <th>GSS code</th>
+                            <th>ERO name</th>
                             <th>Pending postal downloads</th>
                             <th>Pending with EMS Elector ID</th>
+                            <th>Date of oldest pending application</th>
+                            <th>Date of most recent successful EMS download</th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>$GSS_CODE_1</td>
+                                <td>$ERO_NAME_1</td>
                                 <td>2</td>
                                 <td>1</td>
+                                <td>2025-03-01T10:30:00Z</td>
+                                <td>2025-03-05T09:30:00Z</td>
                             </tr>
                             <tr>
                                 <td>$GSS_CODE_2</td>
-                               <td>1</td>
+                                <td></td>
+                                <td>1</td>
                                 <td>0</td>
+                                <td>2025-03-02T10:30:00Z</td>
+                                <td>never</td>
                             </tr>
                         </tbody>
                     </table>
@@ -106,15 +131,21 @@ class EmailServiceEmsTest {
                         <thead>
                         <tr>
                             <th>GSS code</th>
+                            <th>ERO name</th>
                             <th>Pending proxy downloads</th>
                             <th>Pending with EMS Elector ID</th>
+                            <th>Date of oldest pending application</th>
+                            <th>Date of most recent successful EMS download</th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>$GSS_CODE_1</td>
+                                <td>$ERO_NAME_1</td>
                                 <td>4</td>
                                 <td>2</td>
+                                <td>2025-03-03T08:30:00Z</td>
+                                <td>never</td>
                             </tr>
                         </tbody>
                     </table>
