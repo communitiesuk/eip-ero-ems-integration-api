@@ -1215,17 +1215,23 @@ components:
       description: Response containing a summary of pending register checks and pending EMS Downloads for all ERO.
       properties:
         pendingRegisterChecks:
-          description: The list of pending register checks summary per ERO
+          description: |-
+            The list of pending register check summaries per ERO, sorted by registerCheckCount in descending order,
+            then by gssCode in ascending order when counts are equal.
           type: array
           items:
             $ref: '#/components/schemas/AdminPendingRegisterCheckSummary'
         pendingPostalDownloads:
-          description: The list of pending postal vote EMS downloads summary per ERO
+          description: |-
+            The list of pending postal vote EMS download summaries per ERO, sorted by pendingDownloadCount in descending order,
+            then by gssCode in ascending order when counts are equal.
           type: array
           items:
             $ref: '#/components/schemas/AdminPendingEmsDownloadSummary'
         pendingProxyDownloads:
-          description: The list of pending proxy vote EMS downloads summary per ERO
+          description: |-
+            The list of pending proxy vote EMS download summaries per ERO, sorted by pendingDownloadCount in descending order,
+            then by gssCode in ascending order when counts are equal.
           type: array
           items:
             $ref: '#/components/schemas/AdminPendingEmsDownloadSummary'

@@ -64,7 +64,10 @@ class PendingEmsDownloadSummaryService(
         val lastSuccessfulDownloadsByGssCode = lastSuccessfulDownloads.associateBy { it.gssCode }
         return pendingSummaries
             .filter { it.gssCode !in excludedGssCodes }
-            .sortedBy { it.gssCode }
+            .sortedWith(
+                compareByDescending<PendingDownloadsSummaryByGssCode> { it.pendingDownloadCount }
+                    .thenBy { it.gssCode }
+            )
             .map { pendingSummary ->
                 val eroSummary = eroSummaryByGssCode[pendingSummary.gssCode]
                 PendingEmsDownloadSummary(

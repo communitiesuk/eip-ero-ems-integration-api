@@ -46,7 +46,6 @@ interface PostalVoteApplicationRepository :
         FROM PostalVoteApplication app
         WHERE app.status = 'RECEIVED' AND app.dateCreated < :createdBefore
         GROUP BY app.applicationDetails.gssCode
-        ORDER BY app.applicationDetails.gssCode
         """
     )
     fun summarisePendingPostalVotesByGssCode(createdBefore: Instant): List<PendingDownloadsSummaryByGssCode>
@@ -58,7 +57,6 @@ interface PostalVoteApplicationRepository :
         FROM PostalVoteApplication app
         WHERE app.status = 'DELETED'
         GROUP BY app.applicationDetails.gssCode
-        ORDER BY app.applicationDetails.gssCode
         """
     )
     fun getLastSuccessfulEmsDownloadByGssCode(): List<LastSuccessfulEmsDownloadByGssCode>
