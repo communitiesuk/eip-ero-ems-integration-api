@@ -6,7 +6,7 @@ updates:
     schedule:
       interval: "daily"
     assignees:
-      - "aleyipsoftwire"
+      - "conwhisw"
     cooldown:
       default-days: 7
     # Only create PRs for direct dependencies
@@ -44,7 +44,7 @@ updates:
     cooldown:
       default-days: 7
     assignees:
-      - "aleyipsoftwire"
+      - "conwhisw"
     groups:
       # Group all github-action updates
       github-actions:
