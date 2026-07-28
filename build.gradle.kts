@@ -87,6 +87,7 @@ dependencies {
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
+    // EROPSPT-733: Pinned version to fix vulnerability. Should review when upgrading spring boot.
     implementation("org.springframework.retry:spring-retry:2.0.13")
 
     // spring security
