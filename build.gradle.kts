@@ -38,6 +38,7 @@ extra["netty.version"] = "4.2.16.Final"
 extra["log4j2.version"] = "2.25.5"
 extra["tomcat.version"] = "11.0.24"
 extra["httpcore5.version"] = "5.4.3"
+extra["jackson.version"] = "3.1.5"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
