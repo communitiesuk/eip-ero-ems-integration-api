@@ -29,9 +29,15 @@ java {
     }
 }
 
-extra["awsSdkVersion"] = "2.26.20"
-extra["springCloudAwsVersion"] = "4.0.2"
+extra["awsSdkVersion"] = "2.49.4"
+extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
+// EROPSPT-733: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
+extra["logback.version"] = "1.5.37"
+extra["netty.version"] = "4.2.16.Final"
+extra["log4j2.version"] = "2.25.5"
+extra["tomcat.version"] = "11.0.24"
+extra["httpcore5.version"] = "5.4.3"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -52,16 +58,6 @@ repositories {
         }
     }
 }
-
-apply(plugin = "org.jlleitschuh.gradle.ktlint")
-apply(plugin = "org.openapi.generator")
-apply(plugin = "org.springframework.boot")
-apply(plugin = "io.spring.dependency-management")
-apply(plugin = "org.jetbrains.kotlin.jvm")
-apply(plugin = "org.jetbrains.kotlin.plugin.spring")
-apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
-apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
-apply(plugin = "org.liquibase.gradle")
 
 liquibase {
     activities.register("main")
@@ -87,15 +83,10 @@ dependencies {
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
-    implementation("org.webjars:swagger-ui:4.19.1")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
-
-    // Logging
-    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
+    implementation("org.springframework.retry:spring-retry:2.0.13")
 
     // spring security
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -162,11 +153,14 @@ dependencies {
     // AWS library to support tests
     testImplementation("software.amazon.awssdk:auth")
     // Libraries to support creating JWTs in tests
-    testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-    testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    testImplementation("io.jsonwebtoken:jjwt-impl:0.13.0")
+    testImplementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
+    // EROPSPT-733: Jackson v2 packages used by jjwt, should be reviewed if upgrading jjwt-jackson
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.21.5")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.5")
 
     // Logging
-    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
     // Liquibase plugin for local development
     val liquibaseRuntime by configurations
     liquibaseRuntime("org.liquibase:liquibase-core")
