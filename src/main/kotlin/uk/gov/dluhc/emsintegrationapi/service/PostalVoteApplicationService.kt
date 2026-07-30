@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -42,17 +42,17 @@ class PostalVoteApplicationService(
         pageSize: Int?,
     ): PostalVoteApplications {
         if (shouldHoldApplicationsForEro(certificateSerialNumber)) {
-            logger.info("No postal records fetched for $certificateSerialNumber, as hold is enabled for ERO and after holding pool threshold date")
+            logger.info { "No postal records fetched for $certificateSerialNumber, as hold is enabled for ERO and after holding pool threshold date" }
             return PostalVoteApplications(0, emptyList())
         }
 
         val gssCodes = getGssCodes(certificateSerialNumber)
         var numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
-        logger.info("Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
+        logger.info { "Fetching $pageSize applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes" }
         if (numberOfRecordsToFetch > apiProperties.forceMaxPageSize) {
-            logger.warn(
-                "Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch",
-            )
+            logger.warn {
+                "Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch"
+            }
             numberOfRecordsToFetch = apiProperties.forceMaxPageSize
         }
         val postalApplicationIds =
@@ -66,7 +66,7 @@ class PostalVoteApplicationService(
             postalApplicationIds.map { id -> postalApplications.find { it.applicationId == id }!! }
 
         val actualPageSize = postalApplicationsList.size
-        logger.info("The actual number of records fetched is $actualPageSize")
+        logger.info { "The actual number of records fetched is $actualPageSize" }
         return PostalVoteApplications(actualPageSize, postalVoteMapper.mapFromEntities(postalApplicationsList))
     }
 
@@ -77,7 +77,7 @@ class PostalVoteApplicationService(
         request: EMSApplicationResponse,
     ) {
         val gssCodes = getGssCodes(certificateSerialNumber)
-        logger.info("Updating the postal vote application with the id $postalVoteApplicationId with status ${RecordStatus.DELETED}")
+        logger.info { "Updating the postal vote application with the id $postalVoteApplicationId with status ${RecordStatus.DELETED}" }
         postalVoteApplicationRepository
             .findByApplicationIdAndApplicationDetailsGssCodeIn(
                 postalVoteApplicationId,

@@ -71,8 +71,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("tools.jackson.core:jackson-databind")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
-    implementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
+    implementation("org.apache.commons:commons-lang3")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
@@ -84,22 +84,20 @@ dependencies {
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.47")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
-    // EROPSPT-733: Pinned version to fix vulnerability. Should review when upgrading spring boot.
-    implementation("org.springframework.retry:spring-retry:2.0.13")
 
     // spring security
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("com.nimbusds:nimbus-jose-jwt:10.0.2")
 
     // jpa/liquibase
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
-    implementation("org.apache.commons:commons-text:1.12.0")
+    implementation("org.apache.commons:commons-text:1.15.0")
     implementation("org.hibernate.orm:hibernate-envers")
 
     // mysql
@@ -143,14 +141,9 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:1.21.4")
     testImplementation("org.testcontainers:mysql:1.21.4")
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 
     testImplementation("org.wiremock.integrations:wiremock-spring-boot-standalone:4.2.1")
     testImplementation("net.datafaker:datafaker:1.6.0")
-
-    // caching
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("com.github.ben-manes.caffeine:caffeine")
 
     // AWS library to support tests
     testImplementation("software.amazon.awssdk:auth")
@@ -166,11 +159,10 @@ dependencies {
     // Liquibase plugin for local development
     val liquibaseRuntime by configurations
     liquibaseRuntime("org.liquibase:liquibase-core")
-    liquibaseRuntime("mysql:mysql-connector-java")
+    liquibaseRuntime("com.mysql:mysql-connector-j")
     liquibaseRuntime("org.springframework.boot:spring-boot")
     liquibaseRuntime("info.picocli:picocli:4.6.1")
     liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-    liquibaseRuntime("org.apache.commons:commons-lang3:3.18.0")
 }
 
 dependencyManagement {
