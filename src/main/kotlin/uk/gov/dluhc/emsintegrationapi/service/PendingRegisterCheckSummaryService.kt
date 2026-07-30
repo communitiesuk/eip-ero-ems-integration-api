@@ -1,5 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckSummaryByGssCode
@@ -7,6 +8,8 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepositor
 import uk.gov.dluhc.emsintegrationapi.service.dto.EroSummary
 import uk.gov.dluhc.emsintegrationapi.service.dto.PendingRegisterCheckSummary
 import java.time.Instant
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Summarizes pending register checks per GSS code, combining the pending check counts with the
@@ -28,9 +31,12 @@ class PendingRegisterCheckSummaryService(
         excludedGssCodes: List<String>,
         eroSummaryByGssCode: Map<String, EroSummary>,
     ): List<PendingRegisterCheckSummary> {
+        logger.info { "Summarising pending register checks" }
         val mostRecentResponsesByGssCode = registerCheckRepository.findMostRecentResponseTimeForEachGssCode()
             .associateBy { it.gssCode }
-        return registerCheckRepository.summarisePendingRegisterChecksByGssCode(createdBefore)
+        logger.info { "Big query time - PENDING REG CHECKS" }
+
+        val pendingchecks = registerCheckRepository.summarisePendingRegisterChecksByGssCode(createdBefore)
             .filter { it.gssCode !in excludedGssCodes }
             .sortedWith(
                 compareByDescending<RegisterCheckSummaryByGssCode> { it.registerCheckCount }
@@ -48,5 +54,8 @@ class PendingRegisterCheckSummaryService(
                     emsVendor = eroSummary?.emsVendor,
                 )
             }
+
+        logger.info { "Found ${pendingchecks.size} pending checks" }
+        return pendingchecks
     }
 }
