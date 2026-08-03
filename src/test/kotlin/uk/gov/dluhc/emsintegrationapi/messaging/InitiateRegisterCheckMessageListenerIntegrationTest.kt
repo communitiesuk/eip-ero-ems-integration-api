@@ -1,10 +1,10 @@
 package uk.gov.dluhc.emsintegrationapi.messaging
 
 import ch.qos.logback.classic.Level
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Root
-import mu.KotlinLogging
 import org.apache.commons.lang3.time.StopWatch
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -78,7 +78,7 @@ internal class InitiateRegisterCheckMessageListenerIntegrationTest : Integration
                 .hasIdAndDbAuditFieldsAfter(earliestDateCreated)
 
             stopWatch.stop()
-            logger.info("completed assertions in $stopWatch")
+            logger.info { "completed assertions in $stopWatch" }
         }
     }
 
@@ -97,7 +97,7 @@ internal class InitiateRegisterCheckMessageListenerIntegrationTest : Integration
 
             Assertions.assertThat(actualRegisterCheckJpaEntity.first().sourceCorrelationId).isEqualTo(message.sourceCorrelationId)
             stopWatch.stop()
-            logger.info("completed assertions in $stopWatch")
+            logger.info { "completed assertions in $stopWatch" }
         }
 
         sqsMessagingTemplate.send(initiateApplicantRegisterCheckQueueName, message)

@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.QueueConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.entity.ApplicationDetails

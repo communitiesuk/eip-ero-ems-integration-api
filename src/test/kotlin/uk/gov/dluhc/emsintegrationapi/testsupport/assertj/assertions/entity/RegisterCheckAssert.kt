@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.entity
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.assertj.core.api.AbstractAssert
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.InstanceOfAssertFactories
@@ -50,7 +50,7 @@ class RegisterCheckAssert(private val actualJpaEntity: RegisterCheck?) :
                 .ignoringFields(*ignoringFields)
                 .isEqualTo(expectedJpaEntity)
         } catch (e: Error) {
-            logger.debug("failed to assert: ", e)
+            logger.debug(e) { "failed to assert: " }
             throw e
         }
         return this

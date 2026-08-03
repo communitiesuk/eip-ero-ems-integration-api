@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.config
 
 import io.awspring.cloud.core.region.StaticRegionProvider
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.util.TestPropertyValues
