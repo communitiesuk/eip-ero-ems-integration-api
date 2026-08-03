@@ -1,7 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport
 
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import uk.gov.dluhc.emsintegrationapi.testsupport.RsaKeyPair.privateKey
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -20,14 +19,14 @@ fun buildAccessToken(
     email: String,
     issuer: String
 ): String = Jwts.builder()
-    .setSubject(UUID.randomUUID().toString())
-    .setClaims(
+    .subject(UUID.randomUUID().toString())
+    .claims(
         mapOf(
             "email" to email
         )
     )
-    .setIssuer(issuer)
-    .setIssuedAt(Date.from(Instant.now()))
-    .setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
-    .signWith(privateKey, SignatureAlgorithm.RS256)
+    .issuer(issuer)
+    .issuedAt(Date.from(Instant.now()))
+    .expiration(Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
+    .signWith(RsaKeyPair.privateKey, Jwts.SIG.RS256)
     .compact()

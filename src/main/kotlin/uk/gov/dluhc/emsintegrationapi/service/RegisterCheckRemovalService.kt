@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.CollectionUtils
@@ -25,14 +25,14 @@ class RegisterCheckRemovalService(
 
     private fun removeRegisterCheck(dto: RegisterCheckRemovalDto): Set<UUID> {
         with(dto) {
-            logger.info("Finding RegisterCheck for removal by sourceReference: [$sourceReference]")
+            logger.info { "Finding RegisterCheck for removal by sourceReference: [$sourceReference]" }
             val matchingRecords = registerCheckRepository.findBySourceReference(
                 sourceReference = sourceReference,
             )
             if (CollectionUtils.isEmpty(matchingRecords)) {
-                logger.info("Found no matching RegisterCheck to delete for sourceReference: [$sourceReference]")
+                logger.info { "Found no matching RegisterCheck to delete for sourceReference: [$sourceReference]" }
             } else {
-                logger.info("Deleting [${matchingRecords.size}] RegisterCheck record(s) for sourceReference: [$sourceReference]")
+                logger.info { ("Deleting [${matchingRecords.size}] RegisterCheck record(s) for sourceReference: [$sourceReference]") }
                 registerCheckRepository.deleteAll(matchingRecords)
             }
             return matchingRecords.map { it.correlationId }.toSet()
@@ -41,13 +41,13 @@ class RegisterCheckRemovalService(
 
     private fun removeRegisterCheckResult(correlationIds: Set<UUID>) {
         if (correlationIds.isNotEmpty()) {
-            logger.info("Finding RegisterCheckResult records for removal for [${correlationIds.size}] correlationIds: $correlationIds")
+            logger.info { "Finding RegisterCheckResult records for removal for [${correlationIds.size}] correlationIds: $correlationIds" }
             val matchingRecords = registerCheckResultDataRepository.findByCorrelationIdIn(correlationIds)
 
             if (CollectionUtils.isEmpty(matchingRecords)) {
-                logger.info("Found no matching RegisterCheckResult to delete for [${correlationIds.size}] correlationIds: $correlationIds")
+                logger.info { "Found no matching RegisterCheckResult to delete for [${correlationIds.size}] correlationIds: $correlationIds" }
             } else {
-                logger.info("Deleting [${matchingRecords.size}] RegisterCheckResult record(s) for [${correlationIds.size}] correlationIds: $correlationIds")
+                logger.info { ("Deleting [${matchingRecords.size}] RegisterCheckResult record(s) for [${correlationIds.size}] correlationIds: $correlationIds") }
                 registerCheckResultDataRepository.deleteAll(matchingRecords)
             }
         }
