@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
-    <changeSet author="connor.whitworth@softwire.com" id="0042_EROPSPT-717_retention_status_nullable" context="ddl">
+    <changeSet author="connor.whitworth@softwire.com" id="0042_EROPSPT-717_postal_retention_status_nullable" context="ddl">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="NO">
                     SELECT IS_NULLABLE
@@ -16,7 +16,7 @@
             </sqlCheck>
         </preConditions>
 
-        <dropNotNullConstraint tableName="postal_vote_application" columnName="retention_status" />
+        <dropNotNullConstraint tableName="postal_vote_application" columnName="retention_status" columnDataType="varchar(20)"/>
 
         <rollback>
             <addNotNullConstraint tableName="postal_vote_application" columnName="retention_status" columnDataType="varchar(20)" />
@@ -34,7 +34,7 @@
             </sqlCheck>
         </preConditions>
 
-        <dropNotNullConstraint tableName="proxy_vote_application" columnName="retention_status" />
+        <dropNotNullConstraint tableName="proxy_vote_application" columnName="retention_status" columnDataType="varchar(20)"/>
 
         <rollback>
             <addNotNullConstraint tableName="proxy_vote_application" columnName="retention_status" columnDataType="varchar(20)"/>
