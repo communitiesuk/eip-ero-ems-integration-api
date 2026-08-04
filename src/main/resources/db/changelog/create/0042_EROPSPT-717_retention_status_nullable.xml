@@ -19,7 +19,7 @@
         <dropNotNullConstraint tableName="postal_vote_application" columnName="retention_status" />
 
         <rollback>
-            <addNotNullConstraint tableName="postal_vote_application" columnName="retention_status" />
+            <addNotNullConstraint tableName="postal_vote_application" columnName="retention_status" columnDataType="varchar(20)" />
         </rollback>
     </changeSet>
 
@@ -37,7 +37,7 @@
         <dropNotNullConstraint tableName="proxy_vote_application" columnName="retention_status" />
 
         <rollback>
-            <addNotNullConstraint tableName="proxy_vote_application" columnName="retention_status" />
+            <addNotNullConstraint tableName="proxy_vote_application" columnName="retention_status" columnDataType="varchar(20)"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>
