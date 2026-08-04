@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers
 
 import io.awspring.cloud.sqs.operations.SqsTemplate
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogging
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.await
 import org.springframework.data.repository.CrudRepository
@@ -52,7 +52,7 @@ class ProxyIntegrationTestHelpers(
     private val messageSenderProxy: MessageSender<ProxyVoteApplicationMessage>? = null,
     private val eroAbsentVoteHoldRepository: EroAbsentVoteHoldRepository? = null,
 ) {
-    val logger = KotlinLogging.logger {}
+    val logger = KLogging().logger
 
     fun givenEroIdAndGssCodesMapped() {
         // Given the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL mapped to the ERO_ID_1
@@ -140,7 +140,7 @@ class ProxyIntegrationTestHelpers(
         signatureWaived: Boolean? = false,
         signatureWaiverReason: String? = null,
     ): Map<String, ProxyVoteApplication> {
-        logger.info { "Creating $numberOfRecords of proxy vote applications" }
+        logger.info("Creating $numberOfRecords of proxy vote applications")
         val proxyVoteApplications =
             saveRecords(
                 proxyVoteApplicationRepository!!,
@@ -230,9 +230,9 @@ class ProxyIntegrationTestHelpers(
 
     infix fun sendMessage(proxyVoteApplicationMessage: ProxyVoteApplicationMessage) {
         with(proxyVoteApplicationMessage) {
-            logger.info {
-                "Send proxy application with id = ${applicationDetails.id} and electoral id = ${applicantDetails.emsElectorId} the queue"
-            }
+            logger.info(
+                "Send proxy application with id = ${applicationDetails.id} and electoral id = ${applicantDetails.emsElectorId} the queue",
+            )
             messageSenderProxy?.send(proxyVoteApplicationMessage, QueueConfiguration.QueueName.PROXY_APPLICATION_QUEUE)
         }
     }
@@ -275,7 +275,7 @@ class ProxyIntegrationTestHelpers(
             Assertions.assertThat(optSavedEntity).isNotNull
             optSavedEntity?.let {
                 validateSavedEntityProxy(proxyVoteApplicationMessage, it.get(), applicationStatus)
-                logger.info { "Successfully validated the postal application with the id = $applicationId" }
+                logger.info("Successfully validated the postal application with the id = $applicationId")
             }
         }
     }

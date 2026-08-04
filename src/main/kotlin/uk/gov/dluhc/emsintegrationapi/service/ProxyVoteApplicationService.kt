@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.service
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -42,17 +42,17 @@ class ProxyVoteApplicationService(
         pageSize: Int?,
     ): ProxyVoteApplications {
         if (shouldHoldApplicationsForEro(certificateSerialNumber)) {
-            logger.info { "No proxy records fetched for $certificateSerialNumber, as hold is enabled for ERO and after holding pool threshold date" }
+            logger.info("No proxy records fetched for $certificateSerialNumber, as hold is enabled for ERO and after holding pool threshold date")
             return ProxyVoteApplications(0, emptyList())
         }
         logger.info { "Proxy Service fetching GSS Codes for $certificateSerialNumber" }
         val gssCodes = retrieveGssCodeService.getGssCodesFromCertificateSerial(certificateSerialNumber)
         var numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
-        logger.info { "Fetching $pageSize proxy vote applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes" }
+        logger.info("Fetching $pageSize proxy vote applications from DB for Serial No=$certificateSerialNumber and gss codes = $gssCodes")
         if (numberOfRecordsToFetch > apiProperties.forceMaxPageSize) {
-            logger.warn {
-                "Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch"
-            }
+            logger.warn(
+                "Force setting number of records to fetch to ${apiProperties.forceMaxPageSize}, ignoring requested record count of $numberOfRecordsToFetch",
+            )
             numberOfRecordsToFetch = apiProperties.forceMaxPageSize
         }
         val proxyApplicationIds =
@@ -65,7 +65,7 @@ class ProxyVoteApplicationService(
         val proxyApplicationsList =
             proxyApplicationIds.map { id -> proxyApplications.find { it.applicationId == id }!! }
         val actualPageSize = proxyApplicationsList.size
-        logger.info { "The actual number of records fetched is $actualPageSize" }
+        logger.info("The actual number of records fetched is $actualPageSize")
         return ProxyVoteApplications(actualPageSize, proxyVoteMapper.mapFromEntities(proxyApplicationsList))
     }
 
@@ -77,7 +77,7 @@ class ProxyVoteApplicationService(
     ) {
         val gssCodes = getGssCodes(certificateSerialNumber)
 
-        logger.info { "Updating the proxy vote application with the id $proxyVoteApplicationId with status ${RecordStatus.DELETED}" }
+        logger.info("Updating the proxy vote application with the id $proxyVoteApplicationId with status ${RecordStatus.DELETED}")
         proxyVoteApplicationRepository
             .findByApplicationIdAndApplicationDetailsGssCodeIn(
                 proxyVoteApplicationId,
