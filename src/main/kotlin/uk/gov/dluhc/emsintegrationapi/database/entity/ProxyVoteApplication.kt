@@ -37,7 +37,7 @@ class ProxyVoteApplication(
     var removalDateTime: Instant? = null,
 
     @Enumerated(EnumType.STRING)
-    var retentionStatus: RetentionStatus,
+    var retentionStatus: RetentionStatus? = RetentionStatus.RETAIN,
 
     @CreatedDate
     var dateCreated: Instant? = null,
