@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.client
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException

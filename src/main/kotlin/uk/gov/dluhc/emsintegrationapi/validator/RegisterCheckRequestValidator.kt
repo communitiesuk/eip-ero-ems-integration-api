@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.validator
 
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.dto.RegisterCheckResultDto
 import uk.gov.dluhc.emsintegrationapi.exception.Pre1970EarliestSearchException

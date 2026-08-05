@@ -1,8 +1,8 @@
 package uk.gov.dluhc.emsintegrationapi.messaging
 
 import io.awspring.cloud.sqs.annotation.SqsListener
-import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
+import mu.KotlinLogging
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.messaging.models.RemoveApplicationEmsIntegrationDataMessage
@@ -16,7 +16,7 @@ class ProcessIntegrationDataRemovalMessageListener(private val removeEmsIntegrat
     @SqsListener("\${sqs.remove-application-ems-integration-data-queue-name}")
     fun handleMessage(@Valid @Payload removeEmsDataMessage: RemoveApplicationEmsIntegrationDataMessage) {
         with(removeEmsDataMessage) {
-            logger.info { "Integration Data Removal Message received with an application id = ${removeEmsDataMessage.applicationId} and source ${removeEmsDataMessage.source}" }
+            logger.info("Integration Data Removal Message received with an application id = ${removeEmsDataMessage.applicationId} and source ${removeEmsDataMessage.source}")
             removeEmsIntegrationDataMessageService.process(this)
         }
     }

@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers
 
 import io.awspring.cloud.sqs.operations.SqsTemplate
-import io.github.oshai.kotlinlogging.KotlinLogging
+import mu.KLogging
 import org.assertj.core.api.Assertions
 import org.awaitility.kotlin.await
 import org.springframework.data.repository.CrudRepository
@@ -52,7 +52,7 @@ class PostalIntegrationTestHelpers(
     private val messageSenderPostal: MessageSender<PostalVoteApplicationMessage>? = null,
     private val eroAbsentVoteHoldRepository: EroAbsentVoteHoldRepository? = null,
 ) {
-    private val logger = KotlinLogging.logger {}
+    private val logger = KLogging().logger
 
     fun givenEroIdAndGssCodesMapped() {
         // Given the certificate serial number ERO_ID_1_CERTIFICATE_SERIAL mapped to the ERO_ID_1
@@ -104,9 +104,9 @@ class PostalIntegrationTestHelpers(
 
     fun sendMessage(postalVoteApplicationMessage: PostalVoteApplicationMessage) {
         with(postalVoteApplicationMessage) {
-            logger.info {
-                "Send postal application with id = ${applicationDetails.id} and electoral id = ${applicantDetails.emsElectorId} the queue"
-            }
+            logger.info(
+                "Send postal application with id = ${applicationDetails.id} and electoral id = ${applicantDetails.emsElectorId} the queue",
+            )
             messageSenderPostal?.send(
                 postalVoteApplicationMessage,
                 QueueConfiguration.QueueName.POSTAL_APPLICATION_QUEUE,
@@ -152,7 +152,7 @@ class PostalIntegrationTestHelpers(
         signatureWaived: Boolean? = false,
         signatureWaiverReason: String? = null,
     ): Map<String, PostalVoteApplication> {
-        logger.info { "Creating $numberOfRecords of postal vote applications" }
+        logger.info("Creating $numberOfRecords of postal vote applications")
         val postalVoteApplications =
             saveRecords(
                 postalVoteApplicationRepository!!,
@@ -208,7 +208,7 @@ class PostalIntegrationTestHelpers(
         expectedPageSize: Int,
         apiResponse: WebTestClient.ResponseSpec,
     ) {
-        logger.info { "Expected number of postal vote applications with signature = $expectedPageSize" }
+        logger.info("Expected number of postal vote applications with signature = $expectedPageSize")
         val postalApplications =
             ApiClient.validateStatusAndGetResponse(
                 apiResponse = apiResponse,
@@ -262,7 +262,7 @@ class PostalIntegrationTestHelpers(
             Assertions.assertThat(optSavedEntity).isNotNull
             optSavedEntity?.let {
                 validateSavedEntityPostal(postalVoteApplicationMessage, it.get(), applicationStatus)
-                logger.info { "Successfully validated the postal application with the id = $applicationId" }
+                logger.info("Successfully validated the postal application with the id = $applicationId")
             }
         }
     }

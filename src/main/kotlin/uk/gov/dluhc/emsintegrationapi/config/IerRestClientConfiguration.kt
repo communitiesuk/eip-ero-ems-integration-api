@@ -100,7 +100,7 @@ class IerRestClientConfiguration(
     @Bean
     fun stsClient(): StsClient =
         StsClient.builder()
-            .credentialsProvider(DefaultCredentialsProvider.builder().build())
+            .credentialsProvider(DefaultCredentialsProvider.create())
             .region(DefaultAwsRegionProviderChain().region)
             .build()
 }
