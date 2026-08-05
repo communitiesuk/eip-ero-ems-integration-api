@@ -7,7 +7,7 @@
     <changeSet author="connor.whitworth@softwire.com" id="0042_EROPSPT-302_add_postal_vote_application_status_gss_code_date_updated_idx">
         <preConditions onFail="MARK_RAN">
             <not>
-                <indexExists tableName="postal_vote_application" indexName="postal_vote_application_status_gss_code_date_updated_idx">
+                <indexExists tableName="postal_vote_application" indexName="postal_vote_application_status_gss_code_date_updated_idx" />
             </not>
         </preConditions>
 
@@ -25,7 +25,7 @@
     <changeSet author="connor.whitworth@softwire.com" id="0042_EROPSPT-302_add_proxy_vote_application_status_gss_code_date_updated_idx">
         <preConditions onFail="MARK_RAN">
             <not>
-                <indexExists tableName="proxy_vote_application" indexName="proxy_vote_application_status_gss_code_date_updated_idx">
+                <indexExists tableName="proxy_vote_application" indexName="proxy_vote_application_status_gss_code_date_updated_idx" />
             </not>
         </preConditions>
 
