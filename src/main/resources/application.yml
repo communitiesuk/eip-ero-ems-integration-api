@@ -53,7 +53,7 @@ jobs:
     enabled: true
     send-email: true
     name: "PendingDownloadsMonitoring"
-    cron: "0 0 5 * * *" # Runs at 05:00 daily
+    cron: "0 30 15 * * *" # Runs at 05:00 daily
     expected-maximum-pending-period: 5D
     excluded-gss-codes: "E99999999"
   register-check-monitoring:
