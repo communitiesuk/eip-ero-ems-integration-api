@@ -84,4 +84,4 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0041_EROPSPT-566_add_application_reference_to_vote_application_tables.xml
   - include:
-      file: /db/changelog/create/0042_EROPSPT-717_retention_status_nullable.xml
+      file: db/changelog/create/0042_EROPSPT-717_retention_status_default.xml
