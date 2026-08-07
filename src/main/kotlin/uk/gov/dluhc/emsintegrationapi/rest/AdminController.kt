@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -26,7 +26,7 @@ class AdminController(
     fun adminGetPendingRegisterChecks(
         @PathVariable eroId: String
     ): AdminPendingRegisterChecksResponse {
-        logger.info("Getting admin pending register checks for eroId=[$eroId]")
+        logger.info { "Getting admin pending register checks for eroId=[$eroId]" }
         return AdminPendingRegisterChecksResponse(
             pendingRegisterChecks = adminService.adminGetPendingRegisterChecks(eroId).map(
                 adminPendingRegisterCheckMapper::adminPendingRegisterCheckDtoToAdminPendingRegisterCheckModel
@@ -38,7 +38,7 @@ class AdminController(
     fun adminGetPendingEmsDownloads(
         @PathVariable eroId: String
     ): AdminPendingEmsDownloadsResponse {
-        logger.info("Getting admin pending EMS downloads for eroId=[$eroId]")
+        logger.info { "Getting admin pending EMS downloads for eroId=[$eroId]" }
         return AdminPendingEmsDownloadsResponse(
             pendingEmsDownloads = adminService.adminGetPendingEmsDownloads(eroId).map(
                 adminPendingEmsDownloadMapper::adminPendingEmsDownloadEntityToAdminPendingEmsDownloadModel
@@ -51,10 +51,10 @@ class AdminController(
         @RequestParam(defaultValue = "0") registerChecksPendingMinAgeInDays: Int,
         @RequestParam(defaultValue = "0") emsDownloadsPendingMinAgeInDays: Int,
     ): AdminPendingChecksAndDownloadsSummaryResponse {
-        logger.info(
+        logger.info {
             "Getting admin pending checks and downloads summary with minimum pending ages " +
                 "[registerChecks=$registerChecksPendingMinAgeInDays days, emsDownloads=$emsDownloadsPendingMinAgeInDays days]"
-        )
+        }
 
         return adminService.adminGetPendingChecksAndDownloadsSummary(registerChecksPendingMinAgeInDays, emsDownloadsPendingMinAgeInDays)
     }

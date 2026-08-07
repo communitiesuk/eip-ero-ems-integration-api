@@ -1,8 +1,8 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Pattern
-import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication

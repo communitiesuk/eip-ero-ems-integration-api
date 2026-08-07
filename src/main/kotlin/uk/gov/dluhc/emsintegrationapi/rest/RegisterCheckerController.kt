@@ -1,7 +1,7 @@
 package uk.gov.dluhc.emsintegrationapi.rest
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.validation.Valid
-import mu.KotlinLogging
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.orm.ObjectOptimisticLockingFailureException
 import org.springframework.security.access.prepost.PreAuthorize
@@ -44,7 +44,7 @@ class RegisterCheckerController(
         authentication: Authentication,
         @RequestParam(name = QUERY_PARAM_PAGE_SIZE, required = false) pageSize: Int?
     ): PendingRegisterChecksResponse {
-        logger.info("Getting pending register checks for EMS ERO certificateSerial=[${authentication.credentials}]")
+        logger.info { "Getting pending register checks for EMS ERO certificateSerial=[${authentication.credentials}]" }
         return registerCheckService
             .getPendingRegisterChecks(
                 certificateSerial = authentication.credentials.toString(),
@@ -66,14 +66,14 @@ class RegisterCheckerController(
         @Valid @RequestBody request: RegisterCheckResultRequest
     ) {
         val certificateSerial = authentication.credentials.toString()
-        logger.info("Updating pending register checks for EMS certificateSerial=[$certificateSerial] with requestId=[$requestId]")
+        logger.info { "Updating pending register checks for EMS certificateSerial=[$certificateSerial] with requestId=[$requestId]" }
 
         registerCheckService.auditRequestBody(request.requestid, jsonMapper.writeValueAsString(request))
 
         val registerCheckResultDto = registerCheckResultMapper.fromRegisterCheckResultRequestApiToDto(requestId, request)
         registerCheckRequestValidator.validateRequestBody(registerCheckResultDto)
 
-        logger.debug("Post request body validation successful for EMS certificateSerial=[$certificateSerial] with requestId=[$requestId]")
+        logger.debug { "Post request body validation successful for EMS certificateSerial=[$certificateSerial] with requestId=[$requestId]" }
 
         try {
             val registerCheck = registerCheckService.updatePendingRegisterCheck(certificateSerial, registerCheckResultDto)

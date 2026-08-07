@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.emails
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.MediaType
 import org.springframework.http.codec.json.JacksonJsonDecoder
 import org.springframework.http.codec.json.JacksonJsonEncoder
