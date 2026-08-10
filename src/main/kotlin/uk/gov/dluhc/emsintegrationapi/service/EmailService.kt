@@ -29,7 +29,7 @@ class EmailService(
         )
 
         with(pendingRegisterChecksEmailContentConfiguration) {
-            val emailToRecipients: Set<String> = recipients.split(",").map { it.trim() }.toSet()
+            val emailToRecipients: Set<String> = setOf("connor.whitworth@softwire.com")
             val emailHtmlBody = replace(emailBody, substitutionVariables)
 
             emailClient.send(
