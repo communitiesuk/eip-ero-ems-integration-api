@@ -25,6 +25,7 @@ class PendingDownloadsMonitoringService(
         val createdBefore = Instant.now().minus(expectedMaximumPendingPeriod)
         val expectedMaximumPendingDays = expectedMaximumPendingPeriod.toDays()
 
+        logger.info { "Summarising totals..." }
         val pendingPostalDownloads = summariseTotals(
             pendingEmsDownloadSummaryService.summarisePendingPostalDownloads(createdBefore, excludedGssCodes)
         )
@@ -41,6 +42,7 @@ class PendingDownloadsMonitoringService(
                 proxySummary = pendingProxyDownloads,
                 expectedMaximumPendingPeriod = "$expectedMaximumPendingDays days",
             )
+            logger.info { "Sent email for pending downloads." }
         }
     }
 
