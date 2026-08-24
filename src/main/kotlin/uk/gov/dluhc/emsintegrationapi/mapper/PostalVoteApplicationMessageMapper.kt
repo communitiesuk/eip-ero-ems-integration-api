@@ -3,7 +3,6 @@ package uk.gov.dluhc.emsintegrationapi.mapper
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.database.entity.PostalVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
-import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem as RejectedReasonItemEntity
@@ -31,7 +30,6 @@ class PostalVoteApplicationMessageMapper(
                     it.primaryElectorDetails,
                 ),
                 createdBy = SourceSystem.POSTAL,
-                retentionStatus = RetentionStatus.RETAIN,
                 status = RecordStatus.RECEIVED,
                 englishRejectionNotes = it.postalVoteDetails?.rejectedReasons?.englishReason?.notes,
                 englishRejectedReasonItems = it.postalVoteDetails?.rejectedReasons?.englishReason?.reasonList

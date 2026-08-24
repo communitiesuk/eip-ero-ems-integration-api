@@ -7,11 +7,6 @@ enum class SourceSystem {
     EROP
 }
 
-enum class RetentionStatus {
-    REMOVE,
-    RETAIN,
-}
-
 enum class RecordStatus {
     RECEIVED,
     DELETED,

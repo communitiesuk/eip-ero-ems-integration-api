@@ -39,11 +39,6 @@ class PostalVoteApplication(
     @Embedded
     var postalVoteDetails: PostalVoteDetails? = null,
 
-    var removalDateTime: Instant? = null,
-
-    @Enumerated(EnumType.STRING)
-    var retentionStatus: RetentionStatus,
-
     @CreatedDate
     var dateCreated: Instant? = null,
 

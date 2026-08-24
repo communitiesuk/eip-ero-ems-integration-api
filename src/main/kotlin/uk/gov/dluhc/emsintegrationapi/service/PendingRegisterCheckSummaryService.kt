@@ -2,6 +2,7 @@ package uk.gov.dluhc.emsintegrationapi.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.dluhc.emsintegrationapi.database.entity.RegisterCheckSummaryByGssCode
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.service.dto.EroSummary
 import uk.gov.dluhc.emsintegrationapi.service.dto.PendingRegisterCheckSummary
@@ -31,7 +32,10 @@ class PendingRegisterCheckSummaryService(
             .associateBy { it.gssCode }
         return registerCheckRepository.summarisePendingRegisterChecksByGssCode(createdBefore)
             .filter { it.gssCode !in excludedGssCodes }
-            .sortedBy { it.gssCode }
+            .sortedWith(
+                compareByDescending<RegisterCheckSummaryByGssCode> { it.registerCheckCount }
+                    .thenBy { it.gssCode }
+            )
             .map { pendingSummary ->
                 val eroSummary = eroSummaryByGssCode[pendingSummary.gssCode]
                 PendingRegisterCheckSummary(
