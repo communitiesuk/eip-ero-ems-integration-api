@@ -204,6 +204,40 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
     }
 
     @Test
+    fun `should sort each summary by descending volume`() {
+        wireMockService.stubIerApiGetEros(
+            listOf(
+                buildIerEroDetails(gssCode = GSS_CODE_1, name = ERO_NAME_1, eroIdentifier = ERO_ID_1),
+                buildIerEroDetails(gssCode = GSS_CODE_2, name = ERO_NAME_2, eroIdentifier = ERO_ID_2),
+            )
+        )
+        val pendingSince = Instant.parse("2025-03-01T09:00:00Z")
+
+        saveRegisterCheckPendingSince(GSS_CODE_1, pendingSince)
+        repeat(2) { saveRegisterCheckPendingSince(GSS_CODE_2, pendingSince) }
+        savePostalApplicationPendingSince(GSS_CODE_1, pendingSince)
+        repeat(2) { savePostalApplicationPendingSince(GSS_CODE_2, pendingSince) }
+        saveProxyApplicationPendingSince(GSS_CODE_1, pendingSince)
+        repeat(2) { saveProxyApplicationPendingSince(GSS_CODE_2, pendingSince) }
+
+        val response = webTestClient.get()
+            .uri(ADMIN_GET_PENDING_CHECKS_AND_DOWNLOADS_SUMMARY_ENDPOINT)
+            .bearerToken(getBearerToken())
+            .exchange()
+            .expectStatus().isOk
+            .returnResult<AdminPendingChecksAndDownloadsSummaryResponse>()
+
+        val actual = response.responseBody.blockFirst()
+        assertThat(actual).isNotNull
+        assertThat(actual!!.pendingRegisterChecks.map { it.gssCode to it.registerCheckCount })
+            .containsExactly(GSS_CODE_2 to 2, GSS_CODE_1 to 1)
+        assertThat(actual.pendingPostalDownloads.map { it.gssCode to it.pendingDownloadCount })
+            .containsExactly(GSS_CODE_2 to 2, GSS_CODE_1 to 1)
+        assertThat(actual.pendingProxyDownloads.map { it.gssCode to it.pendingDownloadCount })
+            .containsExactly(GSS_CODE_2 to 2, GSS_CODE_1 to 1)
+    }
+
+    @Test
     fun `should return unauthorized given authentication token is invalid`() {
         // When & Then
         webTestClient.get()

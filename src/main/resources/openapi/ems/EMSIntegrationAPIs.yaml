@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: EROP EMS Integration APIs for Postal and Proxy Vote Applications (OAVA)
-  version: 1.5.0
+  version: 1.5.1
   description: |
     This specification is for an API hosted by EROP for EMS clients to fetch
     details of Postal Vote and Proxy Vote applications made by the public.
@@ -1215,17 +1215,23 @@ components:
       description: Response containing a summary of pending register checks and pending EMS Downloads for all ERO.
       properties:
         pendingRegisterChecks:
-          description: The list of pending register checks summary per ERO
+          description: |-
+            The list of pending register check summaries per ERO, sorted by registerCheckCount in descending order,
+            then by gssCode in ascending order when counts are equal.
           type: array
           items:
             $ref: '#/components/schemas/AdminPendingRegisterCheckSummary'
         pendingPostalDownloads:
-          description: The list of pending postal vote EMS downloads summary per ERO
+          description: |-
+            The list of pending postal vote EMS download summaries per ERO, sorted by pendingDownloadCount in descending order,
+            then by gssCode in ascending order when counts are equal.
           type: array
           items:
             $ref: '#/components/schemas/AdminPendingEmsDownloadSummary'
         pendingProxyDownloads:
-          description: The list of pending proxy vote EMS downloads summary per ERO
+          description: |-
+            The list of pending proxy vote EMS download summaries per ERO, sorted by pendingDownloadCount in descending order,
+            then by gssCode in ascending order when counts are equal.
           type: array
           items:
             $ref: '#/components/schemas/AdminPendingEmsDownloadSummary'
