@@ -34,11 +34,6 @@ class ProxyVoteApplication(
     @Embedded
     val proxyVoteDetails: ProxyVoteDetails,
 
-    var removalDateTime: Instant? = null,
-
-    @Enumerated(EnumType.STRING)
-    var retentionStatus: RetentionStatus,
-
     @CreatedDate
     var dateCreated: Instant? = null,
 

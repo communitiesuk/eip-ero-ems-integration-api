@@ -6,7 +6,6 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteApplication
 import uk.gov.dluhc.emsintegrationapi.database.entity.ProxyVoteDetails
 import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.RejectedReasonItem
-import uk.gov.dluhc.emsintegrationapi.database.entity.RetentionStatus
 import uk.gov.dluhc.emsintegrationapi.database.entity.SourceSystem
 import uk.gov.dluhc.emsintegrationapi.messaging.models.ProxyVoteApplicationMessage
 import java.time.Instant
@@ -20,8 +19,6 @@ fun buildProxyVoteApplication(
     applicationDetails: ApplicationDetails = buildApplicationDetailsEntity(),
     applicantDetails: ApplicantDetails = buildApplicantDetailsEntity(),
     proxyVoteDetails: ProxyVoteDetails = buildProxyVoteDetailsEntity(),
-    removalDateTime: Instant? = null,
-    retentionStatus: RetentionStatus = RetentionStatus.RETAIN,
     createdBy: SourceSystem = SourceSystem.POSTAL,
     dateUpdated: Instant? = null,
     updatedBy: SourceSystem? = null,
@@ -35,8 +32,6 @@ fun buildProxyVoteApplication(
     applicationDetails = applicationDetails,
     applicantDetails = applicantDetails,
     proxyVoteDetails = proxyVoteDetails,
-    removalDateTime = removalDateTime,
-    retentionStatus = retentionStatus,
     createdBy = createdBy,
     dateUpdated = dateUpdated,
     updatedBy = updatedBy,
