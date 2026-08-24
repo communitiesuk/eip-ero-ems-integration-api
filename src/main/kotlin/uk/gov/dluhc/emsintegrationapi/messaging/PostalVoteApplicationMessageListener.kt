@@ -7,14 +7,16 @@ import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 import uk.gov.dluhc.emsintegrationapi.messaging.models.PostalVoteApplicationMessage
 import uk.gov.dluhc.emsintegrationapi.service.ProcessPostalVoteApplicationMessageService
+import uk.gov.dluhc.messagingsupport.MessageListener
 
 private val logger = KotlinLogging.logger { }
 
 @Component
-class PostalVoteApplicationMessageListener(private val processPostalVoteApplicationMessageService: ProcessPostalVoteApplicationMessageService) {
+class PostalVoteApplicationMessageListener(private val processPostalVoteApplicationMessageService: ProcessPostalVoteApplicationMessageService) :
+    MessageListener<PostalVoteApplicationMessage> {
     @SqsListener("\${sqs.postal-application-queue-name}")
-    fun handleMessage(@Valid @Payload postalVoteApplicationMessage: PostalVoteApplicationMessage) {
-        with(postalVoteApplicationMessage) {
+    override fun handleMessage(@Valid @Payload payload: PostalVoteApplicationMessage) {
+        with(payload) {
             logger.info { "Postal Vote Application Message received with an application id = ${applicationDetails.id}" }
             processPostalVoteApplicationMessageService.process(this)
         }
