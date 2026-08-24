@@ -16,7 +16,7 @@ plugins {
     kotlin("plugin.allopen") version "2.4.10"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("org.openapi.generator") version "7.0.1"
-    id("org.owasp.dependencycheck") version "12.2.2"
+    id("org.owasp.dependencycheck") version "13.0.0"
     id("org.liquibase.gradle") version "2.0.4"
 }
 
@@ -29,9 +29,16 @@ java {
     }
 }
 
-extra["awsSdkVersion"] = "2.26.20"
-extra["springCloudAwsVersion"] = "4.0.2"
+extra["awsSdkVersion"] = "2.49.4"
+extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
+// EROPSPT-733: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
+extra["logback.version"] = "1.5.37"
+extra["netty.version"] = "4.2.16.Final"
+extra["log4j2.version"] = "2.25.5"
+extra["tomcat.version"] = "11.0.24"
+extra["httpcore5.version"] = "5.4.3"
+extra["jackson.version"] = "3.1.5"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -53,16 +60,6 @@ repositories {
     }
 }
 
-apply(plugin = "org.jlleitschuh.gradle.ktlint")
-apply(plugin = "org.openapi.generator")
-apply(plugin = "org.springframework.boot")
-apply(plugin = "io.spring.dependency-management")
-apply(plugin = "org.jetbrains.kotlin.jvm")
-apply(plugin = "org.jetbrains.kotlin.plugin.spring")
-apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
-apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
-apply(plugin = "org.liquibase.gradle")
-
 liquibase {
     activities.register("main")
     runList = "main"
@@ -74,39 +71,33 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("tools.jackson.core:jackson-databind")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
-    implementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
+    implementation("org.apache.commons:commons-lang3")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     // internal libs
-    implementation("uk.gov.dluhc:logging-library:4.0.0")
-    implementation("uk.gov.dluhc:messaging-support-library:3.0.0")
-    implementation("uk.gov.dluhc:email-client:1.2.0")
+    implementation("uk.gov.dluhc:logging-library:4.2.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.2.1")
+    implementation("uk.gov.dluhc:email-client:1.4.0")
 
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
-    implementation("org.webjars:swagger-ui:4.19.1")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.7")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.47")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
 
-    // Logging
-    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
-
     // spring security
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("com.nimbusds:nimbus-jose-jwt:10.0.2")
 
     // jpa/liquibase
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
-    implementation("org.apache.commons:commons-text:1.12.0")
+    implementation("org.apache.commons:commons-text:1.15.0")
     implementation("org.hibernate.orm:hibernate-envers")
 
     // mysql
@@ -150,31 +141,28 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:1.21.4")
     testImplementation("org.testcontainers:mysql:1.21.4")
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
 
     testImplementation("org.wiremock.integrations:wiremock-spring-boot-standalone:4.2.1")
     testImplementation("net.datafaker:datafaker:1.6.0")
 
-    // caching
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("com.github.ben-manes.caffeine:caffeine")
-
     // AWS library to support tests
     testImplementation("software.amazon.awssdk:auth")
     // Libraries to support creating JWTs in tests
-    testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
-    testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    testImplementation("io.jsonwebtoken:jjwt-impl:0.13.0")
+    testImplementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
+    // EROPSPT-733: Jackson v2 packages used by jjwt, should be reviewed if upgrading jjwt-jackson
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.21.5")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.5")
 
     // Logging
-    runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
     // Liquibase plugin for local development
     val liquibaseRuntime by configurations
     liquibaseRuntime("org.liquibase:liquibase-core")
-    liquibaseRuntime("mysql:mysql-connector-java")
+    liquibaseRuntime("com.mysql:mysql-connector-j")
     liquibaseRuntime("org.springframework.boot:spring-boot")
     liquibaseRuntime("info.picocli:picocli:4.6.1")
     liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
-    liquibaseRuntime("org.apache.commons:commons-lang3:3.18.0")
 }
 
 dependencyManagement {
@@ -302,12 +290,19 @@ tasks.withType<KtLintCheckTask> {
 
 tasks.withType<BootBuildImage> {
     builder.set("paketobuildpacks/builder-jammy-base")
-    environment.set(mapOf("BP_HEALTH_CHECKER_ENABLED" to "true"))
+    environment.set(
+        mapOf(
+            "BP_HEALTH_CHECKER_ENABLED" to "true",
+            // Netty 4.2 defaults to the adaptive allocator; pin to the pooled allocator
+            "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
+            "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-Dio.netty.allocator.type=pooled",
+        )
+    )
     buildpacks.set(
         listOf(
             "urn:cnb:builder:paketo-buildpacks/java",
             "docker.io/paketobuildpacks/health-checker",
-        ),
+        )
     )
 }
 
