@@ -16,7 +16,7 @@ plugins {
     kotlin("plugin.allopen") version "2.4.10"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("org.openapi.generator") version "7.0.1"
-    id("org.owasp.dependencycheck") version "12.2.2"
+    id("org.owasp.dependencycheck") version "13.0.0"
     id("org.liquibase.gradle") version "2.0.4"
 }
 
@@ -290,12 +290,19 @@ tasks.withType<KtLintCheckTask> {
 
 tasks.withType<BootBuildImage> {
     builder.set("paketobuildpacks/builder-jammy-base")
-    environment.set(mapOf("BP_HEALTH_CHECKER_ENABLED" to "true"))
+    environment.set(
+        mapOf(
+            "BP_HEALTH_CHECKER_ENABLED" to "true",
+            // Netty 4.2 defaults to the adaptive allocator; pin to the pooled allocator
+            "BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
+            "BPE_APPEND_JAVA_TOOL_OPTIONS" to "-Dio.netty.allocator.type=pooled",
+        )
+    )
     buildpacks.set(
         listOf(
             "urn:cnb:builder:paketo-buildpacks/java",
             "docker.io/paketobuildpacks/health-checker",
-        ),
+        )
     )
 }
 

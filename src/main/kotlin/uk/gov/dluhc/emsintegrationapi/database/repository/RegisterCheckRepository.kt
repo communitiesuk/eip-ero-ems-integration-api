@@ -31,7 +31,6 @@ interface RegisterCheckRepository :
         FROM RegisterCheck rc
         WHERE rc.status = 'PENDING' AND rc.dateCreated < :createdBefore
         GROUP BY rc.gssCode
-        ORDER BY rc.gssCode
         """
     )
     fun summarisePendingRegisterChecksByGssCode(createdBefore: Instant): List<RegisterCheckSummaryByGssCode>
