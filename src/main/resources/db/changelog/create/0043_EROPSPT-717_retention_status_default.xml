@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
-    <changeSet author="connor.whitworth@softwire.com" id="0042_EROPSPT-717_postal_retention_status_add_default" context="ddl">
+    <changeSet author="connor.whitworth@softwire.com" id="0043_EROPSPT-717_postal_retention_status_add_default" context="ddl">
         <addDefaultValue tableName="postal_vote_application" columnName="retention_status" defaultValue="RETAIN" columnDataType="varchar(20)" />
 
         <rollback>
@@ -13,7 +13,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet author="connor.whitworth@softwire.com" id="0042_EROPSPT-717_proxy_retention_status_add_default" context="ddl">
+    <changeSet author="connor.whitworth@softwire.com" id="0043_EROPSPT-717_proxy_retention_status_add_default" context="ddl">
         <addDefaultValue tableName="proxy_vote_application" columnName="retention_status" defaultValue="RETAIN" columnDataType="varchar(20)" />
 
         <rollback>
