@@ -84,4 +84,4 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0041_EROPSPT-566_add_application_reference_to_vote_application_tables.xml
   - include:
-      file: db/changelog/create/0042_EROPSPT-302_add_application_status_gss_code_date_updated_idx.xml
+      file: /db/changelog/create/0042_EROPSPT-302_add_application_status_gss_code_date_updated_idx.xml
