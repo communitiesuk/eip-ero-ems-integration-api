@@ -88,4 +88,4 @@ databaseChangeLog:
   - include:
       file: /db/changelog/create/0043_EROPSPT-717_retention_status_default.xml
   - include:
-      file: /db/changelog/create/0043_EROPSPT-717_remove_unused_columns_from_postal_and_proxy.xml
+      file: db/changelog/create/0044_EROPSPT-717_remove_unused_columns_from_postal_and_proxy.xml
