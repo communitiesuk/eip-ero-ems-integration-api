@@ -29,7 +29,7 @@ java {
     }
 }
 
-extra["awsSdkVersion"] = "2.49.4"
+extra["awsSdkVersion"] = "2.52.0"
 extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
 // EROPSPT-733: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
@@ -147,8 +147,8 @@ dependencies {
     testImplementation("io.jsonwebtoken:jjwt-impl:0.13.0")
     testImplementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
     // EROPSPT-733: Jackson v2 packages used by jjwt, should be reviewed if upgrading jjwt-jackson
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.21.5")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.5")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.21.6")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.6")
 
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
