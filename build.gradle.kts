@@ -7,7 +7,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import java.lang.ProcessBuilder.Redirect
 
 plugins {
-    id("org.springframework.boot") version "4.1.0"
+    id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.4.10"
     kotlin("kapt") version "2.4.10"
@@ -33,12 +33,8 @@ extra["awsSdkVersion"] = "2.49.4"
 extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
 // EROPSPT-733: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
-extra["logback.version"] = "1.5.37"
-extra["netty.version"] = "4.2.16.Final"
-extra["log4j2.version"] = "2.25.5"
-extra["tomcat.version"] = "11.0.24"
-extra["httpcore5.version"] = "5.4.3"
-extra["jackson.version"] = "3.1.5"
+extra["tomcat.version"] = "11.0.25"
+extra["jackson.version"] = "3.1.6"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
