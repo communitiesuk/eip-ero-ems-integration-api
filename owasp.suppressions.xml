@@ -71,6 +71,33 @@
         <cve>CVE-2026-60624</cve>
         <cve>CVE-2026-61082</cve>
     </suppress>
+    <suppress until="2026-12-01Z">
+        <notes><![CDATA[
+        FALSE POSITIVE - wrong product. All three CVEs are from Oracle's July 2026 Critical Patch
+        Update and are explicitly scoped to "MySQL Connectors ... (component: Connector/Net)", i.e.
+        the .NET/C# connector (MySql.Data), NOT Connector/J (the Java JDBC driver):
+        (1) CVE-2026-60192 (CVSS 8.1, CWE-284) - unauthenticated takeover of Connector/Net.
+        (2) CVE-2026-60193 (CVSS 8.5, CWE-284) - takeover of Connector/Net with scope change,
+            requires a low-privileged attacker.
+        (3) CVE-2026-60317 (CVSS 7.4, CWE-284) - unauthorized data access/modification via
+            Connector/Net.
+        dependency-check maps them onto com.mysql:mysql-connector-j only because Oracle files all of
+        its connectors (J, Net, Node.js, Python, C++, ODBC) under the single generic CPE
+        cpe:2.3:a:oracle:mysql_connectors:9.7.x, which collides with the 9.7.0 Connector/J we resolve
+        via the Spring Boot BOM (mysql.version). The affected artifact is a .NET assembly and is not
+        present anywhere in this project: this is a Kotlin/JVM service with no .NET components, and
+        the only MySQL drivers on the classpath are com.mysql:mysql-connector-j and
+        software.aws.rds:aws-mysql-jdbc. There is therefore nothing to patch on the Java side and no
+        Connector/J release will ever "fix" these.
+        Scoped to the 9.7.x line so the suppression stops applying automatically once Connector/J
+        moves past the colliding CPE range. REMOVE this suppression if dependency-check corrects the
+        CPE mapping, or when Connector/J is upgraded off 9.7.x.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.mysql/mysql\-connector\-j@9\.7\..*$</packageUrl>
+        <cve>CVE-2026-60192</cve>
+        <cve>CVE-2026-60193</cve>
+        <cve>CVE-2026-60317</cve>
+    </suppress>
     <suppress until="2026-11-24Z">
         <notes><![CDATA[
         CVE-2026-19880 is a path traversal in logback-classic: an MDC value flows unsanitised through
@@ -125,5 +152,18 @@
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-.*@.*$</packageUrl>
         <cve>CVE-2026-47838</cve>
+    </suppress>
+    <suppress until="2026-12-01Z">
+        <notes><![CDATA[
+        FALSE POSITIVE: we are already on a fixed version. CVE-2026-47842 is a deterministic AES/CBC
+        encryption flaw in Spring Security's AesBytesEncryptor (all-zero IV). The advisory
+        (https://spring.io/security/cve-2026-47842) lists 7.1.0 as the only affected release on the
+        7.1.x line, and this service resolves Spring Security 7.1.1 via the Spring Boot 4.1.1 BOM.
+        Dependency-check still reports it because the CVE is in "Awaiting Analysis" state with no CPE
+        version ranges published, so there is no machine-readable "fixed at 7.1.1" boundary to match on.
+        REMOVE this suppression once dependency-check stops reporting it.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-.*@.*$</packageUrl>
+        <cve>CVE-2026-47842</cve>
     </suppress>
 </suppressions>
