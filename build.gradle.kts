@@ -15,9 +15,9 @@ plugins {
     kotlin("plugin.jpa") version "2.4.10"
     kotlin("plugin.allopen") version "2.4.10"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("org.openapi.generator") version "7.0.1"
+    id("org.openapi.generator") version "7.25.0"
     id("org.owasp.dependencycheck") version "13.0.0"
-    id("org.liquibase.gradle") version "2.0.4"
+    id("org.liquibase.gradle") version "3.1.0"
 }
 
 group = "uk.gov.dluhc"
@@ -69,8 +69,8 @@ dependencies {
     implementation("tools.jackson.core:jackson-databind")
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
     implementation("org.apache.commons:commons-lang3")
-    implementation("org.mapstruct:mapstruct:1.5.5.Final")
-    kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    kapt("org.mapstruct:mapstruct-processor:1.6.3")
 
     // internal libs
     implementation("uk.gov.dluhc:logging-library:4.3.0")
@@ -80,7 +80,7 @@ dependencies {
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.47")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.54")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
@@ -98,7 +98,7 @@ dependencies {
 
     // mysql
     runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.10")
+    runtimeOnly("software.aws.rds:aws-mysql-jdbc:1.1.15")
     runtimeOnly("software.amazon.awssdk:rds")
 
     // AWS dependencies (that are defined in the BOM "software.amazon.awssdk")
@@ -112,7 +112,7 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-aws-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
 
-    implementation("io.github.acm19:aws-request-signing-apache-interceptor:3.0.0")
+    implementation("io.github.acm19:aws-request-signing-apache-interceptor:4.0.1")
     implementation("org.apache.httpcomponents.client5:httpclient5")
 
     // caching
@@ -120,26 +120,26 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
 
     // Scheduling
-    implementation("net.javacrumbs.shedlock:shedlock-spring:4.43.0")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.43.0")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:7.9.0")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.9.0")
 
     // tests
     testImplementation("software.amazon.awssdk:sqs") // required to send messages to a queue, which we only need to do in test at the moment
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
-    testImplementation("net.datafaker:datafaker:1.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
+    testImplementation("net.datafaker:datafaker:2.7.0")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-restclient-test")
     testImplementation("org.springframework.boot:spring-boot-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-webtestclient")
 
-    testImplementation("org.testcontainers:junit-jupiter:1.21.4")
-    testImplementation("org.testcontainers:testcontainers:1.21.4")
-    testImplementation("org.testcontainers:mysql:1.21.4")
-    testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
+    testImplementation("org.testcontainers:junit-jupiter:2.0.5")
+    testImplementation("org.testcontainers:testcontainers:2.0.5")
+    testImplementation("org.testcontainers:mysql:2.0.5")
+    testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
 
-    testImplementation("org.wiremock.integrations:wiremock-spring-boot-standalone:4.2.1")
-    testImplementation("net.datafaker:datafaker:1.6.0")
+    testImplementation("org.wiremock.integrations:wiremock-spring-boot-standalone:4.2.2")
+    testImplementation("net.datafaker:datafaker:2.7.0")
 
     // AWS library to support tests
     testImplementation("software.amazon.awssdk:auth")
@@ -147,8 +147,8 @@ dependencies {
     testImplementation("io.jsonwebtoken:jjwt-impl:0.13.0")
     testImplementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
     // EROPSPT-733: Jackson v2 packages used by jjwt, should be reviewed if upgrading jjwt-jackson
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.21.6")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.6")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.2")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.2")
 
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
@@ -157,7 +157,7 @@ dependencies {
     liquibaseRuntime("org.liquibase:liquibase-core")
     liquibaseRuntime("com.mysql:mysql-connector-j")
     liquibaseRuntime("org.springframework.boot:spring-boot")
-    liquibaseRuntime("info.picocli:picocli:4.6.1")
+    liquibaseRuntime("info.picocli:picocli:4.7.7")
     liquibaseRuntime("javax.xml.bind:jaxb-api:2.3.1")
 }
 
