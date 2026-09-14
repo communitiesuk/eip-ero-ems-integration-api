@@ -29,12 +29,13 @@ java {
     }
 }
 
-extra["awsSdkVersion"] = "2.52.0"
+extra["awsSdkVersion"] = "2.54.17"
 extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
 // EROPSPT-733: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
 extra["tomcat.version"] = "11.0.25"
 extra["jackson.version"] = "3.1.6"
+extra["netty.version"] = "4.2.18.Final"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
