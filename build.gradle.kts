@@ -33,9 +33,8 @@ extra["awsSdkVersion"] = "2.54.17"
 extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
 // EROPSPT-767: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
-// Note: Jackson 3.1.6 now also brings in CVEs, and should be patched to 3.1.7 once available
 extra["tomcat.version"] = "11.0.25"
-extra["jackson.version"] = "3.1.6"
+extra["jackson.version"] = "3.1.7"
 extra["netty.version"] = "4.2.18.Final"
 extra["hibernate.version"] = "7.4.9.Final"
 

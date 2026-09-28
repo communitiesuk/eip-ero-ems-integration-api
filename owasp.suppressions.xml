@@ -166,35 +166,4 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-.*@.*$</packageUrl>
         <cve>CVE-2026-47842</cve>
     </suppress>
-    <suppress until="2026-10-28Z">
-        <notes><![CDATA[
-    CVE-2026-91776 and CVE-2026-91777 are denial-of-service flaws in jackson-databind, fixed
-    upstream in PR #6203 and PR #6204 (merged 14 and 15 September 2026). This service resolves
-    tools.jackson.core:jackson-databind 3.1.6, pinned in build.gradle.kts because the Spring Boot
-    4.1.1 BOM brings in an older version.
-    There is currently NO fixed release to upgrade to on the Jackson 3 line. Both fixes were merged
-    onto the 2.18 maintenance branch and have shipped only in 2.18.11 (20 September 2026). The
-    newest published Jackson 3 artifacts, 3.1.6 and 3.2.2, were both released on 14 August 2026 and
-    therefore predate the fixes, so moving to 3.2.2 would not clear either finding. The fixes have
-    been merged forward onto the 3.1 branch (release notes and CVE ids are recorded there), so a
-    future 3.1.7 should contain them.
-    Neither vulnerable code path is reachable here:
-    (1) CVE-2026-91777 (CWE-400) is quadratic forward-reference resolution in the
-        CollectionDeserializer / MapDeserializer referring accumulators. Those accumulators are only
-        created in response to an UnresolvedForwardReference, which is raised only by object-id
-        handling. This service declares no @JsonIdentityInfo on any type, in hand-written code or in
-        the models generated from the OpenAPI specs.
-    (2) CVE-2026-91776 (CWE-770) is unbounded growth of the type id cache in
-        TypeDeserializerBase._findDeserializer, reachable only with polymorphic typing and
-        attacker-controlled type ids. This service uses no @JsonTypeInfo or @JsonSubTypes, and
-        JacksonConfiguration builds a plain JsonMapper that only disables
-        FAIL_ON_NULL_FOR_PRIMITIVES, so default typing is never activated. The OpenAPI specs declare
-        no discriminator, oneOf or anyOf, so the generated models are not polymorphic either.
-    REMOVE this suppression and move the jackson.version pin to a fixed release once 3.1.7 (or a
-    later fixed 3.x) is published.
-    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/tools\.jackson.*/jackson\-.*@.*$</packageUrl>
-        <cve>CVE-2026-91776</cve>
-        <cve>CVE-2026-91777</cve>
-    </suppress>
 </suppressions>
