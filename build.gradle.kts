@@ -37,6 +37,7 @@ extra["tomcat.version"] = "11.0.25"
 extra["jackson.version"] = "3.1.7"
 extra["netty.version"] = "4.2.18.Final"
 extra["hibernate.version"] = "7.4.9.Final"
+extra["logback.version"] = "1.6.5"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
