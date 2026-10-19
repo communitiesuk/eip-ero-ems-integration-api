@@ -77,8 +77,8 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     // internal libs
-    implementation("uk.gov.dluhc:logging-library:4.4.0")
-    implementation("uk.gov.dluhc:messaging-support-library:3.5.0")
+    implementation("uk.gov.dluhc:logging-library:4.5.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.6.0")
     implementation("uk.gov.dluhc:email-client:1.5.0")
 
     // api
