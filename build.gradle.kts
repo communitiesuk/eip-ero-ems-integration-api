@@ -38,6 +38,7 @@ extra["jackson.version"] = "3.1.7"
 extra["netty.version"] = "4.2.18.Final"
 extra["hibernate.version"] = "7.4.9.Final"
 extra["logback.version"] = "1.6.5"
+extra["hibernate-validator"] = "9.1.5.Final"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -76,8 +77,8 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
     // internal libs
-    implementation("uk.gov.dluhc:logging-library:4.4.0")
-    implementation("uk.gov.dluhc:messaging-support-library:3.5.0")
+    implementation("uk.gov.dluhc:logging-library:4.5.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.6.0")
     implementation("uk.gov.dluhc:email-client:1.5.0")
 
     // api
