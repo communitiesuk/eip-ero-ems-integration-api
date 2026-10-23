@@ -9,7 +9,7 @@ fun buildPersonalDetailDto(
     firstName: String = faker.name().firstName(),
     middleNames: String? = faker.name().firstName(),
     surname: String = faker.name().lastName(),
-    dateOfBirth: LocalDate? = faker.date().birthday().toLocalDateTime().toLocalDate(),
+    dateOfBirth: LocalDate? = faker.timeAndDate().birthday(),
     email: String? = faker.internet().emailAddress(),
     phone: String? = faker.phoneNumber().cellPhone(),
     address: AddressDto = buildAddressDto()

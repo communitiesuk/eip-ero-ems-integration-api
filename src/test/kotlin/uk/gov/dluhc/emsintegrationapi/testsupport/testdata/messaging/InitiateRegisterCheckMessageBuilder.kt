@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging
 
-import net.datafaker.Address
+import net.datafaker.providers.base.Address
 import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.DataFaker
 import uk.gov.dluhc.registercheckerapi.messaging.models.InitiateRegisterCheckMessage
@@ -33,7 +33,7 @@ private fun buildRegisterCheckPersonalDetail(
     firstName: String = DataFaker.faker.name().firstName(),
     middleNames: String? = DataFaker.faker.name().firstName(),
     surname: String = DataFaker.faker.name().lastName(),
-    dateOfBirth: LocalDate? = DataFaker.faker.date().birthday().toLocalDateTime().toLocalDate(),
+    dateOfBirth: LocalDate? = DataFaker.faker.timeAndDate().birthday(),
     email: String? = DataFaker.faker.internet().emailAddress(),
     phone: String? = DataFaker.faker.phoneNumber().cellPhone(),
     address: RegisterCheckAddress = buildRegisterCheckAddress()

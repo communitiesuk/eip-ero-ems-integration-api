@@ -33,7 +33,7 @@ fun buildRegisterCheckMatchRequest(
     fn: String = faker.name().firstName(),
     mn: String? = faker.name().firstName(),
     ln: String = faker.name().lastName(),
-    dob: LocalDate? = faker.date().birthday().toLocalDateTime().toLocalDate(),
+    dob: LocalDate? = faker.timeAndDate().birthday(),
     phone: String? = faker.phoneNumber().cellPhone(),
     email: String? = faker.internet().emailAddress(),
     regstreet: String = faker.address().streetName(),
@@ -75,7 +75,7 @@ fun buildRegisterCheckMatchRequest(
 
 fun buildPostalVote(
     postalVoteUntilFurtherNotice: Boolean = false,
-    postalVoteForSingleDate: LocalDate? = faker.date().birthday().toLocalDateTime().toLocalDate(),
+    postalVoteForSingleDate: LocalDate? = faker.timeAndDate().birthday(),
     postalVoteStartDate: LocalDate? = null,
     postalVoteEndDate: LocalDate? = null,
 ) = PostalVote(

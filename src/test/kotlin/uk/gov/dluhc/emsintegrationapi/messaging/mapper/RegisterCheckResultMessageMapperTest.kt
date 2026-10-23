@@ -45,12 +45,12 @@ internal class RegisterCheckResultMessageMapperTest {
         @ParameterizedTest
         @CsvSource(
             value = [
-                "EXACT_MATCH, EXACT_MINUS_MATCH",
-                "NO_MATCH, NO_MINUS_MATCH",
-                "PARTIAL_MATCH, PARTIAL_MINUS_MATCH",
-                "PENDING_DETERMINATION, PENDING_MINUS_DETERMINATION",
+                "EXACT_MATCH, EXACT_MATCH",
+                "NO_MATCH, NO_MATCH",
+                "PARTIAL_MATCH, PARTIAL_MATCH",
+                "PENDING_DETERMINATION, PENDING_DETERMINATION",
                 "EXPIRED, EXPIRED",
-                "NOT_STARTED, NOT_MINUS_STARTED"
+                "NOT_STARTED, NOT_STARTED"
             ]
         )
         fun `should map entity to message when one match found`(
@@ -113,13 +113,13 @@ internal class RegisterCheckResultMessageMapperTest {
                 historicalSearchEarliestDate = historicalSearchEarliestDateInstant,
             )
 
-            given(checkStatusMapper.toRegisterCheckResultEnum(any())).willReturn(RegisterCheckResult.NO_MINUS_MATCH)
+            given(checkStatusMapper.toRegisterCheckResultEnum(any())).willReturn(RegisterCheckResult.NO_MATCH)
             given(instantMapper.toOffsetDateTime(any())).willReturn(historicalSearchEarliestDateOffset)
 
             val expected = buildRegisterCheckResultMessage(
                 sourceReference = registerCheck.sourceReference,
                 sourceCorrelationId = registerCheck.sourceCorrelationId,
-                registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
+                registerCheckResult = RegisterCheckResult.NO_MATCH,
                 matches = emptyList(),
                 historicalSearchEarliestDate = historicalSearchEarliestDateOffset,
             )
@@ -147,12 +147,12 @@ internal class RegisterCheckResultMessageMapperTest {
                 historicalSearchEarliestDate = null,
             )
 
-            given(checkStatusMapper.toRegisterCheckResultEnum(any())).willReturn(RegisterCheckResult.MULTIPLE_MINUS_MATCH)
+            given(checkStatusMapper.toRegisterCheckResultEnum(any())).willReturn(RegisterCheckResult.MULTIPLE_MATCH)
 
             val expected = buildRegisterCheckResultMessage(
                 sourceReference = registerCheck.sourceReference,
                 sourceCorrelationId = registerCheck.sourceCorrelationId,
-                registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
+                registerCheckResult = RegisterCheckResult.MULTIPLE_MATCH,
                 matches = registerCheck.registerCheckMatches.map { registerCheckMatch ->
                     with(registerCheckMatch) {
                         buildVcaRegisterCheckMatch(
