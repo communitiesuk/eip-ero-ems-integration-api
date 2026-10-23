@@ -20,6 +20,12 @@ plugins {
     id("org.liquibase.gradle") version "3.1.0"
 }
 
+buildscript {
+    dependencies {
+        classpath("org.liquibase:liquibase-core:5.0.1")
+    }
+}
+
 group = "uk.gov.dluhc"
 version = "latest"
 

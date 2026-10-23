@@ -50,14 +50,14 @@ internal class CheckStatusMapperTest {
         @ParameterizedTest
         @CsvSource(
             value = [
-                "NO_MATCH, NO_MINUS_MATCH",
-                "EXACT_MATCH, EXACT_MINUS_MATCH",
-                "PARTIAL_MATCH, PARTIAL_MINUS_MATCH",
-                "PENDING_DETERMINATION, PENDING_MINUS_DETERMINATION",
+                "NO_MATCH, NO_MATCH",
+                "EXACT_MATCH, EXACT_MATCH",
+                "PARTIAL_MATCH, PARTIAL_MATCH",
+                "PENDING_DETERMINATION, PENDING_DETERMINATION",
                 "EXPIRED, EXPIRED",
-                "NOT_STARTED, NOT_MINUS_STARTED",
-                "MULTIPLE_MATCH, MULTIPLE_MINUS_MATCH",
-                "TOO_MANY_MATCHES, TOO_MINUS_MANY_MINUS_MATCHES"
+                "NOT_STARTED, NOT_STARTED",
+                "MULTIPLE_MATCH, MULTIPLE_MATCH",
+                "TOO_MANY_MATCHES, TOO_MANY_MATCHES"
             ]
         )
         fun `should map entity CheckStatus enum to VCA RegisterCheckResult message enum`(
