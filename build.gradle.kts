@@ -78,7 +78,7 @@ dependencies {
 
     // internal libs
     implementation("uk.gov.dluhc:logging-library:4.5.0")
-    implementation("uk.gov.dluhc:messaging-support-library:3.6.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.7.0")
     implementation("uk.gov.dluhc:email-client:1.5.0")
 
     // api
