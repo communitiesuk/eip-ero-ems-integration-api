@@ -34,11 +34,11 @@ extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
 // EROPSPT-784: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
 extra["tomcat.version"] = "11.0.25"
-extra["jackson.version"] = "3.1.7"
+extra["jackson.version"] = "3.1.8"
 extra["netty.version"] = "4.2.18.Final"
 extra["hibernate.version"] = "7.4.9.Final"
 extra["logback.version"] = "1.6.5"
-extra["hibernate-validator"] = "9.1.5.Final"
+extra["hibernate-validator.version"] = "9.1.5.Final"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -78,7 +78,7 @@ dependencies {
 
     // internal libs
     implementation("uk.gov.dluhc:logging-library:4.5.0")
-    implementation("uk.gov.dluhc:messaging-support-library:3.6.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.7.0")
     implementation("uk.gov.dluhc:email-client:1.5.0")
 
     // api
@@ -151,8 +151,8 @@ dependencies {
     testImplementation("io.jsonwebtoken:jjwt-impl:0.13.0")
     testImplementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
     // EROPSPT-733: Jackson v2 packages used by jjwt, should be reviewed if upgrading jjwt-jackson
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.21.7")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.7")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.21.8")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.21.8")
 
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
