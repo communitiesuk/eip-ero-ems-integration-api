@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
-    <suppress until="2026-10-28Z">
+    <suppress until="2027-01-01Z">
         <notes><![CDATA[
         org.hdrhistogram:HdrHistogram is pulled in transitively via Micrometer (used by Spring Boot
         Actuator metrics); it is not a directly declared dependency. Both CVEs affect HdrHistogram
@@ -23,7 +23,7 @@
         <cve>CVE-2026-14683</cve>
         <cve>CVE-2026-14686</cve>
     </suppress>
-    <suppress until="2026-10-28Z">
+    <suppress until="2027-01-01Z">
         <notes><![CDATA[
         com.mysql:mysql-connector-j is pinned to 9.7.0 by the Spring Boot 4.1.0 dependency BOM
         (mysql.version). All four CVEs come from Oracle's July 2026 Critical Patch Update and affect
