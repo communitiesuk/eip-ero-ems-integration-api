@@ -39,6 +39,7 @@ extra["netty.version"] = "4.2.18.Final"
 extra["hibernate.version"] = "7.4.9.Final"
 extra["logback.version"] = "1.6.5"
 extra["hibernate-validator.version"] = "9.1.5.Final"
+extra["mysql.version"] = "26.10.0"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
