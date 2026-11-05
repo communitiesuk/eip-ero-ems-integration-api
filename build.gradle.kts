@@ -40,11 +40,12 @@ extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
 // EROPSPT-784: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
 extra["tomcat.version"] = "11.0.25"
-extra["jackson.version"] = "3.1.7"
+extra["jackson.version"] = "3.1.8"
 extra["netty.version"] = "4.2.18.Final"
 extra["hibernate.version"] = "7.4.9.Final"
 extra["logback.version"] = "1.6.5"
-extra["hibernate-validator"] = "9.1.5.Final"
+extra["hibernate-validator.version"] = "9.1.5.Final"
+extra["mysql.version"] = "26.10.0"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -84,7 +85,7 @@ dependencies {
 
     // internal libs
     implementation("uk.gov.dluhc:logging-library:4.5.0")
-    implementation("uk.gov.dluhc:messaging-support-library:3.6.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.7.0")
     implementation("uk.gov.dluhc:email-client:1.5.0")
 
     // api
