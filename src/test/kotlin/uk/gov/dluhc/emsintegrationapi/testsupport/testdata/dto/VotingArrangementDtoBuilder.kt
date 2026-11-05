@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 fun buildVotingArrangementDto(
     untilFurtherNotice: Boolean = false,
-    forSingleDate: LocalDate? = faker.date().birthday().toLocalDateTime().toLocalDate(),
+    forSingleDate: LocalDate? = faker.timeAndDate().birthday(),
     startDate: LocalDate? = null,
     endDate: LocalDate? = null,
 ) = VotingArrangementDto(

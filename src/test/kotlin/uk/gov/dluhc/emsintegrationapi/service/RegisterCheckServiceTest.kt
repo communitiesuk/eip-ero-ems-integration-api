@@ -282,7 +282,7 @@ internal class RegisterCheckServiceTest {
             val expectedMessage = buildRegisterCheckResultMessage(
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-                registerCheckResult = RegisterCheckResult.EXACT_MINUS_MATCH,
+                registerCheckResult = RegisterCheckResult.EXACT_MATCH,
                 matches = registerCheckMatchListDto.map { buildVcaRegisterCheckMatchFromMatchDto(it) },
                 historicalSearchEarliestDate = historicalSearchEarliestDate.atOffset(ZoneOffset.UTC)
             )
@@ -363,13 +363,13 @@ internal class RegisterCheckServiceTest {
         @ParameterizedTest
         @CsvSource(
             value = [
-                "0, NO_MATCH, NO_MINUS_MATCH",
-                "1, EXACT_MATCH, EXACT_MINUS_MATCH",
-                "1, PENDING_DETERMINATION, PENDING_MINUS_DETERMINATION",
+                "0, NO_MATCH, NO_MATCH",
+                "1, EXACT_MATCH, EXACT_MATCH",
+                "1, PENDING_DETERMINATION, PENDING_DETERMINATION",
                 "1, EXPIRED, EXPIRED",
-                "1, NOT_STARTED, NOT_MINUS_STARTED",
-                "10, MULTIPLE_MATCH, MULTIPLE_MINUS_MATCH",
-                "11, TOO_MANY_MATCHES, TOO_MINUS_MANY_MINUS_MATCHES"
+                "1, NOT_STARTED, NOT_STARTED",
+                "10, MULTIPLE_MATCH, MULTIPLE_MATCH",
+                "11, TOO_MANY_MATCHES, TOO_MANY_MATCHES"
             ]
         )
         fun `should update pending register check successfully`(

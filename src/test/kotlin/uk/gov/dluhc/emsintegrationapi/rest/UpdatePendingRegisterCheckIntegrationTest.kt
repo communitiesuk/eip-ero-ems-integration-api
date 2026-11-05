@@ -573,7 +573,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             RegisterCheckResultMessage(
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-                registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
+                registerCheckResult = RegisterCheckResult.MULTIPLE_MATCH,
                 matches = matches.map { buildVcaRegisterCheckMatchFromMatchApi(it) },
                 historicalSearchEarliestDate = historicalSearchEarliestDate,
             )
@@ -632,11 +632,11 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
     @CsvSource(
         value = [
             // handle date format with timezone offset and empty franchise code
-            "2022-09-13T21:03:03.7788394+05:30, '', BS1 1AB, BS1 1AB, EXACT_MINUS_MATCH, EXACT_MATCH",
+            "2022-09-13T21:03:03.7788394+05:30, '', BS1 1AB, BS1 1AB, EXACT_MATCH, EXACT_MATCH",
             // handle UTC date format and Pending franchise code
-            "1986-05-01T02:42:44.348Z, Pending,  BS1 1AB, BS1 1AB, PENDING_MINUS_DETERMINATION, PENDING_DETERMINATION",
+            "1986-05-01T02:42:44.348Z, Pending,  BS1 1AB, BS1 1AB, PENDING_DETERMINATION, PENDING_DETERMINATION",
             // handle partial match
-            "2022-11-17T21:33:03.7788394+00:00, '', BS1 1AB, BS2 2CD, PARTIAL_MINUS_MATCH, PARTIAL_MATCH",
+            "2022-11-17T21:33:03.7788394+00:00, '', BS1 1AB, BS2 2CD, PARTIAL_MATCH, PARTIAL_MATCH",
         ],
     )
     fun `should return created given a post request with one match found`(
@@ -813,7 +813,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             RegisterCheckResultMessage(
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-                registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
+                registerCheckResult = RegisterCheckResult.NO_MATCH,
                 matches = emptyList(),
             )
 
@@ -884,7 +884,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             RegisterCheckResultMessage(
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-                registerCheckResult = RegisterCheckResult.NO_MINUS_MATCH,
+                registerCheckResult = RegisterCheckResult.NO_MATCH,
                 matches = emptyList(),
             )
 
@@ -960,7 +960,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
             RegisterCheckResultMessage(
                 sourceReference = savedPendingRegisterCheckEntity.sourceReference,
                 sourceCorrelationId = savedPendingRegisterCheckEntity.sourceCorrelationId,
-                registerCheckResult = RegisterCheckResult.MULTIPLE_MINUS_MATCH,
+                registerCheckResult = RegisterCheckResult.MULTIPLE_MATCH,
                 matches = matches.map { buildVcaRegisterCheckMatchFromMatchApi(it) },
                 historicalSearchEarliestDate = historicalSearchEarliestDate,
             )
