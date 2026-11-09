@@ -1,6 +1,6 @@
 package uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging
 
-import net.datafaker.Address
+import net.datafaker.providers.base.Address
 import org.apache.commons.lang3.RandomStringUtils
 import uk.gov.dluhc.emsintegrationapi.database.entity.PersonalDetail
 import uk.gov.dluhc.emsintegrationapi.dto.AddressDto
@@ -19,7 +19,7 @@ import java.util.UUID
 fun buildRegisterCheckResultMessage(
     sourceReference: String = "VPIOKNHPBP",
     sourceCorrelationId: UUID = UUID.randomUUID(),
-    registerCheckResult: RegisterCheckResult = RegisterCheckResult.EXACT_MINUS_MATCH,
+    registerCheckResult: RegisterCheckResult = RegisterCheckResult.EXACT_MATCH,
     matches: List<RegisterCheckMatch> = listOf(buildVcaRegisterCheckMatch()),
     historicalSearchEarliestDate: OffsetDateTime? = OffsetDateTime.now()
 ) = RegisterCheckResultMessage(
@@ -96,7 +96,7 @@ fun buildVcaRegisterCheckPersonalDetailSqs(
     firstName: String = faker.name().firstName(),
     middleNames: String? = faker.name().firstName(),
     surname: String = faker.name().lastName(),
-    dateOfBirth: LocalDate? = faker.date().birthday().toLocalDateTime().toLocalDate(),
+    dateOfBirth: LocalDate? = faker.timeAndDate().birthday(),
     email: String? = faker.internet().emailAddress(),
     phone: String? = faker.phoneNumber().cellPhone(),
     address: RegisterCheckAddress = buildVcaRegisterCheckAddressSqs()

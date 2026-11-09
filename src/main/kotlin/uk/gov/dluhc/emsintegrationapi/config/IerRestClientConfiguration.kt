@@ -84,7 +84,8 @@ class IerRestClientConfiguration(
             .build()
 
         val httpClient = HttpClients.custom()
-            .addRequestInterceptorLast(
+            .addExecInterceptorLast(
+                "aws-request-signer",
                 AwsRequestSigningApacheV5Interceptor(
                     API_GATEWAY_SERVICE_NAME,
                     AwsV4HttpSigner.create(),
