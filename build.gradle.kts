@@ -15,14 +15,14 @@ plugins {
     kotlin("plugin.jpa") version "2.4.21"
     kotlin("plugin.allopen") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("org.openapi.generator") version "7.26.0"
+    id("org.openapi.generator") version "7.27.0"
     id("org.owasp.dependencycheck") version "13.0.0"
-    id("org.liquibase.gradle") version "3.1.0"
+    id("org.liquibase.gradle") version "3.1.1"
 }
 
 buildscript {
     dependencies {
-        classpath("org.liquibase:liquibase-core:5.0.1")
+        classpath("org.liquibase:liquibase-core:5.0.4")
     }
 }
 
@@ -91,7 +91,7 @@ dependencies {
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.55")
+    implementation("io.swagger.core.v3:swagger-annotations:3.0.0")
     implementation("org.springframework:spring-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
@@ -158,8 +158,8 @@ dependencies {
     testImplementation("io.jsonwebtoken:jjwt-impl:0.13.0")
     testImplementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
     // EROPSPT-733: Jackson v2 packages used by jjwt, should be reviewed if upgrading jjwt-jackson
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
-    testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.3")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.4")
+    testImplementation("com.fasterxml.jackson.core:jackson-core:2.22.4")
 
     // Logging
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
