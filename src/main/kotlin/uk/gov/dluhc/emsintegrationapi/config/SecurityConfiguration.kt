@@ -38,7 +38,6 @@ class SecurityConfiguration(
             .authorizeHttpRequests {
                 it.anyRequest().authenticated()
             }
-            .addFilter(RegisterCheckerHeaderAuthenticationFilter(requestHeaderName, emptyList()))
             .also { addOAuth2ResourceServer(it, adminIssuer, adminIssuerUrl) }
             .build()
 
