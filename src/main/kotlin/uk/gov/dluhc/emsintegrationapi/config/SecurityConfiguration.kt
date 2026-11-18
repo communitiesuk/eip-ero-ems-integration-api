@@ -29,12 +29,12 @@ class SecurityConfiguration(
 
     @Bean
     @Order(1)
-    fun adminPendingDownloadsFilterChain(
+    fun adminPendingChecksAndDownloadsFilterChain(
         http: HttpSecurity,
         @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer}") adminIssuer: String,
         @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer-uri}") adminIssuerUrl: String,
     ): SecurityFilterChain =
-        baseSecurityFilterChain(http, "/admin/pending-downloads/**")
+        baseSecurityFilterChain(http, "/admin/pending-checks/**", "/admin/pending-checks-and-downloads-summary", "/admin/pending-downloads/**")
             .authorizeHttpRequests {
                 it.anyRequest().authenticated()
             }
@@ -43,20 +43,6 @@ class SecurityConfiguration(
 
     @Bean
     @Order(2)
-    fun adminPendingChecksFilterChain(
-        http: HttpSecurity,
-        @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer}") adminIssuer: String,
-        @Value("\${spring.security.oauth2.resourceserver.jwt.admin-issuer-uri}") adminIssuerUrl: String,
-    ): SecurityFilterChain =
-        baseSecurityFilterChain(http, "/admin/pending-checks/**", "/admin/pending-checks-and-downloads-summary")
-            .authorizeHttpRequests {
-                it.anyRequest().authenticated()
-            }
-            .also { addOAuth2ResourceServer(it, adminIssuer, adminIssuerUrl) }
-            .build()
-
-    @Bean
-    @Order(3)
     fun defaultFilterChain(http: HttpSecurity): SecurityFilterChain =
         baseSecurityFilterChain(http, "/**")
             .authorizeHttpRequests {
