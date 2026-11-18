@@ -18,6 +18,8 @@ import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRe
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingChecksAndDownloadsSummaryResponse
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingEmsDownloadSummary
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingRegisterCheckSummary
+import uk.gov.dluhc.emsintegrationapi.rest.GetPendingRegisterChecksIntegrationTest.Companion.CERT_SERIAL_NUMBER_VALUE
+import uk.gov.dluhc.emsintegrationapi.rest.GetPendingRegisterChecksIntegrationTest.Companion.REQUEST_HEADER_NAME
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.UNAUTHORIZED_BEARER_TOKEN
 import uk.gov.dluhc.emsintegrationapi.testsupport.bearerToken
@@ -246,6 +248,17 @@ internal class AdminGetPendingChecksAndDownloadsSummaryIntegrationTest : Integra
             .exchange()
             .expectStatus().isUnauthorized
             .returnResult<ErrorResponse>()
+    }
+
+    @Test
+    fun `should return unauthorized given client cert serial header and no bearer token`() {
+        // When & Then
+        webTestClient.get()
+            .uri(ADMIN_GET_PENDING_CHECKS_AND_DOWNLOADS_SUMMARY_ENDPOINT)
+            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
+            .exchange()
+            .expectStatus().isUnauthorized
+            .returnResult(ErrorResponse::class.java)
     }
 
     /**

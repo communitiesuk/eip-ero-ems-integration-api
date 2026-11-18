@@ -11,6 +11,8 @@ import uk.gov.dluhc.emsintegrationapi.database.entity.RecordStatus
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.models.AdminPendingEmsDownloadsResponse
+import uk.gov.dluhc.emsintegrationapi.rest.GetPendingRegisterChecksIntegrationTest.Companion.CERT_SERIAL_NUMBER_VALUE
+import uk.gov.dluhc.emsintegrationapi.rest.GetPendingRegisterChecksIntegrationTest.Companion.REQUEST_HEADER_NAME
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.UNAUTHORIZED_BEARER_TOKEN
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.ErrorResponseAssert.Companion.assertThat
@@ -211,6 +213,17 @@ internal class AdminGetPendingEmsDownloadsIntegrationTest : IntegrationTest() {
         webTestClient.get()
             .uri(buildUri("south-testington"))
             .bearerToken(UNAUTHORIZED_BEARER_TOKEN)
+            .exchange()
+            .expectStatus().isUnauthorized
+            .returnResult(ErrorResponse::class.java)
+    }
+
+    @Test
+    fun `should return unauthorized given client cert serial header and no bearer token`() {
+        // When, Then
+        webTestClient.get()
+            .uri(buildUri("south-testington"))
+            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
             .exchange()
             .expectStatus().isUnauthorized
             .returnResult(ErrorResponse::class.java)

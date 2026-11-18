@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.database.entity.CheckStatus
+import uk.gov.dluhc.emsintegrationapi.rest.GetPendingRegisterChecksIntegrationTest.Companion.CERT_SERIAL_NUMBER_VALUE
+import uk.gov.dluhc.emsintegrationapi.rest.GetPendingRegisterChecksIntegrationTest.Companion.REQUEST_HEADER_NAME
 import uk.gov.dluhc.emsintegrationapi.testsupport.UNAUTHORIZED_BEARER_TOKEN
 import uk.gov.dluhc.emsintegrationapi.testsupport.assertj.assertions.models.ErrorResponseAssert.Companion.assertThat
 import uk.gov.dluhc.emsintegrationapi.testsupport.bearerToken
@@ -132,6 +134,17 @@ internal class AdminGetPendingRegisterChecksIntegrationTest : IntegrationTest() 
         webTestClient.get()
             .uri(buildUri("west-testington"))
             .bearerToken(UNAUTHORIZED_BEARER_TOKEN)
+            .exchange()
+            .expectStatus().isUnauthorized
+            .returnResult(ErrorResponse::class.java)
+    }
+
+    @Test
+    fun `should return unauthorized given client cert serial header and no bearer token`() {
+        // When, Then
+        webTestClient.get()
+            .uri(buildUri("west-testington"))
+            .header(REQUEST_HEADER_NAME, CERT_SERIAL_NUMBER_VALUE)
             .exchange()
             .expectStatus().isUnauthorized
             .returnResult(ErrorResponse::class.java)
