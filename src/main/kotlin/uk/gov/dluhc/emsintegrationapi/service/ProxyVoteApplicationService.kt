@@ -14,26 +14,18 @@ import uk.gov.dluhc.emsintegrationapi.messaging.MessageSender
 import uk.gov.dluhc.emsintegrationapi.messaging.models.EmsConfirmedReceiptMessage
 import uk.gov.dluhc.emsintegrationapi.models.EMSApplicationResponse
 import uk.gov.dluhc.emsintegrationapi.models.ProxyVoteApplications
-import java.time.Clock
 
 private val logger = KotlinLogging.logger { }
 
 @Service
 class ProxyVoteApplicationService(
-    // IntelliJ cannot resolve the clock bean as it's determined at runtime. See https://stackoverflow.com/questions/21323309/intellij-idea-shows-errors-when-using-springs-autowired-annotation
-    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-    private val clock: Clock,
     private val apiProperties: ApiProperties,
     private val proxyVoteApplicationRepository: ProxyVoteApplicationRepository,
     private val proxyVoteMapper: ProxyVoteMapper,
     private val retrieveGssCodeService: RetrieveGssCodeService,
     private val messageSender: MessageSender<EmsConfirmedReceiptMessage>,
-    private val retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService
 ) : AbstractApplicationService(
-        clock,
-        apiProperties,
         retrieveGssCodeService,
-        retrieveIsHoldEnabledForEroService,
         messageSender
     ) {
     @Transactional(readOnly = true)
@@ -41,10 +33,6 @@ class ProxyVoteApplicationService(
         certificateSerialNumber: String,
         pageSize: Int?,
     ): ProxyVoteApplications {
-        if (shouldHoldApplicationsForEro(certificateSerialNumber)) {
-            logger.info { "No proxy records fetched for $certificateSerialNumber, as hold is enabled for ERO and after holding pool threshold date" }
-            return ProxyVoteApplications(0, emptyList())
-        }
         logger.info { "Proxy Service fetching GSS Codes for $certificateSerialNumber" }
         val gssCodes = retrieveGssCodeService.getGssCodesFromCertificateSerial(certificateSerialNumber)
         var numberOfRecordsToFetch = pageSize ?: apiProperties.defaultPageSize
