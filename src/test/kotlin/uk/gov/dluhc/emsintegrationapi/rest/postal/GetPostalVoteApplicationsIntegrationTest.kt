@@ -10,20 +10,16 @@ import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.config.TestClockConfiguration
-import uk.gov.dluhc.emsintegrationapi.database.repository.EroAbsentVoteHoldRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.PostalVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_99
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_INVALID
-import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_CERTIFICATE_SERIAL
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_GSS_CODE_1
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.ERO_ID_1_GSS_CODE_2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.SIGNATURE_WAIVER_REASON
 import uk.gov.dluhc.emsintegrationapi.testsupport.testhelpers.PostalIntegrationTestHelpers
 import uk.gov.dluhc.registercheckerapi.models.ErrorResponse
-import java.time.Clock
-import java.time.ZoneOffset
 
 internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
@@ -38,9 +34,6 @@ internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
     @Autowired
     protected lateinit var clock: TestClockConfiguration.FlexibleClock
 
-    @Autowired
-    private lateinit var eroAbsentVoteHoldRepository: EroAbsentVoteHoldRepository
-
     private var apiClient: ApiClient? = null
 
     private var testHelpers: PostalIntegrationTestHelpers? = null
@@ -50,7 +43,6 @@ internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
     @BeforeEach
     fun setup() {
         cacheManager.getCache(ERO_GSS_CODE_BY_ERO_ID_CACHE)?.clear()
-        eroAbsentVoteHoldRepository.deleteAll()
         ClearDownUtils.clearDownRecords(
             postalRepository = postalVoteApplicationRepository,
             registerCheckResultDataRepository = registerCheckResultDataRepository
@@ -65,12 +57,9 @@ internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
                 wiremockService = wireMockService,
                 postalVoteApplicationRepository = postalVoteApplicationRepository,
                 queueMessagingTemplate = sqsMessagingTemplate,
-                eroAbsentVoteHoldRepository = eroAbsentVoteHoldRepository,
             )
         // Map ERO_ID_1_CERTIFICATE_SERIAL to ERO_ID_1 with gss codes ERO_ID_1_GSS_CODE_1 and ERO_ID_1_GSS_CODE_2
         testHelpers!!.givenEroIdAndGssCodesMapped()
-        val timeBeforeThreshold = apiProperties.holdingPoolThresholdDate.minusSeconds(3600)
-        clock.setClock(Clock.fixed(timeBeforeThreshold, ZoneOffset.UTC))
     }
 
     @Test
@@ -299,89 +288,6 @@ internal class GetPostalVoteApplicationsIntegrationTest : IntegrationTest() {
             postalVoteApplicationsMap = postalVoteApplicationMap,
             hasSignature = false,
             expectedPageSize = 20,
-            apiResponse = responseSpec,
-        )
-    }
-
-    @Test
-    fun `System does not return postal vote applications if hold is enabled and threshold date has passed`() {
-        // Given
-        val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.plusSeconds(3600)
-        clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
-
-        testHelpers!!.createEroAbsentVoteHold(eroId = ERO_ID_1, holdEnabled = true)
-
-        testHelpers!!.buildPostalVoteApplications(
-            numberOfRecords = 10,
-            recordStatus = "RECEIVED",
-            gssCodes = arrayOf(ERO_ID_1_GSS_CODE_1),
-        )
-
-        // When
-        val responseSpec =
-            testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, ERO_ID_1_CERTIFICATE_SERIAL)
-
-        // Then
-        testHelpers!!.validatePostalResponse(
-            postalVoteApplicationsMap = mapOf(),
-            hasSignature = true,
-            expectedPageSize = 0,
-            apiResponse = responseSpec,
-        )
-    }
-
-    @Test
-    fun `System returns postal vote applications if hold not enabled and threshold date has passed`() {
-        // Given
-        val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.plusSeconds(3600)
-        clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
-
-        testHelpers!!.createEroAbsentVoteHold(eroId = ERO_ID_1, holdEnabled = false)
-
-        val postalVoteApplicationMap =
-            testHelpers!!.buildPostalVoteApplications(
-                numberOfRecords = 1,
-                recordStatus = "RECEIVED",
-                gssCodes = arrayOf(ERO_ID_1_GSS_CODE_1),
-            )
-
-        // When
-        val responseSpec =
-            testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, ERO_ID_1_CERTIFICATE_SERIAL)
-
-        // Then
-        testHelpers!!.validatePostalResponse(
-            postalVoteApplicationsMap = postalVoteApplicationMap,
-            hasSignature = true,
-            expectedPageSize = 1,
-            apiResponse = responseSpec,
-        )
-    }
-
-    @Test
-    fun `System returns postal vote applications if hold enabled and threshold date has not passed`() {
-        // Given
-        val timeAfterThreshold = apiProperties.holdingPoolThresholdDate.minusSeconds(3600)
-        clock.setClock(Clock.fixed(timeAfterThreshold, ZoneOffset.UTC))
-
-        testHelpers!!.createEroAbsentVoteHold(eroId = ERO_ID_1, holdEnabled = true)
-
-        val postalVoteApplicationMap =
-            testHelpers!!.buildPostalVoteApplications(
-                numberOfRecords = 1,
-                recordStatus = "RECEIVED",
-                gssCodes = arrayOf(ERO_ID_1_GSS_CODE_1),
-            )
-
-        // When
-        val responseSpec =
-            testHelpers!!.sendGetRequestWithCertificateSerialNumberAndOptionalPageSize(apiClient!!, acceptedPath, ERO_ID_1_CERTIFICATE_SERIAL)
-
-        // Then
-        testHelpers!!.validatePostalResponse(
-            postalVoteApplicationsMap = postalVoteApplicationMap,
-            hasSignature = true,
-            expectedPageSize = 1,
             apiResponse = responseSpec,
         )
     }

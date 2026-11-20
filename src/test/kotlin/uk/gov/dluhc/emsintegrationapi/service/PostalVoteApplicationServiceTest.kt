@@ -9,7 +9,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.given
@@ -34,14 +33,10 @@ import uk.gov.dluhc.emsintegrationapi.service.ApplicationType.POSTAL
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildPostalVoteApplication
-import java.time.Clock
-import java.time.Instant
 import java.util.stream.IntStream
 
 @ExtendWith(MockitoExtension::class)
 internal class PostalVoteApplicationServiceTest {
-    @Spy
-    private var clock: Clock = Clock.systemUTC()
 
     @Mock
     private lateinit var apiProperties: ApiProperties
@@ -58,9 +53,6 @@ internal class PostalVoteApplicationServiceTest {
     @Mock
     private lateinit var retrieveGssCodeService: RetrieveGssCodeService
 
-    @Mock
-    private lateinit var retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService
-
     @InjectMocks
     private lateinit var postalVoteApplicationService: PostalVoteApplicationService
 
@@ -76,12 +68,6 @@ internal class PostalVoteApplicationServiceTest {
 
     @Nested
     inner class GetProxyVoteApplications {
-        @BeforeEach
-        public fun setup() {
-            val now = Instant.now()
-            given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
-        }
-
         @Nested
         inner class PageSizeIsNotProvided {
             @BeforeEach
@@ -175,59 +161,6 @@ internal class PostalVoteApplicationServiceTest {
                     numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
                     pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
                 )
-        }
-
-        @Nested
-        inner class HoldingPool {
-            @Test
-            fun `should return postal applications if after threshold date and hold not enabled`() {
-                val now = Instant.now()
-                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
-                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(false)
-                given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
-                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
-                    GSS_CODES
-                )
-
-                validateFetchPostalVoteApplications(
-                    numberOfRecordsToBeReturned = 1,
-                    numberOfRecordsToBeRequested = 1,
-                    pageSizeRequested = 1
-                )
-            }
-
-            @Test
-            fun `should return postal applications if before threshold date`() {
-                val now = Instant.now()
-                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
-                given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
-                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
-                    GSS_CODES
-                )
-
-                validateFetchPostalVoteApplications(
-                    numberOfRecordsToBeReturned = 1,
-                    numberOfRecordsToBeRequested = 1,
-                    pageSizeRequested = 1
-                )
-            }
-
-            @Test
-            fun `should not return any postal applications if after threshold date and hold enabled`() {
-                val now = Instant.now()
-                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(true)
-                given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
-
-                val postalVoteApplications =
-                    postalVoteApplicationService.getPostalVoteApplications(
-                        certificateSerialNumber = CERTIFICATE_SERIAL_NUMBER,
-                        pageSize = 1
-                    )
-
-                assertThat(postalVoteApplications.pageSize).isEqualTo(0)
-                assertThat(postalVoteApplications.postalVotes).isEmpty()
-                verifyNoInteractions(postalVoteApplicationRepository)
-            }
         }
     }
 
