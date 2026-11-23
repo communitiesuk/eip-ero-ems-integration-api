@@ -45,7 +45,7 @@ internal class SavePostalVoteApplicationIntegrationTest : IntegrationTest() {
         ClearDownUtils.clearDownRecords(
             postalRepository = postalVoteApplicationRepository,
             registerCheckResultDataRepository = registerCheckResultDataRepository,
-            sqsAsyncClient = sqsAsyncClient,
+            sqsAsyncClient = sqsAsync,
             queueName = removeApplicationEmsDataQueueName,
         )
     }
@@ -55,7 +55,7 @@ internal class SavePostalVoteApplicationIntegrationTest : IntegrationTest() {
         ClearDownUtils.clearDownRecords(
             postalRepository = postalVoteApplicationRepository,
             registerCheckResultDataRepository = registerCheckResultDataRepository,
-            sqsAsyncClient = sqsAsyncClient,
+            sqsAsyncClient = sqsAsync,
             queueName = removeApplicationEmsDataQueueName,
         )
     }

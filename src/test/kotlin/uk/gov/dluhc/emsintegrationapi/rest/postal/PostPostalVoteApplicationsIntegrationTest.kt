@@ -46,7 +46,7 @@ internal class PostPostalVoteApplicationsIntegrationTest : IntegrationTest() {
         ClearDownUtils.clearDownRecords(
             postalRepository = postalVoteApplicationRepository,
             registerCheckResultDataRepository = registerCheckResultDataRepository,
-            sqsAsyncClient = sqsAsyncClient,
+            sqsAsyncClient = sqsAsync,
             queueName = emsApplicationProcessedQueueName,
         )
         apiClient = ApiClient(webClient, apiProperties)

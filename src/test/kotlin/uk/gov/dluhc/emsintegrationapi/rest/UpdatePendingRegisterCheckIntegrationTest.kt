@@ -1043,7 +1043,7 @@ internal class UpdatePendingRegisterCheckIntegrationTest : IntegrationTest() {
                 .maxNumberOfMessages(10)
                 .build()
 
-        return sqsAsyncClient
+        return sqsAsync
             .receiveMessage(receiveMessageRequest)
             .get()
             .messages()
