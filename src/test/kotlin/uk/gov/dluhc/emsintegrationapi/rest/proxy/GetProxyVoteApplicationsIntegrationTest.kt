@@ -9,7 +9,6 @@ import uk.gov.dluhc.emsintegrationapi.config.ApiClient
 import uk.gov.dluhc.emsintegrationapi.config.ApiProperties
 import uk.gov.dluhc.emsintegrationapi.config.ERO_GSS_CODE_BY_ERO_ID_CACHE
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
-import uk.gov.dluhc.emsintegrationapi.config.TestClockConfiguration
 import uk.gov.dluhc.emsintegrationapi.database.repository.ProxyVoteApplicationRepository
 import uk.gov.dluhc.emsintegrationapi.testsupport.ClearDownUtils
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.RestTestUtils.CERTIFICATE_SERIAL_NUM_99
@@ -30,9 +29,6 @@ internal class GetProxyVoteApplicationsIntegrationTest : IntegrationTest() {
 
     @Autowired
     private lateinit var proxyVoteApplicationRepository: ProxyVoteApplicationRepository
-
-    @Autowired
-    private lateinit var clock: TestClockConfiguration.FlexibleClock
 
     private var apiClient: ApiClient? = null
 
