@@ -3,7 +3,6 @@ package uk.gov.dluhc.emsintegrationapi.config
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import java.time.Instant
 
 @Component
 class ApiProperties(
@@ -15,8 +14,6 @@ class ApiProperties(
     val maxPageSize: Int,
     @Value("\${$FORCE_MAX_PAGE_SIZE}")
     val forceMaxPageSize: Int,
-    @Value("\${$HOLDING_POOL_THRESHOLD_DATE}")
-    val holdingPoolThresholdDate: Instant,
 ) {
     companion object {
         private const val API_CONFIG_PREFIX = "dluhc"
@@ -24,7 +21,6 @@ class ApiProperties(
         const val MAX_PAGE_SIZE = "$API_CONFIG_PREFIX.max-page-size"
         const val FORCE_MAX_PAGE_SIZE = "$API_CONFIG_PREFIX.force-max-page-size"
         const val REQUEST_HEADER_NAME = "$API_CONFIG_PREFIX.request.header.name"
-        const val HOLDING_POOL_THRESHOLD_DATE = "$API_CONFIG_PREFIX.holding-pool-threshold-date"
         const val MAX_PAGE_SIZE_MIN_VALUE = 50
         const val DEFAULT_PAGE_SIZE_MIN_VALUE = 10
     }

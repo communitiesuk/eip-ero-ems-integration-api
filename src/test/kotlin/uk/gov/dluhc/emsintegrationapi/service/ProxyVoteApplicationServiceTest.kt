@@ -9,7 +9,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Spy
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.given
@@ -32,14 +31,10 @@ import uk.gov.dluhc.emsintegrationapi.models.ProxyVote
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.GSS_CODE2
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.buildProxyVoteApplication
-import java.time.Clock
-import java.time.Instant
 import java.util.stream.IntStream
 
 @ExtendWith(MockitoExtension::class)
 internal class ProxyVoteApplicationServiceTest {
-    @Spy
-    private var clock: Clock = Clock.systemUTC()
 
     @Mock
     private lateinit var apiProperties: ApiProperties
@@ -56,9 +51,6 @@ internal class ProxyVoteApplicationServiceTest {
     @Mock
     private lateinit var retrieveGssCodeService: RetrieveGssCodeService
 
-    @Mock
-    private lateinit var retrieveIsHoldEnabledForEroService: RetrieveIsHoldEnabledForEroService
-
     @InjectMocks
     private lateinit var proxyVoteApplicationService: ProxyVoteApplicationService
 
@@ -74,12 +66,6 @@ internal class ProxyVoteApplicationServiceTest {
 
     @Nested
     inner class GetProxyVoteApplications {
-        @BeforeEach
-        public fun setup() {
-            val now = Instant.now()
-            given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
-        }
-
         @Nested
         inner class PageSizeIsNotProvided {
             @BeforeEach
@@ -169,59 +155,6 @@ internal class ProxyVoteApplicationServiceTest {
                     numberOfRecordsToBeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE,
                     pageSizeRequested = BETWEEN_DEFAULT_AND_FORCE_MAX_PAGE_SIZE
                 )
-        }
-
-        @Nested
-        inner class HoldingPool {
-            @Test
-            fun `should return proxy applications if after threshold date and hold not enabled`() {
-                val now = Instant.now()
-                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(false)
-                given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
-                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
-                    GSS_CODES
-                )
-                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
-
-                validateFetchProxyVoteApplications(
-                    numberOfRecordsToBeReturned = 1,
-                    numberOfRecordsToBeRequested = 1,
-                    pageSizeRequested = 1
-                )
-            }
-
-            @Test
-            fun `should return proxy applications if before threshold date`() {
-                val now = Instant.now()
-                given(apiProperties.holdingPoolThresholdDate).willReturn(now.plusSeconds(3600))
-                given { retrieveGssCodeService.getGssCodesFromCertificateSerial(CERTIFICATE_SERIAL_NUMBER) }.willReturn(
-                    GSS_CODES
-                )
-                given(apiProperties.forceMaxPageSize).willReturn(FORCE_MAX_PAGE_SIZE)
-
-                validateFetchProxyVoteApplications(
-                    numberOfRecordsToBeReturned = 1,
-                    numberOfRecordsToBeRequested = 1,
-                    pageSizeRequested = 1
-                )
-            }
-
-            @Test
-            fun `should not return any proxy applications if after threshold date and hold enabled`() {
-                val now = Instant.now()
-                given(retrieveIsHoldEnabledForEroService.getIsHoldEnabled(CERTIFICATE_SERIAL_NUMBER)).willReturn(true)
-                given(apiProperties.holdingPoolThresholdDate).willReturn(now.minusSeconds(3600))
-
-                val proxyVoteApplications =
-                    proxyVoteApplicationService.getProxyVoteApplications(
-                        certificateSerialNumber = CERTIFICATE_SERIAL_NUMBER,
-                        pageSize = 1
-                    )
-
-                assertThat(proxyVoteApplications.pageSize).isEqualTo(0)
-                assertThat(proxyVoteApplications.proxyVotes).isEmpty()
-                verifyNoInteractions(proxyVoteApplicationRepository)
-            }
         }
     }
 
