@@ -7,7 +7,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 import java.lang.ProcessBuilder.Redirect
 
 plugins {
-    id("org.springframework.boot") version "4.1.1"
+    id("org.springframework.boot") version "4.1.3"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.4.21"
     kotlin("kapt") version "2.4.21"
@@ -38,14 +38,9 @@ java {
 extra["awsSdkVersion"] = "2.54.17"
 extra["springCloudAwsVersion"] = "4.1.0"
 extra["junitJupiterVersion"] = "6.0.3"
-// EROPSPT-784: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
-extra["tomcat.version"] = "11.0.25"
-extra["jackson.version"] = "3.1.8"
-extra["netty.version"] = "4.2.18.Final"
-extra["hibernate.version"] = "7.4.9.Final"
+// EROPSPT-801: Pinned versions which resolve vulnerabilities - these should be reviewed when upgrading springboot.
+extra["tomcat.version"] = "11.0.29"
 extra["logback.version"] = "1.6.5"
-extra["hibernate-validator.version"] = "9.1.5.Final"
-extra["mysql.version"] = "26.10.0"
 
 allOpen {
     annotations("jakarta.persistence.Entity", "jakarta.persistence.MappedSuperclass", "jakarta.persistence.Embedabble")
@@ -84,9 +79,9 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:1.6.3")
 
     // internal libs
-    implementation("uk.gov.dluhc:logging-library:4.5.0")
-    implementation("uk.gov.dluhc:messaging-support-library:3.7.0")
-    implementation("uk.gov.dluhc:email-client:1.5.0")
+    implementation("uk.gov.dluhc:logging-library:4.6.0")
+    implementation("uk.gov.dluhc:messaging-support-library:3.8.0")
+    implementation("uk.gov.dluhc:email-client:1.5.2")
 
     // api
     implementation("org.springframework.boot:spring-boot-starter-actuator")
