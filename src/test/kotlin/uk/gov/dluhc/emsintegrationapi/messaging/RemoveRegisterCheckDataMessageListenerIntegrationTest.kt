@@ -2,7 +2,6 @@ package uk.gov.dluhc.emsintegrationapi.messaging
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.testcontainers.shaded.org.awaitility.Awaitility.await
 import uk.gov.dluhc.emsintegrationapi.config.IntegrationTest
 import uk.gov.dluhc.emsintegrationapi.testsupport.getRandomGssCode
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterCheck
@@ -10,7 +9,6 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.entity.buildRegisterC
 import uk.gov.dluhc.emsintegrationapi.testsupport.testdata.messaging.buildRemoveRegisterCheckDataMessage
 import java.util.UUID.fromString
 import java.util.UUID.randomUUID
-import java.util.concurrent.TimeUnit
 
 internal class RemoveRegisterCheckDataMessageListenerIntegrationTest : IntegrationTest() {
 
@@ -51,12 +49,13 @@ internal class RemoveRegisterCheckDataMessageListenerIntegrationTest : Integrati
         sqsMessagingTemplate.send(removeApplicantRegisterCheckDataQueueName, message)
 
         // Then
-        await().atMost(10, TimeUnit.SECONDS).untilAsserted {
-            assertThat(registerCheckRepository.findBySourceReference(sourceReference)).isEmpty()
-            assertThat(registerCheckResultDataRepository.findByCorrelationIdIn(setOf(correlationIdForCheck1, correlationIdForCheck2, correlationIdForOtherGssCode))).isEmpty()
+        waitForAllSqsMessagesToProcess(
+            localStackContainerSettings.mappedQueueUrlRemoveRegisterCheckData
+        )
+        assertThat(registerCheckRepository.findBySourceReference(sourceReference)).isEmpty()
+        assertThat(registerCheckResultDataRepository.findByCorrelationIdIn(setOf(correlationIdForCheck1, correlationIdForCheck2, correlationIdForOtherGssCode))).isEmpty()
 
-            assertThat(registerCheckRepository.findByCorrelationId(correlationIdForOtherSourceRef)).isNotNull
-            assertThat(registerCheckResultDataRepository.findByCorrelationIdIn(setOf(correlationIdForOtherSourceRef))).isNotEmpty.hasSize(1)
-        }
+        assertThat(registerCheckRepository.findByCorrelationId(correlationIdForOtherSourceRef)).isNotNull
+        assertThat(registerCheckResultDataRepository.findByCorrelationIdIn(setOf(correlationIdForOtherSourceRef))).isNotEmpty.hasSize(1)
     }
 }

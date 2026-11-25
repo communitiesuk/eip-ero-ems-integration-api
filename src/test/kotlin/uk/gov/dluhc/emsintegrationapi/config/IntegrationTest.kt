@@ -2,6 +2,8 @@ package uk.gov.dluhc.emsintegrationapi.config
 
 import com.zaxxer.hikari.HikariDataSource
 import io.awspring.cloud.sqs.operations.SqsTemplate
+import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.kotlin.await
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,6 +15,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
+import software.amazon.awssdk.services.sqs.model.GetQueueAttributesRequest
+import software.amazon.awssdk.services.sqs.model.QueueAttributeName
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckRepository
 import uk.gov.dluhc.emsintegrationapi.database.repository.RegisterCheckResultDataRepository
@@ -21,7 +25,9 @@ import uk.gov.dluhc.emsintegrationapi.testsupport.WiremockService
 import uk.gov.dluhc.emsintegrationapi.testsupport.emails.LocalstackEmailMessagesSentClient
 import uk.gov.dluhc.emsintegrationapi.testsupport.getBearerToken
 import java.time.Duration
+import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
+import kotlin.text.toInt
 
 /**
  * Base class used to bring up the entire Spring ApplicationContext
@@ -53,7 +59,7 @@ internal abstract class IntegrationTest {
     protected lateinit var votingArrangementRepository: uk.gov.dluhc.emsintegrationapi.database.repository.VotingArrangementRepository
 
     @Autowired
-    protected lateinit var sqsAsyncClient: SqsAsyncClient
+    protected lateinit var sqsAsync: SqsAsyncClient
 
     @Autowired
     protected lateinit var sqsMessagingTemplate: SqsTemplate
@@ -121,5 +127,32 @@ internal abstract class IntegrationTest {
     @BeforeEach
     fun clearLogAppender() {
         TestLogAppender.reset()
+    }
+
+    protected fun getNumberOfMessagesOnSqsQueue(sqsAsyncClient: SqsAsyncClient, queueUrl: String): Int {
+        val request = GetQueueAttributesRequest.builder()
+            .queueUrl(queueUrl)
+            .attributeNames(
+                QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES,
+                QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE,
+                QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_DELAYED
+            )
+            .build()
+        val response = sqsAsyncClient.getQueueAttributes(request).join()
+        val responseAttributes = response.attributes()
+        return (responseAttributes[QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES]?.toInt() ?: 0) +
+            (responseAttributes[QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_NOT_VISIBLE]?.toInt() ?: 0) +
+            (responseAttributes[QueueAttributeName.APPROXIMATE_NUMBER_OF_MESSAGES_DELAYED]?.toInt() ?: 0)
+    }
+
+    protected fun waitForAllSqsMessagesToProcess(
+        vararg queueUrl: String,
+        timeoutSeconds: Long = 5,
+    ) {
+        await.atMost(timeoutSeconds, TimeUnit.SECONDS).untilAsserted {
+            queueUrl.forEach {
+                assertThat(getNumberOfMessagesOnSqsQueue(sqsAsync, it)).isZero
+            }
+        }
     }
 }

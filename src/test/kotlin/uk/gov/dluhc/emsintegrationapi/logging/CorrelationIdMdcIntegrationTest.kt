@@ -189,7 +189,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
                 postalRepository = postalVoteApplicationRepository,
                 registerCheckRepository = registerCheckRepository,
                 registerCheckResultDataRepository = registerCheckResultDataRepository,
-                sqsAsyncClient = sqsAsyncClient,
+                sqsAsyncClient = sqsAsync,
                 queueName = postalApplicationQueueName
             )
         }
@@ -200,7 +200,7 @@ internal class CorrelationIdMdcIntegrationTest : IntegrationTest() {
                 postalRepository = postalVoteApplicationRepository,
                 registerCheckRepository = registerCheckRepository,
                 registerCheckResultDataRepository = registerCheckResultDataRepository,
-                sqsAsyncClient = sqsAsyncClient,
+                sqsAsyncClient = sqsAsync,
                 queueName = postalApplicationQueueName
             )
         }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="emilie.anderson-stone@softwire.com" id="0045_EIP1-12903_remove_ero_absent_vote_hold_table"
+               context="ddl">
+        <dropTable tableName="ero_absent_vote_hold"/>
+
+        <rollback>
+            <createTable tableName="ero_absent_vote_hold">
+                <column name="ero_id" type="varchar(100)">
+                    <constraints primaryKey="true" nullable="false"/>
+                </column>
+                <column name="hold_enabled" type="bit">
+                    <constraints nullable="false"/>
+                </column>
+            </createTable>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
