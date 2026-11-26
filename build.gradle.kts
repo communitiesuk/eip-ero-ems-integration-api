@@ -73,7 +73,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("tools.jackson.core:jackson-databind")
-    implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
+    implementation("io.github.oshai:kotlin-logging-jvm:8.0.7")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.mapstruct:mapstruct:1.6.3")
     kapt("org.mapstruct:mapstruct-processor:1.6.3")
@@ -126,8 +126,8 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
 
     // Scheduling
-    implementation("net.javacrumbs.shedlock:shedlock-spring:7.10.1")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.10.1")
+    implementation("net.javacrumbs.shedlock:shedlock-spring:7.11.0")
+    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.11.0")
 
     // tests
     testImplementation("software.amazon.awssdk:sqs") // required to send messages to a queue, which we only need to do in test at the moment
